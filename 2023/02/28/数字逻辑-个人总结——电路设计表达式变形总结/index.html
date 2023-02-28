@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在电路设计中，最直观的方式是与或表达式，但有时这种方式所需的逻辑门电路较多。有时可以对其加以变形。在变形的过程中，通过画出卡诺图能够让我们更加直观地理解其中的变化过程。  或与表达式  画出卡诺图，圈出0的部分，直接写出或与表达式。 例1    CD\AB 00 01 11 10    00 0 0 0 0   01 0 1 1 1   11 0 0 1 1   10 0 0 1 1   Step">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字逻辑 个人总结——电路设计表达式变形总结">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="在电路设计中，最直观的方式是与或表达式，但有时这种方式所需的逻辑门电路较多。有时可以对其加以变形。在变形的过程中，通过画出卡诺图能够让我们更加直观地理解其中的变化过程。  或与表达式  画出卡诺图，圈出0的部分，直接写出或与表达式。 例1    CD\AB 00 01 11 10    00 0 0 0 0   01 0 1 1 1   11 0 0 1 1   10 0 0 1 1   Step">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/083f490e02b44130b652595f1a2976d9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/fc8d02ed738a47859f6bad588391c207.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="article:published_time" content="2023-02-28T14:28:14.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:28:14.106Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/083f490e02b44130b652595f1a2976d9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>数字逻辑 个人总结——电路设计表达式变形总结 | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数字逻辑 个人总结——电路设计表达式变形总结
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:28:14" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:14+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在电路设计中，最直观的方式是与或表达式，但有时这种方式所需的逻辑门电路较多。有时可以对其加以变形。在变形的过程中，通过画出卡诺图能够让我们更加直观地理解其中的变化过程。</p>
+<ol>
+<li>或与表达式</li>
+</ol>
+<p>画出卡诺图，圈出0的部分，直接写出或与表达式。</p>
+<p><strong>例1</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">CD\AB</th>
+<th align="center">00</th>
+<th align="center">01</th>
+<th align="center">11</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">00</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">01</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+</tbody></table>
+<p>Step 1: 画出0部分的划分圈</p>
+<p><img src="https://img-blog.csdnimg.cn/083f490e02b44130b652595f1a2976d9.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>红圈实际表示的是$\overline C * \overline D$，在或与表达式中写为$C + D$<br>绿圈实际表示的是$\overline A * \overline B$，在或与表达式中写为$A + B$<br>蓝圈实际表示的是$\overline A * C$，在或与表达式中写为$A + \overline C$</p>
+<p>上述卡诺图对应的或与表达式就为：$(C+D)(A+B)(A+\overline C)$</p>
+<ol start="2">
+<li>与非表达式</li>
+</ol>
+<p>将与非表达式以电路的形式展现时，电路中只能有与非门这一种门电路。对于每一个与非表达式，其最外面一定是一个非，在非的下面是多个与非表达式的与。这些与非表达式相与的结果应该对应卡诺图中0的部分，也即这里面任何一个与非表达式都应该包含0的所有部分。也即这里面任何一个与非表达式中非下面的部分都不应该包含0的任何部分。这样我们就转化成对1的部分进行分片的操作了。</p>
+<p><strong>例2</strong></p>
+<p>卡诺图与例1相同，可以将1分为以下3块。</p>
+<p><img src="https://img-blog.csdnimg.cn/fc8d02ed738a47859f6bad588391c207.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>红圈实际表示的是$A * C$，在与非表达式中写为 $\overline{A * C}$<br>绿圈实际表示的是$B * \overline C * D$，在与非表达式中写为$\overline {B * \overline C * D}$<br>蓝圈实际表示的是$A * D$，在与非表达式中写为$\overline {A * D}$</p>
+<p>上述卡诺图对应的与非表达式就为：$\overline {\overline {A * C} * \overline {B * \overline C * D} * \overline {A * D}}$。它实际上可以由与或表达式加两条杠转化而成，因此根据卡诺图求与非表达式实际上就是求与或表达式，非常方便。</p>
+<p>如果要求出花费与非门最少的表达式，则需要关注0部分，为0部分画卡诺圈，这些圈都可以作为共同项写入每一个与非项中。如上例中可以写成$\overline{\overline{\overline{CD}\cdot\overline{A\overline C}A}\cdot\overline{\overline{CD}\cdot\overline{A\overline C}B}}$，这样需要5个与非门，与例2中需要的与非门数量相同。</p>
+<ol start="3">
+<li>或非表达式</li>
+</ol>
+<p>使用与非表达式同样的方法进行分析：或非表达式的总的非下面有很多或非表达式的或，他们的或对应所有0的部分。因此其中每一个或非表达式都不能包含任何1的部分，也即其中每一个或非表达式中非的下面都应该包含所有1的部分。这样看来，或非表达式实际上是或与表达式加两条杠转化而来。</p>
+<p><strong>例3</strong></p>
+<p>卡诺图与例1相同，划分也与例1相同。</p>
+<p>红圈实际表示的是$\overline C * \overline D$，在或与表达式中写为$\overline {\overline C + \overline D}$<br>绿圈实际表示的是$\overline A * \overline B$，在或与表达式中写为$\overline {\overline A + \overline B}$<br>蓝圈实际表示的是$\overline A * C$，在或与表达式中写为$\overline {\overline A + C}$</p>
+<p>上述卡诺图对应的或非表达式就为：$\overline{\overline {\overline C + \overline D}+\overline {\overline A + \overline B}+\overline {\overline A + C}}$</p>
+<ol start="4">
+<li>不含反变量的与非表达式</li>
+</ol>
+<p>如果与非表达式中可以有反变量，则不会产生嵌套，否则可能需要进行嵌套。</p>
+<p>我们直接分析例子，一边分析一边总结规律。</p>
+<p><strong>例4</strong></p>
+<p>卡诺图同例1。</p>
+<p>设表达式为$\overline X$，其中$X$是一系列与非表达式的与。则$X$表示的是图中所有0的部分。所有的与非项都应包含所有0部分。<br>其中，$\overline {AD}$和$\overline {CD}$仍然可用，这与例2相同，但例2中的$\overline {B * \overline C * D}$不再可用，我们必须将内部的$\overline C$换掉。方法很简单，将$\overline {C}$改成$\overline {B<em>C</em>D}$即可。在具体设计电路的情景下，这里的$\overline {B<em>C</em>D}$也可以改成$\overline {B<em>C}$或$\overline {C</em>D}$，看如何修改使逻辑门电路的输出结果得到最大限度的复用。</p>
+<p>因此，如果我们想要获得不含反变量的与非表达式，只需要将原来的反变量下添加与其相乘的正变量即可，且是否添加均可选，但不能都不选。</p>
+<p>但是不难发现，上述方法产生的表达式至多只有两层嵌套，能否利用多层嵌套实现功能呢？</p>
+<ol start="5">
+<li>高阶与非表达式探究（慎用！）<br>对于含有4个变量的形如$\overline{\overline{\overline {AB}C}D}$（3个与非门）的与非表达式（$A\ne B$），其需要3个与非门完成，等价于$\overline{\overline CD+ABD}$（4个与非门），使用代换规则可以在卡诺图中构造出类似于这样的很多表达式。当四个变量均不相同时，卡诺图中0的个数应为5。从与非表达式转换为与或表达式不如从与或表达式转换为与非表达式有用。如果题中明确采用与非表达式且要求使用的门电路最少，不妨可以考虑这种高阶与非表达式，有利于构造不规则卡诺图形状。观察到其转化后的与非项两项都有$D$，因此反带时可以将非反变量的共同项看成是$D$。但要注意，在$\overline C$和$AB$的选择上，有时两项除共同项外无法直接配出这两项，这时不适合使用高阶表达式，直接采用第四点中的表达式即可。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/" rel="prev" title="how2heap 深入学习(8)">
+      <i class="fa fa-chevron-left"></i> how2heap 深入学习(8)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-2/" rel="next" title="how2heap 深入学习(2)">
+      how2heap 深入学习(2) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

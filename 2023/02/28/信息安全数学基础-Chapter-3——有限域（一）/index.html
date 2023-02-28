@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 3 有限域定义3.1 设$\mathbb F$为一个非空集合，在其上定义两种运算：加法和乘法，这两种运算在集合上封闭，且满足下列条件：  $\mathbb F$中所有元素对于加法形成加法交换群 $\mathbb F$中所有非零元素（记为$\mathbb F^*$）对于乘法构成乘法交换群 任意$\mathbb F$中元素满足乘法对加法的交换律（与实数集中的交换律形式上相同）  则称$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息安全数学基础 Chapter 3——有限域（一）">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="Chapter 3 有限域定义3.1 设$\mathbb F$为一个非空集合，在其上定义两种运算：加法和乘法，这两种运算在集合上封闭，且满足下列条件：  $\mathbb F$中所有元素对于加法形成加法交换群 $\mathbb F$中所有非零元素（记为$\mathbb F^*$）对于乘法构成乘法交换群 任意$\mathbb F$中元素满足乘法对加法的交换律（与实数集中的交换律形式上相同）  则称$">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:28:02.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:28:02.663Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>信息安全数学基础 Chapter 3——有限域（一） | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息安全数学基础 Chapter 3——有限域（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:28:02" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:02+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Chapter-3-有限域"><a href="#Chapter-3-有限域" class="headerlink" title="Chapter 3 有限域"></a>Chapter 3 有限域</h1><p><font color=blue>定义3.1</font> 设$\mathbb F$为一个非空集合，在其上定义两种运算：加法和乘法，这两种运算在集合上封闭，且满足下列条件：</p>
+<ol>
+<li>$\mathbb F$中所有元素对于加法形成加法交换群</li>
+<li>$\mathbb F$中所有非零元素（记为$\mathbb F^*$）对于乘法构成乘法交换群</li>
+<li>任意$\mathbb F$中元素满足乘法对加法的交换律（与实数集中的交换律形式上相同）</li>
+</ol>
+<p>则称$\mathbb F$对于规定的乘法和加法构成一个域。<br><font color=red>一个域至少有两个元素：加法群零元（称为域的零元，$0$）和乘法单位元（称为域的单位元，$e$）</font>。域元素个数有限称为有限域或伽罗华域，否则称为无限域。有理数集合$\mathbb Q$和复数集合$\mathbb C$按定义的加法和乘法均为域</p>
+<hr>
+<p><font color=blue>定义3.2</font> 设$\mathbb F$是一个域，$\mathbb F_0$是$\mathbb F$的非空子集，如果对于$\mathbb F$上的加法和乘法，$\mathbb F_0$本身也是一个域，则称$\mathbb F_0$是$\mathbb F$的子域，$\mathbb F$是$\mathbb F_0$的扩域，记作$\mathbb F_0\subsetneq\mathbb F$</p>
+<hr>
+<p><font color=purple>定理3.1</font> 设$\mathbb F_0$，$\mathbb F_0^*$均是域$\mathbb F$的非空子集，当且仅当下面两个条件成立时$\mathbb F_0$是$\mathbb F$的子域：</p>
+<ol>
+<li>对于任意$a, b\in \mathbb F_0$，都有$-a, a+b\in\mathbb F_0$</li>
+<li>对于任意非零元素$a, b\in\mathbb F_0$，都有$a^{-1}, ab\in\mathbb F_0$</li>
+</ol>
+<p><font color=dblue>证明方法：</font>需要证明$\mathbb F_0$是$\mathbb F$的加法子群，$\mathbb F_0^*$是$\mathbb F$的乘法子群。这个证明与证明子群很相似。<br>$\because a,-a\in\mathbb F_0, \therefore0\in\mathbb F_0$，有加法单位元，每个元素有逆元。<br>$\because \forall a, b\in \mathbb F_0, a+b\in \mathbb F_0$，故运算封闭。<br>该运算由于在$\mathbb F$中构成域，因此满足交换律与结合律。因此$\mathbb F_0$是$\mathbb F$的加法子群。<br>$\because \forall a\in\mathbb F_0, a^{-1}\in\mathbb F_0$，故每个元素有逆元，有乘法单位元$e$<br>$\because \forall a, b\in \mathbb F_0, ab\in \mathbb F_0$，故运算封闭。<br>该运算由于在$\mathbb F$中构成域，因此满足交换律与结合律。因此$\mathbb F_0^*$是$\mathbb F$的乘法子群。<br>由于这两个运算在$\mathbb F$中满足分配律，因此在$\mathbb F_0$中同样满足。$\Box$</p>
+<p><font color=red>定义$a^{-n}&#x3D;(a^n)^{-1}$，当$a\ne 0$时，定义$a^0&#x3D;e$。</font></p>
+<hr>
+<p><font color=purple>定理3.2</font> 设$\mathbb F$是一个域，那么：</p>
+<ol>
+<li>对于任意$a\in\mathbb F$，$0a&#x3D;a0&#x3D;0$；</li>
+<li>对于任意$a,b\in\mathbb F$，若$ab&#x3D;0$，则$a&#x3D;0$或$b&#x3D;0$</li>
+</ol>
+<p><font color=dblue>证明方法：</font>$0a&#x3D;(0+0)a$ 证明1<br>若$a\ne 0$，则$ab&#x3D;a^{-1}ab&#x3D;b&#x3D;0$，若$b&#x3D;0$同理。</p>
+<p><font color=red>在域中，二项式定理成立。</font></p>
+<hr>
+<p><font color=purple>定理3.3</font> 设$\mathbb F$是一个域，$a,b\in\mathbb F$，对于任意正整数$n$，有<br>$$(a+b)^n&#x3D;\sum_{i&#x3D;0}^n C_n^i a^{n-i} b^i<br>&#x3D;\sum_{i&#x3D;0}^n\begin{pmatrix}n\i\end{pmatrix}a^{n-i} b^i$$</p>
+<p><font color=dblue>证明方法：</font>分配律易证。</p>
+<hr>
+<p><font color=blue>定义3.3</font> 设$\mathbb F$是一个域，如果存在正整数$m$，使得对于任意$a\in\mathbb F$均有$ma&#x3D;0$，则在所有满足上述条件的m中，最小的正整数称为域$\mathbb F$的特征。如果$m$不存在则称$\mathbb F$的特征为0。特征记作$char(\mathbb F)$。</p>
+<hr>
+<p><font color=blue>定义3.4</font> 设$\mathbb F, \mathbb k$是两个域，如果存在$\mathbb F$到$\mathbb k$的一一映射$\delta$，使得对于任意$a,b\in\mathbb F$，均有<br>$$\delta(a+<em>{\mathbb F}b)&#x3D;\delta(a)+</em>{\mathbb k}\delta(b), \delta(a\times_{\mathbb F} b)&#x3D;\delta(a)\times_{\mathbb k}\delta(b)$$<br>则称$\delta$为$\mathbb F$到$\mathbb k$的同构映射，称$\mathbb F, \mathbb k$同构，记作$\mathbb F\cong\mathbb k$。如果$\mathbb F&#x3D;\mathbb k$则称$\delta$为自同构映射，若对于任意$a\in\mathbb F$均有$\delta(a)&#x3D;a$，则称$\delta$为恒等自同构映射。<font color=red>一个域的最小子域称为该域的素域。</font></p>
+<hr>
+<p><font color=purple>定理3.4</font> 设$\mathbb F$是一个域，则$char(\mathbb F)$为0或某个素数$p$。特征为素数$p$的域的素域与$\mathbb Z_p$同构，特征为0的域的素域与$\mathbb Q$同构。</p>
+<p><font color=dblue>证明方法：</font>此证明显然需要分为三个部分进行。<br>首先证明特征为0或素数。如果特征不是素数，则可写为$s\times t$的形式，也即$\forall a\in \mathbb F, (st)a&#x3D;sta&#x3D;0$，故$sa&#x3D;0$或$ta&#x3D;0$。此时特征就应该是$s$或$t$而非$st$。<br>当$\mathbb F$是一个域且特征不为0时，其所有子域显然均需要包含$0$和$e$，由于需要满足运算的封闭性，所以还需要包含$2e, 3e, …,(p-1)e$。由这些元素构成的集合容易证明其是一个域（需要注意乘法逆元的证明，由于$p$是素数，故对于任意的$0&lt;k&lt;p$，均能找到其关于模$p$的逆元，也就是对应的乘法逆元），因此这就是$\mathbb F$上最小的域。同构映射$\delta(ke)&#x3D;k$与$\mathbb Z_p$构成同构。<br>当$\mathbb F$的特征为0时，同样其所有子域均需要包含$0,e,2e,3e,…$。由加法运算的封闭性，还需要包含$-e,-2e,-3e,…$。又由于需要满足乘法逆元也包含于域中，所以$e^{-1}, 2e^{-1},…-e^{-1},-2e^{-1},…$也在子域中。又需要满足乘法的封闭性，故任意子域均需包含$\mathbb F_0&#x3D;{(ae)(be)^{-1}|a,b\in\mathbb Z,b\ne 0}$。这个集合容易证明域的所有判定性质，因此其本身就是一个域，而且是最小的子域。同构映射$\delta((ae)(be)^{-1})&#x3D;\frac{a}{b}$与$\mathbb Q$构成同构。</p>
+<hr>
+<p><font color=purple>定理3.5</font> 设$\mathbb F$是一个域，$char(\mathbb F)&#x3D;p$，则对于任意$a,b\in\mathbb F,n\ge 0$，均有<br>$$(a\pm b)^{p^n}&#x3D;a^{p^n}\pm b^{p^n}$$</p>
+<p><font color=dblue>证明方法：</font>首先使用二项式定理证明$(a+b)^p&#x3D;a^p+b^p$：<br>$(a+b)^p$中的第i项为$\frac{p!}{i!(p-i)!}a^ib^{p-i}$，即证明$\frac{p!}{i!(p-i)!}$是$p$的倍数$(i\ne 0,i\ne p)$。显然这是一个整数，且$\frac{p!}{i!(p-i)!}&#x3D;p\times \frac{(p-1)!}{i!(p-i)!}$。后面的数不可能是分数，因为如果是，那么分母必然是$p$的倍数，但是分母显然与$p$互素。因此后面的数是整数，也就是说这个数能够被$p$整除。故得证第一项。<br>然后使用数学归纳法，用类似的方式证明后面的式子即可。</p>
+<hr>
+<p><font color=blue>定义3.5</font> 对于非负整数$i$，$a_ix^i,a_i\in\mathbb F$表示域$\mathbb F$上文字为x的单项式，称形式和$f(x)&#x3D;a_nx^n+a_{n-1}x^{n-1}+…+a_1x^1+a_0x^0,a_i\in\mathbb F$为域上文字为x的多项式，简称域$\mathbb F$上的多项式。$a_ix^i$称为$f(x)$的$i$次项，$a_i$称为$f(x)$的$i$次项系数。当$a_n\ne 0$时，称该多项式为n次多项式，$a_n$称为$f(x)$的首项系数，多项式$f(x)$的次数称为$\deg f(x)$。如果多项式各项系数均为0，称为零多项式，记为0，次数规定为$-\infty$。<br><font color=red>域$\mathbb F$上文字为x的所有多项式的集合用符号$\mathbb F[x]$表示，规定$x^0&#x3D;1\in\mathbb F,a_0x^0&#x3D;a_0\in\mathbb F$，则有$\mathbb F\subsetneq\mathbb F[x]$。注意按照上面的定义，$\mathbb F[x]$不是域。</font><br><font color=red>关于多项式次数，下面结论成立：</font><br>$$\deg (f(x)+g(x))\le max{\deg f(x), \deg g(x)}<br>\\deg(f(x)g(x))&#x3D;\deg f(x)+\deg g(x)$$</p>
+<p><font color=red>注意：这里的x可以表示任意的东西而不仅限于$\mathbb F$，即anything，但是需要定义次方。</font></p>
+<hr>
+<p><font color=purple>定理3.6</font> 设$f(x),g(x)$为域$\mathbb F$上的两个多项式，$g(x)\ne 0$，则存在唯一一对多项式$q(x),r(x)$使得<br>$$f(x)&#x3D;q(x)g(x)+r(x),\deg r(x)&lt;\deg g(x)$$<br><font color=red>注意：不要看系数能否被整除，而应该注意到域的性质。由于域的特征只可能为素数或0，因此不要想当然地用诸如$5x^2+1$和$2x^2+4$来挑战这条定理，因为整数集并不是域！</font></p>
+<p><font color=dblue>证明方法：</font>归纳。<br>存在性易证，总存在一个系数能够消去被除式的最高次项（利用乘法逆元）<br>唯一性：$(q(x)-q’(x))g(x)&#x3D;r’(x)-r(x),\deg (r’(x)-r(x))&lt;\deg g(x)$，故$q(x)&#x3D;q’(x), r(x)&#x3D;r’(x)$</p>
+<p>定理中的式子称为多项式带余除法算式，$r(x)$称为余式，记作<font color=red>$(f(x))_{g(x)}&#x3D;r(x)$</font></p>
+<hr>
+<p><font color=purple>定理3.7</font> 多项式满足模加和模乘运算。证明略。</p>
+<hr>
+<p><font color=blue>定义3.6</font><br>整除：$r(x)&#x3D;0$<br>倍式与因式<br>真因式：次数小于倍式的因式</p>
+<hr>
+<p><font color=blue>定义3.7</font><br>可约多项式：不含次数大于0的真因式的多项式<br>不可约多项式</p>
+<hr>
+<p><font color=purple>定理3.8</font> 域$\mathbb F$上多项式$f(x)$可约，则当且仅当存在两个域$\mathbb F$上多项式$f_1(x),f_2(x)$，$\deg f_1(x)&lt;\deg f(x), \deg f_2(x)&lt;\deg f(x)$，使得$f(x)&#x3D;f_1(x)f_2(x)$</p>
+<p>证明略。</p>
+<hr>
+<p><font color=purple>定理3.9</font> 如果有$g(x)|f_1(x), g(x)|f_2(x)$，则任意多项式$s(x),t(x)$，有$g(x)|s(x)f_1(x)+t(x)f_2(x)$</p>
+<p><font color=dblue>证明方法：</font><br>设$f_1(x)&#x3D;g(x)q_1(x),f_2(x)&#x3D;g(x)q_2(x)$<br>则$s(x)f_1(x)+t(x)f_2(x)&#x3D;(s(x)q_1(x)+t(x)q_2(x))g(x)$一定是$g(x)$的倍式</p>
+<hr>
+<p><font color=blue>定义3.8</font> 公因式、最高公因式（首项系数为1，次数最高）、互素</p>
+<hr>
+<p><font color=purple>定理3.10</font> 欧几里得辗转相除法<br>$r_i(x)&#x3D;q_{i+1}(x)r_{i+1}(x)+r_{i+2}(x)$</p>
+<ol>
+<li>经过有限步之后，余式必然为0。</li>
+<li>存在多项式$s(x),t(x)\in \mathbb F[x]$，使得$s(x)r_0(x)+t(x)r_1(x)&#x3D;r_n(x)$。</li>
+<li>设$r_n(x)$首项系数为$c$，则$(r_0(x), r_1(x))&#x3D;c^{-1}r_n(x)$，且最高公因式唯一存在。</li>
+<li>对于任意$c(x)\in \mathbb F(x)$，如果$c(x)|r_0(x),c(x)|r_1(x)$，那么$c(x)|(r_0(x),r_1(x))$</li>
+</ol>
+<p><font color=orange>推论</font> 多项式的裴蜀定理（描述、证明略）</p>
+<hr>
+<p><font color=purple>定理3.11</font> 设$f(x),g(x)$为域$\mathbb F$上两个不全为0的多项式，则对于任意$k(x)\in \mathbb F[x],(f(x)+g(x)k(x),g(x))&#x3D;(f(x),g(x))$<br>类比整数，证明略。</p>
+<hr>
+<p><font color=purple>定理3.12</font> 设$f_1(x),f_2(x)$为域$\mathbb F$上的多项式，$p(x)$为域$\mathbb F$上的不可约多项式，且$p(x)|f_1(x)f_2(x)$，若$(p(x),f_1(x))&#x3D;1$，则$p(x)|f_2(x)$<br>类比整数，证明使用定理3.10推论证明，略。</p>
+<hr>
+<p><font color=purple>定理3.13</font> 设$f_1(x),f_2(x)$为域$\mathbb F$上的多项式，$p(x)$为域$\mathbb F$上的不可约多项式，且$p(x)|f_1(x)f_2(x)$，则$p(x)|f_1(x)$或$p(x)|f_2(x)$<br>类比整数，证明略。</p>
+<hr>
+<p><font color=purple>定理3.14</font> 唯一因式分解定理：设$f(x)$是域$\mathbb F$上次数大于0的多项式，则$f(x)$可以唯一地表示为域$\mathbb F$上一些次数大于0的不可约多项式的乘积。特别地，若$f(x)$为首1多项式，且<br>$$f(x)&#x3D;p_1(x)p_2(x)…p_s(x)&#x3D;q_1(x)q_2(x)…q_t(x)$$<br>其中$p_i(x),q_i(x)$为域$\mathbb F$上次数大于0的首1不可约多项式，则有$s&#x3D;t$，经过适当调整可以使得对任意$i$均有$p_i(x)&#x3D;q_i(x)$</p>
+<p><font color=dblue>证明方法：</font>归纳法。略</p>
+<hr>
+<p><font color=blue>定义3.9</font> 根：设$f(x)$为域$\mathbb F$上的多项式，如果$a\in \mathbb F$使得$f(a)&#x3D;0$，则称$a$是$f(x)$在域$\mathbb F$上的一个根。</p>
+<hr>
+<p><font color=purple>定理3.15</font> 余元定理：设$f(x)$为域$\mathbb F$上的多项式，对于任意$a\in \mathbb F$，存在$g(x)\in \mathbb F[x]$使得$f(x)&#x3D;(x-a)g(x)+f(a)$</p>
+<p><font color=dblue>证明方法：</font>设$f(x)&#x3D;(x-a)g(x)+c$，代入$a$即可。</p>
+<p><font color=red>本定理可以这样理解：将其看成域上离散的中值定理——$\frac{f(x)-f(a)}{x-a}&#x3D;g(x)$，认为中值定理在域上也成立。但是实际上写的时候不能写分式，因为并没有定义除这个运算。</font></p>
+<p><font color=orange>推论1</font> 设$f(x)$为域$\mathbb F$上的多项式，$a$为$f(x)$在域$\mathbb F$的根的充要条件为$(x-a)|f(x)$<br><font color=orange>推论2</font> 设$f(x)$为域$\mathbb F$上的多项式，如果$a_1,a_2,…a_m$为$f(x)$在域$\mathbb F$的根，则存在$n-m$次多项式$g(x)\in \mathbb F[x]$使得$f(x)&#x3D;(x-a_1)(x-a_2)…(x-a_m)g(x)$<br><font color=orange>推论3</font> 设$f(x)$为域$\mathbb F$上的多项式，则$f(x)$在$\mathbb F$的任意扩域中，不同根的个数不会超过$n$（证明使用推论2证明）</p>
+<hr>
+<p><font color=purple>定理3.16</font> 设$f(x)$是域$\mathbb F$上的$n\ge 1$次不可约多项式，集合$\mathbb F[x]<em>{f(x)}&#x3D;{\sum</em>{i&#x3D;0}^{n-1}a_ix^i|a_i\in\mathbb F}$按照模$f(x)$的模加和模乘形成一个域。特别地，若$f(x)$是有限域$\mathbb F_q$上的$n$次不可约多项式，则$\mathbb F[x]<em>{f(x)}&#x3D;{\sum</em>{i&#x3D;0}^{n-1}a_ix^i|a_i\in\mathbb F_q}$按照模$f(x)$的模加和模乘形成一个元素个数为$q^n$的有限域。</p>
+<p><font color=dblue>证明方法：</font>证明该运算系统满足域的每条性质。每个项的系数都可以取q个值，因此构造的域的元素个数为$q^n$</p>
+<p>以$\mathbb F_q[x]^*_{f(x)}$表示$\mathbb F_q[x]_{f(x)}$的乘法群，其元素个数为$q^n-1$。</p>
+<p><font color=red>注意：任何次数大于等于n的多项式在$\mathbb F[x]_{f(x)}$中均等于一个次数小于n的多项式，每一项的系数关于$\mathbb F$取余，整个多项式关于$f(x)$取余</font></p>
+<hr>
+<p><font color=purple>定理3.17</font> 设$f(x)$是域$\mathbb F$上的一个次数大于0的不可约多项式，那么$f(x)$必然在$\mathbb F$的某个扩域中有根。</p>
+<p><font color=dblue>证明方法：</font>使用定理3.16构造的扩域。</p>
+<p><font color=green>举例：</font>定义在$\mathbb Z_2$上的多项式$f(x)&#x3D;x^2+1$在其上不可约，因此构造扩域，集合元素为${0,1,x,x+1}$，则显然有$f(x)&#x3D;x^2+1&#x3D;0$，即$f(x)&#x3D;0$，x是多项式的一个根。（这里的x指的是扩域中的x，不要混淆了）</p>
+<p><font color=orange>推论</font> $\mathbb F$上的任意一个次数为$n\ge 1$的多项式，必然在$\mathbb F$的扩域中可以分解为$n$个一次不可约多项式的乘积。</p>
+<hr>
+<p><font color=purple>定理3.18</font> 设$\mathbb E$是有限域，$\mathbb F_q$是其q元子域，则存在正整数n使得$|\mathbb E|&#x3D;q^n$。</p>
+<p><font color=dblue>证明方法：</font>逐步扩大法。$\mathbb F_q&#x3D;\mathbb E_1$如果存在$\beta\in \mathbb E \setminus \mathbb E_1$，那么定义$\mathbb E_2&#x3D;{a_0+a_1\beta|a_0,a_1\in\mathbb F_q}$，其元素个数为$q^2$，如果还存在不在$\mathbb E_2$的元素，则继续扩展，直到$\mathbb E_n&#x3D;\mathbb E$为止。</p>
+<p><font color=red>注意：这其中的$\mathbb E_i$不一定是一个域！在严格证明中将其描述为集合。</font></p>
+<p><font color=orange>推论</font> 有限域的元素个数必为$p^n$，其中$p$为素数。任何有限域都是其素域的扩域。</p>
+<hr>
+<p><font color=purple>定理3.19</font> 设$\mathbb F_q$为q元有限域，$\mathbb F$为$\mathbb F_q$的扩域，$\alpha\in\mathbb F$，那么$\alpha$是多项式$x^q-x$的根当且仅当$\alpha\in\mathbb F_q$</p>
+<p><font color=dblue>证明方法：</font>对于任意$\alpha\in\mathbb F_q$，$\alpha^q-\alpha&#x3D;(e+e+e+…+e)^q-\alpha&#x3D;e^q+e^q+…+e^q-\alpha&#x3D;\alpha-\alpha&#x3D;0$，故$x^q-x$的根是$\mathbb F_q$的所有元素，而其也只有这么多根（次数限制）。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-3/" rel="prev" title="how2heap 深入学习(3)">
+      <i class="fa fa-chevron-left"></i> how2heap 深入学习(3)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-5/" rel="next" title="Kernel pwn 入门 (5)">
+      Kernel pwn 入门 (5) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-3-%E6%9C%89%E9%99%90%E5%9F%9F"><span class="nav-number">1.</span> <span class="nav-text">Chapter 3 有限域</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

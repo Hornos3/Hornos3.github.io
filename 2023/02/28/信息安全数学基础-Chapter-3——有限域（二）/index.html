@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="定理3.20 设$\mathbb F_q$为q元有限域，$f(x)\in \mathbb F_q[x]$为n次不可约多项式，那么有$f(x)|x^{q^n}-x$ 证明方法：构造$f(x)$的扩域$\mathbb F_q[x]{f(x)}$，对于任意$x\in F_q[x]{f(x)}$均有$x^{q^n}-x&#x3D;0$（定理3.19），则有$(x^{q^n}-x)_{f(x)}&#x3D;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息安全数学基础 Chapter 3——有限域（二）">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="定理3.20 设$\mathbb F_q$为q元有限域，$f(x)\in \mathbb F_q[x]$为n次不可约多项式，那么有$f(x)|x^{q^n}-x$ 证明方法：构造$f(x)$的扩域$\mathbb F_q[x]{f(x)}$，对于任意$x\in F_q[x]{f(x)}$均有$x^{q^n}-x&#x3D;0$（定理3.19），则有$(x^{q^n}-x)_{f(x)}&#x3D;">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:27:26.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:26.399Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>信息安全数学基础 Chapter 3——有限域（二） | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息安全数学基础 Chapter 3——有限域（二）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:26+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><font color=purple>定理3.20</font> 设$\mathbb F_q$为q元有限域，$f(x)\in \mathbb F_q[x]$为n次不可约多项式，那么有$f(x)|x^{q^n}-x$</p>
+<p><font color=dblue>证明方法：</font>构造$f(x)$的扩域$\mathbb F_q[x]<em>{f(x)}$，对于任意$x\in F_q[x]</em>{f(x)}$均有$x^{q^n}-x&#x3D;0$（定理3.19），则有$(x^{q^n}-x)_{f(x)}&#x3D;0$（定理3.7）。证毕。</p>
+<hr>
+<p><font color=purple>定理3.21</font> 设$m,n$均为正整数，则有$(x^m-1,x^n-1)&#x3D;x^{(m,n)}-1$</p>
+<p><font color=dblue>证明方法：</font>归纳法。<br>当$max{m,n}&#x3D;1$时显然成立<br>假设当$max{m,n}&#x3D;k$时成立，若$m&gt;n$，那么有$(x^m-1,x^n-1)&#x3D;(x^{m-n}-1,x^n-1)$（定理3.11），此时$max{m,n}&lt;k$，故成立。</p>
+<p><font color=orange>推论</font> 设$m,n,q$为整数，则$(x^{q^m}-x,x^{q^n}-x)&#x3D;x^{q^{(m,n)}}-x$（使用上面定理即可，证明略）</p>
+<hr>
+<p><font color=purple>定理3.22</font> 设$\mathbb F_q$为q元域，$n$为正整数，$f(x)\in\mathbb F_q[x]$为m次不可约多项式，且$m&gt;n$，那么$f(x)∤x^{q^n}-x$</p>
+<p><font color=dblue>证明方法：</font>反证法。</p>
+<p>假设能够整除。则有$x^{q^n}<em>{f(x)}&#x3D;x</em>{f(x)}$<br>对于任意$\mathbb F_q[x]<em>{f(x)}$中元素$g(x)&#x3D;\sum</em>{i&#x3D;0}^{m-1}a_ix^i$，有<br>$$g(x)^{q^n}&#x3D;\sum_{i&#x3D;0}^{m-1}(a_ix^i)^{q^n}$$<br>（二项式定理）<br>根据定理3.19有<br>$$g(x)^{q^n}&#x3D;\sum_{i&#x3D;0}^{m-1}a_i(x^i)^{q^n}$$<br>注意$(a_i)^{q^n}&#x3D;a_i$<br>因此<br>$$(g(x)^{q^n}-g(x))<em>{f(x)}&#x3D;\sum</em>{i&#x3D;0}^{m-1}a_i((x^i)^{q^n}-x^i)<em>{f(x)}&#x3D;\sum</em>{i&#x3D;0}^{m-1}a_i((x^{q^n})^i-x^i)<em>{f(x)}&#x3D;\sum</em>{i&#x3D;0}^{m-1}a_i(x^i-x^i)_{f(x)}&#x3D;0$$</p>
+<p>故任意$\mathbb F_q[x]_{f(x)}$中元素均是$x^{q^n}-x$的根，而$n&lt;m$，故矛盾。</p>
+<hr>
+<p><font color=purple>定理3.23</font> 设$\mathbb F_q$为q元域，$n,d$为正整数，$f(x)\in\mathbb F_q[x]$为$d$次不可约多项式，那么有$f(x)|x^{q^n}-x$当且仅当$d|n$。</p>
+<p><font color=dblue>证明方法：</font><br>充分性：$f(x)|x^{q^d}-x$，根据定理3.21，$x^{q^d}-x|x^{q^n}-x$，证毕<br>必要性：$f(x)|x^{q^d}-x,f(x)|x^{q^n}-x\Rightarrow f(x)|(x^{q^d}-x, x^{q^n}-x)&#x3D;x^{q^{(d,n)}}-x$，又$\deg(f(x))&#x3D;d\le (d,n)$，故$d|n$</p>
+<hr>
+<p><font color=blue>定义3.10</font> 导式</p>
+<hr>
+<p><font color=blue>定义3.11</font> 重因式、k重因式、重根、k重根、导式</p>
+<hr>
+<p><font color=purple>定理3.24</font> $\mathbb F_q$为q元有限域，$f(x),g(x)\in\mathbb F_q[x]$，若$g(x)$是$f(x)$的k重因式，则$g(x)^{k-1}|f’(x)$</p>
+<p><font color=dblue>证明方法：</font>求导</p>
+<p><font color=orange>推论1</font> $\mathbb F_q$为q元有限域，$f(x)\in\mathbb F_q[x]$，若$(f(x),f’(x))&#x3D;1$，则$f(x)$在域$\mathbb F_q$上没有重因式，也没有重根。（证明反证法）<br><font color=orange>推论2</font> $\mathbb F_q$为q元有限域，n为正整数，则$x^{q^n}-x$在域$\mathbb F_q$上没有重因式。（用推论1证明）</p>
+<p><font color=red>$x^{q^n}-x$可以表示为所有次数为n的因子的首1不可约多项式的乘积，每个因式仅出现一次 <strong>（注意理解：n的因子！如当n&#x3D;4时，所有1、2、4次不可约多项式都是其因子）</strong> </font></p>
+<hr>
+<p><font color=purple>定理3.25</font> 设$\mathbb F_q$为q元域，n为正整数，那么$\mathbb F_q$上一定存在n次不可约多项式。</p>
+<p><font color=dblue>证明方法：</font>容斥原理</p>
+<p>$\phi(k)$为$\mathbb F_q$上次数为$k$的因子的首1不可约多项式的乘积，即$\phi(k)&#x3D;x^{q^k}-x$，$A$为$n$次首1不可约多项式的乘积。<br>设$n&#x3D;\prod_{i&#x3D;1}^S p_i^{\alpha_i}$<br>$$A&#x3D;\phi(n)\cdot\prod_{1\le i\le S}\phi(\frac{n}{p_i})^{-1}\prod_{1\le i_1&lt;i_2\le S}\phi(\frac{n}{p_{i_1}p_{i_2}})…\phi(\frac{n}{p_1p_2…p_S})^{(-1)^S}$$</p>
+<p>首先，次数不是n的因子的首1不可约多项式，在等式两边都不出现。<br>其次，任何一个次数为n的首1不可约多项式在等式两边各出现1次，分别在$A$和$\phi(n)$中<br>再者，对于任意$d|n,d&lt;n$，设<br>$$d&#x3D;p_1^{f_1}p_2^{f_2}…p_r^{f_r}p_{r+1}^{\alpha_{r+1}}…p_S^{\alpha_S}$$<br>那么在$\frac{n}{p_{i_1}p_{i_2}…p_{i_t}}(0\le t&lt;s,1\le i_1&lt;i_2&lt;…&lt;i_t\le S)$中，只有n,$\frac{n}{p_i}(1\le i\le r),\frac{n}{p_ip_j}(1\le i&lt;j\le r),…,\frac{n}{p_1p_2…p_r}$以d为因子，所以任一d次首1不可约多项式在等式右边出现的次数为：$1-\begin{pmatrix} r \ 1 \end{pmatrix}+\begin{pmatrix} r \ 2 \end{pmatrix}-…+(-1)^r\begin{pmatrix} r \ r \end{pmatrix}&#x3D;(1-1)^r&#x3D;0$。显然其在左边出现次数也为0，等式得证。</p>
+<p>又$\phi(n)&#x3D;x^{q^n}-x$，所以<br>$$\deg A&#x3D;q^n-\sum_{1\le i\le S}q^{\frac{n}{p_i}}+\sum_{1\le i_1&lt;i_2\le S}q^{\frac{n}{p_{i_1}p_{i_2}}}+…+(-1)^S q^\frac{n}{p_1p_2…p_S}$$<br>故$\deg A\equiv (-1)^Sq^\frac{n}{p_1p_2…p_S}\ne 0 (\mod q^{\frac{n}{p_1p_2…p_S}+1})$[$q^{\frac{n}{p_1p_2…p_S}+1}|q^n$，前面项全消去仅剩最后一项]，故$\deg A&gt;0$，因此$A$至少包含1个不可约多项式</p>
+<hr>
+<p><font color=purple>定理3.26</font> 对于任意素数$p$，正整数$n$，$p^n$元有限域一定存在。</p>
+<p><font color=dblue>证明方法：</font>根据定理3.25能在$\mathbb Z_p$找到n次不可约多项式，因此可以根据定理3.16构造一个元素个数为$p^n$的有限域。</p>
+<hr>
+<p><font color=red>若$\mathbb F_{q^n}$是$\mathbb F_q$的扩域，则$\mathbb F_{q^n}$可以看做$\mathbb F_q$的n维向量空间，一组基能够按照定理3.18的方式构造：${1,\beta_1,\beta_2,…\beta_{n-1}}$，$\mathbb F_{q^n}$中任意一个元素可以唯一表示为</font><br>$$a_0+a_1\beta_1+…+a_{n-1}\beta_{n-1},a_i\in\mathbb F_q$$<br>的形式。</p>
+<p>如${1,x,x^2,…,x^{n-1}}$就是一组基。</p>
+<hr>
+<p><font color=green>引理1</font> 设群$G$的元素$\alpha$的阶为$n$，则对于任意整数m，$ord(\alpha^m)&#x3D;\frac{n}{(m,n)}$</p>
+<p>证明：设$ord(a^m)&#x3D;d$，分别证明$d|\frac{n}{(m,n)},\frac{n}{(m,n)}|d$即可。<br>$d|\frac{n}{(m,n)}$易证<br>$(\alpha^m)^d&#x3D;1$，故$n|md$，即$\frac{n}{(m,n)}|\frac{m}{(m,n)}d$，且有$(\frac{m}{(m,n)},\frac{n}{(m,n)})&#x3D;1$，故$\frac{n}{(m,n)}|d$</p>
+<hr>
+<p><font color=green>引理2</font> 设群$G$中，$ord(\alpha)&#x3D;m,ord(\beta)&#x3D;n$，若$(m,n)&#x3D;1$，则$ord(\alpha\beta)&#x3D;mn$<br>证明：证明思路与引理1相同<br>$d|mn$易证<br>$(\alpha\beta)^d&#x3D;1$，故$\alpha^d&#x3D;\beta^{-d}$，故$ord(\alpha^d)&#x3D;\frac{m}{(d,m)}&#x3D;\frac{n}{(-d,m)}&#x3D;ord(\beta^{-d})$。$(m,n)&#x3D;1\Rightarrow(\frac{m}{(d,m)},\frac{n}{(d,n)})&#x3D;1,\frac{m}{(d,m)}&#x3D;\frac{n}{(d,n)},\therefore \frac{m}{(d,m)}&#x3D;\frac{n}{(d,n)}&#x3D;1$。故$m|d,n|d\Rightarrow mn|d$</p>
+<hr>
+<p><font color=purple>定理3.27</font> 有限域的乘法群是循环群。</p>
+<p><font color=dblue>证明方法：</font>设$\mathbb F_{p^n}$是元素个数为$p^n$的有限域，其乘法群元素个数为$p^n-1$，设$\alpha$是其中阶最大的元素，设其阶$ord(\alpha)&#x3D;d$，则$d|p^n-1$，故有$d\le p^n-1$。<br>对任意$\beta\in\mathbb F_{p^n}$，设$ord(\beta)&#x3D;s&#x3D;\prod_{i&#x3D;1}^t p_i^{\alpha_i},d&#x3D;\prod_{i&#x3D;1}^t p_i^{\beta_i},\alpha_i\ge 0,\beta_i\ge 0$，那么$[d,s]&#x3D;\prod_{i&#x3D;1}^tp_i^{\max{\alpha_i, \beta_i}}$，将前面的式子拆分为两份：$s’&#x3D;\prod_{\alpha_i\ge \beta_i}p_i^{\alpha_i},d’&#x3D;\prod_{\alpha_i&lt;\beta_i}p_i^{\beta_i}$，则易得$d’|d,s’|s,(d,s)&#x3D;1,d’s’&#x3D;[d,s]$，此时$ord(\alpha^{\frac{d}{d’}})&#x3D;d’,ord(\beta^{\frac{s}{s’}})&#x3D;s’$，由引理2可得，$ord(\alpha^{\frac{d}{d’}}\beta^{\frac{s}{s’}})&#x3D;d’s’&#x3D;[d,s]\le d$，因为d是最大的阶。故有$s|d$。于是$\mathbb F_{p^n}^*$中任意一个元素的阶都是d的因子，即$\mathbb F_{p^n}^*$中$p^n-1$个元素均为$x^d-1&#x3D;0$的根，故有$p^n-1\le d$。综上有$d&#x3D;p^n-1$，证毕。</p>
+<p><font color=red>将域乘法群的生成元称为其本原元。</font></p>
+<hr>
+<p><font color=blue>定义3.12</font> 极小多项式：$\mathbb F_q$是元素个数为q的有限域，有限域$\mathbb F$为其扩域，则$\mathbb F$中任意一个元素$\alpha$在$\mathbb F_q$上的极小多项式指$\mathbb F_q$上以$\alpha$为根的首1不可约多项式。<font color=red><strong>（$\alpha$为$\mathbb F_q$扩域上，$\mathbb F$上元素，故其不一定是$\mathbb F_q$上元素，因此虽然$x-\alpha$整除该多项式，但该多项式不一定就是$x-\alpha$。但如果$\alpha\in\mathbb F_q$，则该多项式就是$x-\alpha$）</strong></font></p>
+<hr>
+<p><font color=purple>群的定理</font> 设$<a>$为由a构成的循环群，则：</p>
+<ol>
+<li>$<a>$的子群都是循环群</li>
+<li>对于任意正整数$d|n$，$<a>$存在唯一d元子群</li>
+<li>若整数$s,t$不全为0，则$&lt;a^s,a^t&gt;&#x3D;{a^{sx+ty}}&#x3D;&lt;a^{(s,t)}&gt;$</li>
+</ol>
+<hr>
+<p><font color=green>引理3</font> 设$\mathbb F_q$是元素个数为q的有限域，有限域$\mathbb F$为其扩域，$\mathbb F$任一元素$\alpha$在$\mathbb F_q$上的极小多项式存在且唯一。<br>证明：存在性。设$|\mathbb F|&#x3D;q^n$，则其中任意一个元素一定为$x^{q^n}-x$的根，其可以在$\mathbb F$中分解为若干首1不可约多项式的乘积：$x^{q^n}-x&#x3D;p_1(x)p_2(x)…p_s(x),p_i(x)\in\mathbb F_q[x]$，故存在$1\le i\le s,p_i(\alpha)&#x3D;0$，$p_i(x)$即为$\mathbb F_q$上的极小多项式。<br>唯一性。由定理3.24定理的推论，不存在重根，设存在两个极小多项式$a(x),b(x)$，因为$(a(x),b(x))&#x3D;1$，代入$\alpha$可得：$0&#x3D;s(\alpha)a(\alpha)+t(\alpha)b(\alpha)&#x3D;1$，矛盾。</p>
+<p>由上可知，$\alpha$在$\mathbb F_q$上的极小多项式是以$\alpha$为根的次数最低的多项式，且唯一。（反证法：假设可约则存在有次数更低的多项式，代入$\alpha$得其中一个多项式必为0，矛盾）</p>
+<hr>
+<p><font color="0080FF">结论1</font> 设$f(x)$是一个n次不可约多项式，那么包含$f(x)$的根$\alpha$的最小扩域为$\mathbb F_{q^n}$，所有包含$f(x)$的根的域都是$\mathbb F_{q^n}$的扩域。</p>
+<p><font color=dblue>证明：</font>设包含$f(x)$的根$\alpha$的最小扩域为$\mathbb F_{q^k}$，设<br>$$x^{q^k}-x&#x3D;g(x)f(x)+r(x),\deg r(x)&lt;\deg f(x)$$<br>代入$\alpha$可得$r(x)&#x3D;0$，即$\alpha$是r(x)的一个根，但f(x)是$\mathbb F_q$上以$\alpha$为根的次数最小的多项式，因此r(x)只能为0。<br>故$f(x)|x^{q^k}-x,n|k$，最小正整数k即为n（定理3.20，3.22）</p>
+<hr>
+<p><font color="0080FF">结论2</font> $\mathbb F_q$为q元有限域，那么其扩域$\mathbb F_{q^n}$中包含所有次数为n的因子的不可约多项式的所有根，而不包含次数不为n的因子的不可约多项式的任何根。</p>
+<p><font color=dblue>证明：</font>由结论1易证。</p>
+<hr>
+<p><font color=green>引理4</font> 设$\mathbb F_q$是元素个数为q的有限域，有限域$\mathbb F$为其扩域，$\alpha\in\mathbb F^*$，$\alpha$的阶为m，设k是使$q^k\equiv1(\mod m)$的最小正整数，则$\alpha$在$\mathbb F_q$上的极小多项式为k次，该多项式的k个根为$\alpha,\alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}}$。若$|\mathbb F|&#x3D;q^n$，$\alpha$为$\mathbb F$的本原元，则$\alpha$在$\mathbb F_q$上的极小多项式一定为n次。</p>
+<p>证明：构造k次多项式<br>$$g(x)&#x3D;(x-\alpha)(x-\alpha^q)…(x-\alpha^{q^{k-1}})$$<br>对于$0\le i\le k$，g(x)的1次项系数可以看做$\mathbb F_q$的素域$\mathbb F_p$上的k元多项式，不妨设为$c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}})$，即$g(x)&#x3D;\sum_{i&#x3D;0}^kc_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}})x^i$<br>由$q^k\equiv 1(\mod m)$，$\alpha$的阶为m，得到$\alpha^{q^k}&#x3D;\alpha$，又q为p的幂，因此由定理3.5：<br>$$(c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}}))^q&#x3D;c_i(\alpha^q,\alpha^{q^2},…,\alpha^{q^{k}})&#x3D;c_i(\alpha^q,\alpha^{q^2},…,\alpha)$$<br>又$g(x)&#x3D;(x-\alpha^q)…(x-\alpha^{q^{k-1}})(x-\alpha)$，所以g(x)的i次项系数又可以表示为$c_i(\alpha^q,\alpha^{q^2},…,\alpha)$，也即$c_i(\alpha^q,\alpha^{q^2},…,\alpha)&#x3D;c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}})$。因此有<br>$$(c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}}))^q&#x3D;c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}})$$<br>由定理3.19可知$c_i(\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}})\in\mathbb F_q$，即$g(x)\in\mathbb F_q[x]$</p>
+<p>下面证明$g(x)$在$\mathbb F_q[x]$中不可约。<br>易得$\alpha, \alpha^q,\alpha^{q^2},…,\alpha^{q^{k-1}}$互不相等。若存在两项$\alpha^{q^i},\alpha^{q^j}$相等，则$\alpha^{q^i(q^{j-i}-1)}&#x3D;1$，故$m|q^i(q^{j-i}-1)$。由$q^k\equiv 1(\mod m)$可知$(q,m)&#x3D;1$<strong>（q^k^和1属于模m的同一个剩余类，故(q^k^,m)&#x3D;(1,m)&#x3D;1，即有(q,m)&#x3D;1）</strong>，故$m|q^{j-i}-1$，即$q^{j-i}\equiv 1(\mod m)$，但$0&lt;j-i&lt;k$，与k最小矛盾。</p>
+<p>若$g(x)$在$\mathbb F_q[x]$上可约，则存在因式$f_1(x),f_2(x)\in\mathbb F_q[x]$<br>由$g(\alpha)&#x3D;0$可得$f_1(\alpha)&#x3D;0$或$f_2(\alpha)&#x3D;0$，不妨设$f_1(\alpha)&#x3D;0$，则有$f_1(\alpha)&#x3D;f_1(\alpha^q)&#x3D;…&#x3D;f_1(\alpha^{q^{k-1}})&#x3D;0$<strong>（$f_1(\alpha)&#x3D;\sum_{i&#x3D;0}^Sa_i\alpha^i,a_i^q&#x3D;a_i$，故$f_1(\alpha)&#x3D;\sum_{i&#x3D;0}^Sa_i\alpha^{qi}&#x3D;\sum_{i&#x3D;0}^Sa_i^q\alpha^{qi}&#x3D;(f_1(\alpha))^q&#x3D;0$）</strong>，其根的个数超过其次数，矛盾。</p>
+<p>由极小多项式的定义和唯一性可知g(x)即为$\alpha$在$\mathbb F_q$上的极小多项式。<br><font color=red><strong>所有根的阶数均为m。</strong></font></p>
+<hr>
+<p><font color=green>引理5</font> 设$\mathbb F_q$是元素个数为q的有限域，$f(x)$为$\mathbb F_q$上的$n(n\ge 1)$的首1不可约多项式，$\mathbb F_{q^n}$为$\mathbb F_q$的任一扩域，那么$f(x)$在$\mathbb F_{q^n}$中有根，且若$\alpha$是$f(x)$在$\mathbb F_{q^n}$中的一个根，那么$f(x)$在$\mathbb F_{q^n}$中的所有根为$\alpha,\alpha^q,\alpha^{q^2},…,\alpha^{q^{n-1}}$。</p>
+<p>证明：当$f(x)&#x3D;cx,c\in\mathbb F_q^*$时，结论成立。<br>不妨设$f(x)$是首一n次不可约多项式，且$f(x)\ne cx,c\in \mathbb F_q^*$。由定理3.20可知$f(x)|x^{q^n}-x$，而$\mathbb F_{q^n}$中所有$q^n$个元素均为$x^{q^n}-x$的根。令$x^{q^n}-x&#x3D;f(x)g(x),\deg g(x)&#x3D;q^n-n$，则$x^{q^n}-x$的根一定是f(x)或g(x)的根，且f(x)的根至少有n个。又$\deg f(x)&#x3D;n$，则f(x)有n个根。</p>
+<p>$\alpha$是$f(x)$在$\mathbb F_{q^n}$中的一个根，则$f(x)$为$\alpha$在$\mathbb F_q$上的极小多项式，其所有根为$\alpha,\alpha^q,\alpha^{q^2},…,\alpha^{q^{n-1}}$。</p>
+<hr>
+<p><font color=blue>定义3.13</font> 极小多项式所有根的阶称为多项式的周期，周期为最大（$q^n-1$）时称该多项式为$\mathbb F_q$上的本原多项式</p>
+<hr>
+<p><font color=purple>定理3.28</font> 所有元素相同的有限域均同构。</p>
+<p><font color=dblue>证明方法：</font></p>
+<hr>
+<p><font color=purple>定理3.29</font> （有限域伽罗华定理）设p为素数，$\mathbb F_{p^n}$为元素个数为p^n^的有限域，$\alpha$为$\mathbb F_{p^n}$的本原元，$\alpha$在$\mathbb F_p$上的极小多项式为n次本原多项式$f(x)$，则：<br>(1) $\mathbb F_{p^n}$的任意自同构都保持其素域$\mathbb F_p$中的元素不变。<br>(2) $\mathbb F_{p^n}$的任意自同构都只能将$f(x)$的根映射成$f(x)$的根。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E9%A6%99%E5%86%9C%E7%90%86%E8%AE%BA%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="prev" title="密码学基础 Chapter 2——香农理论（二）">
+      <i class="fa fa-chevron-left"></i> 密码学基础 Chapter 2——香农理论（二）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-3/" rel="next" title="musl pwn 入门 (3)">
+      musl pwn 入门 (3) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

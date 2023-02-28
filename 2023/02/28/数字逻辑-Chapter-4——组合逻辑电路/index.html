@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="4.0 概念 组合逻辑电路：逻辑电路在任何时刻产生的稳定输出信号仅仅取决于该时刻的输入信号，而与输入信号作用前的电路状态无关（即不含触发器），则称为组合逻辑电路 结构特点：电路由逻辑门构成，不含记忆元件；输入单向传输，不含反馈回路 电路类型：根据输出端为1个还是多个分为单输出组合逻辑电路和多输出组合逻辑电路。  4.1 组合逻辑电路分析对一个给定的逻辑电路，找出其输出与输入之间的逻辑关系。 分析的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字逻辑 Chapter 4——组合逻辑电路">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-4%E2%80%94%E2%80%94%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="4.0 概念 组合逻辑电路：逻辑电路在任何时刻产生的稳定输出信号仅仅取决于该时刻的输入信号，而与输入信号作用前的电路状态无关（即不含触发器），则称为组合逻辑电路 结构特点：电路由逻辑门构成，不含记忆元件；输入单向传输，不含反馈回路 电路类型：根据输出端为1个还是多个分为单输出组合逻辑电路和多输出组合逻辑电路。  4.1 组合逻辑电路分析对一个给定的逻辑电路，找出其输出与输入之间的逻辑关系。 分析的">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ad1ed3b321274983a377b70d1848cad3.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/910e7ebffa614a03a7eba919248cf424.png">
+<meta property="article:published_time" content="2023-02-28T14:27:17.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:17.799Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/ad1ed3b321274983a377b70d1848cad3.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-4%E2%80%94%E2%80%94%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>数字逻辑 Chapter 4——组合逻辑电路 | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-4%E2%80%94%E2%80%94%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数字逻辑 Chapter 4——组合逻辑电路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:17" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:17+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="4-0-概念"><a href="#4-0-概念" class="headerlink" title="4.0 概念"></a>4.0 概念</h1><ol>
+<li>组合逻辑电路：逻辑电路在任何时刻产生的稳定输出信号仅仅取决于该时刻的输入信号，而与输入信号作用前的电路状态无关（即不含触发器），则称为组合逻辑电路</li>
+<li>结构特点：电路由逻辑门构成，不含记忆元件；输入单向传输，不含反馈回路</li>
+<li>电路类型：根据输出端为1个还是多个分为单输出组合逻辑电路和多输出组合逻辑电路。</li>
+</ol>
+<h1 id="4-1-组合逻辑电路分析"><a href="#4-1-组合逻辑电路分析" class="headerlink" title="4.1 组合逻辑电路分析"></a>4.1 组合逻辑电路分析</h1><p>对一个给定的逻辑电路，找出其输出与输入之间的逻辑关系。</p>
+<p>分析的一般步骤：</p>
+<ul>
+<li>逻辑电路图（题目中一般给出）</li>
+<li>写出逻辑表达式（分析逻辑电路图，具体分析过程无需详细写出）</li>
+<li>若电路功能直观简单，则跳过2步，若表达式较为复杂，则需要画出卡诺图化简表达式，否则跳过该步</li>
+<li>画出输出端的真值表</li>
+<li>分析逻辑功能</li>
+<li>改进电路使电路更简单</li>
+</ul>
+<h1 id="4-2-组合逻辑电路设计"><a href="#4-2-组合逻辑电路设计" class="headerlink" title="4.2 组合逻辑电路设计"></a>4.2 组合逻辑电路设计</h1><p>设计的首要任务是将文字描述的设计要求抽象为一种逻辑关系，即抽象出描述问题的逻辑表达式，然后根据表达式画逻辑电路。逻辑电路可以使用们短路（小规模）、中规模集成电路进行组合，也可使用可编程大规模集成电路实现。</p>
+<p>设计的一般步骤：</p>
+<ul>
+<li>确定输入、输出，列出真值表</li>
+<li>写出表达式并简化</li>
+<li>画出卡诺图</li>
+<li>求出最简与或表达式</li>
+<li>如果需要进行形式变换则进行，否则跳过</li>
+<li>画出逻辑电路图</li>
+</ul>
+<p>包含无关条件的组合逻辑电路设计</p>
+<ul>
+<li>在一些实际问题中，输入变量之间存在相互制约或问题的某种特殊限定等，使逻辑函数与输入变量的某些取值组合无关。</li>
+<li>描述此类问题的逻辑函数称为包含无关条件的逻辑函数</li>
+<li>采用“最小项之和”表达式描述一个包含无关条件的逻辑问题时，函数表达式中是否包含无关项，以及对无关项是令其值为0还是1，并不影响函数的实际逻辑功能</li>
+<li>在化简此类逻辑函数时，利用无关项的随意性往往可以使逻辑函数得到更好地简化，从而使设计的电路达到更简</li>
+</ul>
+<h1 id="4-3-组合逻辑电路的险象"><a href="#4-3-组合逻辑电路的险象" class="headerlink" title="4.3 组合逻辑电路的险象"></a>4.3 组合逻辑电路的险象</h1><p>实际情况下需要考虑信号传输的时延问题。实际上，信号经过任何逻辑门和导线都会产生时间延迟，这就使得当电路所有输入达到稳定状态时，输出并不是立即达到稳定状态。<br>延迟时间对数字系统是一个有害的因素。一般会造成系统运行速度下降，电路中信号的波形参数变坏，以及产生竞争险象等问题。</p>
+<ul>
+<li>逻辑电路中各路径上延迟时间的长短与信号经过的门的级数有关，与具体逻辑门的时延大小有关，还与导线的长短有关。</li>
+<li>因此，输入信号经过不同路径到达输出端的时间有先有后，这种现象称为竞争现象。</li>
+</ul>
+<p>竞争现象分为临界竞争和非临界竞争。</p>
+<ul>
+<li>不产生错误输出的称为非临界竞争</li>
+<li>导致错误输出的竞争称为临界竞争，被称为<strong>险象</strong><ul>
+<li>这种险象是一种瞬态险象</li>
+<li>它表现为在输出端陈胜不应有的尖脉冲，暂时地破坏正常逻辑关系</li>
+<li>一旦瞬态过程结束，即可恢复正常逻辑关系</li>
+</ul>
+</li>
+</ul>
+<p>险象分类：</p>
+<ul>
+<li>静态险象：在输入变化而输出不应发生变化的情况下，输出端产生了短暂的错误输出</li>
+<li>动态险象：在输入变化而输出应该发生变化的情况下，输出在变化过程中产生了短暂的错误输出。</li>
+<li>“0”型险象：错误输出信号为负脉冲</li>
+<li>“1”型险象：错误输出信号为正脉冲</li>
+</ul>
+<p>险象的判断：代数法和卡诺图法</p>
+<ul>
+<li>代数法：检查函数表达式中是否存在具备竞争条件的变量，是否有某个变量同时以原变量和反变量的形式出现在函数表达式中。<ul>
+<li>如果具备，则代入其他变量，看函数表达式是否会成为$X\cdot \bar X$和$X+ \bar X$。</li>
+<li>若会，则说明对应的逻辑电路可能产生险象。</li>
+</ul>
+</li>
+<li>卡诺图法：画出函数卡诺图，画出和函数表达式中各项“与”项对应的卡诺圈。<ul>
+<li>若卡诺圈之间存在“相切”关系，则可能产生险象。</li>
+</ul>
+</li>
+</ul>
+<p>消除险象的方法：增加冗余项（√）、增加惯性延时环节、选通法<br>在代数法中，增加冗余项的方法是：记下某个变量产生险象时其他变量的取值，将其全部取反之后相与，加上这一项即可。<br>卡诺图法中，增加卡诺圈消除相切即可。</p>
+<h1 id="解题指南"><a href="#解题指南" class="headerlink" title="解题指南"></a>解题指南</h1><p>五、分析题</p>
+<ol>
+<li>略</li>
+<li>(1) 写出逻辑表达式：<br>$$F&#x3D;\overline{\overline{ABC}A+\overline{ABC}B+\overline{ABC}C}\<br>&#x3D;(ABC+\overline A)(ABC+\overline B)(ABC+\overline C)\<br>&#x3D;ABC+\overline{ABC}$$<br>(2) 结果简单，直接描述功能：判断三个输入是否都相等<br>(3) 简化电路图：<br><img src="https://img-blog.csdnimg.cn/ad1ed3b321274983a377b70d1848cad3.png"></li>
+</ol>
+<p>六、设计题</p>
+<ol>
+<li>(1) 功能描述：比较两个二位二进制数<br>(2) 输入：4个；输出：1个。真值表：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">B1B0\A1A0</th>
+<th align="center">00</th>
+<th align="center">01</th>
+<th align="center">11</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">00</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">01</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<p>(3) 表达式：$Z&#x3D;A_1\overline{B_1}+\overline{B_1}\cdot\overline{B_0}A_0+\overline{B_1}A_1A_0$<br>(4) 电路图：<br><img src="https://img-blog.csdnimg.cn/910e7ebffa614a03a7eba919248cf424.png"></p>
+<ol start="2">
+<li>本题的关键在于使用与非门设计。<br>(1) 输入：4个，输出：1个。真值表：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">A3A2\A1A0</th>
+<th align="center">00</th>
+<th align="center">01</th>
+<th align="center">11</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">00</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">01</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">1</td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">0</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">0</td>
+</tr>
+</tbody></table>
+<p>(2) 表达式：<br>$$Z&#x3D;A_2\overline{A_1}A_0+\overline{A_2}A_1A_0+\overline{A_3}A_1\overline{A_0}\<br>&#x3D;\overline{\overline{A_2\overline{A_1}A_0+\overline{A_2}A_1A_0+\overline{A_3}A_1\overline{A_0}}}\<br>&#x3D;\overline{\overline{A_2\overline{A_1}A_0}\cdot\overline{\overline{A_2}A_1A_0}\cdot\overline{\overline{A_3}A_1\overline{A_0}}}\<br>&#x3D;\overline{\overline{\overline{A_2A_1}A_2A_0}\cdot\overline{\overline{A_2A_1}A_1A_0}\cdot\overline{\overline{A_3A_1}\cdot\overline{A_1A_0}A_1}}$$<br>(3) 电路图：略</p>
+<ol start="3">
+<li>(1) 输入：4个，输出：4个；真值表：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">A3A2\A1A0</th>
+<th align="center">00</th>
+<th align="center">01</th>
+<th align="center">11</th>
+<th align="center">10</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">00</td>
+<td align="center">0011</td>
+<td align="center">0100</td>
+<td align="center">0110</td>
+<td align="center">0101</td>
+</tr>
+<tr>
+<td align="center">01</td>
+<td align="center">0111</td>
+<td align="center">1011</td>
+<td align="center">1101</td>
+<td align="center">1100</td>
+</tr>
+<tr>
+<td align="center">11</td>
+<td align="center">1110</td>
+<td align="center">1111</td>
+<td align="center">dddd</td>
+<td align="center">dddd</td>
+</tr>
+<tr>
+<td align="center">10</td>
+<td align="center">dddd</td>
+<td align="center">dddd</td>
+<td align="center">dddd</td>
+<td align="center">dddd</td>
+</tr>
+</tbody></table>
+<p>(2) 表达式：<br>$$Z_0&#x3D;\overline{A_3}\cdot\overline{A_1}\cdot\overline{A_0}+\overline{A_3}\cdot\overline{A_2}\cdot\overline{A_0}+A_2A_0\<br>Z_1&#x3D;\overline{A_1}\cdot\overline{A_0}+A_2\overline{A_1}+\overline{A_2}A_1A_0\<br>Z_2&#x3D;\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}$$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-5%E2%80%94%E2%80%94%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81%E4%BD%93%E5%88%B6/" rel="prev" title="密码学基础 Chapter 5——公钥密码体制">
+      <i class="fa fa-chevron-left"></i> 密码学基础 Chapter 5——公钥密码体制
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-3/" rel="next" title="ARM pwn 入门 (3)">
+      ARM pwn 入门 (3) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#4-0-%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">4.0 概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-1-%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">4.1 组合逻辑电路分析</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-2-%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">4.2 组合逻辑电路设计</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-3-%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E7%9A%84%E9%99%A9%E8%B1%A1"><span class="nav-number">4.</span> <span class="nav-text">4.3 组合逻辑电路的险象</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E6%8C%87%E5%8D%97"><span class="nav-number">5.</span> <span class="nav-text">解题指南</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

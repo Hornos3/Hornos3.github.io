@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="3.1 数字集成电路分类集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢  3.2 半导体期间开关特性3.2">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字逻辑 Chapter 3——门电路和触发器">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="3.1 数字集成电路分类集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢  3.2 半导体期间开关特性3.2">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/6d020de8ccee4fa09ed3399b22af9541.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_19,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/cd1bb4e99ce245719a97b3d326214998.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/180d7b1cebd346b8aac755f2be93b748.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_18,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/8659ff2637d04c90b5e436f0fdfc1f8b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_19,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/065e8e538d2c4f90b422f5f6c9bc68fb.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/69e22b3482704f55ab38a0d0650d3e0f.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2c567c1e7abc403bad6b71cbe46c6636.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/062aec0250c246feaca588884af80018.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_10,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/778ee0b80ba34d018010ad69d8494d64.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/568b8bddea054bdf94bec75e6fb51ec1.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/5a974f0d796b40ac808748491df27f66.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/021f8beff0b54d6fab794b03eaaee8d1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/556b852f79be4be2a208fd3edd0c7a64.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ce0afbe7408a405d8860a3b5120afd08.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="article:published_time" content="2023-02-28T14:28:15.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:28:16.006Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/6d020de8ccee4fa09ed3399b22af9541.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_19,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>数字逻辑 Chapter 3——门电路和触发器 | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数字逻辑 Chapter 3——门电路和触发器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-02-28 22:28:15 / Modified: 22:28:16" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:15+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="3-1-数字集成电路分类"><a href="#3-1-数字集成电路分类" class="headerlink" title="3.1 数字集成电路分类"></a>3.1 数字集成电路分类</h1><p>集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等<br>数字集成电路根据采用的半导体期间可以分为两类：</p>
+<ol>
+<li>双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。</li>
+<li>单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢</li>
+</ol>
+<h1 id="3-2-半导体期间开关特性"><a href="#3-2-半导体期间开关特性" class="headerlink" title="3.2 半导体期间开关特性"></a>3.2 半导体期间开关特性</h1><h2 id="3-2-1-晶体二极管"><a href="#3-2-1-晶体二极管" class="headerlink" title="3.2.1 晶体二极管"></a>3.2.1 晶体二极管</h2><p>正向特性：有门槛电压，即二极管开始导通的正向电压，又称阈值电压。<br>反向特性：在反向电压作用下处于截止状态，反向电阻大，相当于断开。</p>
+<h2 id="3-2-2-晶体三极管"><a href="#3-2-2-晶体三极管" class="headerlink" title="3.2.2 晶体三极管"></a>3.2.2 晶体三极管</h2><p>截止、放大、饱和3种状态。</p>
+<h1 id="3-3-逻辑门电路"><a href="#3-3-逻辑门电路" class="headerlink" title="3.3 逻辑门电路"></a>3.3 逻辑门电路</h1><h2 id="3-3-1-简单逻辑门电路"><a href="#3-3-1-简单逻辑门电路" class="headerlink" title="3.3.1 简单逻辑门电路"></a>3.3.1 简单逻辑门电路</h2><ol>
+<li>与门<br><img src="https://img-blog.csdnimg.cn/6d020de8ccee4fa09ed3399b22af9541.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_19,color_FFFFFF,t_70,g_se,x_16"></li>
+<li>或门</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/cd1bb4e99ce245719a97b3d326214998.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"><br>3. 非门</p>
+<p><img src="https://img-blog.csdnimg.cn/180d7b1cebd346b8aac755f2be93b748.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_18,color_FFFFFF,t_70,g_se,x_16"></p>
+<h2 id="3-3-2-TTL集成逻辑门电路和CMOS电路"><a href="#3-3-2-TTL集成逻辑门电路和CMOS电路" class="headerlink" title="3.3.2 TTL集成逻辑门电路和CMOS电路"></a>3.3.2 TTL集成逻辑门电路和CMOS电路</h2><p>TTL功耗大、集成度低，广泛用户中小规模集成电路中<br>常用TTL集成电路芯片有74系列</p>
+<p>两种特殊门电路：</p>
+<ol>
+<li>集电极开路门(OC门)<br> 一种输出端可以直接相互连接的特殊逻辑门，可以实现“线与”逻辑<br><img src="https://img-blog.csdnimg.cn/8659ff2637d04c90b5e436f0fdfc1f8b.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_19,color_FFFFFF,t_70,g_se,x_16"></li>
+<li>三态输出门(TS门)<br> 常用于数字系统中总线传输控制，可以让共享总线的输入输出设备根据控制信号从总线获取或向总线发送数据<br> 三种输出状态：高电平、低电平、高阻</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/065e8e538d2c4f90b422f5f6c9bc68fb.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<p>正逻辑与负逻辑<br>正逻辑：用高电平表示逻辑1<br>负逻辑：用低电平表示逻辑1</p>
+<h1 id="3-4-触发器"><a href="#3-4-触发器" class="headerlink" title="3.4 触发器"></a>3.4 触发器</h1><p>触发器：一种具有记忆功能的电子器件，用于存储一位二进制信息<br>特点：</p>
+<ul>
+<li>有两个互补的输出端$Q,\bar Q$</li>
+<li>有两个稳定状态，$Q&#x3D;1,\bar Q&#x3D;0$称为“1”状态，否则称为“0”状态。输入信号不变时，触发器状态稳定不变</li>
+<li>在一定输入信号作用下，触发器可以从一个稳定状态转移到另一个稳定状态</li>
+<li>输出状态不仅与现时输入有关，还与原来输出状态有关</li>
+<li>按功能分类：RS型触发器、D型触发器、T型触发器、JK型触发器等</li>
+</ul>
+<p>现态：$Q^n,\bar{Q^n}$，简记为$Q,\bar Q$<br>次态：$Q^{n+1},\bar Q^{n+1}$</p>
+<h2 id="3-4-1-基本R-S触发器"><a href="#3-4-1-基本R-S触发器" class="headerlink" title="3.4.1 基本R-S触发器"></a>3.4.1 基本R-S触发器</h2><p><img src="https://img-blog.csdnimg.cn/69e22b3482704f55ab38a0d0650d3e0f.png"></p>
+<p>功能表：</p>
+<table>
+<thead>
+<tr>
+<th align="center">R</th>
+<th align="center">S</th>
+<th align="center">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">1</td>
+<td align="center">1</td>
+<td align="center">不变</td>
+</tr>
+<tr>
+<td align="center">1</td>
+<td align="center">0</td>
+<td align="center">次态为1</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">1</td>
+<td align="center">现态为0</td>
+</tr>
+<tr>
+<td align="center">0</td>
+<td align="center">0</td>
+<td align="center">不定（不允许）</td>
+</tr>
+</tbody></table>
+<p><font color=red>输出方程：$Q^{n+1}&#x3D;\bar S+RQ$</font><br>约束方程：$R+S&#x3D;1$</p>
+<p>基本R-S触发器在RS不同时实现的是赋值功能，赋R的值。</p>
+<h2 id="3-4-2-常用的几种时钟控制触发器"><a href="#3-4-2-常用的几种时钟控制触发器" class="headerlink" title="3.4.2 常用的几种时钟控制触发器"></a>3.4.2 常用的几种时钟控制触发器</h2><h3 id="1-钟控R-S触发器"><a href="#1-钟控R-S触发器" class="headerlink" title="1. 钟控R-S触发器"></a>1. 钟控R-S触发器</h3><p><img src="https://img-blog.csdnimg.cn/2c567c1e7abc403bad6b71cbe46c6636.png"></p>
+<p>当$CP&#x3D;0$时，$Q$状态不变<br>当$CP&#x3D;1$时，R-S输入功能表与基本R-S触发器功能表相反。</p>
+<p><font color=red>输出方程：$Q^{n+1}&#x3D;S+\bar RQ$</font><br>约束方程：$RS&#x3D;0$</p>
+<p>激励表：<br><img src="https://img-blog.csdnimg.cn/062aec0250c246feaca588884af80018.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_10,color_FFFFFF,t_70,g_se,x_16"></p>
+<h3 id="2-钟控D触发器"><a href="#2-钟控D触发器" class="headerlink" title="2. 钟控D触发器"></a>2. 钟控D触发器</h3><p><img src="https://img-blog.csdnimg.cn/778ee0b80ba34d018010ad69d8494d64.png"></p>
+<p>实际上就是将R-S触发器的S换成了D，R换成了~D。因此D输入什么就储存什么。</p>
+<p><font color=red>输出方程：$Q^{n+1}&#x3D;D$</font></p>
+<h3 id="3-钟控J-K触发器"><a href="#3-钟控J-K触发器" class="headerlink" title="3. 钟控J-K触发器"></a>3. 钟控J-K触发器</h3><p><img src="https://img-blog.csdnimg.cn/568b8bddea054bdf94bec75e6fb51ec1.png"></p>
+<p>实际上就是相较于钟控R-S触发器添加了JK端均为1的处理：反转。JK端输入不同时赋J的值。</p>
+<p><font color=red>输出方程：$Q^{n+1}&#x3D;J\bar Q+\bar KQ$</font></p>
+<h3 id="4-钟控T触发器"><a href="#4-钟控T触发器" class="headerlink" title="4. 钟控T触发器"></a>4. 钟控T触发器</h3><p><img src="https://img-blog.csdnimg.cn/5a974f0d796b40ac808748491df27f66.png"></p>
+<p>即将钟控J-K触发器的JK端接在一起。T&#x3D;1反转，T&#x3D;0不变</p>
+<h2 id="3-4-3-主从R-S触发器"><a href="#3-4-3-主从R-S触发器" class="headerlink" title="3.4.3 主从R-S触发器"></a>3.4.3 主从R-S触发器</h2><p>空翻现象：在一个时钟周期内触发器发生2次及以上的变化，会造成系统状态的不稳定和工作的紊乱。<br>主从R-S触发器可以看做两个R-S触发器串联形成，这两个触发器的时钟信号互补。当主触发器解锁时，其信号变化对从触发器无影响。<br>从触发器的状态取决于主触发器解锁到锁定最后一课的状态，根据此状态设定从触发器。因此整个触发器输出信号只可能在时钟信号由1变为0时改变，提升了系统的同步性。</p>
+<ol>
+<li>主从R-S触发器<br><img src="https://img-blog.csdnimg.cn/021f8beff0b54d6fab794b03eaaee8d1.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></li>
+</ol>
+<p>其中$R_D,S_D$为直接清零端和直接置1端，一般情况下为高电平，为低电平时可以直接为从触发器强制赋值。</p>
+<ol start="2">
+<li>主从J-K触发器<br>在主从R-S触发器的基础上，加从$\bar Q$到主触发器S端的反馈与从Q到R端的反馈：R&#x3D;K，S&#x3D;J</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/556b852f79be4be2a208fd3edd0c7a64.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+<ol start="3">
+<li>典型维持：阻塞D触发器<br>钟控D触发器的改进版，只在时钟信号由0变成1（称上升沿）时读取D信号并设置触发器状态，其余时间Q不变</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/ce0afbe7408a405d8860a3b5120afd08.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-2/" rel="prev" title="how2heap 深入学习(2)">
+      <i class="fa fa-chevron-left"></i> how2heap 深入学习(2)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-5/" rel="next" title="how2heap 深入学习(5)">
+      how2heap 深入学习(5) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1-%E6%95%B0%E5%AD%97%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">3.1 数字集成电路分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-%E5%8D%8A%E5%AF%BC%E4%BD%93%E6%9C%9F%E9%97%B4%E5%BC%80%E5%85%B3%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">3.2 半导体期间开关特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-1-%E6%99%B6%E4%BD%93%E4%BA%8C%E6%9E%81%E7%AE%A1"><span class="nav-number">2.1.</span> <span class="nav-text">3.2.1 晶体二极管</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-%E6%99%B6%E4%BD%93%E4%B8%89%E6%9E%81%E7%AE%A1"><span class="nav-number">2.2.</span> <span class="nav-text">3.2.2 晶体三极管</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-3-%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">3.3 逻辑门电路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-1-%E7%AE%80%E5%8D%95%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.1.</span> <span class="nav-text">3.3.1 简单逻辑门电路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-2-TTL%E9%9B%86%E6%88%90%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8CCMOS%E7%94%B5%E8%B7%AF"><span class="nav-number">3.2.</span> <span class="nav-text">3.3.2 TTL集成逻辑门电路和CMOS电路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-4-%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">3.4 触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-1-%E5%9F%BA%E6%9C%ACR-S%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.1.</span> <span class="nav-text">3.4.1 基本R-S触发器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-2-%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E7%A7%8D%E6%97%B6%E9%92%9F%E6%8E%A7%E5%88%B6%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">3.4.2 常用的几种时钟控制触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%92%9F%E6%8E%A7R-S%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.1.</span> <span class="nav-text">1. 钟控R-S触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%92%9F%E6%8E%A7D%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.2.</span> <span class="nav-text">2. 钟控D触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%92%9F%E6%8E%A7J-K%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.3.</span> <span class="nav-text">3. 钟控J-K触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%92%9F%E6%8E%A7T%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.4.</span> <span class="nav-text">4. 钟控T触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-3-%E4%B8%BB%E4%BB%8ER-S%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.3.</span> <span class="nav-text">3.4.3 主从R-S触发器</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

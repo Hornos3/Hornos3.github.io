@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="九、密码学中的熵关系定理2.10设$(P,C,K,E,D)$是一个密码体制，那么有$H(K|C)&#x3D;H(K)+H(P)-H(C)$即截获密文后，密钥的熵等于明文的熵加密钥的熵减密文的熵（密钥含糊度） 证明：由定理2.8：$H(K|C)&#x3D;H(KC)-H(C)$明文与密钥之间没有任何统计规律，故有$H(KP)&#x3D;H(K)+H(P)$由密码体制的性质，当明文和密钥已知时，密文也">
+<meta property="og:type" content="article">
+<meta property="og:title" content="密码学基础 Chapter 2——香农理论（二）">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E9%A6%99%E5%86%9C%E7%90%86%E8%AE%BA%EF%BC%88%E4%BA%8C%EF%BC%89/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="九、密码学中的熵关系定理2.10设$(P,C,K,E,D)$是一个密码体制，那么有$H(K|C)&#x3D;H(K)+H(P)-H(C)$即截获密文后，密钥的熵等于明文的熵加密钥的熵减密文的熵（密钥含糊度） 证明：由定理2.8：$H(K|C)&#x3D;H(KC)-H(C)$明文与密钥之间没有任何统计规律，故有$H(KP)&#x3D;H(K)+H(P)$由密码体制的性质，当明文和密钥已知时，密文也">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d8681db88eae446e8a9a6e63682492af.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ac5e1a8a33d7442aa7314a0f21092421.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0da7a41c78ce483291d639eca3345028.png">
+<meta property="article:published_time" content="2023-02-28T14:27:25.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:27:25.455Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/d8681db88eae446e8a9a6e63682492af.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E9%A6%99%E5%86%9C%E7%90%86%E8%AE%BA%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>密码学基础 Chapter 2——香农理论（二） | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-2%E2%80%94%E2%80%94%E9%A6%99%E5%86%9C%E7%90%86%E8%AE%BA%EF%BC%88%E4%BA%8C%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          密码学基础 Chapter 2——香农理论（二）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:27:25" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:25+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="九、密码学中的熵关系"><a href="#九、密码学中的熵关系" class="headerlink" title="九、密码学中的熵关系"></a>九、密码学中的熵关系</h2><h3 id="定理2-10"><a href="#定理2-10" class="headerlink" title="定理2.10"></a>定理2.10</h3><p>设$(P,C,K,E,D)$是一个密码体制，那么有$H(K|C)&#x3D;H(K)+H(P)-H(C)$<br>即截获密文后，密钥的熵等于明文的熵加密钥的熵减密文的熵（密钥含糊度）</p>
+<p>证明：<br>由定理2.8：$H(K|C)&#x3D;H(KC)-H(C)$<br>明文与密钥之间没有任何统计规律，故有$H(KP)&#x3D;H(K)+H(P)$<br>由密码体制的性质，当明文和密钥已知时，密文也随之确定，则有$H(C|KP)&#x3D;0$（信息量为0）<br>同理当密文与密钥已知时，明文也随之确定，故$H(P|KC)&#x3D;0$<br>由定理2.8：$H(PKC)&#x3D;H(P|KC)+H(KC)&#x3D;H(KC),H(CKP)&#x3D;H(C|KP)+H(KP)&#x3D;H(KP)$<br>故有$H(KC)&#x3D;H(KP)&#x3D;H(K)+H(P)$<br>故$H(K|C)&#x3D;H(K)+H(P)-H(C)$，证毕。</p>
+<h3 id="一般密码体制与熵有关的性质"><a href="#一般密码体制与熵有关的性质" class="headerlink" title="一般密码体制与熵有关的性质"></a><font color=red>一般密码体制与熵有关的性质</font></h3><ol>
+<li>$|P|\le|C|$（从明文空间到密文空间必为单射）</li>
+<li>$H(P|KC)&#x3D;H(C|KP)&#x3D;0$（见定理2.10证明部分）</li>
+<li>$H(PK)&#x3D;H(P)+H(K)$（见定理2.10证明部分）</li>
+<li>定理2.10结论</li>
+<li>$H(P)\le H(C)\le H(P)+H(K)$（$H(K|C)\le H(K)$，由定理2.10推出）</li>
+<li>$H(P|C)\le H(K|C)$</li>
+</ol>
+<p>推论：若$|P|&#x3D;|C|$，且P随机等概率分布，则C一定随机等概率分布。此时$H(K|C)&#x3D;H(K)$<br>对于完善保密体制，还有下面的性质：</p>
+<ol start="7">
+<li>$H(P|C)&#x3D;H(P)$</li>
+<li>$|P|\le |C|\le |K|(Pr[y|x]&#x3D;Pr[y]&gt;0)$</li>
+<li>$H(P)\le H(C)\le H(K)$</li>
+</ol>
+<p>6.证明：<br>$$H(K|C)&#x3D;H(KC)-H(C),H(P|C)&#x3D;H(PC)-H(C)\<br>即证H(KC)\ge H(PC)\<br>H(KPC)&#x3D;H(PC)+H(K|PC)&#x3D;H(KC)+H(P|KC)\<br>H(P|KC)&#x3D;0,H(K|PC)&gt;0\Rightarrow H(KC)\ge H(PC)$$</p>
+<p>9.证明：密钥随机等概率分布且由8可知，$H(C)\le H(K)$<br>$H(P)&#x3D;H(P|KC)+H(PK)+H(CP|K)&#x3D;H(C|K)\le H(C)$(???)</p>
+<p><img src="https://img-blog.csdnimg.cn/d8681db88eae446e8a9a6e63682492af.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16"><br><img src="https://img-blog.csdnimg.cn/ac5e1a8a33d7442aa7314a0f21092421.png"><br><img src="https://img-blog.csdnimg.cn/0da7a41c78ce483291d639eca3345028.png"><br>上图中：<br>绿+紫&#x3D;$I(X;Y)$；蓝+紫&#x3D;$I(Y;Z)$；青+紫&#x3D;$I(X;Z)$<br>绿&#x3D;$I(X;Y|Z)$；蓝&#x3D;$I(Y;Z|X)$；青&#x3D;$I(X;Z|Y)$<br>红&#x3D;$H(X|YZ)$；橙&#x3D;$H(Y|XZ)$；黄&#x3D;$H(Z|XY)$<br>紫&#x3D;$I(X;Y;Z)$<br>红+青&#x3D;$H(X|Y)$；橙+蓝&#x3D;$H(Y|X)$；<br>红+绿&#x3D;$H(X|Z)$；黄+蓝&#x3D;$H(Z|X)$；<br>橙+绿&#x3D;$H(Y|Z)$；黄+青&#x3D;$H(Z|Y)$；<br>除黄所有&#x3D;$H(XY)$；除红所有&#x3D;$H(YZ)$；除橙所有&#x3D;$H(XZ)$<br>青+紫+蓝&#x3D;$I(XY;Z)$；绿+紫+蓝&#x3D;$I(XZ;Y)$；绿+紫+青&#x3D;$I(YZ;X)$<br>红+绿+橙&#x3D;$H(XY|Z)$；红+青+黄&#x3D;$H(XZ|Y)$；橙+蓝+黄&#x3D;$H(YZ|X)$</p>
+<h2 id="十、伪密钥"><a href="#十、伪密钥" class="headerlink" title="十、伪密钥"></a>十、伪密钥</h2><p>明文串每个分组使用同一个密钥加密得到密文串，考虑唯密文攻击方式，明文为某自然语言时，分析者可以排除某些密钥，但依然存在多个密钥使得明密文满足加解密函数时，其中只有一个密钥是正确的。称其他那些可能但不正确的密钥为伪密钥。（如移位密码对于不同的密钥有不同语义的单词明文出现）<br>（获得同一密钥加密的密文越长，存在伪密钥的可能性越小）</p>
+<h2 id="十一、自然语言的熵"><a href="#十一、自然语言的熵" class="headerlink" title="十一、自然语言的熵"></a>十一、自然语言的熵</h2><p>有随机符号序列$X&#x3D;X_1X_2…X_n$，其中$X_i\in {x_1,x_2,…,x_m}$<br><strong>单符号信源</strong>：仅有一个信号的信源，信号的种类服从一个概率分布。<br><strong>多符号信源</strong>：有多个符号的信源。<br><strong>非平稳信源</strong>——相同字符在不同位置的统计规律也不同：<br>$$H(X_1X_2…X_n)&#x3D;H(X_1)+H(X_2|X_1)+H(X_3|X_2X_1)+…+H(X_n|X_1X_2…X_{n-1})$$<br>若各维联合概率分布与时间起点无关，则称为<strong>离散平稳信源</strong>。有<br>$$H(X_iX_{i+1}…H(X_{i+n-1}))&#x3D;H(X_jX_{j+1}…X_{j+n-1})$$<br><strong>无记忆信源</strong>：每个符号统计独立，其熵值等于每个符号的熵之和。<br><strong>有记忆信源</strong>：每个符号的统计规律有一定的关联<br>极限熵：当序列长度趋近于无穷大时，其中每一个字符的平均熵值：<br>$$H_{\infty}&#x3D;\lim_{n\rightarrow\infty}\frac{1}{n}H(X_1X_2…X_n)&#x3D;\lim_{n\rightarrow\infty}\frac{1}{n}H(X_n|X_1X_2…X_{n-1})$$</p>
+<p><strong>马尔可夫信源</strong>：如果x<del>i</del>只与前面的m个信号（x<del>i-1</del>，…，x<del>i-m</del>）相关，则称为马尔可夫信源<br>$$H(X_n|X_1X_2…X_{n-1})&#x3D;H(X_n|X_1X_2…X_{n-m})$$</p>
+<p>若英语中每个字母是随机使用的，则其熵$H_0&#x3D;\log_226&#x3D;4.7$。但实际上根据每个英文字母在英文中出现的概率计算，英文字母的熵为4.19。随着统计字母组的长度增加，字母平均熵值呈下降趋势，当长度达到一定量时，熵值趋于稳定。</p>
+<p>若定义$P^n$为n字母序列的概率分布构成的随机变量，则$H(P^n)$表示以n个字母为统计对象的熵值，其除以n表示以n个字母为统计对象时，单字母的平均熵<br>定义<strong>自然语言L的熵</strong>为$H_L&#x3D;\lim_{n\rightarrow\infty}\frac{H(P^n)}{n}$<br>统计得出大概范围为1.0~1.5，取1.25</p>
+<p><strong>自然语言冗余度</strong>：<br>$$R_L&#x3D;1-\frac{H_L}{\log_2|P|}&#x3D;\frac{H_0-H_L}{H_0}$$<br>其中$H_0-H_L$称为语言冗余<br>英语约为0.75</p>
+<p><strong>唯一解距离</strong>：使得伪密钥期望值为0所需要的密文分组数量，即在给定足够的计算时间下分析者能够唯一计算出密钥所需明文的平均数量。<br>$$H(K|C^n)&#x3D;H(K)+H(P^n)-H(C^n)\.<br>H(P^n)&#x3D;nH_L(P)&#x3D;n(1-R_L)\log_2|P|,H(C^n)\le n\log_2|C|\<br>H(K|C^n)\ge\log_2|K|-nR_L\log_2|P|$$<br>令$H(K|C^n)&#x3D;0$得<br>$$n\ge \frac{\log_2|K|}{R_L\log_2|P|}$$<br>唯一解距离$n_0&#x3D;\frac{\log_2|K|}{R_L\log_2|P|}$</p>
+<h2 id="十二、乘积密码体制"><a href="#十二、乘积密码体制" class="headerlink" title="十二、乘积密码体制"></a>十二、乘积密码体制</h2><p>对于两个密码体制$S_1,S_2$，其明文空间和密文空间相同（内嵌式密码体制），$S_1&#x3D;(P,P,K_1,E_1,D_1),S_2&#x3D;(P,P,K_2,E_2,D_2)$，则$S_1$和$S_2$的乘积密码体制定义为$S_1\times S_2&#x3D;(P,P,K_1\times K_2,E,D)$<br>$$e_{(k_1,k_2)}(x)&#x3D;e_{k_2}(e_{k_1}(x))\<br>d_{(k_1,k_2)}(x)&#x3D;d_{k_1}(d_{k_2}(x))$$<br>（实际上就是将明文先用S<del>1</del>加密后再用S<del>2</del>加密。）</p>
+<h3 id="幂等密码体制"><a href="#幂等密码体制" class="headerlink" title="幂等密码体制"></a>幂等密码体制</h3><p>使用一个密码体制将明文加密两次即为S^2^，加密n次则为S^n^。<br>若S^2^&#x3D;S则称该密码体制幂等，与自身做乘积无法提高算法安全性。<br>古典密码中的移位、代换、乘法、仿射、置换、维吉尼亚、希尔密码均为幂等。<br><strong>若S<del>1</del>和S<del>2</del>为幂等的且为可交换的，则$S_1\times S_2$也是幂等的</strong><br>如果密码体制不是幂等的，那么可以通过与自身作多次乘积运算（迭代）来提高安全性（<strong>注意</strong>：这里的相等定义要注意，不是说<del>选择一个密钥，将一个明文加密两次和加密一次得到的密文相等</del>）<br>一种构造简单非幂等密码体制的方法是对两个不同的简单密码体制做乘积（必须保证两个密码体制不是可交换的）</p>
+<p><strong>证明两个内嵌式密码体制相等的方法：首先二者的明文空间相同，其次存在一个双射函数使两者密钥空间中的密钥一一对应相等。（两个密钥空间相互包含也可证明两密钥空间相等）[K相等且同分布]</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2022-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94yakagame/" rel="prev" title="强网杯2022 pwn 赛题解析——yakagame">
+      <i class="fa fa-chevron-left"></i> 强网杯2022 pwn 赛题解析——yakagame
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-3%E2%80%94%E2%80%94%E6%9C%89%E9%99%90%E5%9F%9F%EF%BC%88%E4%BA%8C%EF%BC%89/" rel="next" title="信息安全数学基础 Chapter 3——有限域（二）">
+      信息安全数学基础 Chapter 3——有限域（二） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D%E3%80%81%E5%AF%86%E7%A0%81%E5%AD%A6%E4%B8%AD%E7%9A%84%E7%86%B5%E5%85%B3%E7%B3%BB"><span class="nav-number">1.</span> <span class="nav-text">九、密码学中的熵关系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%862-10"><span class="nav-number">1.1.</span> <span class="nav-text">定理2.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E8%88%AC%E5%AF%86%E7%A0%81%E4%BD%93%E5%88%B6%E4%B8%8E%E7%86%B5%E6%9C%89%E5%85%B3%E7%9A%84%E6%80%A7%E8%B4%A8"><span class="nav-number">1.2.</span> <span class="nav-text">一般密码体制与熵有关的性质</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E3%80%81%E4%BC%AA%E5%AF%86%E9%92%A5"><span class="nav-number">2.</span> <span class="nav-text">十、伪密钥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80%E3%80%81%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E7%9A%84%E7%86%B5"><span class="nav-number">3.</span> <span class="nav-text">十一、自然语言的熵</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%BA%8C%E3%80%81%E4%B9%98%E7%A7%AF%E5%AF%86%E7%A0%81%E4%BD%93%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">十二、乘积密码体制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%82%E7%AD%89%E5%AF%86%E7%A0%81%E4%BD%93%E5%88%B6"><span class="nav-number">4.1.</span> <span class="nav-text">幂等密码体制</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第9~16个源码，重点对源码进行分析与解读。一些2.23版本中出现过的漏洞将不再赘述。如果本文的分析有任何错漏之处，还请各位读者不吝赐教">
+<meta property="og:type" content="article">
+<meta property="og:title" content="how2heap 深入学习(8)">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第9~16个源码，重点对源码进行分析与解读。一些2.23版本中出现过的漏洞将不再赘述。如果本文的分析有任何错漏之处，还请各位读者不吝赐教">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta property="article:published_time" content="2023-02-28T14:28:13.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:28:13.162Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>how2heap 深入学习(8) | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          how2heap 深入学习(8)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:28:13" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:13+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 18.04<br>Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
+<p>按照顺序，本文将分析glibc 2.27文件夹下的第9~16个源码，重点对源码进行分析与解读。一些2.23版本中出现过的漏洞将不再赘述。<br>如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
+<h1 id="9-large-bin-attack"><a href="#9-large-bin-attack" class="headerlink" title="9. large_bin_attack"></a>9. large_bin_attack</h1><p>简单看了一下源码，和2.23版本的没有什么区别，有关于large bin的链入过程已经在上一篇文章详细推演过了，这里解释一下large bin attack的大致操作流程。</p>
+<p><strong>Step 1: 构造堆环境</strong></p>
+<p>在分配3块大内存后释放前2块之后，unsorted bin中有2个chunk。</p>
+<p>之后，会分配一个0x100大小的堆块，由于last_remainder始终为空，因此这会导致两个unsorted bin中的chunk首先被链入到large bins中。</p>
+<p>到此为止，_int_malloc函数仍然没有找到能够分配给用户的chunk，那么下一步就是在large bins中寻找并切割chunk，这也是last_remainder从NULL被赋值为一个有效地址的唯一方式。下面就来具体分析一下这个子过程。</p>
+<h2 id="切割large-bins-chunk返回的过程"><a href="#切割large-bins-chunk返回的过程" class="headerlink" title="切割large bins chunk返回的过程"></a>切割large bins chunk返回的过程</h2><p>下面是这个子过程的源码，在第4步大循环中执行。第4步大循环首先进入一个while小循环将unsorted bin整理完毕，然后再向下执行，到达这个子过程。中间跳过了一个检查是否分配的是大chunk的过程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">++idx;</span><br><span class="line">bin = bin_at (av, idx);</span><br><span class="line">block = idx2block (idx);</span><br><span class="line"><span class="built_in">map</span> = av-&gt;binmap[block];</span><br><span class="line">bit = idx2bit (idx);</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (;; )</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="comment">/* Skip rest of block if there are no more set bits in this block.  */</span></span><br><span class="line">    <span class="keyword">if</span> (bit &gt; <span class="built_in">map</span> || bit == <span class="number">0</span>)</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="keyword">do</span></span><br><span class="line">          &#123;</span><br><span class="line">            <span class="keyword">if</span> (++block &gt;= BINMAPSIZE) <span class="comment">/* out of bins */</span></span><br><span class="line">              <span class="keyword">goto</span> use_top;</span><br><span class="line">          &#125;</span><br><span class="line">        <span class="keyword">while</span> ((<span class="built_in">map</span> = av-&gt;binmap[block]) == <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        bin = bin_at (av, (block &lt;&lt; BINMAPSHIFT));</span><br><span class="line">        bit = <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Advance to bin with set bit. There must be one. */</span></span><br><span class="line">    <span class="keyword">while</span> ((bit &amp; <span class="built_in">map</span>) == <span class="number">0</span>)</span><br><span class="line">      &#123;</span><br><span class="line">        bin = next_bin (bin);</span><br><span class="line">        bit &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">        assert (bit != <span class="number">0</span>);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Inspect the bin. It is likely to be non-empty */</span></span><br><span class="line">    victim = last (bin);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*  If a false alarm (empty bin), clear the bit. */</span></span><br><span class="line">    <span class="keyword">if</span> (victim == bin)</span><br><span class="line">      &#123;</span><br><span class="line">        av-&gt;binmap[block] = <span class="built_in">map</span> &amp;= ~bit; <span class="comment">/* Write through */</span></span><br><span class="line">        bin = next_bin (bin);</span><br><span class="line">        bit &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      &#123;</span><br><span class="line">        size = chunksize (victim);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/*  We know the first chunk in this bin is big enough to use. */</span></span><br><span class="line">        assert ((<span class="type">unsigned</span> <span class="type">long</span>) (size) &gt;= (<span class="type">unsigned</span> <span class="type">long</span>) (nb));</span><br><span class="line"></span><br><span class="line">        remainder_size = size - nb;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* unlink */</span></span><br><span class="line">        unlink (av, victim, bck, fwd);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Exhaust */</span></span><br><span class="line">        <span class="keyword">if</span> (remainder_size &lt; MINSIZE)</span><br><span class="line">          &#123;</span><br><span class="line">            set_inuse_bit_at_offset (victim, size);</span><br><span class="line">            <span class="keyword">if</span> (av != &amp;main_arena)</span><br><span class="line">set_non_main_arena (victim);</span><br><span class="line">          &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Split */</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">          &#123;</span><br><span class="line">            remainder = chunk_at_offset (victim, nb);</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* We cannot assume the unsorted list is empty and therefore</span></span><br><span class="line"><span class="comment">               have to perform a complete insert here.  */</span></span><br><span class="line">            bck = unsorted_chunks (av);</span><br><span class="line">            fwd = bck-&gt;fd;</span><br><span class="line">	  <span class="keyword">if</span> (__glibc_unlikely (fwd-&gt;bk != bck))</span><br><span class="line">	    malloc_printerr (<span class="string">&quot;malloc(): corrupted unsorted chunks 2&quot;</span>);</span><br><span class="line">            remainder-&gt;bk = bck;</span><br><span class="line">            remainder-&gt;fd = fwd;</span><br><span class="line">            bck-&gt;fd = remainder;</span><br><span class="line">            fwd-&gt;bk = remainder;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/* advertise as last remainder */</span></span><br><span class="line">            <span class="keyword">if</span> (in_smallbin_range (nb))</span><br><span class="line">              av-&gt;last_remainder = remainder;</span><br><span class="line">            <span class="keyword">if</span> (!in_smallbin_range (remainder_size))</span><br><span class="line">              &#123;</span><br><span class="line">                remainder-&gt;fd_nextsize = <span class="literal">NULL</span>;</span><br><span class="line">                remainder-&gt;bk_nextsize = <span class="literal">NULL</span>;</span><br><span class="line">              &#125;</span><br><span class="line">            set_head (victim, nb | PREV_INUSE |</span><br><span class="line">                      (av != &amp;main_arena ? NON_MAIN_ARENA : <span class="number">0</span>));</span><br><span class="line">            set_head (remainder, remainder_size | PREV_INUSE);</span><br><span class="line">            set_foot (remainder, remainder_size);</span><br><span class="line">          &#125;</span><br><span class="line">        check_malloced_chunk (av, victim, nb);</span><br><span class="line">        <span class="type">void</span> *p = chunk2mem (victim);</span><br><span class="line">        alloc_perturb (p, bytes);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>在一开始，有block，map，bit这三个变量的赋值，这三个变量是干嘛的呢？注意在2.27的malloc_state中，第8个成员，也就是bins下面一个成员是一个叫binmap的东西，这个成员通过比特位来记录哪些bins当前存有chunk，哪些没有chunk，这是为了在后面查找chunk的时候不用每一个bin都过去检查是否为空。从下面的定义中可以看出，binmap是一个unsorted int类型，一个整型变量可以保存32个bin的“是否为空”的信息。那么一开始的<code>block = idx2block (idx);</code>就是为了找到对应索引（idx）的比特位信息在哪个索引中。<code>map = av-&gt;binmap[block];</code>则定位索引对应的无符号整型变量，<code>bit = idx2bit (idx);</code>则定位到该idx的比特位，从后面这句<code>while ((bit &amp; map) == 0)</code>可以看出，bit应该是诸如0x100，0x10000，0x1000000这样的数，与map做按位与处理判断某位上是否为1。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> BINMAPSHIFT      5</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BITSPERMAP       (1U &lt;&lt; BINMAPSHIFT)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BINMAPSIZE       (NBINS / BITSPERMAP)</span></span><br><span class="line">......</span><br><span class="line"><span class="type">unsigned</span> <span class="type">int</span> binmap[BINMAPSIZE];</span><br></pre></td></tr></table></figure>
+
+<p>首先判断当前map中是否有满足请求大小的chunk，如果没有则查找下一个map，直至找到为止。如果都没有找到则通过top chunk分配。外层if判断条件为<code>bit &gt; map || bit == 0</code>，即当前map中没有满足的chunk或bit溢出，则查找后面的map，后面的map只要找到一个不为0的就说明有满足的chunk，就选择第一个非零的map。退出循环后while（line 4000）的条件为<code>(bit &amp; map) == 0</code>，即如果找到了chunk就确认bit并返回。<strong>（注意：执行到这一步时一定可以找到chunk，因为map非0且bit从1开始查找，所以才会有循环中的assert断言）</strong></p>
+<p>找到有chunk的bin之后，选择最后一个chunk。后面再次检查这个bin是否为空（line 4011），如果为空说明前面的比特位有误，将其清除之后重新循环判断。</p>
+<p>如果确认有chunk存在，选择最后一个chunk并获取其size，并断言这个size大于请求的size（line 4023）。计算切割该chunk后剩下的大小remainder_size。然后unlink将该chunk从bins中安全取出（line 4028）。</p>
+<p>后面判断remainder_size是否小于最小chunk的size（0x20）。如果是则干脆将整个chunk全部分配出去，结束。（line 4031）</p>
+<p>如果不是，将获取分割后的chunk的头部地址（line 4041），并将这个chunk插入到unsorted bin的头指针之后，也就是第一的位置（line 4049 ~ 4052）。之后如果申请大小在small bins范围则设置last_remainder为该chunk（line 4055），如果是large bin大小的chunk则将fd_nextsize和bk_nextsize置空（line 4057 ~ 4061）。之后设置一些标志位就可以返回了。</p>
+<hr>
+<p>根据上面的分析结果，可以知道，在两个chunk被链入到large bins之后，会选择较小的那个chunk，即p1进行切割，剩余大小为0x3f0。因此此次malloc之后将会有p1的残余留在unsorted bin，p2进入large bins。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x6032f0</span><br><span class="line">Size: 0x391</span><br><span class="line">fd: 0x7ffff7dcdca0</span><br><span class="line">bk: 0x7ffff7dcdca0</span><br><span class="line"></span><br><span class="line">Free chunk (largebins) | PREV_INUSE</span><br><span class="line">Addr: 0x6036b0</span><br><span class="line">Size: 0x511</span><br><span class="line">fd: 0x7ffff7dce0d0</span><br><span class="line">bk: 0x7ffff7dce0d0</span><br><span class="line">fd_nextsize: 0x6036b0</span><br><span class="line">bk_nextsize: 0x6036b0</span><br></pre></td></tr></table></figure>
+
+<p>后面释放p3，unsorted bin中就链入了两个chunk。</p>
+<p><strong>Step 2: 修改p2的4个指针</strong></p>
+<p>要修改的栈区地址为0x7fffffffe260~0x7fffffffe270。将p2的指针修改为如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00:0000│     0x6036b0 ◂— 0x0</span><br><span class="line">01:0008│     0x6036b8 ◂— 0x3f1			// size改小</span><br><span class="line">02:0010│     0x6036c0 ◂— 0x0			// fd置空</span><br><span class="line">03:0018│     0x6036c8 —▸ 0x7fffffffe250 —▸ 0x7fffffffe370 ◂— 0x1		// bk设为target_addr - 0x10</span><br><span class="line">04:0020│     0x6036d0 ◂— 0x0			// fd_nextsize置空</span><br><span class="line">05:0028│ rdx 0x6036d8 —▸ 0x7fffffffe248 —▸ 0x400620 (_start) ◂— xor    ebp, ebp		// bk_nextsize设为target_addr - 0x18</span><br></pre></td></tr></table></figure>
+
+<p><strong>Step 3: malloc(0x90)</strong></p>
+<p>之后，一场好戏的开始只需要malloc一个0x100的chunk。让我们凑近点看看，下面到底会发生什么。</p>
+<p>首先到达判断是否切割last_remainder。<font color=red><strong>注意：切割last_remainder的条件还是比较苛刻的，需要4个条件同时满足：(1) last_remainder存在，(2) 要分配的大小在small bins范围，(3) 这个last_remainder是unsorted bin里面唯一一个chunk，(4) 这个last_remainder的大小要大于(申请大小+最小chunk的大小【0x20】)。</strong></font>很明显这里第3个条件不满足，因为此时unsorted bin中不仅有p1的残余还有p3。首先将p1放入small bins（此时p1的size&#x3D;0x3f0，正好是最后一个small bins存放的大小），然后将p3放入large bins，与p2应该放在一个bins中。</p>
+<p>将p2放入large bins的同时会将栈区的内容修改掉，步骤如下图所示，与上一篇文章的house_of_storm的流程实际上是相同的：</p>
+<p><img src="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 3820~3822, Step 1, 2</span></span><br><span class="line">    victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line"><span class="comment">// line 3856~3859, Step 3, 4, 5, 6</span></span><br><span class="line">	victim-&gt;fd_nextsize = fwd;</span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">    fwd-&gt;bk_nextsize = victim;</span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line"><span class="comment">// line 3861, Step 7</span></span><br><span class="line">	bck = fwd-&gt;bk;</span><br><span class="line"><span class="comment">// line 3869~3872, Step 8, 9, 10, 11</span></span><br><span class="line">	victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
+
+<p>这样就将两个栈区内容成功修改。</p>
+<h1 id="10-mmap-overlapping-chunks"><a href="#10-mmap-overlapping-chunks" class="headerlink" title="10. mmap_overlapping_chunks"></a>10. mmap_overlapping_chunks</h1><p>经过检查，2.27的源码和2.23完全相同，这里不再赘述，本身也不难的一个漏洞，参见第4篇文章。</p>
+<h1 id="11-overlapping-chunks"><a href="#11-overlapping-chunks" class="headerlink" title="11. overlapping_chunks"></a>11. overlapping_chunks</h1><p>这个也和2.23没什么区别，只是将chunk的大小增大到tcache无法容纳从而绕过tcache而已，也不赘述了。</p>
+<h1 id="12-poison-null-byte"><a href="#12-poison-null-byte" class="headerlink" title="12. poison_null_byte"></a>12. poison_null_byte</h1><p>同上，略。</p>
+<h1 id="13-tcache-house-of-spirit"><a href="#13-tcache-house-of-spirit" class="headerlink" title="13. tcache_house_of_spirit"></a>13. tcache_house_of_spirit</h1><p><strong>Step 1: 初始化堆</strong></p>
+<p>随便malloc一块即可。</p>
+<p><strong>Step 2: 构造栈区</strong></p>
+<p>在栈区开0x88大小的空间，开头0x8备用。其后的0x80大小作为一个假的chunk，设置其size&#x3D;0x40。</p>
+<p><strong>Step 3: 释放假chunk后重新分配</strong></p>
+<p>现在将栈区的这个假chunk释放，它能够成功进入tcache。在下一次分配时也能够返回这里的地址。</p>
+<p>整个漏洞利用的流程很简单，即tcache不会去过多检查要释放的地址，这里仅仅设置了一个size就能够成功通过检查链入tcache。要想知道为什么，我们需要查看_int_free的源码。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> USE_TCACHE</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="type">size_t</span> tc_idx = csize2tidx (size);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (tcache</span><br><span class="line">	&amp;&amp; tc_idx &lt; mp_.tcache_bins</span><br><span class="line">	&amp;&amp; tcache-&gt;counts[tc_idx] &lt; mp_.tcache_count)</span><br><span class="line">      &#123;</span><br><span class="line">	tcache_put (p, tc_idx);</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>可以看到，释放时通过chunk的size来确定存入哪一个tcache中，因此要将size设置为正确的值。之后只需要这个tcache不满，就能够链入，不加任何检查，如此看来，2.27版本的tcache比fastbin还要容易利用。</p>
+<h1 id="14-tcache-poisoning"><a href="#14-tcache-poisoning" class="headerlink" title="14. tcache_poisoning"></a>14. tcache_poisoning</h1><p>这个漏洞利用比上一个还简单，和2.23的fastbin attack类似。</p>
+<p>分配两个大小相同的不大的chunk并释放，两个chunk进入tcache，修改任意一个chunk的fd到想要的地址，然后分配出来就行了。不多赘述。</p>
+<h1 id="15-tcache-stashing-unlink-attack"><a href="#15-tcache-stashing-unlink-attack" class="headerlink" title="15. tcache_stashing_unlink_attack"></a>15. tcache_stashing_unlink_attack</h1><p>这个漏洞可以使malloc返回任意地址。</p>
+<p><strong>Step 1: 构造堆、栈结构</strong></p>
+<p>在栈上布置假chunk，大小0x80，并将bk指针指向其fd。在堆中首先分配并释放7个chunk到tcache，然后再释放2个相同大小chunk到unsorted bin。这些chunk的指针均存放在栈上，其中第0、2个chunk被释放到unsorted bin，剩余被释放到tcache，释放顺序为：3、4、5、6、7、8、1。然后分配一个大一些的chunk使unsorted bin中2个chunk进入small bins。然后分配2个tcache chunk回去使得tcache中只有5个chunk。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">tcachebins</span><br><span class="line">0xa0 [  5]: 0x6036c0 —▸ 0x603620 —▸ 0x603580 —▸ 0x6034e0 —▸ 0x603440 ◂— 0x0</span><br><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x0</span><br><span class="line">smallbins</span><br><span class="line">0xa0: 0x603390 —▸ 0x603250 —▸ 0x7ffff7dcdd30 (main_arena+240) ◂— 0x603390</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
+
+<p><strong>Step 2: 修改small bins中第一个chunk（0x603390）的bk指针为栈区的假chunk。</strong></p>
+<p><strong>Step 3: 分配一个chunk出来，即可使栈区假chunk链入tcache头部。</strong></p>
+<p>这里使用calloc分配chunk，但是calloc还是要调用_int_malloc函数。<br>在调用之后，bins的结构变成了这样：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tcachebins</span><br><span class="line">0xa0 [  7]: 0x7fffffffe120 —▸ 0x6033a0 —▸ 0x6036c0 —▸ 0x603620 —▸ 0x603580 —▸ 0x6034e0 —▸ 0x603440 ◂— 0x0</span><br><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x0</span><br><span class="line">smallbins</span><br><span class="line">0xa0 [corrupted]</span><br><span class="line">FD: 0x603390 —▸ 0x6036c0 ◂— 0x0</span><br><span class="line">BK: 0x7fffffffe120 ◂— 0x0</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
+
+<p>可以看到栈区假chunk被成功链入，后面跟着的是原small bins中的第二个chunk，但是地址偏移了0x10。返回的是第0个chunk，在bins中已经找不到。</p>
+<p>我们还是通过源码来分析一下这个过程的原理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> USE_TCACHE</span></span><br><span class="line">	  <span class="comment">/* While we&#x27;re here, if we see other chunks of the same size,</span></span><br><span class="line"><span class="comment">	     stash them in the tcache.  */</span></span><br><span class="line">	  <span class="type">size_t</span> tc_idx = csize2tidx (nb);</span><br><span class="line">	  <span class="keyword">if</span> (tcache &amp;&amp; tc_idx &lt; mp_.tcache_bins)</span><br><span class="line">	    &#123;</span><br><span class="line">	      mchunkptr tc_victim;</span><br><span class="line"></span><br><span class="line">	      <span class="comment">/* While bin not empty and tcache not full, copy chunks over.  */</span></span><br><span class="line">	      <span class="keyword">while</span> (tcache-&gt;counts[tc_idx] &lt; mp_.tcache_count</span><br><span class="line">		     &amp;&amp; (tc_victim = last (bin)) != bin)</span><br><span class="line">		&#123;</span><br><span class="line">		  <span class="keyword">if</span> (tc_victim != <span class="number">0</span>)</span><br><span class="line">		    &#123;</span><br><span class="line">		      bck = tc_victim-&gt;bk;</span><br><span class="line">		      set_inuse_bit_at_offset (tc_victim, nb);</span><br><span class="line">		      <span class="keyword">if</span> (av != &amp;main_arena)</span><br><span class="line">			  set_non_main_arena (tc_victim);</span><br><span class="line">		      bin-&gt;bk = bck;</span><br><span class="line">		      bck-&gt;fd = bin;</span><br><span class="line"></span><br><span class="line">		      tcache_put (tc_victim, tc_idx);</span><br><span class="line">	            &#125;</span><br><span class="line">		&#125;</span><br><span class="line">	    &#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>上面就是这个过程涉及的源码。可以看到这里是从末尾开始遍历small bins，发现tcache没有填满时会调用tcache_put函数将这个chunk移至tcache的头部，同时调整small bins结构。这里和fastbin类似的一点就是不会进行检查，当tcache内部指针数量达到7个时就会直接退出。</p>
+<p>在这个示例中，_int_malloc函数首先将small bins中末尾的chunk，即0x603250弹出small bins准备后面返回，这样small bins中就只剩下了0x603390。因为我们将第一个chunk的bk改掉了，所以这里libc会误以为small bins不止一个chunk。在链入0x603390之后又会链入栈区的这个地址，而此时刚好，tcache满了，直接退出，完美。</p>
+<p><strong>Step 4: malloc分配出栈区地址。</strong></p>
+<p>此时栈区地址应该是写在了tcache的头部，直接malloc即可。</p>
+<h1 id="16-unsafe-unlink"><a href="#16-unsafe-unlink" class="headerlink" title="16. unsafe_unlink"></a>16. unsafe_unlink</h1><p>2.27中关于unlink的利用与2.23类似，只是分配的chunk更大绕过了tcache而已。这里不具体分析漏洞的利用方式了，如有疑问请参考第5篇文章。这里分析一下unlink这个函数具体干了什么。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> unlink(AV, P, BK, FD) &#123;                                            \</span></span><br><span class="line"><span class="meta">    <span class="keyword">if</span> (__builtin_expect (chunksize(P) != prev_size (next_chunk(P)), 0))      \</span></span><br><span class="line"><span class="meta">      malloc_printerr (<span class="string">&quot;corrupted size vs. prev_size&quot;</span>);			      \</span></span><br><span class="line"><span class="meta">    FD = P-&gt;fd;								      \</span></span><br><span class="line"><span class="meta">    BK = P-&gt;bk;								      \</span></span><br><span class="line"><span class="meta">    <span class="keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, 0))		      \</span></span><br><span class="line"><span class="meta">      malloc_printerr (<span class="string">&quot;corrupted double-linked list&quot;</span>);			      \</span></span><br><span class="line"><span class="meta">    <span class="keyword">else</span> &#123;								      \</span></span><br><span class="line"><span class="meta">        FD-&gt;bk = BK;							      \</span></span><br><span class="line"><span class="meta">        BK-&gt;fd = FD;							      \</span></span><br><span class="line"><span class="meta">        <span class="keyword">if</span> (!in_smallbin_range (chunksize_nomask (P))			      \</span></span><br><span class="line"><span class="meta">            &amp;&amp; __builtin_expect (P-&gt;fd_nextsize != NULL, 0)) &#123;		      \</span></span><br><span class="line"><span class="meta">	    <span class="keyword">if</span> (__builtin_expect (P-&gt;fd_nextsize-&gt;bk_nextsize != P, 0)	      \</span></span><br><span class="line"><span class="meta">		|| __builtin_expect (P-&gt;bk_nextsize-&gt;fd_nextsize != P, 0))    \</span></span><br><span class="line"><span class="meta">	      malloc_printerr (<span class="string">&quot;corrupted double-linked list (not small)&quot;</span>);   \</span></span><br><span class="line"><span class="meta">            <span class="keyword">if</span> (FD-&gt;fd_nextsize == NULL) &#123;				      \</span></span><br><span class="line"><span class="meta">                <span class="keyword">if</span> (P-&gt;fd_nextsize == P)				      \</span></span><br><span class="line"><span class="meta">                  FD-&gt;fd_nextsize = FD-&gt;bk_nextsize = FD;		      \</span></span><br><span class="line"><span class="meta">                <span class="keyword">else</span> &#123;							      \</span></span><br><span class="line"><span class="meta">                    FD-&gt;fd_nextsize = P-&gt;fd_nextsize;			      \</span></span><br><span class="line"><span class="meta">                    FD-&gt;bk_nextsize = P-&gt;bk_nextsize;			      \</span></span><br><span class="line"><span class="meta">                    P-&gt;fd_nextsize-&gt;bk_nextsize = FD;			      \</span></span><br><span class="line"><span class="meta">                    P-&gt;bk_nextsize-&gt;fd_nextsize = FD;			      \</span></span><br><span class="line"><span class="meta">                  &#125;							      \</span></span><br><span class="line"><span class="meta">              &#125; <span class="keyword">else</span> &#123;							      \</span></span><br><span class="line"><span class="meta">                P-&gt;fd_nextsize-&gt;bk_nextsize = P-&gt;bk_nextsize;		      \</span></span><br><span class="line"><span class="meta">                P-&gt;bk_nextsize-&gt;fd_nextsize = P-&gt;fd_nextsize;		      \</span></span><br><span class="line"><span class="meta">              &#125;								      \</span></span><br><span class="line"><span class="meta">          &#125;								      \</span></span><br><span class="line"><span class="meta">      &#125;									      \</span></span><br><span class="line"><span class="meta">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>unlink的第1个参数是malloc_state，一般来说就是main_arena。第2个参数是当前需要脱链的chunk。第3个chunk是P-&gt;bk，第4个为P-&gt;fd。</p>
+<p>首先进行检查：FD-&gt;bk == BK-&gt;fd &#x3D;&#x3D; P，正常情况下这是一定成立的，这是为了防止堆结构被修改。</p>
+<p>如果这个chunk在small bins中或者在large bins中但fd_nextsize不为空，则进行双向链表的经典脱链操作：<code>FD-&gt;bk = BK; BK-&gt;fd = FD;</code>。然后直接返回。**<font color=red>注意：这里需要思考一下large bins的结构，在一个large bins中由于chunk的大小不一定相同，在正常情况下，一个large bin中的chunk是按照大小有序排列的，其中bins头存放的是最大的chunk。如果一个bins中有几个chunk的大小相等，那么这些chunk一定是连接在一起的，而且只有第一个chunk拥有fd_nextsize和bk_nextsize指针，其他chunk的这两个指针为空。因为在需要遍历large bins时只需要第一个chunk有这两个指针就能够找到下一个大小不同的chunk。所以如果要进行unlink的不是有fd_nextsize的chunk，则说明这个chunk在large bins中被unlink之后无需重新调整前后fd_nextsize和bk_nextsize，因此可以和small bins一样直接脱链即可。</font>**</p>
+<p>如果这个chunk在large bins中而且还拥有fd_nextsize，则操作要复杂很多。因为fd_nextsize和bk_nextsize需要定位前后第一个大小不同的chunk，如果将这个chunk脱链，那么fd_nextsize和bk_nextsize链也就会断裂，这个时候需要进行调整。学过数据结构的同学应该已经有思路了，这里应该分为两种情况讨论：</p>
+<ol>
+<li><p>如果这个bins中没有与当前chunk大小相同的chunk，那么其FD的fd_nextsize一定不为空，此时只需直接令P-&gt;fd_nextsize-&gt;bk_nextsize &#x3D; P-&gt;bk_nextsize，P-&gt;bk_nextsize-&gt;fd_nextsize &#x3D; P-&gt;fd_nextsize即可恢复原来的结构。</p>
+</li>
+<li><p>如果这个bins中有与当前chunk大小相同的chunk，为维持原有结构，我们应该将fd_nextsize和bk_nextsize赋值给下一个与其大小相同的chunk，让其作为新的nextsize结点。如果这个bins中只有这一种大小的chunk，那就直接将后面一个chunk的fd_nextsize和bk_nextsize改为其自身即可；否则对应修改后面chunk的fd_nextsize为P-&gt;fd_nextsize，bk_nextsize为P-&gt;bk_nextsize，再让前后的nextsize对应chunk指向这个chunk即可。</p>
+</li>
+</ol>
+<p>由此可见，unlink仅仅完成了一个chunk的脱链操作，这个chunk应该位于small bins或large bins中。只要理解了两个bins的数据结构，就应该不难理解其中的原理。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80-Chapter-1%E2%80%94%E2%80%94%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="prev" title="密码学基础 Chapter 1——古典密码学">
+      <i class="fa fa-chevron-left"></i> 密码学基础 Chapter 1——古典密码学
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/" rel="next" title="数字逻辑 个人总结——电路设计表达式变形总结">
+      数字逻辑 个人总结——电路设计表达式变形总结 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#9-large-bin-attack"><span class="nav-number">1.</span> <span class="nav-text">9. large_bin_attack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E5%89%B2large-bins-chunk%E8%BF%94%E5%9B%9E%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.1.</span> <span class="nav-text">切割large bins chunk返回的过程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#10-mmap-overlapping-chunks"><span class="nav-number">2.</span> <span class="nav-text">10. mmap_overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#11-overlapping-chunks"><span class="nav-number">3.</span> <span class="nav-text">11. overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-poison-null-byte"><span class="nav-number">4.</span> <span class="nav-text">12. poison_null_byte</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-tcache-house-of-spirit"><span class="nav-number">5.</span> <span class="nav-text">13. tcache_house_of_spirit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-tcache-poisoning"><span class="nav-number">6.</span> <span class="nav-text">14. tcache_poisoning</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-tcache-stashing-unlink-attack"><span class="nav-number">7.</span> <span class="nav-text">15. tcache_stashing_unlink_attack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-unsafe-unlink"><span class="nav-number">8.</span> <span class="nav-text">16. unsafe_unlink</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

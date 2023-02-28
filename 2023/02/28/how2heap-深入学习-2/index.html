@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第7~8个源码。这两种攻击方式初见比较绕人，也比较难，因此也花了不少时间消化与理解。 7. house_of_mind_fastbin这是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="how2heap 深入学习(2)">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-2/index.html">
+<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第7~8个源码。这两种攻击方式初见比较绕人，也比较难，因此也花了不少时间消化与理解。 7. house_of_mind_fastbin这是">
+<meta property="og:locale">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/aaea8e3113c34658b4fd9b629526eb38.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/fa040cdfc24945b2a1764c8205b676f8.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/c307e3c2e9c14240b7f8b33d57b52698.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta property="article:published_time" content="2023-02-28T14:28:15.000Z">
+<meta property="article:modified_time" content="2023-02-28T14:28:15.062Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/aaea8e3113c34658b4fd9b629526eb38.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh'
+  };
+</script>
+
+  <title>how2heap 深入学习(2) | CoLin's Pwnhome</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's Pwnhome">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          how2heap 深入学习(2)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:28:15" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:15+08:00">2023-02-28</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 16.04<br>Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
+<p>按照顺序，本文分析glibc 2_23文件夹中的第7~8个源码。这两种攻击方式初见比较绕人，也比较难，因此也花了不少时间消化与理解。<br><img src="https://img-blog.csdnimg.cn/aaea8e3113c34658b4fd9b629526eb38.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
+<h1 id="7-house-of-mind-fastbin"><a href="#7-house-of-mind-fastbin" class="headerlink" title="7. house_of_mind_fastbin"></a>7. house_of_mind_fastbin</h1><p>这是一种较为复杂，不太常见的堆漏洞。原文件中的解释翻译大致如下（英语水平有限，很多地方自己都看不懂…）：</p>
+<pre><code>这种攻击与传统的house of mind类似，后者使用一个假的非主线程所占有的arena来向一个新的地址写入。而前者使用的是fastbin作为写入的地址。
+如果能够分配任意数量的chunk，且对于chunk的size域有一字节的溢出，我们就可以控制很多东西。
+这可以被用来覆写一个已经被free的chunk到一个任意地址，或者可以在任意地址写入一个超大整数值。
+chunks的size域中低3 bit存放的是控制信息，由低到高分别为prev_inuse、mmap、non_main arena。使用non_main arena是本攻击的重点。
+首先，我们需要知道chunk是怎么知道自己不是主线程的arena。
+下面是_heap_info结构体的声明：
+</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">heap_info</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  mstate ar_ptr;           <span class="comment">// Arena for this heap. &lt;--- Malloc State pointer</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">heap_info</span> *<span class="title">prev</span>;</span> <span class="comment">// Previous heap.</span></span><br><span class="line">  <span class="type">size_t</span> size;            <span class="comment">// Current size in bytes.</span></span><br><span class="line">  <span class="type">size_t</span> mprotect_size;   <span class="comment">// Size in bytes that has been mprotected</span></span><br><span class="line">  <span class="type">char</span> pad[<span class="number">-6</span> * SIZE_SZ &amp; MALLOC_ALIGN_MASK]; <span class="comment">// Proper alignment</span></span><br><span class="line">&#125; heap_info; </span><br></pre></td></tr></table></figure>
+
+<pre><code>这里有一个值得注意的点是arena中的malloc_state是通过ar_ptr获取的，这是该结构体的第一个元素。malloc_state == mstate == arena。
+main arena有一个特殊的指针。但是，非main arenas在一个堆段的起始处。它们通过下面的代码获取，这里也是用户控制arena_for_chunk中ptr的地方。
+</code></pre>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> heap_for_ptr(ptr) \</span></span><br><span class="line"><span class="meta">  ((heap_info *) ((unsigned long) (ptr) &amp; ~(HEAP_MAX_SIZE - 1)))</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> arena_for_chunk(ptr) \</span></span><br><span class="line"><span class="meta">  (chunk_non_main_arena (ptr) ? heap_for_ptr (ptr)-&gt;ar_ptr : &amp;main_arena)</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>这个宏获取了ptr然后减去了一个大数，因为heap_info应该在整个堆段的开头。那么通过使用这个，程序就可以找到需要使用的arena。
+这个攻击的想法是使用一个假的arena来写一个指针到一个地址，这个地址在free掉fastbin时滥用了arena_for_chunk的功能。
+
+这个攻击做了如下事情：
+1. 找到一个可用的arena地址作为non_main arena的地址
+2. 分配足够的chunk来到达这个non_main arena的位置，在那个位置我们可以控制arena控制字段的值
+3. 创建一个假的_heap_info来指明之后要使用的at_ptr
+4. 使用这个假的arena(ar_ptr)，我们使用fastbin，配合一个堆指针向一个ar_ptr不期望写入的地址写入。
+
+进行这个攻击的前提条件：
+1. 一个堆区地址的泄露，以知道假的_heap_info在什么地方（需要有可能避免特殊的喷射技术）
+2. 无限制分配堆空间的能力
+3. 一字节的溢出到下一个chunk的size处（需要能够放入fastbin中，因此如果有tcache需要首先填满tcache）
+4. malloc state（ar_ptr）的地址需要是一个大于在malloc_state.system_mem中被free的fastbin大小的值，否则这个chunk会被认为无效（这可以通过排列值完成）
+5. 下一个chunk，已经被free，必须有一个有效的size值（大于0x20且小于malloc_state.system_mem）
+</code></pre>
+<p>看完这一大段话我是一脸懵逼的，不知所云。程序中说的是产生一个<code>constrained WRITE-WHERE primitive</code>。算了，叫什么名词无所谓，看他是怎么玩的。</p>
+<p>跟着程序单步走，在进入while循环之前栈的结构如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">00:0000│ rsp 0x7fffffffe450 —▸ 0x7ffff7ffe168 ◂— 0x0</span><br><span class="line">01:0008│     0x7fffffffe458 ◂— 0x1ff0004000000	;MAX_SIZE | HEAP_MAX_SIZE</span><br><span class="line">02:0010│     0x7fffffffe460 ◂— 0x604430 ◂— 0x0	;user_mem</span><br><span class="line">03:0018│     0x7fffffffe468 —▸ 0x603420 ◂— 0x0	;fake_arena	</span><br><span class="line">04:0020│     0x7fffffffe470 —▸ 0x603448 ◂— 0x0	;target_loc</span><br><span class="line">05:0028│     0x7fffffffe478 —▸ 0x603410 ◂— 0x0	;target_chunk</span><br><span class="line">06:0030│     0x7fffffffe480 ◂— 0x4000000		;new_arena_value</span><br><span class="line">07:0038│     0x7fffffffe488 ◂— 0x4000000		;fake_heap_info</span><br><span class="line">08:0040│     0x7fffffffe490 —▸ 0x7fffffffe580 ◂— 0x1</span><br><span class="line">09:0048│     0x7fffffffe498 ◂— 0x0</span><br><span class="line">0a:0050│ rbp 0x7fffffffe4a0 —▸ 0x4008c0 (__libc_csu_init) ◂— push   r15</span><br><span class="line">0b:0058│     0x7fffffffe4a8 —▸ 0x7ffff7a2d840 (__libc_start_main+240) ◂— mov    edi, eax</span><br></pre></td></tr></table></figure>
+
+<p>之后进入循环一直分配大小为<code>MAX_SIZE==0x1FF00</code>大小的chunk直到分配到的chunk的地址大于<code>new_arena_value==0x4000000</code>。然后<code>malloc(0x50)</code>，将上述stack中08:0040处赋值为fastbin chunk的值（测试为0x4028F50）。之后，程序对0x4000000处进行了写操作，这里是要作为假的arena，因此有：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fake_heap_info[0] = (uint64_t) fake_arena; // Setting the fake ar_ptr (arena)</span><br></pre></td></tr></table></figure>
+<p>将假_heap_info的第一个字段（ar_ptr）设置为假的arena所在处（0x603420）。调试显示，在没有攻击时，被攻击地址（0x603448）处的值为0，然后将那个最后分配的chunk的size中的non_main arena位修改为1。最后，将这个fastbin释放，然后就可以看到目标地址处被写入了fastbin的地址，成功将其修改为一个较大的值。</p>
+<p>看到这里，已经大概明白了。实际上就是伪造一个malloc_state结构体在chunk中，然后欺骗free让它将bins链入这个假的arena中。因为malloc_state是arena所有控制字段以及bins的头指针所在的地方，具体定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* Serialize access.  */</span></span><br><span class="line">  <span class="type">mutex_t</span> mutex;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Flags (formerly in max_fast).  */</span></span><br><span class="line">  <span class="type">int</span> flags;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Fastbins */</span></span><br><span class="line">  mfastbinptr fastbinsY[NFASTBINS];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Base of the topmost chunk -- not otherwise kept in a bin */</span></span><br><span class="line">  mchunkptr top;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* The remainder from the most recent split of a small request */</span></span><br><span class="line">  mchunkptr last_remainder;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Normal bins packed as described above */</span></span><br><span class="line">  mchunkptr bins[NBINS * <span class="number">2</span> - <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Bitmap of bins */</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> binmap[BINMAPSIZE];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list for free arenas.  Access to this field is serialized</span></span><br><span class="line"><span class="comment">     by free_list_lock in arena.c.  */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next_free</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Number of threads attached to this arena.  0 if the arena is on</span></span><br><span class="line"><span class="comment">     the free list.  Access to this field is serialized by</span></span><br><span class="line"><span class="comment">     free_list_lock in arena.c.  */</span></span><br><span class="line">  INTERNAL_SIZE_T attached_threads;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Memory allocated from the system in this arena.  */</span></span><br><span class="line">  INTERNAL_SIZE_T system_mem;</span><br><span class="line">  INTERNAL_SIZE_T max_system_mem;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这里需要注意为什么这个fastbin会修改到0x603448的值。查看mutex_t的定义知道这就是int类型，后面的flags也是一个int类型。紧随其后的fastbinsY是按照fastbin的大小链入的，从0x20大小开始。</p>
+<table align=center>
+    <tr align=center>
+        <td> addr </td> <td> 0x0 </td> <td> 0x4 </td> <td> 0x8 </td> <td> 0xC </td>
+    </tr>
+    <tr align=center>
+        <td> 0x603420 </td> <td> mutex </td> <td> flag </td> <td colspan=2> fastbinsY[0] (for chunk size=0x20) </td>
+    </tr>
+    <tr align=center>
+        <td> 0x603430 </td> <td colspan=2> fastbinsY[1] (for chunk size=0x30) </td> <td colspan=2> fastbinsY[2] (for chunk size=0x40) </td>
+    </tr>
+    <tr align=center>
+        <td> 0x603440 </td> <td colspan=2> fastbinsY[3] (for chunk size=0x50) </td> <td colspan=2> <font color=red>fastbinsY[4] (for chunk size=0x60) </font> </td>
+    </tr>
+    <tr align=center>
+        <td> ...... </td> <td colspan=2> ...... </td> <td colspan=2> ...... </td>
+    </tr>
+</table>
+
+<p>由于释放的chunk大小为0x60，因此它被链入fastbinsY[4]的开头，而fastbinsY[4]的地址正好就是0x603448，这样要攻击的地址的值就被成功修改了。</p>
+<p>综上所述，这种攻击的局限性较大，不仅前提条件很多，而且还不能任意修改值，在题目中可能会作为一种辅助的攻击手段来使用。其中最关键的两步就是修改了0x4000000处和fastbin的non_main arena的值。</p>
+<h1 id="8-House-of-orange"><a href="#8-House-of-orange" class="headerlink" title="8. House_of_orange"></a>8. House_of_orange</h1><p>在how2heap的注释说明中，这个漏洞已经在glibc 2.24被修复。</p>
+<blockquote>
+<p>（摘自参考书籍）<br>这是一种FSOP（File Stream Oriented Programming），劫持_IO_list_all来伪造链表的利用技术，通过调用_IO_flush_all_lockp函数触发。该函数在以下3种情况触发：libc检测到内存错误从而执行abort流程时、执行exit函数时、main函数返回时。（源码演示的是第一种）</p>
+</blockquote>
+<p>乍一看，这个漏洞的执行流程较为复杂。要理解house_of_orange，首先要明确当需要分配的chunk大小大于top chunk会怎样。</p>
+<p>在malloc函数中，当所有的freed chunk均不能满足分配时，会检查top chunk，这通过调用sysmalloc来实现。查看了一下sysmalloc函数，发现里面的判断关系很复杂。按照how2heap源码中的说法，在这里会将被缩小的top chunk释放，前提是top chunk的尾部需要是一页的尾部（即紧跟top chunk后面的地址是0x1000的整数倍）。源码中将top chunk的大小从0x20C01改为0xC01，然后分配大小为0x1000的堆块。但是通过自己写代码测试发现，在堆正常工作时，即使top chunk的大小也是0xC01，下一个分配的堆块也是0x1000大小，所有的chunk还是紧密连接，且没有一个chunk在bin中。</p>
+<p><img src="https://img-blog.csdnimg.cn/fa040cdfc24945b2a1764c8205b676f8.png#pic_center"></p>
+<p>看来这里面的逻辑有更加复杂的一些方面，即使是看源代码也不容易进行分析。最后还是在书中找到了答案。</p>
+<blockquote>
+<p>sysmalloc函数调用时会发生两种情况：第一种调用sbrk函数直接扩充top chunk，第二种调用mmap函数分配一块新的top chunk。为了能够使用前一种扩展chunk，需要请求小于阈值mp_.mmap_threshold。<br>同时，为了能够调用sysmalloc函数中的_int_free函数，需要top chunk在减去一个防止fencepost的MINSIZE后，还要大于MAXSIZE，即0x20；如果是main_arena，则需要放置两个fencepost。还需要绕过两个assert：满足old_size小于nb+MINSIZE，prev_inuse标志位为1，以及old_top+old_size页对齐。</p>
+</blockquote>
+<p>虽然还是有些懵，但先往下看。</p>
+<p>运行how2heap源码，分配0x1000后显示的堆信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; heap</span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x602000</span><br><span class="line">Size: 0x401</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x602400</span><br><span class="line">Size: 0xbe1</span><br><span class="line">fd: 0x7ffff7dd1b78</span><br><span class="line">bk: 0x7ffff7dd1b78</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x602fe0</span><br><span class="line">Size: 0x10</span><br><span class="line"></span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x602ff0</span><br><span class="line">Size: 0x11</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603000</span><br><span class="line">Size: 0x00</span><br></pre></td></tr></table></figure>
+
+<p>分配0x1000之后，源码注释里面写到下面假设这个unsorted bin能够被写。那也就是说这个地方不一定要通过上面的方法获取unsorted bin，有可能通过其他方式获得的unsorted bin也能进行后续操作，这个示例只是不使用free函数就获得了unsorted bin中的chunk而已。还是先往下看。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">这种攻击利用的是中止程序的函数。当程序异常中止时，会将所有文件指针清空，通过调用_IO_flush_all_lockp实现，最终遍历_IO_list_all并调用_IO_OVERFLOW函数。</span><br><span class="line">这种攻击的思路是用一个假的文件指针覆写_IO_list_all指针，它的_IO_OVERFLOW指向的是system函数，且开头8字节被设定为&#x27;/bin/sh&#x27;。因此调用_IO_OVERFLOW(fp, EOF)就是调用system(&#x27;/bin/sh&#x27;)。</span><br><span class="line">_IO_list_all的地址可以通过unsorted bin的fd和bk指针获取（当unsorted bin中仅有一个chunk时，这个chunk的fd和bk指针均指向main_arena + 0x88处【仅限glibc 2.23】）。源代码中_IO_list_all在其之后0x9A8处。</span><br></pre></td></tr></table></figure>
+
+<p>其中操作的文件结构体定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE_plus</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  _IO_FILE file;</span><br><span class="line">  <span class="type">const</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span> *<span class="title">vtable</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">extern</span> <span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE_plus</span> *<span class="title">IO_list_all</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span> &#123;</span></span><br><span class="line">  <span class="type">int</span> _flags;		<span class="comment">/* High-order word is _IO_MAGIC; rest is flags. */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _IO_file_flags _flags</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* The following pointers correspond to the C++ streambuf protocol. */</span></span><br><span class="line">  <span class="comment">/* Note:  Tk uses the _IO_read_ptr and _IO_read_end fields directly. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_read_ptr;	<span class="comment">/* Current read pointer */</span></span><br><span class="line">  <span class="type">char</span>* _IO_read_end;	<span class="comment">/* End of get area. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_read_base;	<span class="comment">/* Start of putback+get area. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_write_base;	<span class="comment">/* Start of put area. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_write_ptr;	<span class="comment">/* Current put pointer. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_write_end;	<span class="comment">/* End of put area. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_buf_base;	<span class="comment">/* Start of reserve area. */</span></span><br><span class="line">  <span class="type">char</span>* _IO_buf_end;	<span class="comment">/* End of reserve area. */</span></span><br><span class="line">  <span class="comment">/* The following fields are used to support backing up and undo. */</span></span><br><span class="line">  <span class="type">char</span> *_IO_save_base; <span class="comment">/* Pointer to start of non-current get area. */</span></span><br><span class="line">  <span class="type">char</span> *_IO_backup_base;  <span class="comment">/* Pointer to first valid character of backup area */</span></span><br><span class="line">  <span class="type">char</span> *_IO_save_end; <span class="comment">/* Pointer to end of non-current get area. */</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_marker</span> *_<span class="title">markers</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span> *_<span class="title">chain</span>;</span>	<span class="comment">// 这个是进程FILE的指针域，通过这个指针链接形成链表，表头为_IO_list_all</span></span><br><span class="line"></span><br><span class="line">  <span class="type">int</span> _fileno;</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> 0</span></span><br><span class="line">  <span class="type">int</span> _blksize;</span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line">  <span class="type">int</span> _flags2;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">  _IO_off_t _old_offset; <span class="comment">/* This used to be _offset but it&#x27;s too small.  */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __HAVE_COLUMN <span class="comment">/* temporary */</span></span></span><br><span class="line">  <span class="comment">/* 1+column number of pbase(); 0 is unknown. */</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">short</span> _cur_column;</span><br><span class="line">  <span class="type">signed</span> <span class="type">char</span> _vtable_offset;</span><br><span class="line">  <span class="type">char</span> _shortbuf[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/*  char* _save_gptr;  char* _save_egptr; */</span></span><br><span class="line"></span><br><span class="line">  _IO_lock_t *_lock;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> _IO_USE_OLD_IO_FILE</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE_complete</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span> _<span class="title">file</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined _G_IO_IO_FILE_VERSION &amp;&amp; _G_IO_IO_FILE_VERSION == 0x20001</span></span><br><span class="line">  _IO_off64_t _offset;</span><br><span class="line"><span class="meta"># <span class="keyword">if</span> defined _LIBC || defined _GLIBCPP_USE_WCHAR_T</span></span><br><span class="line">  <span class="comment">/* Wide character stream stuff.  */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_codecvt</span> *_<span class="title">codecvt</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_wide_data</span> *_<span class="title">wide_data</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span> *_<span class="title">freeres_list</span>;</span></span><br><span class="line">  <span class="type">void</span> *_freeres_buf;</span><br><span class="line"><span class="meta"># <span class="keyword">else</span></span></span><br><span class="line">  <span class="type">void</span> *__pad1;</span><br><span class="line">  <span class="type">void</span> *__pad2;</span><br><span class="line">  <span class="type">void</span> *__pad3;</span><br><span class="line">  <span class="type">void</span> *__pad4;</span><br><span class="line"><span class="meta"># <span class="keyword">endif</span></span></span><br><span class="line">  <span class="type">size_t</span> __pad5;</span><br><span class="line">  <span class="type">int</span> _mode;</span><br><span class="line">  <span class="comment">/* Make sure we don&#x27;t get into trouble again.  */</span></span><br><span class="line">  <span class="type">char</span> _unused2[<span class="number">15</span> * <span class="keyword">sizeof</span> (<span class="type">int</span>) - <span class="number">4</span> * <span class="keyword">sizeof</span> (<span class="type">void</span> *) - <span class="keyword">sizeof</span> (<span class="type">size_t</span>)];</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>接下来，将chunk的size改为0x61，将chunk的bk指针赋值为<code>_IO_list_all-0x10</code>，对应<code>chunk-&gt;bk-&gt;fd</code>。</p>
+<p><img src="https://img-blog.csdnimg.cn/c307e3c2e9c14240b7f8b33d57b52698.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
+<p>然后将chunk地址看成一个假的<code>_IO_FILE</code>结构体指针fp，但是在最前面写上’&#x2F;bin&#x2F;sh\x00’。将fp-&gt;_mode设为0（偏移为0xC0）【这里的_mode我看了半天才明白原来不应该忽略#ifdef，如果为假则_IO_FILE中有_mode这个元素】、fp-&gt;_IO_write_base设为2、fp-&gt;_IO_write_ptr设为3、fp的jump_table处索引为3（偏移为0x78）设为shell函数地址。最后调用malloc出错，打印错误信息后拿到shell。</p>
+<p>_int_malloc中通不过的检查：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">bck = victim-&gt;bk;</span><br><span class="line">          <span class="keyword">if</span> (__builtin_expect (victim-&gt;size &lt;= <span class="number">2</span> * SIZE_SZ, <span class="number">0</span>)</span><br><span class="line">              || __builtin_expect (victim-&gt;size &gt; av-&gt;system_mem, <span class="number">0</span>))</span><br><span class="line">            malloc_printerr (check_action, <span class="string">&quot;malloc(): memory corruption&quot;</span>,</span><br><span class="line">                             chunk2mem (victim), av);</span><br></pre></td></tr></table></figure>
+
+<p>看到这里，虽然整个流程走完了，但还是不禁要问一句，他为什么要这样设定？为什么要改变这些地址？将2016年此方法诞生的那道题——HITCON CTF 2016 House of Orange的解析看完后，便明白了。</p>
+<ol>
+<li>要在遍历_IO_list_all时拿到shell，所以应该让这个指针指向我们可以控制的内存区域，也就是这个被释放的老top chunk。那既然要遍历_IO_list_all，为什么源码中没有修改这里的值，让其指向old top chunk？</li>
+</ol>
+<blockquote>
+<p>在源码中并没有直接对_IO_list_all中的值进行修改，它是在最后一次调用malloc函数时libc修改的。可以想想如果我们自己写一个双向链表的脱链操作，要将链表中的第一个元素脱链，就必然要在脱链之后将头指针指向原来链表中的第二个元素。因此最后的malloc(0x10)中，libc检查了老top chunk后会将其从unsorted bin中拿出来，之后old top chunk的bk指针指向的(_IO_list_all-0x10)-&gt;fd就会被成功修改，而(_IO_list_all-0x10)-&gt;fd &#x3D;&#x3D; _IO_list_all。所以这里是在最后被修改的。实际上，这是一种unsorted bin attack。整个攻击流程实际上是unsorted bin attack与FSOP的结合。</p>
+</blockquote>
+<ol start="2">
+<li>这里为什么要将unsorted bin的size改为0x61？</li>
+</ol>
+<blockquote>
+<p><font color=red>注意：malloc函数查找bins的顺序是：fastbins、small bins、unsorted bin、large bins。在搜索unsorted bin时，除分配small bins大小的chunk有时会进行拆分之外，与搜索fastbins相同，返回大小与请求大小正好相等的chunk，其他的chunk会根据大小链入small bins和large bins中。</font>这里将size改为0x61，是为了在malloc时将其链入到smallbins[5]中。在arena的控制结构体中，fastbins的地址在最前面，之后是其他bins的地址，都在一个数组bins中，bins[0]、bins[1]分别为unsorted bin的头指针和尾指针；bins[2]、bins[3]为存放大小为0x20的chunk的small bin的头指针和尾指针……bins[10]、bins[11]就是为存放大小为0x60的chunk的small bin的头指针和尾指针，这也是第5个smallbin。之前_int_malloc函数已经将_IO_list_all修改为top chunk，那么在内存检查失败后会到达top chunk的地方，误认为这是一个_IO_FILE结构体。<br><font color=red>这里需要注意_IO_list_all被修改后的值。_IO_list_all是被修改为了unsorted bin头指针，即bins[0]的地址main_arena + 0x58，而不是top chunk的地址。因此，libc实际上会将main_arena + 0x58作为一个_IO_list_all结构体的头部。</font><br>那么要想让libc遍历到top chunk里面去，还要在后面再链接一个指针指向top chunk。在_IO_FILE结构体中0x68偏移指向的是_IO_FILE* chain，即下一个元素的指针。遍历到一个_IO_FILE_plus时，会执行vtable中的函数。下面是vtable的结构体定义。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_jump_t</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    JUMP_FIELD(<span class="type">size_t</span>, __dummy);</span><br><span class="line">    JUMP_FIELD(<span class="type">size_t</span>, __dummy2);</span><br><span class="line">    JUMP_FIELD(_IO_finish_t, __finish);</span><br><span class="line">    JUMP_FIELD(_IO_overflow_t, __overflow);</span><br><span class="line">    JUMP_FIELD(_IO_underflow_t, __underflow);</span><br><span class="line">    JUMP_FIELD(_IO_underflow_t, __uflow);</span><br><span class="line">    JUMP_FIELD(_IO_pbackfail_t, __pbackfail);</span><br><span class="line">    <span class="comment">/* showmany */</span></span><br><span class="line">    JUMP_FIELD(_IO_xsputn_t, __xsputn);</span><br><span class="line">    JUMP_FIELD(_IO_xsgetn_t, __xsgetn);</span><br><span class="line">    JUMP_FIELD(_IO_seekoff_t, __seekoff);</span><br><span class="line">    JUMP_FIELD(_IO_seekpos_t, __seekpos);</span><br><span class="line">    JUMP_FIELD(_IO_setbuf_t, __setbuf);</span><br><span class="line">    JUMP_FIELD(_IO_sync_t, __sync);</span><br><span class="line">    JUMP_FIELD(_IO_doallocate_t, __doallocate);</span><br><span class="line">    JUMP_FIELD(_IO_read_t, __read);</span><br><span class="line">    JUMP_FIELD(_IO_write_t, __write);</span><br><span class="line">    JUMP_FIELD(_IO_seek_t, __seek);</span><br><span class="line">    JUMP_FIELD(_IO_close_t, __close);</span><br><span class="line">    JUMP_FIELD(_IO_stat_t, __stat);</span><br><span class="line">    JUMP_FIELD(_IO_showmanyc_t, __showmanyc);</span><br><span class="line">    JUMP_FIELD(_IO_imbue_t, __imbue);</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> 0</span></span><br><span class="line">    get_column;</span><br><span class="line">    set_column;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>要执行的函数是第4个，因此源码中修改索引为3的值为后门函数。vtable紧跟在_IO_FILE结构体后面，因此也是可以控制的地址。</p>
+<ol start="3">
+<li>为什么要设置_mode&#x3D;0，fp-&gt;_IO_write_base&#x3D;2、fp-&gt;_IO_write_ptr&#x3D;3？</li>
+</ol>
+<blockquote>
+<p>执行_IO_OVERFLOW函数的是_IO_flush_all_lockp函数，其中调用_IO_OVERFLOW的语句如下：</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (((fp-&gt;_mode &lt;= <span class="number">0</span> &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined _LIBC || defined _GLIBCPP_USE_WCHAR_T</span></span><br><span class="line">	   || (_IO_vtable_offset (fp) == <span class="number">0</span></span><br><span class="line">	       &amp;&amp; fp-&gt;_mode &gt; <span class="number">0</span> &amp;&amp; (fp-&gt;_wide_data-&gt;_IO_write_ptr</span><br><span class="line">				    &gt; fp-&gt;_wide_data-&gt;_IO_write_base))</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	   )</span><br><span class="line">	  &amp;&amp; _IO_OVERFLOW (fp, EOF) == EOF)</span><br><span class="line">	result = EOF;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>由此可知需要绕过一个检查，即<code>(fp-&gt;_mode &lt;= 0 &amp;&amp; fp-&gt;_IO_write_ptr &gt; fp-&gt;_IO_write_base)</code>，这也就不难理解了。只有绕过它才能执行_IO_OVERFLOW函数。</p>
+</blockquote>
+<p>总结一下，整个攻击流程大致有这么几步：</p>
+<ul>
+<li>不使用free函数获得一个unsorted bin中的chunk，同时泄露libc的基地址</li>
+<li>构造chunk的结构准备攻击，包括绕过检查、设置system地址到指定地址</li>
+<li>用malloc函数触发攻击</li>
+</ul>
+<p>到这里，House of orange的神秘面纱算是彻底揭开了。能够真正理解这个攻击，我们的水平就又提升了一个档次。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/" rel="prev" title="数字逻辑 个人总结——电路设计表达式变形总结">
+      <i class="fa fa-chevron-left"></i> 数字逻辑 个人总结——电路设计表达式变形总结
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/" rel="next" title="数字逻辑 Chapter 3——门电路和触发器">
+      数字逻辑 Chapter 3——门电路和触发器 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-house-of-mind-fastbin"><span class="nav-number">1.</span> <span class="nav-text">7. house_of_mind_fastbin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-House-of-orange"><span class="nav-number">2.</span> <span class="nav-text">8. House_of_orange</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
