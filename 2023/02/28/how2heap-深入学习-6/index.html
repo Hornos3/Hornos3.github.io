@@ -20,16 +20,16 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of_lo">
+  <meta name="description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04 Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of">
 <meta property="og:type" content="article">
 <meta property="og:title" content="how2heap 深入学习(6)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-6/index.html">
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
-<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of_lo">
+<meta property="og:description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04 Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of">
 <meta property="og:locale">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/3de7a924c8704c7d88de38d665411f93.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
 <meta property="article:published_time" content="2023-02-28T14:28:05.000Z">
-<meta property="article:modified_time" content="2023-02-28T14:28:05.495Z">
+<meta property="article:modified_time" content="2023-02-28T14:54:18.985Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/3de7a924c8704c7d88de38d665411f93.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
@@ -174,8 +174,22 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2023-02-28 22:28:05" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:05+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:28:05 / Modified: 22:54:18" itemprop="dateCreated datePublished" datetime="2023-02-28T22:28:05+08:00">2023-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/glibc-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">glibc 系列</span></a>
+                </span>
             </span>
 
           
@@ -189,46 +203,51 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 18.04<br>Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
-<p>按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of_lore。<br>如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="1-fastbin-dup"><a href="#1-fastbin-dup" class="headerlink" title="1. fastbin_dup"></a>1. fastbin_dup</h1><p>熟悉的味道。double free嘛。不过首先将tcache对应的cache填满了。不再赘述。</p>
-<h1 id="2-fastbin-reverse-into-tcache"><a href="#2-fastbin-reverse-into-tcache" class="headerlink" title="2. fastbin_reverse_into_tcache"></a>2. fastbin_reverse_into_tcache</h1><p>看标题应该和tcache有关，仔细看一下。</p>
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
+Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br />
+参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 18.04<br />
+Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
+<p>按照顺序，本文将分析glibc 2.27文件夹下的前6个源码，其中主要分析fastbin_reverse_into_tcache，house_of_botcake，house_of_lore。<br />
+如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
+<h1 id="1-fastbin_dup"><a class="markdownIt-Anchor" href="#1-fastbin_dup"></a> 1. fastbin_dup</h1>
+<p>熟悉的味道。double free嘛。不过首先将tcache对应的cache填满了。不再赘述。</p>
+<h1 id="2-fastbin_reverse_into_tcache"><a class="markdownIt-Anchor" href="#2-fastbin_reverse_into_tcache"></a> 2. fastbin_reverse_into_tcache</h1>
+<p>看标题应该和tcache有关，仔细看一下。</p>
 <p>首先就分配了14个0x50大小的chunk，然后释放7个填满了tcache，再释放7个填满了fastbin。在栈区分配了6个8字节空间，初始化为全0xcd。之后漏洞关键步骤：将第8个free掉的chunk（即第1个被放入fastbin的chunk）的fd修改为栈区这6个8字节空间的开头。<font color=red>记住：第8个被释放的chunk在fastbins的尾部，fastbin是<strong>链栈结构</strong>。</font></p>
 <p>之后，将tcache分配完清空。然后注意：再malloc一次会将所有fastbin chunks转到tcache中，而且是和fastbin逆序的关系链入tcache。</p>
 <p>这是malloc之前的bins：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">tcachebins</span><br><span class="line">empty</span><br><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x555555757660 —▸ 0x555555757610 —▸ 0x5555557575c0 —▸ 0x555555757570 —▸ 0x555555757520 ◂— ...</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x0</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
-
 <p>这是malloc之后的bins：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">tcachebins</span><br><span class="line">0x50 [  7]: 0x7fffffffe180 —▸ 0x555555757490 —▸ 0x5555557574e0 —▸ 0x555555757530 —▸ 0x555555757580 —▸ 0x5555557575d0 —▸ 0x555555757620 ◂— 0x0</span><br><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0xcdcdcdcdcdcdcdcd</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x0</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
-
 <p>从前后的变化我们可以大胆猜测这一步进行了什么操作：</p>
 <p>由于malloc之前tcache没有chunk，所以_int_malloc只能从fastbin中查找。查找到合适的chunk之后，会将这个chunk记录下来留作之后返回。但是并不是立即返回，_int_malloc发现fastbin后面还有chunk，于是从头指针不断弹出chunk到tcache的头指针。如此操作之后原来fastbin中的chunk到了tcache的顺序就反过来了。因为一个fastbin最多有7个chunk。那么_int_malloc函数应该会循环7次退出，或者是检查到chunk的fd指针为0时退出（这个chunk就是fastbin中最后一个chunk了）。在malloc之后，fastbin中还剩下6个chunk。在弹出这6个chunk之后，libc发现了我们修改的fd指针，此时fastbin的指针指向栈区，于是libc顺理成章地将这个栈区的指针也链入到了tcache中，并放在tcache的头部，然后不加检查地就退出了。此时，fastbin中却只剩下了一地鸡毛：一个我们在初始化栈区时嵌入的无效的指针值（0xcdcdcdcdcdcdcdcd）。在栈区指针链入之后，栈区中的值实际上就已经发生了改变，fd指针的地方变成了后面一个chunk的地址，bk指针的地方应该是被修改为了tcache结构体位置的地址（因为tcache中后面的chunk在bk处设置的值是相等的）。然后，我们只要再进行一次malloc就能够获得一个栈上面的地址了。</p>
 <p>查看源代码之后，验证了我们的猜想。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (tcache &amp;&amp; tc_idx &lt; mp_.tcache_bins)</span><br><span class="line">&#123;</span><br><span class="line">  mchunkptr tc_victim;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* While bin not empty and tcache not full, copy chunks.  */</span></span><br><span class="line">  <span class="keyword">while</span> (tcache-&gt;counts[tc_idx] &lt; mp_.tcache_count</span><br><span class="line">	 &amp;&amp; (tc_victim = *fb) != <span class="literal">NULL</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="keyword">if</span> (SINGLE_THREAD_P)</span><br><span class="line">	*fb = tc_victim-&gt;fd;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">	  REMOVE_FB (fb, pp, tc_victim);</span><br><span class="line">	  <span class="keyword">if</span> (__glibc_unlikely (tc_victim == <span class="literal">NULL</span>))</span><br><span class="line">	    <span class="keyword">break</span>;</span><br><span class="line">	&#125;</span><br><span class="line">      tcache_put (tc_victim, tc_idx);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> REMOVE_FB(fb, victim, pp)			\</span></span><br><span class="line"><span class="meta">  do							\</span></span><br><span class="line"><span class="meta">    &#123;							\</span></span><br><span class="line"><span class="meta">      victim = pp;					\</span></span><br><span class="line"><span class="meta">      <span class="keyword">if</span> (victim == NULL)				\</span></span><br><span class="line"><span class="meta">	break;						\</span></span><br><span class="line"><span class="meta">    &#125;							\</span></span><br><span class="line"><span class="meta">  while ((pp = catomic_compare_and_exchange_val_acq (fb, victim-&gt;fd, victim)) \</span></span><br><span class="line"><span class="meta">	 != victim);</span></span><br></pre></td></tr></table></figure>
-
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="keyword">define</span> TCACHE_FILL_COUNT 7</span></span><br><span class="line">......</span><br><span class="line">tcache_count = TCACHE_FILL_COUNT,</span><br></pre></td></tr></table></figure>
-
 <p>while语句就是将fastbin chunk移至tcache中，其中<code>REMOVE_FB</code>函数就是取出fastbin的第一个chunk链入到对应tcache头。后面检查fastbin里面是否还有chunk，没有则退出。</p>
 <p>在源代码中，还考虑了当fastbin中的chunk数量少于7个的情况。如果fastbin没有被填满，则在链入栈区的地址后，_int_malloc还会继续检查栈区这个假chunk的fd是否为0，如果是一个无效值就会导致程序崩溃。但如果是0的话也是可以达到上面的效果，将栈区地址链入到tcache头的。但是栈区的不稳定性与可重用性决定了其在未初始化时的值不确定，所以fastbin没有填满时进行malloc有一定的风险，不一定能够成功。</p>
 <p>理解本漏洞利用方式需要理解fastbin和tcache的交互过程，实际上也比较容易理解。既然glibc决定添加tcache，就要让其发挥最大限度的作用——成为一个比fastbin还要fast的堆块分配模块，所以这种情况下肯定是要让fastbin里面的chunk尽可能往tcache里面塞。又考虑到fast的性质，在tcache不空的时候不会触发这个过程。</p>
-<h1 id="3-house-of-botcake"><a href="#3-house-of-botcake" class="headerlink" title="3. house_of_botcake"></a>3. house_of_botcake</h1><p>这是一种通过tcache进行的漏洞利用方法，能够让malloc返回任意地址值。</p>
+<h1 id="3-house_of_botcake"><a class="markdownIt-Anchor" href="#3-house_of_botcake"></a> 3. house_of_botcake</h1>
+<p>这是一种通过tcache进行的漏洞利用方法，能够让malloc返回任意地址值。</p>
 <p>首先在栈区分配0x20空间，这是之后malloc要返回的地址。之后分配9个0x110的chunk，外加一个小chunk防止top chunk合并。然后释放前7个chunk填满tcache。然后先释放第9个再释放第8个chunk，这样释放完之后这两个chunk因为同在unsorted bin中，所以会合并。后面分配一个chunk出来，这个chunk当然是从tcache中获取（第7个chunk）。获取之后再次释放第9个chunk，此时第9个chunk被放到了tcache中，也即第9个chunk被double free，导致重叠了。</p>
 <p>之后呢，分配一个0x130的chunk，这当然会从由第8和9个chunk合并产生的unsorted bin chunk中切割一个chunk分过去。到这里，你的眼里是否有光？我们可以通过这个chunk修改第9个chunk的指针，而这个chunk现在就在tcache的头部！我们将第9个chunk的fd指针修改为栈区我们想要的地址之后，tcache就断链了，此时tcache头部是第9个chunk，后面连着的就是我们想分配的地址。因此后面malloc两次即可。</p>
 <p>理解本漏洞利用方法的核心在于理解堆块的重叠。堆块重叠的目的是修改tcache使其最终指向我们想要的地址，这只是一种我们修改tcache的手段而已。tcache不会检查double free。当一个chunk被double free到不同的bin时，杀伤力是最大的，因为这不可能会被检查到。glibc 2.23中的第二个源码好像也是将chunk两次free到不同的bin中。</p>
-<h1 id="4-house-of-einherjar"><a href="#4-house-of-einherjar" class="headerlink" title="4. house_of_einherjar"></a>4. house_of_einherjar</h1><p>这个漏洞利用在glibc 2.23中有分析，是一种poison null byte漏洞利用方式。还是看一下和2.23有没有什么不同之处。</p>
+<h1 id="4-house_of_einherjar"><a class="markdownIt-Anchor" href="#4-house_of_einherjar"></a> 4. house_of_einherjar</h1>
+<p>这个漏洞利用在glibc 2.23中有分析，是一种poison null byte漏洞利用方式。还是看一下和2.23有没有什么不同之处。</p>
 <p>首先分配0x40的chunk(name: a)，然后在栈构造一个假chunk，prev size和size均为0x100，fd、bk、fd_nextsize和bk_nextsize均设为其本身。之后分配0x500的chunk(name: b)，这样b的size本来应为0x501。之后，漏洞关键步骤：a溢出一个空字节到b使得b的size变为0x500。然后调整a的prev size使得后面堆块合并的时候能够让堆块头到达想要分配的栈区地址。这里a的prev size应设为b - fake chunk，作为呼应，栈区的size也应该修改为这个值。然后将b释放即可得到一个位于栈区的堆块指针。这样看起来和2.23的没有什么不同，只是因为有tcache的存在，所以需要释放的b应该要比较大才行，大于tcache中链入chunk的最大size即可。</p>
-<h1 id="5-house-of-force"><a href="#5-house-of-force" class="headerlink" title="5. house_of_force"></a>5. house_of_force</h1><p>这个漏洞利用在glibc 2.23中有分析。</p>
+<h1 id="5-house_of_force"><a class="markdownIt-Anchor" href="#5-house_of_force"></a> 5. house_of_force</h1>
+<p>这个漏洞利用在glibc 2.23中有分析。</p>
 <p>源码中想要在bss段的地方进行写操作。首先分配0x110的chunk(name: p1)，然后修改top chunk的大小到最大，再分配一个很大的chunk使top chunk到达要写的地方的正下方，然后再分配一个chunk就能在bss段写了。这个利用方式与2.23没有区别，不再赘述。</p>
-<h1 id="6-house-of-lore"><a href="#6-house-of-lore" class="headerlink" title="6. house_of_lore"></a>6. house_of_lore</h1><p>这是一种利用small bins的攻击手段，由于glibc 2.27中tcache的影响，具体的利用方式可能会和2.23有所区别。</p>
+<h1 id="6-house_of_lore"><a class="markdownIt-Anchor" href="#6-house_of_lore"></a> 6. house_of_lore</h1>
+<p>这是一种利用small bins的攻击手段，由于glibc 2.27中tcache的影响，具体的利用方式可能会和2.23有所区别。</p>
 <p>和2.23相比，2.27的house_of_lore利用需要绕过更加严格的检查。</p>
 <p><strong>Step 1: 分配8个0x110的chunk，在栈区开8*7大小的空间，其中包括0x20大小的一块（stack_buffer_1）和0x18大小的一块（stack_buffer_2）。另在栈区开7*4的指针数组。</strong></p>
 <p>第1个会成为漏洞利用的对象，而2~8个用于后面填充tcache。</p>
 <p><strong>Step 2: 构造栈区，将stack_buffer_1和stack_buffer_2构造为两个假的chunk，将指针数组构造为一个假的free list。</strong></p>
 <p>在源码中，我们应该将指针数组的每一个0x20的空间看做是一个chunk，程序所做的就是为每一个假chunk的bk指针赋值使得前一个chunk的bk指向后一个chunk（最后一个chunk不赋值）。之后，将stack_buffer_1的fd指针对应偏移处指向Step 1中分配的第一个chunk，size和prev size均设为0，bk指针对应偏移处指向stack_buffer_2；将stack_buffer_2的fd指针对应偏移处指向stack_buffer_1，bk对应偏移处指向指针数组开头。如图所示。将栈区如此构造主要是为了绕过libc的检查，后面会有所解释。</p>
-<p><img src="https://img-blog.csdnimg.cn/3de7a924c8704c7d88de38d665411f93.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
+<p><img src="https://img-blog.csdnimg.cn/3de7a924c8704c7d88de38d665411f93.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
 <p><strong>Step 3: 分配0x1010的chunk消除top chunk的影响。释放2~8个chunk以填满tcache。</strong></p>
 <p><strong>Step 4: 释放第一个chunk，它会被链入到unsorted bin中。</strong></p>
 <p><strong>Step 5: 分配一个大chunk（0x1210），让第一个chunk进入small bins</strong></p>
@@ -240,10 +259,8 @@
 <p><strong>step 8: 分配出第一个chunk。</strong></p>
 <p>注意：将第一个chunk分配出来之后，malloc会将我们在栈区构造的7个假chunk逆向链入到tcache中。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">tcachebins</span><br><span class="line">0x110 [  7]: 0x7fffffffe1e0 —▸ 0x7fffffffe1c0 —▸ 0x7fffffffe1a0 —▸ 0x7fffffffe180 —▸ 0x7fffffffe160 —▸ 0x7fffffffe0e0 —▸ 0x7fffffffe100 ◂— 0x0</span><br><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x0</span><br><span class="line">smallbins</span><br><span class="line">0x110 [corrupted]</span><br><span class="line">FD: 0x555555757250 —▸ 0x7ffff7dcdda0 (main_arena+352) ◂— 0x555555757250 /* &#x27;PruUUU&#x27; */</span><br><span class="line">BK: 0x7fffffffe1f1 ◂— 0x4000007fffffffe2</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
-
 <p>在libc源码中有下面这一段，构造stack_buffer_1就是为了绕过这个检查：<code>bck-&gt;fd == victim</code>。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[ ... ]</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      bck = victim-&gt;bk;</span><br><span class="line">    <span class="keyword">if</span> (__glibc_unlikely (bck-&gt;fd != victim))&#123;</span><br><span class="line"></span><br><span class="line">                  errstr = <span class="string">&quot;malloc(): smallbin double linked list corrupted&quot;</span>;</span><br><span class="line">                  <span class="keyword">goto</span> errout;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">       set_inuse_bit_at_offset (victim, nb);</span><br><span class="line">       bin-&gt;bk = bck;</span><br><span class="line">       bck-&gt;fd = bin;</span><br><span class="line"></span><br><span class="line">       [ ... ]</span><br></pre></td></tr></table></figure>
-
 <p><strong>Step 9: 再分配出一个chunk，这个chunk的地址就在栈区。</strong></p>
 <p>由上面的bin分布可知，这个chunk的地址在0x7fffffffe1e0，妥妥的栈区。</p>
 <p><strong>Step 10: 利用这个栈上的地址修改main函数返回地址。</strong></p>
@@ -333,7 +350,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-fastbin-dup"><span class="nav-number">1.</span> <span class="nav-text">1. fastbin_dup</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-fastbin-reverse-into-tcache"><span class="nav-number">2.</span> <span class="nav-text">2. fastbin_reverse_into_tcache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-house-of-botcake"><span class="nav-number">3.</span> <span class="nav-text">3. house_of_botcake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-house-of-einherjar"><span class="nav-number">4.</span> <span class="nav-text">4. house_of_einherjar</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-house-of-force"><span class="nav-number">5.</span> <span class="nav-text">5. house_of_force</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-house-of-lore"><span class="nav-number">6.</span> <span class="nav-text">6. house_of_lore</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-fastbin_dup"><span class="nav-number">1.</span> <span class="nav-text"> 1. fastbin_dup</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-fastbin_reverse_into_tcache"><span class="nav-number">2.</span> <span class="nav-text"> 2. fastbin_reverse_into_tcache</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-house_of_botcake"><span class="nav-number">3.</span> <span class="nav-text"> 3. house_of_botcake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-house_of_einherjar"><span class="nav-number">4.</span> <span class="nav-text"> 4. house_of_einherjar</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-house_of_force"><span class="nav-number">5.</span> <span class="nav-text"> 5. house_of_force</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-house_of_lore"><span class="nav-number">6.</span> <span class="nav-text"> 6. house_of_lore</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -347,9 +364,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">posts</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
       </div>
   </nav>
 </div>

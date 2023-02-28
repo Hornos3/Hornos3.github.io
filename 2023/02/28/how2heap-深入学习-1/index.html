@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。 how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版">
+  <meta name="description" content="刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。 how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Gli">
 <meta property="og:type" content="article">
 <meta property="og:title" content="how2heap 深入学习(1)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-1/index.html">
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
-<meta property="og:description" content="刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。 how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版">
+<meta property="og:description" content="刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。 how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Gli">
 <meta property="og:locale">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/e11840261fe44692a5a97963baa426aa.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
 <meta property="article:published_time" content="2023-02-28T14:27:19.000Z">
-<meta property="article:modified_time" content="2023-02-28T14:27:19.751Z">
+<meta property="article:modified_time" content="2023-02-28T14:54:19.481Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
@@ -175,8 +175,22 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2023-02-28 22:27:19" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:19+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:27:19 / Modified: 22:54:19" itemprop="dateCreated datePublished" datetime="2023-02-28T22:27:19+08:00">2023-02-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/glibc-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">glibc 系列</span></a>
+                </span>
             </span>
 
           
@@ -191,16 +205,24 @@
 
       
         <p>刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。</p>
-<p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 16.04<br>Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
-<p>按照顺序，本文分析glibc 2_23文件夹中的第1~6个源码。<br><img src="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
-<h1 id="1-fastbin-dup"><a href="#1-fastbin-dup" class="headerlink" title="1. fastbin_dup"></a>1. fastbin_dup</h1><p>本程序演示fastbin的double_free漏洞。只需要在两次free中间再进行其他free操作，就可以在fastbin链表中存放两个相同的chunk。这个不难理解。</p>
-<h1 id="2-fastbin-dup-consolidate"><a href="#2-fastbin-dup-consolidate" class="headerlink" title="2. fastbin_dup_consolidate"></a>2. fastbin_dup_consolidate</h1><p>本程序演示另一种double_free漏洞。在glibc 2.23中，如果fastbin中有chunk存在，那么之后申请一块大于fastbin范围的chunk，会将fastbin中的chunk转移到small bins中。原因如下：</p>
-<p><em>首先fastbin中的chunk会通过malloc_consolidate函数转移到unsorted bins中，之后malloc函数在unsorted bins中查找符合大小的chunk。这时就发现了刚刚被转移过来的小chunk。发现大小不够之后，这些chunk又会被转移到small bins中。（malloc在遍历unsorted bin时会将大小不符合的chunk转移到small bins&#x2F;large bins中）</em></p>
+<p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
+Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br />
+参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 16.04<br />
+Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
+<p>按照顺序，本文分析glibc 2_23文件夹中的第1~6个源码。<br />
+<img src="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
+<h1 id="1-fastbin_dup"><a class="markdownIt-Anchor" href="#1-fastbin_dup"></a> 1. fastbin_dup</h1>
+<p>本程序演示fastbin的double_free漏洞。只需要在两次free中间再进行其他free操作，就可以在fastbin链表中存放两个相同的chunk。这个不难理解。</p>
+<h1 id="2-fastbin_dup_consolidate"><a class="markdownIt-Anchor" href="#2-fastbin_dup_consolidate"></a> 2. fastbin_dup_consolidate</h1>
+<p>本程序演示另一种double_free漏洞。在glibc 2.23中，如果fastbin中有chunk存在，那么之后申请一块大于fastbin范围的chunk，会将fastbin中的chunk转移到small bins中。原因如下：</p>
+<p><em>首先fastbin中的chunk会通过malloc_consolidate函数转移到unsorted bins中，之后malloc函数在unsorted bins中查找符合大小的chunk。这时就发现了刚刚被转移过来的小chunk。发现大小不够之后，这些chunk又会被转移到small bins中。（malloc在遍历unsorted bin时会将大小不符合的chunk转移到small bins/large bins中）</em></p>
 <p>此时，fastbin为空，可以将原先在fastbin中的chunk再次free，形成double_free漏洞。</p>
 <p><font color=red>注意：在Glibc 2.23中，malloc只会检查fastbin中是否进行了连续的两次free，而不会将fastbin和其他bins中的chunk整合进行检查。</font></p>
 <p>此时，在fastbins和small bins中就存在两个相同的chunk。</p>
-<h1 id="3-fastbin-dup-into-stack"><a href="#3-fastbin-dup-into-stack" class="headerlink" title="3. fastbin_dup_into_stack"></a>3. fastbin_dup_into_stack</h1><p>本程序演示double_free漏洞的一种应用，即利用fastbin_dup中的double_free漏洞将堆挟持到栈区，在栈区创建chunk。<br>首先进行double_free。此时fastbin中的结构为：</p>
+<h1 id="3-fastbin_dup_into_stack"><a class="markdownIt-Anchor" href="#3-fastbin_dup_into_stack"></a> 3. fastbin_dup_into_stack</h1>
+<p>本程序演示double_free漏洞的一种应用，即利用fastbin_dup中的double_free漏洞将堆挟持到栈区，在栈区创建chunk。<br />
+首先进行double_free。此时fastbin中的结构为：</p>
 <blockquote>
 <p>fastbin → a → b → a</p>
 </blockquote>
@@ -214,7 +236,8 @@
 <p>fastbin → &lt;any address we want&gt; → &lt;other things&gt;</p>
 </blockquote>
 <p>再分配相同大小的chunk，就可以将chunk分配到任何可写的地方。</p>
-<h1 id="4-house-of-einherjar"><a href="#4-house-of-einherjar" class="headerlink" title="4. house_of_einherjar"></a>4. house_of_einherjar</h1><p>本程序演示house of einherjar漏洞。这是一种null off by one漏洞，即仅溢出一个’\x00’字节即可实现任意地址写。原理如下：</p>
+<h1 id="4-house_of_einherjar"><a class="markdownIt-Anchor" href="#4-house_of_einherjar"></a> 4. house_of_einherjar</h1>
+<p>本程序演示house of einherjar漏洞。这是一种null off by one漏洞，即仅溢出一个’\x00’字节即可实现任意地址写。原理如下：</p>
 <p><font color=red>首先，需要明确的是，在glibc 2.23 64bit中，如果malloc的大小为0x8 + n*0x10，那么该chunk能够控制下一个chunk的previous size值。因为chunk在64bit中按照0x10对齐（32bit中以0x8对齐），所有chunk的起始地址最低4bit均为0。因此对于分配0x8 + n*0x10的情况，glibc做出的处理是：将后一个chunk的previous size域作为前一个chunk的可用空间。正常情况下，当前一个chunk正在使用时，后一个chunk的previous size不起作用。</font></p>
 <p>在上述的前提条件下，可以任意指定previous size的值，并通过溢出一个’\x00’字节对后面一个chunk的size进行部分修改。</p>
 <ul>
@@ -225,83 +248,83 @@
 <li>如果后面一个chunk的size域最低一字节原来不是0x01而是0x?1，那么溢出一个空字符后，chunk的size会被改变。如果此时不加任何其他处理，在chunk与top chunk合并时会出错。原理：</li>
 </ul>
 <p><em>_int_free函数中判断后一个chunk是通过size偏移确定的，如果size被改变且没有在后面伪造chunk，在_int_free函数中有一项检查是后一个chunk的prev_in_use是否为1。很显然正常情况下这里都是1，因为没有free之前前一个chunk正在使用，因此如果此时后一个chunk的prev_in_use位为0说明堆结构被篡改。</em></p>
-<h2 id="重要：-int-free中的检查项目（部分）"><a href="#重要：-int-free中的检查项目（部分）" class="headerlink" title="重要：_int_free中的检查项目（部分）"></a>重要：_int_free中的检查项目（部分）</h2><ol>
+<h2 id="重要_int_free中的检查项目部分"><a class="markdownIt-Anchor" href="#重要_int_free中的检查项目部分"></a> 重要：_int_free中的检查项目（部分）</h2>
+<ol>
 <li>检查相邻chunk是否相等，是则为double free</li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(__builtin_expect (old == p, <span class="number">0</span>))</span><br><span class="line">&#123;</span><br><span class="line">	errstr = <span class="string">&quot;double free or corruption (fasttop)&quot;</span>;</span><br><span class="line">    <span class="keyword">goto</span> errout;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <ol start="2">
 <li>检查该chunk是否为top chunk，top chunk不可被free</li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__glibc_unlikely (p == av-&gt;top))</span><br><span class="line">   &#123;</span><br><span class="line">	errstr = <span class="string">&quot;double free or corruption (top)&quot;</span>;</span><br><span class="line">	<span class="keyword">goto</span> errout;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
 <ol start="3">
 <li>检查该chunk是否超过了arena的范围</li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (contiguous (av)</span><br><span class="line">	  &amp;&amp; (<span class="type">char</span> *) nextchunk</span><br><span class="line">	  \&gt;= ((<span class="type">char</span> *) av-&gt;top + chunksize(av-&gt;top)), <span class="number">0</span>))</span><br><span class="line">   &#123;</span><br><span class="line">	errstr = <span class="string">&quot;double free or corruption (out)&quot;</span>;</span><br><span class="line">	<span class="keyword">goto</span> errout;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
 <ol start="4">
 <li><strong>检查紧跟该chunk后面（高地址处）的prev_in_use位是否为1</strong></li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__glibc_unlikely (!prev_inuse(nextchunk)))</span><br><span class="line">   &#123;</span><br><span class="line">	errstr = <span class="string">&quot;double free or corruption (!prev)&quot;</span>;</span><br><span class="line">	<span class="keyword">goto</span> errout;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
 <ol start="5">
 <li>检查紧跟该chunk后面的size是否合理（不能过小或过大）</li>
 </ol>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">nextsize = chunksize(nextchunk);</span><br><span class="line">   <span class="keyword">if</span> (__builtin_expect (nextchunk-&gt;size &lt;= <span class="number">2</span> * SIZE_SZ, <span class="number">0</span>)</span><br><span class="line">|| __builtin_expect (nextsize &gt;= av-&gt;system_mem, <span class="number">0</span>))</span><br><span class="line">     &#123;</span><br><span class="line">errstr = <span class="string">&quot;free(): invalid next size (normal)&quot;</span>;</span><br><span class="line"><span class="keyword">goto</span> errout;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
-
 <p><font color=blue>笔记：free调用时会调用malloc_consolidate函数整理fastbins。对于fastbins中的chunk先向低地址合并再向高地址合并。这一步操作在最后完成</font></p>
 <ul>
 <li>因此后面一个chunk的size域最低一字节原来不是0x01而是0x?1时，需要在对应的位置伪造一个chunk，将损失的size大小补齐，来绕过检查。后面的效果与第一种情况相同。</li>
 </ul>
-<h1 id="5-house-of-force"><a href="#5-house-of-force" class="headerlink" title="5. house_of_force"></a>5. house_of_force</h1><p>本程序演示house_of_force漏洞。这个漏洞的思路比较简单，利用了top chunk。</p>
+<h1 id="5-house_of_force"><a class="markdownIt-Anchor" href="#5-house_of_force"></a> 5. house_of_force</h1>
+<p>本程序演示house_of_force漏洞。这个漏洞的思路比较简单，利用了top chunk。</p>
 <p>在glibc 2.23中，malloc不会对top chunk的size进行检查，因此如果能够将top chunk的size修改为很大，就可以malloc任意大小的chunk，从而在任意地址写。</p>
 <p><font color=purple>注意：malloc不检查整型溢出。如果需要写的地址在top chunk的低地址处，也可以通过整型溢出到达。</font></p>
 <p>假设top chunk头的地址为x，要写的地址为y。那么首先malloc大小为x-y大小的堆块，然后再malloc一下即可对该地址写。注意前面的prev_size和size，必要时需要分配x-y-0x10（32bit为x-y-0x8）大小堆块以实现对目标地址的完全控制。</p>
-<h1 id="6-house-of-lore"><a href="#6-house-of-lore" class="headerlink" title="6. house_of_lore"></a>6. house_of_lore</h1><p>本程序演示house_of_lore漏洞，这是一种利用small_bins的攻击方式。</p>
-<p>small bins&#x2F;large bins&#x2F;unsorted bins的双向链表结构如下图所示<br><img src="https://img-blog.csdnimg.cn/e11840261fe44692a5a97963baa426aa.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center"></p>
+<h1 id="6-house_of_lore"><a class="markdownIt-Anchor" href="#6-house_of_lore"></a> 6. house_of_lore</h1>
+<p>本程序演示house_of_lore漏洞，这是一种利用small_bins的攻击方式。</p>
+<p>small bins/large bins/unsorted bins的双向链表结构如下图所示<br />
+<img src="https://img-blog.csdnimg.cn/e11840261fe44692a5a97963baa426aa.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
 <p>同unsorted bin类似，small bin也类似于链栈结构，但是双向链表。将small bins中位于链尾的chunk的bk指针修改为想要写的地址，在small bin中的chunk被分配完之后，再次分配就能在该地址创建chunk。</p>
 <p>但是在目标地址处还需要进行一些预处理工作。由于glibc的检查机制，导致直接挟持堆不可行。</p>
 <p>下面是_int_malloc函数中查找small bins片段的代码：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (in_smallbin_range (nb))</span><br><span class="line">   &#123;</span><br><span class="line">     idx = smallbin_index (nb);</span><br><span class="line">     bin = bin_at (av, idx);</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> ((victim = last (bin)) != bin)</span><br><span class="line">     &#123;</span><br><span class="line">       <span class="keyword">if</span> (victim == <span class="number">0</span>) <span class="comment">/* initialization check */</span></span><br><span class="line">         malloc_consolidate (av);</span><br><span class="line">       <span class="keyword">else</span></span><br><span class="line">       &#123;</span><br><span class="line">         bck = victim-&gt;bk;</span><br><span class="line">	  <span class="keyword">if</span> (__glibc_unlikely (bck-&gt;fd != victim))</span><br><span class="line">         &#123;</span><br><span class="line">           errstr = <span class="string">&quot;malloc(): smallbin double linked list corrupted&quot;</span>;</span><br><span class="line">           <span class="keyword">goto</span> errout;</span><br><span class="line">         &#125;</span><br><span class="line">         set_inuse_bit_at_offset (victim, nb);</span><br><span class="line">         bin-&gt;bk = bck;</span><br><span class="line">         bck-&gt;fd = bin;</span><br><span class="line"></span><br><span class="line">         <span class="keyword">if</span> (av != &amp;main_arena)</span><br><span class="line">           victim-&gt;size |= NON_MAIN_ARENA;</span><br><span class="line">         check_malloced_chunk (av, victim, nb);</span><br><span class="line">         <span class="type">void</span> *p = chunk2mem (victim);</span><br><span class="line">         alloc_perturb (p, bytes);</span><br><span class="line">         <span class="keyword">return</span> p;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
-
 <p>其中有一个明显的检查是<code>__glibc_unlikely (bck-&gt;fd != victim)</code>，它检查要分配的chunk的bk指向的chunk中的fd指针是否是这个chunk。由于我们要分配的是一个假的chunk，因此需要提前设置好这个假chunk的bk指针，以及bk指针指向的另外一处假chunk中fd指针的值，保证二者正确。为了保证结果正确，如果在假chunk之前分配的chunk地址已知，可以将这个地址写入假chunk的fd指针中以使得双向链表完整。当然就上述代码来看这里不设置应该也是可以的。</p>
 <p><font color=red>注意：这里的检查并未涉及prev_size和size，因此这二者的值对于假chunk的分配没有影响。原演示文件中将这两个值均设为0。</font></p>
 <p>因此总结一下，如果需要写入的地址为x，那么需要将small bins中最后一个chunk的bk指针改为x-0x20（如果写入垃圾数据无妨，可以将这个地址再适当下压一些，如x-0x30，这就需要写入0x10字节的垃圾数据），并且需要在x-0x8处（对应bk）写入另一个地址y，在y+0x10处（对应fd）需要写入x-0x20。故实现该漏洞不仅需要能够在可写地址的低地址方向某处一个8字节区域可写，并且需要另一处8字节区域可写。（需要的两处可写的地方即为下表中标红的地方）</p>
 <table>
 <thead>
 <tr>
-<th align="center">addr</th>
-<th align="center">+0x0</th>
-<th align="center">+0x8</th>
+<th style="text-align:center">addr</th>
+<th style="text-align:center">+0x0</th>
+<th style="text-align:center">+0x8</th>
 </tr>
 </thead>
-<tbody><tr>
-<td align="center">x-0x20</td>
-<td align="center">prev_size</td>
-<td align="center">size</td>
+<tbody>
+<tr>
+<td style="text-align:center">x-0x20</td>
+<td style="text-align:center">prev_size</td>
+<td style="text-align:center">size</td>
 </tr>
 <tr>
-<td align="center">x-0x10</td>
-<td align="center">DEADBEEF</td>
-<td align="center"><font color=red>addr_y</font></td>
+<td style="text-align:center">x-0x10</td>
+<td style="text-align:center">DEADBEEF</td>
+<td style="text-align:center"><font color=red>addr_y</font></td>
 </tr>
 <tr>
-<td align="center">…</td>
-<td align="center">…</td>
-<td align="center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
 </tr>
 <tr>
-<td align="center">y</td>
-<td align="center">prev_size</td>
-<td align="center">size</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">prev_size</td>
+<td style="text-align:center">size</td>
 </tr>
 <tr>
-<td align="center">y+0x10</td>
-<td align="center"><font color=red>addr_x-0x20</font></td>
-<td align="center">DEADBEEF</td>
+<td style="text-align:center">y+0x10</td>
+<td style="text-align:center"><font color=red>addr_x-0x20</font></td>
+<td style="text-align:center">DEADBEEF</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 
     </div>
 
@@ -382,7 +405,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-fastbin-dup"><span class="nav-number">1.</span> <span class="nav-text">1. fastbin_dup</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-fastbin-dup-consolidate"><span class="nav-number">2.</span> <span class="nav-text">2. fastbin_dup_consolidate</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-fastbin-dup-into-stack"><span class="nav-number">3.</span> <span class="nav-text">3. fastbin_dup_into_stack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-house-of-einherjar"><span class="nav-number">4.</span> <span class="nav-text">4. house_of_einherjar</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%A6%81%EF%BC%9A-int-free%E4%B8%AD%E7%9A%84%E6%A3%80%E6%9F%A5%E9%A1%B9%E7%9B%AE%EF%BC%88%E9%83%A8%E5%88%86%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">重要：_int_free中的检查项目（部分）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-house-of-force"><span class="nav-number">5.</span> <span class="nav-text">5. house_of_force</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-house-of-lore"><span class="nav-number">6.</span> <span class="nav-text">6. house_of_lore</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-fastbin_dup"><span class="nav-number">1.</span> <span class="nav-text"> 1. fastbin_dup</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-fastbin_dup_consolidate"><span class="nav-number">2.</span> <span class="nav-text"> 2. fastbin_dup_consolidate</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-fastbin_dup_into_stack"><span class="nav-number">3.</span> <span class="nav-text"> 3. fastbin_dup_into_stack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-house_of_einherjar"><span class="nav-number">4.</span> <span class="nav-text"> 4. house_of_einherjar</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E8%A6%81_int_free%E4%B8%AD%E7%9A%84%E6%A3%80%E6%9F%A5%E9%A1%B9%E7%9B%AE%E9%83%A8%E5%88%86"><span class="nav-number">4.1.</span> <span class="nav-text"> 重要：_int_free中的检查项目（部分）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-house_of_force"><span class="nav-number">5.</span> <span class="nav-text"> 5. house_of_force</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-house_of_lore"><span class="nav-number">6.</span> <span class="nav-text"> 6. house_of_lore</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -396,9 +419,13 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">posts</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span>
       </div>
   </nav>
 </div>
