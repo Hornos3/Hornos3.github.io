@@ -4,15 +4,44 @@
   <meta charset="utf-8">
   
   
-  <title>CoLin&#39;s Pwnhome</title>
+  <title>Ubuntu CTF startup | CoLin&#39;s Pwnhome</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="CoLin&#39;s Pwnhome">
-<meta property="og:url" content="http://hornos3.github.com/index.html">
+  <meta name="description" content="最近因为学校考试所以没怎么看pwn，但是中间虚拟机崩掉过，问题还挺严重。前几天发现能正常打开了，但是一用gdb就会出现下面让人窒息的提醒：怎么调都不知道是怎么回事，很奇怪的是只有在开gdb的时候才会弹出这个错误，其他都是正常的。问过师傅时候无奈只能放弃这个与我并肩作战这么长时间的ubuntu 20.04，重装一个虚拟机。一不做二不休，干脆就将整个过程记录下来，便于日后查询。 虚拟机日常维护注意事项">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu CTF startup">
+<meta property="og:url" content="http://hornos3.github.com/2023/02/28/Ubuntu-CTF-startup/index.html">
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:description" content="最近因为学校考试所以没怎么看pwn，但是中间虚拟机崩掉过，问题还挺严重。前几天发现能正常打开了，但是一用gdb就会出现下面让人窒息的提醒：怎么调都不知道是怎么回事，很奇怪的是只有在开gdb的时候才会弹出这个错误，其他都是正常的。问过师傅时候无奈只能放弃这个与我并肩作战这么长时间的ubuntu 20.04，重装一个虚拟机。一不做二不休，干脆就将整个过程记录下来，便于日后查询。 虚拟机日常维护注意事项">
 <meta property="og:locale">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/Ubuntu-CTF-startup/testimage.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/d444eaec57f84fcfb4b79e13ff2a5a3b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/fbc36cfdc2414f00a9b91ba913680866.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/a2b603c88beb4a01a2d03daf109f6bca.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/05cef1de90f44e33948d9db9ed60ce49.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f20d9df8ab8b4a3a8d643e03acf74409.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ed013bbc66f14150b85bf2f31b404d67.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/ec085415468345b3902738076ee21701.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/6e10263a29424dc8a6dd82c4828a2fac.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/bcd9df7260474273ba3396432d0f7c12.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/089f64591a3f44b4b89500994bc8cfbc.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/36d4869449b84b94aa7fa2f406eb89a4.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f9be0b0f51be4b2caa1999af5c1e23d0.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/63db1daec903499a9a9fc6a732cd22cf.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/829ad28e615a47078c51ee00902065c0.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/dc5e00ac7bee40999ce223c0800a783b.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0adc1d23dbc444cb9a227d560637cce3.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/0b22f4d4bfbb424996917c500c5e425d.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/24d1b1c99b45470eb055da0258e3754f.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/e6147fd6490848d3b412eafc799b43d8.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/c8c04eda32054cc1a0b4c703d6a16c8d.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f2016d8b64ef4c6bb096c51ed28912e2.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/cb873d25bd134315bbaebca8d40fcf34.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/13fca94a56444dda939c9563a457da77.png">
+<meta property="article:published_time" content="2023-02-28T09:31:34.000Z">
+<meta property="article:modified_time" content="2023-02-28T09:33:09.089Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/Ubuntu-CTF-startup/testimage.png">
   
     <link rel="alternate" href="/atom.xml" title="CoLin's Pwnhome" type="application/atom+xml">
   
@@ -69,9 +98,7 @@
 </header>
 
       <div class="outer">
-        <section id="main">
-  
-    <article id="post-Ubuntu-CTF-startup" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-Ubuntu-CTF-startup" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2023/02/28/Ubuntu-CTF-startup/" class="article-date">
   <time class="dt-published" datetime="2023-02-28T09:31:34.000Z" itemprop="datePublished">2023-02-28</time>
@@ -84,8 +111,8 @@
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2023/02/28/Ubuntu-CTF-startup/">Ubuntu CTF startup</a>
+    <h1 class="p-name article-title" itemprop="headline name">
+      Ubuntu CTF startup
     </h1>
   
 
@@ -155,11 +182,9 @@
     </footer>
   </div>
   
-</article>
-
-
-
+    
   
+</article>
 
 
 </section>
