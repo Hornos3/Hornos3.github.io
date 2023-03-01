@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-cn">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -26,7 +26,7 @@
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2022-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94UserManager/index.html">
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="刚刚结束的2022年强网杯中有一道题用到了musl libc，但是之前没有接触过，只能遗憾跳过。本文根据musl libc 1.2.2的源码，和赛题本身，学习一下musl libc的利用方式。 musl libc 是一种轻量级的libc，可以用于嵌入式设备等，其中包含malloc、free等一系列函数的实现都与glibc相差甚远。但由于其轻量化的定位，其实现的代码量也相对较少，便于我们通过源码进行">
-<meta property="og:locale">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/ada7660ee3e34bf58804c88b11805ceb.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/7b575be7203b45b1a1d93a5164039118.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/7f04ef506ac34b93ad1a8d81a80a03c8.png">
@@ -45,7 +45,7 @@
     sidebar: "",
     isHome : false,
     isPost : true,
-    lang   : 'zh'
+    lang   : 'zh-cn'
   };
 </script>
 
@@ -158,7 +158,7 @@
     
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2022-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94UserManager/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -193,6 +193,20 @@
               </span>
               <span class="post-meta-item-text">Views: </span>
               <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span></span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>NaN:aN</span>
             </span>
 
         </div>
@@ -359,6 +373,9 @@
       <span class="links-of-author-item">
         <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
   </div>
 
 
@@ -387,6 +404,18 @@
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">NaNm</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">NaN:aN</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
