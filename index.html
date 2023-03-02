@@ -150,6 +150,298 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第1章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:26:53 / Modified: 23:28:18" itemprop="dateCreated datePublished" datetime="2023-03-02T23:26:53+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-1-计算机网络和因特网"><a class="markdownIt-Anchor" href="#chapter-1-计算机网络和因特网"></a> Chapter 1 计算机网络和因特网</h1>
+<h2 id="11-什么是因特网"><a class="markdownIt-Anchor" href="#11-什么是因特网"></a> 1.1 什么是因特网</h2>
+<h3 id="111-具体构成描述"><a class="markdownIt-Anchor" href="#111-具体构成描述"></a> 1.1.1 具体构成描述</h3>
+<p>因特网由连接在其上的数十亿计的互联计算机设备组成。</p>
+<ul>
+<li>主机是端系统，运行网络应用程序。</li>
+<li>通信链路将这些端系统连接起来，包括光纤、无线电等，它的带宽表现传输速率。</li>
+<li>分组交换机用于转发数据分组，包括链路层交换机和路由器。</li>
+</ul>
+<p>端系统通过因特网服务提供商ISP接入Internet，不同的ISP之间也可以相互连接构成更大的网络。在因特网上运行的网络应用程序属于软件，其上定义有各种协议用于控制报文的发送和接收。这些协议由因特网工程部（IETF）制定，其标准文档称为请求评论（RFC）</p>
+<h3 id="112-服务描述"><a class="markdownIt-Anchor" href="#112-服务描述"></a> 1.1.2 服务描述</h3>
+<ul>
+<li>因特网为应用程序提供服务的基础设施。</li>
+<li>因特网为应用程序提供编程接口，应用程序连接到因特网上的通道（套接字接口），且因特网能够提供不同级别的服务选项，对应不同的服务方式和服务质量。</li>
+</ul>
+<h3 id="113-什么是协议"><a class="markdownIt-Anchor" href="#113-什么是协议"></a> 1.1.3 什么是协议</h3>
+<p>一个协议定义了在两个或者多个通信实体之间交换的报文格式和次序，以及报文发送和/或接收一条报文或其他时间所采取的动作。</p>
+<h2 id="12-网络边缘"><a class="markdownIt-Anchor" href="#12-网络边缘"></a> 1.2 网络边缘</h2>
+<ul>
+<li>网络边缘包括：主机（客户端和服务器，可以运行应用程序）、数据中心的服务器</li>
+<li>网络核心包括：路由器、网络的网络</li>
+<li>接入网和物理媒体：通信链路</li>
+</ul>
+<p>网络应用的通信模型有：</p>
+<ul>
+<li>客户/服务器模型（C/S模式）</li>
+<li>对等模型（P2P模式），所有主机同时承担服务器和客户机的双重身份</li>
+</ul>
+<p>连接端系统和边缘路由器的方法：</p>
+<ul>
+<li>通过住宅接入网（Modem拨号/ADSL拨号/HFC/FTTH/卫星）</li>
+<li>通过机构接入网（以太网/Wifi）</li>
+<li>通过移动接入网（3G/LTE/5G）</li>
+</ul>
+<h3 id="121-接入网"><a class="markdownIt-Anchor" href="#121-接入网"></a> 1.2.1 接入网</h3>
+<p>接入网是指将端系统连接到边缘路由器的网络。其作用是：将网络边缘与网络核心连接起来，通常是将端系统连接到边缘路由器上。边缘路由器指端系统到任何其他远程端系统的路径上的第一台路由器。</p>
+<h4 id="modem-拨号"><a class="markdownIt-Anchor" href="#modem-拨号"></a> Modem 拨号</h4>
+<ul>
+<li>通过本地电话回路点对点连接ISP的拨号池（通常为路由器）</li>
+<li>其速度最高可达56kbps</li>
+<li>无法实现在上网的同时打电话</li>
+</ul>
+<h4 id="dsl-数字用户线"><a class="markdownIt-Anchor" href="#dsl-数字用户线"></a> DSL: 数字用户线</h4>
+<ul>
+<li>下行/上行速率最高可达55Mbps/15Mbps（运营商可以以不同价格限制用户的上网速率）</li>
+<li>采用频分复用的方式：0kHz~4kHz传输语音，4kHz~50kHz为上行，50kHz~1Mhz为下行。</li>
+<li>带宽独享（一条线只能给一个用户用）</li>
+</ul>
+<h4 id="hfc-光纤同轴电缆混合网络"><a class="markdownIt-Anchor" href="#hfc-光纤同轴电缆混合网络"></a> HFC: 光纤同轴电缆混合网络</h4>
+<ul>
+<li>上行/下行速率最高可达40Mbps/30Mbps</li>
+<li>通过有线电视网络部署</li>
+<li>带宽共享（一条线可以给多个用户用，分频段使用）</li>
+</ul>
+<h4 id="局域网接入"><a class="markdownIt-Anchor" href="#局域网接入"></a> 局域网接入</h4>
+<ul>
+<li>公司或大学的局域网（LAN）将端系统连接到边缘路由器</li>
+<li>以太网：通过共享或专用的链路来连接端系统和路由器，速度各有差异，从10Mbps到10Gbps</li>
+</ul>
+<h4 id="无线接入"><a class="markdownIt-Anchor" href="#无线接入"></a> 无线接入</h4>
+<ul>
+<li>共享的无线接入网络连接端系统和路由器</li>
+<li>无限局域网：基于IEEE 802.11技术，最高1Gbps/s</li>
+<li>广域无线接入由电信运营商提供，基于IEEE 802.16</li>
+</ul>
+<h3 id="122-物理媒体"><a class="markdownIt-Anchor" href="#122-物理媒体"></a> 1.2.2 物理媒体</h3>
+<p>常用的物理媒体根据各自的构造和特征、使用的环境、优劣点可以分为几种。</p>
+<ul>
+<li>导引性媒体：沿着固体媒体被导引的媒体，电波随着固体媒体前行。如光缆（在玻璃光纤传播光脉冲，每一个脉冲一比特，传输速率高且误码率低，不受电磁干扰）、双绞铜线（3类线10Mbps，5类线100Mbps，6类线1Gbps）或同轴电缆（双向传输，可分为基带和宽带）。</li>
+<li>非导引型媒体：信号自由传播，如无线局域网（通过电磁频谱传播信号，没有物理线路，可双向传输，但受到传播环境影响较大）或数字卫星频道。地面微波可达45Mbps，无线局域网可达2/11/54Mbps，卫星网络可达45Mbps，有270ms的端到端延时</li>
+</ul>
+<h2 id="13-网络核心"><a class="markdownIt-Anchor" href="#13-网络核心"></a> 1.3 网络核心</h2>
+<p>数据传输的方式有电路交换和分组交换。</p>
+<h3 id="131-电路交换"><a class="markdownIt-Anchor" href="#131-电路交换"></a> 1.3.1 电路交换</h3>
+<p>电路交换网络是第一代计算机网络<br />
+数据交换过程：建立连接，交换数据，释放连接<br />
+特性：</p>
+<ul>
+<li>电路交换网络中一个电路对应一条连接，一个链路对应多条电路</li>
+<li>数据交换前需要建立一条从发端到收端的电路（预留资源）</li>
+<li>在数据交换的全部时间内用户始终占用端到端固定传输信道</li>
+<li>交换双方可以实时进行数据交换而不会产生延迟</li>
+</ul>
+<p>一条物理链路容纳多条连接的方法：</p>
+<ul>
+<li>时分复用（TDM）将时间分组，一组分为多个时间片，一个时间片内的所有频率都供一个用户使用，多个用户轮流使用。</li>
+<li>频分复用（FDM）将频率分组，同一时刻使用不同频率传输不同用户的数据</li>
+</ul>
+<p>电路交换的缺点：</p>
+<ul>
+<li>计算机之间数据交换具有突发性和间歇性特征，电路交换是按照用户占用线路的时间计费的，这可能会造成大量时间的浪费。</li>
+<li>不够灵活，只要双方通信建立的通路中出现任何一点故障就需要拨号重新建立连接，不利于紧急通信。</li>
+</ul>
+<h3 id="132-分组交换"><a class="markdownIt-Anchor" href="#132-分组交换"></a> 1.3.2 分组交换</h3>
+<p>分组交换网络是第二代计算机网络。<br />
+分组交换网络由</p>
+<ul>
+<li>路由器构建路由器网络</li>
+<li>数据被截断划分为分组</li>
+<li>由分组交换机转发分组</li>
+<li>使用链路最大传输速率传输（<font color=red>从宏观上而言，链路是共享的，从微观上看，分组传输时是独占链路的。这一点在理解全双工通信时很重要，即每一段链路上同时只能传输一个分组。</font>）</li>
+</ul>
+<p>分组交换需要解决的问题：</p>
+<ul>
+<li>为什么分组，如何分组</li>
+<li>分组交换机如何确定，是否固定不变</li>
+<li>分组如何按照既定路线前行</li>
+<li>分组转发模式的具体设计</li>
+<li>分组转换方式的效率</li>
+<li>可靠性是否能够保障</li>
+</ul>
+<h4 id="分组的优势"><a class="markdownIt-Anchor" href="#分组的优势"></a> 分组的优势</h4>
+<ul>
+<li>提高传输效率。假设一共有3段链路，将数据分为几个分组，可以让3段链路同时发送数据，但电路交换也能实现。</li>
+<li>提高传输质量。如果在传输过程中出现错误，分组交换只需要重传错误的分组即可，而电路交换需要重传整个报文。</li>
+<li>链路利用率高</li>
+</ul>
+<h4 id="如何分组"><a class="markdownIt-Anchor" href="#如何分组"></a> 如何分组</h4>
+<ul>
+<li>在发送端，先把较长的报文划分为较短的、固定长度的数据段</li>
+<li>将每一个数据段前面添加首部构成分组</li>
+<li>分组交换网络以分组作为数据传输单元，依次将各个分组发送到接收端</li>
+<li>接收端收到分组后去除首部还原报文</li>
+<li>最后接收端将数据重组恢复为原来的报文</li>
+</ul>
+<h4 id="分组传输的模式"><a class="markdownIt-Anchor" href="#分组传输的模式"></a> 分组传输的模式</h4>
+<p>存储转发传输：分组交换机将整个分组接收并存储，然后再发送。这是为了校验分组是否传输正确。</p>
+<h4 id="分组交换网络的特征"><a class="markdownIt-Anchor" href="#分组交换网络的特征"></a> 分组交换网络的特征</h4>
+<ul>
+<li>数据分为若干分组分别传送</li>
+<li>不必预先确定分组传输路径，而是由中间的各个交换机和路由器自行确定传输路径</li>
+<li>交换结点均为共享结点，选择路径</li>
+<li>存储/转发，提高容错率</li>
+<li>断续（动态）分配传输带宽，可以最大限度地利用网络带宽资源，不仅降低费用还提高效率</li>
+<li>网状拓扑结构可提高可靠性，一条线路产生故障时可以使用其他线路进行传输</li>
+<li>主干网络往往由一些高速链路构成，提升网络整体的传输速度</li>
+</ul>
+<h4 id="存储转发效率"><a class="markdownIt-Anchor" href="#存储转发效率"></a> 存储转发效率</h4>
+<p><font color=red>传输时延：L/R。L：分组长度（bit），R：连接设备链路的速率（bps）</font>。N条链路的传输时延为NL/R。注意：传输时延不能理解为一个bit在链路中传输消耗的时间所导致的时延。因为链路中的传输都是光速，造成时延是因为链路的速率有上限，即这条链路一段时间内只能发送多少个bit，这个bit在链路中占有一定的“长度”，可以理解为机器发送bit的速率。如一条链路的速率为10Mbps，即1秒可以传输10000000个bit，1秒光传输的距离为300000km，那么一个bit就占了300000*1000/10000000=30m。n条链路的意思是数据从起点到终点之间经过了多个交换机，这些交换机将链路分为多段，由于交换机需要接收存储一整个分组之后才转发，因此多条链路的传输时延等于每一条链路的传输时延之和。<br />
+<font color=red>排队时延</font>：存储需要缓存，当交换机一段时间内接收到的数据较多而无法全部及时转发时，就可能导致排队。<br />
+<font color=red>分组丢失（丢包）</font>：当缓存满时，交换机会采用某种算法选择一些数据包丢弃，这些包需要重传。</p>
+<h4 id="分组转发的路径"><a class="markdownIt-Anchor" href="#分组转发的路径"></a> 分组转发的路径</h4>
+<p>分组首部含有目的地址，路由器根据其转发表选择对应的链路进行转发。转发表通过路由选择协议形成，通过traceroute/tracert命令可以查看路由。</p>
+<h4 id="分组交换和电路交换的比较"><a class="markdownIt-Anchor" href="#分组交换和电路交换的比较"></a> 分组交换和电路交换的比较</h4>
+<p>分组交换网络的问题</p>
+<ul>
+<li>分组在各个结点存储转发时因为需要排队总会造成一定的时延，当通信量较大时时延可能会很大</li>
+<li>每个分组必须携带头部信息，带来额外开销</li>
+<li>整个分组交换网络的管理和控制较为复杂</li>
+</ul>
+<p>如果需要连续传输大量数据，且传输时间远大于呼叫建立时间，则使用数据通信之前预先分配传输带宽的电路交换。分组交换无需预先分配带宽，在传输突发数据时可以提高整个网络的信道利用率。</p>
+<h4 id="网络核心分类"><a class="markdownIt-Anchor" href="#网络核心分类"></a> 网络核心分类</h4>
+<p>电信网络：电路交换网络、分组交换网络<br />
+电路交换网络：FDM、TDM<br />
+分组交换网络：虚电路网络、数据报网络</p>
+<h3 id="133-网络的网络"><a class="markdownIt-Anchor" href="#133-网络的网络"></a> 1.3.3 网络的网络</h3>
+<p>端系统通过ISP（Internet Service Provider）连接到网络，ISP和ISP之间连接形成更大的网络。由此构建的因特网非常复杂，应该由经济和国家策略而不是性能来驱动。</p>
+<p>对于如此大的网络，可能的连接方式有下列几种：</p>
+<ul>
+<li>将每两个ISP之间都建立一个连接，这样连接的数量太大不经济。</li>
+<li>所有客户ISP连接到一个全球承载ISP，这样会导致全球承载ISP的压力较大，且需要在费用上达成一致，容易形成垄断。</li>
+<li>客户ISP连接到多个全球承载ISP中，全球承载ISP再相互进行连接。这样可能在两个全球承载ISP之间存在一个IXP（因特网交互点），但由于不是每一个国家都有全球承载ISP，因此这种方案也有问题。</li>
+<li>区域网络与承载ISP相联，每一个区域有一个ISP，即在客户ISP和全球承载ISP中间加上一层地区ISP，这种方式较为合理。</li>
+<li>在第四种方案的基础上添加上内容提供商自己的网络——内容提供商网络，如谷歌微软等。总的结构应该为：客户ISP——区域ISP——IXP——全球ISP/内容提供商网络总体4层结构，当然这个层级结构并不严格，客户ISP也可以直联全球ISP。</li>
+</ul>
+<h2 id="14-分组交换网中的时延-丢包与吞吐量"><a class="markdownIt-Anchor" href="#14-分组交换网中的时延-丢包与吞吐量"></a> 1.4 分组交换网中的时延、丢包与吞吐量</h2>
+<p>时延分为：</p>
+<ul>
+<li><font color=red>节点处理时延d<sub>proc</sub></font>：节点收到完整的分组后，需要对该分组进行校验以及确定输出链路，分组完成这些工作所需要的时间。一般为几ms或更短</li>
+<li><font color=red>排队时延</font>：排队时延取决于路由器的拥塞程度，当分组在输出链路中需要等待被发送时产生排队时延。</li>
+<li><font color=red>传输时延</font>：将分组比特流发送到链路中的时间，L/R。其在低速链路中非常重要</li>
+<li><font color=red>传播时延</font>：数据在链路中从起点到终点所需要的时间。d为物理链路的长度，s为媒体中的传播速度（约为2*10<sup>8</sup>m/s），传播时延=d/s。注意与传输时延的区别。约为几ms到几百ms。</li>
+</ul>
+<p>定义<font color=red>流量强度</font>：链路带宽R（bps），分组长度L（bits），平均分组到达速率a，则流量强度为La/R。这是一个以路由器为视角定义的量，当值近似于0时，表示平均排队时延很小，甚至为0，当值小于1时，时延较小，且随着时间推移变小，因为此时分组到来的速度小于路由器的处理速度。当值等于1时，时延不会变化，具体时延的值取决于当前队列的长度。当值大于1时，平均时延较大，且随着时间推移趋近于无穷。</p>
+<ul>
+<li>缓存中的队列容量有限，当分组到达时如果队列已满，则该分组会被丢弃。丢弃的分组可能会被重传，或者根本不重传。</li>
+<li><font color=red>通常到达队列的过程是随机的，La/R并不能全面地表征时延的统计量，当流量强度接近1时，当到达速率超过传输能力（由于分组到达速率的波动）时将产生时间间隔，在这些时段中将形成队列。</font><font color=blue>就比如当流量强度为1时，在一个时刻同时到达多个分组，在这些分组处理完之后，可能会有一段时间路由器中没有队列，此时路由器就会进入空闲状态，但由于流量强度为1，路由器只要有空闲时间，就必须让后面的分组等待更长的时间，这就是统计规律导致的问题。因此并不是说当流量强度为1时平均排队时延就不会增加，而是会缓慢增加。</font></li>
+</ul>
+<p>定义<font color=red>吞吐量</font>：这是现实生活中最关心的一个性能指标，与带宽要进行区分。分为瞬时吞吐量和平均吞吐量，类比瞬时速度和平均速度。吞吐量指发送方和接收方之间的数据传输速率（bits/time unit）。对于一个有多条链路的传输路径，其吞吐量等于吞吐量最小的那一条链路的吞吐量值（木桶原理），称这条链路为瓶颈链路。<font color=red>吞吐量和带宽一定要辨析清楚。带宽指的是一段链路最为理想的情况下单位时间能够传输的比特量，而吞吐量则是一个根据实际情况测出来的一个量，就像高速公路的限速是120（带宽），但在车辆比较多的情况下就不可能达到这个速度（吞吐量）</font>。互联网下，连接瓶颈通常不是在主干网络，而是与每一台机器直接相连或距离不大的分支网络或分支链路上。虽然主干网络上承载的流量大得多，但主干网络通常会被精心维护，所以一般不会出现主干网络成为瓶颈的情况。</p>
+<h2 id="15-协议层次和服务类型"><a class="markdownIt-Anchor" href="#15-协议层次和服务类型"></a> 1.5 协议层次和服务类型</h2>
+<p>现实中需要实现的需求往往多而繁杂，为了将这些需求规范化，定义了种种协议与分层结构。定义层次可以使得每一个层次实现一种服务，相邻的层次之间有依赖作用。分层是处理复杂系统的有效方法，可以以结构化的方式来讨论系统组件。每一层对其他层是透明的。但分层也可能会导致功能冗余和信息关联（某一层的功能需要其他层的信息）</p>
+<h3 id="151-分层的体系结构"><a class="markdownIt-Anchor" href="#151-分层的体系结构"></a> 1.5.1 分层的体系结构</h3>
+<p>目前通用的因特网的协议栈一共分为5层：</p>
+<ul>
+<li>应用层：支持网络应用，如FTP、HTTP等协议就是运行在应用层</li>
+<li>运输层：用于主机之间的数据传输，如TCP、UDP协议</li>
+<li>网络层：将数据报从源端传送到目的端，如IP协议和路由协议</li>
+<li>链路层：数据在网络相邻结点之间传输，如PPP协议和Ethernet协议</li>
+<li>物理层：在线路上传输比特流</li>
+</ul>
+<p>ISO/OSI参考模型：共有7层，在应用层和运输层之间增加了：</p>
+<ul>
+<li>表示层：允许应用程序解释数据的含义，如加密压缩等</li>
+<li>会话层：提供数据交换的同步、定界、建立检查点和恢复的能力</li>
+</ul>
+<p>由于这两层在应用层完全可以实现，因此现实中的因特网协议栈没有这两层。</p>
+<p><font color=red>实体</font>：任何可以发送和接收消息的硬件和软件进程，通常是一个特定的软件模块。<br />
+<font color=red>对等体</font>：不同机器上包含对应层的实体称为对等体，如两台机器上的应用层实体称为对等体，网络层实体为另一个对等体。<br />
+<font color=red>协议</font>：包含——语法，即数据与控制信息的结构或格式；语义：即需发现何种控制信息，完成何种动作以及做出何种应答；同步：即事件实现顺序的详细说明。<br />
+<font color=red>服务</font>：为保证上层对等体之间能够相互通信，下层向上层提供的功能。<br />
+<font color=red>服务原语</font>：网络相邻层之间进行交互时需要交换的一些必要命令。<br />
+<font color=red>服务访问点（SAP）</font>：同一系统中相邻两层的实体进行交互的地方。<br />
+<font color=red>协议数据单元（PDU）</font>对等层次上传送数据的单位。<br />
+<font color=red>服务数据单元（SDU）</font>层与层之间交换数据的单位。<br />
+<font color=red>网络体系结构（Network Architecture）</font>：层和协议的集合。<br />
+<font color=red>协议栈（Protocol Stack）</font>：一个特定的系统所使用的一组协议。</p>
+<p>数据传输过程就是一个加头部去头部的过程，首先在发送方依次加上第5、4、3、2层头部，然后发送到接收方在接收方处将这些头部依次去掉即可。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-mva-%E9%A2%98%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2085,224 +2377,6 @@ Z_2=\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}</ann
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/" class="post-title-link" itemprop="url">数字逻辑 Chapter 3——门电路和触发器</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:09:15" itemprop="dateCreated datePublished" datetime="2023-02-28T23:09:15+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-02 16:49:45" itemprop="dateModified" datetime="2023-03-02T16:49:45+08:00">2023-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="31-数字集成电路分类"><a class="markdownIt-Anchor" href="#31-数字集成电路分类"></a> 3.1 数字集成电路分类</h1>
-<p>集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等<br />
-数字集成电路根据采用的半导体期间可以分为两类：</p>
-<ol>
-<li>双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。</li>
-<li>单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢</li>
-</ol>
-<h1 id="32-半导体期间开关特性"><a class="markdownIt-Anchor" href="#32-半导体期间开关特性"></a> 3.2 半导体期间开关特性</h1>
-<h2 id="321-晶体二极管"><a class="markdownIt-Anchor" href="#321-晶体二极管"></a> 3.2.1 晶体二极管</h2>
-<p>正向特性：有门槛电压，即二极管开始导通的正向电压，又称阈值电压。<br />
-反向特性：在反向电压作用下处于截止状态，反向电阻大，相当于断开。</p>
-<h2 id="322-晶体三极管"><a class="markdownIt-Anchor" href="#322-晶体三极管"></a> 3.2.2 晶体三极管</h2>
-<p>截止、放大、饱和3种状态。</p>
-<h1 id="33-逻辑门电路"><a class="markdownIt-Anchor" href="#33-逻辑门电路"></a> 3.3 逻辑门电路</h1>
-<h2 id="331-简单逻辑门电路"><a class="markdownIt-Anchor" href="#331-简单逻辑门电路"></a> 3.3.1 简单逻辑门电路</h2>
-<ol>
-<li>与门<br />
-<img src="1.png" alt="" /></li>
-<li>或门</li>
-</ol>
-<p><img src="2.png" alt="" /><br />
-3. 非门</p>
-<p><img src="3.png" alt="" /></p>
-<h2 id="332-ttl集成逻辑门电路和cmos电路"><a class="markdownIt-Anchor" href="#332-ttl集成逻辑门电路和cmos电路"></a> 3.3.2 TTL集成逻辑门电路和CMOS电路</h2>
-<p>TTL功耗大、集成度低，广泛用户中小规模集成电路中<br />
-常用TTL集成电路芯片有74系列</p>
-<p>两种特殊门电路：</p>
-<ol>
-<li>集电极开路门(OC门)<br />
-一种输出端可以直接相互连接的特殊逻辑门，可以实现“线与”逻辑<br />
-<img src="4.png" alt="" /></li>
-<li>三态输出门(TS门)<br />
-常用于数字系统中总线传输控制，可以让共享总线的输入输出设备根据控制信号从总线获取或向总线发送数据<br />
-三种输出状态：高电平、低电平、高阻</li>
-</ol>
-<p><img src="5.png" alt="" /></p>
-<p>正逻辑与负逻辑<br />
-正逻辑：用高电平表示逻辑1<br />
-负逻辑：用低电平表示逻辑1</p>
-<h1 id="34-触发器"><a class="markdownIt-Anchor" href="#34-触发器"></a> 3.4 触发器</h1>
-<p>触发器：一种具有记忆功能的电子器件，用于存储一位二进制信息<br />
-特点：</p>
-<ul>
-<li>有两个互补的输出端<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q,\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span></li>
-<li>有两个稳定状态，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">Q=1,\bar Q=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>称为“1”状态，否则称为“0”状态。输入信号不变时，触发器状态稳定不变</li>
-<li>在一定输入信号作用下，触发器可以从一个稳定状态转移到另一个稳定状态</li>
-<li>输出状态不仅与现时输入有关，还与原来输出状态有关</li>
-<li>按功能分类：RS型触发器、D型触发器、T型触发器、JK型触发器等</li>
-</ul>
-<p>现态：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mi>n</mi></msup><mo separator="true">,</mo><mover accent="true"><msup><mi>Q</mi><mi>n</mi></msup><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q^n,\bar{Q^n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.590392em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span>，简记为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q,\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span><br />
-次态：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo separator="true">,</mo><msup><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">Q^{n+1},\bar Q^{n+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span></p>
-<h2 id="341-基本r-s触发器"><a class="markdownIt-Anchor" href="#341-基本r-s触发器"></a> 3.4.1 基本R-S触发器</h2>
-<p><img src="6.png" alt="" /></p>
-<p>功能表：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">R</th>
-<th style="text-align:center">S</th>
-<th style="text-align:center">功能</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">不变</td>
-</tr>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">次态为1</td>
-</tr>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">现态为0</td>
-</tr>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">不定（不允许）</td>
-</tr>
-</tbody>
-</table>
-<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mover accent="true"><mi>S</mi><mo>ˉ</mo></mover><mo>+</mo><mi>R</mi><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=\bar S+RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9034399999999999em;vertical-align:-0.08333em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal">Q</span></span></span></span></font><br />
-约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>+</mo><mi>S</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">R+S=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></p>
-<p>基本R-S触发器在RS不同时实现的是赋值功能，赋R的值。</p>
-<h2 id="342-常用的几种时钟控制触发器"><a class="markdownIt-Anchor" href="#342-常用的几种时钟控制触发器"></a> 3.4.2 常用的几种时钟控制触发器</h2>
-<h3 id="1-钟控r-s触发器"><a class="markdownIt-Anchor" href="#1-钟控r-s触发器"></a> 1. 钟控R-S触发器</h3>
-<p><img src="7.png" alt="" /></p>
-<p>当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">CP=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>时，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span></span></span></span>状态不变<br />
-当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">CP=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>时，R-S输入功能表与基本R-S触发器功能表相反。</p>
-<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>S</mi><mo>+</mo><mover accent="true"><mi>R</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=S+\bar RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span></font><br />
-约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>S</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">RS=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span></p>
-<p>激励表：<br />
-<img src="8.png" alt="" /></p>
-<h3 id="2-钟控d触发器"><a class="markdownIt-Anchor" href="#2-钟控d触发器"></a> 2. 钟控D触发器</h3>
-<p><img src="9.png" alt="" /></p>
-<p>实际上就是将R-S触发器的S换成了D，R换成了~D。因此D输入什么就储存什么。</p>
-<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span></font></p>
-<h3 id="3-钟控j-k触发器"><a class="markdownIt-Anchor" href="#3-钟控j-k触发器"></a> 3. 钟控J-K触发器</h3>
-<p><img src="10.png" alt="" /></p>
-<p>实际上就是相较于钟控R-S触发器添加了JK端均为1的处理：反转。JK端输入不同时赋J的值。</p>
-<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>J</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>K</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=J\bar Q+\bar KQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.19444em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span></font></p>
-<h3 id="4-钟控t触发器"><a class="markdownIt-Anchor" href="#4-钟控t触发器"></a> 4. 钟控T触发器</h3>
-<p><img src="11.png" alt="" /></p>
-<p>即将钟控J-K触发器的JK端接在一起。T=1反转，T=0不变</p>
-<h2 id="343-主从r-s触发器"><a class="markdownIt-Anchor" href="#343-主从r-s触发器"></a> 3.4.3 主从R-S触发器</h2>
-<p>空翻现象：在一个时钟周期内触发器发生2次及以上的变化，会造成系统状态的不稳定和工作的紊乱。<br />
-主从R-S触发器可以看做两个R-S触发器串联形成，这两个触发器的时钟信号互补。当主触发器解锁时，其信号变化对从触发器无影响。<br />
-从触发器的状态取决于主触发器解锁到锁定最后一课的状态，根据此状态设定从触发器。因此整个触发器输出信号只可能在时钟信号由1变为0时改变，提升了系统的同步性。</p>
-<ol>
-<li>主从R-S触发器<br />
-<img src="12.png" alt="" /></li>
-</ol>
-<p>其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>D</mi></msub><mo separator="true">,</mo><msub><mi>S</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">R_D,S_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.00773em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为直接清零端和直接置1端，一般情况下为高电平，为低电平时可以直接为从触发器强制赋值。</p>
-<ol start="2">
-<li>主从J-K触发器<br />
-在主从R-S触发器的基础上，加从<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span>到主触发器S端的反馈与从Q到R端的反馈：R=K，S=J</li>
-</ol>
-<p><img src="13.png" alt="" /></p>
-<ol start="3">
-<li>典型维持：阻塞D触发器<br />
-钟控D触发器的改进版，只在时钟信号由0变成1（称上升沿）时读取D信号并设置触发器状态，其余时间Q不变</li>
-</ol>
-<p><img src="14.png" alt="" /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2372,14 +2446,14 @@ Z_2=\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}</ann
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">78</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -2424,13 +2498,13 @@ Z_2=\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}</ann
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">842k</span>
+    <span title="Symbols count total">847k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">12:45</span>
+    <span title="Reading time total">12:50</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
