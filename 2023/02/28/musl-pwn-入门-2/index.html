@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="musl pwn 入门 (2)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-2/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="在上一篇文章中我们学习了musl libc中内存分配的相关知识，了解了重要的数据结构及函数内容。本文将在此基础上进一步分析musl pwn的利用方式。 musl libc利用的核心思想是向free中传入一个假的chunk指针。由于free函数会通过该chunk进行回溯，获取到其所在的group和meta，因此除了构造假chunk外，还需要构造假group和假meta。如果在假meta中合理构造pr">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-28T14:40:46.000Z">
@@ -45,7 +45,7 @@
   };
 </script>
 
-  <title>musl pwn 入门 (2) | CoLin's Pwnhome</title>
+  <title>musl pwn 入门 (2) | CoLin's BLOG</title>
   
 
 
@@ -96,7 +96,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -164,7 +164,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="buuctf-pwn write-ups (9)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-9/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="buu067-hitcon2014_stkof 简单分析发现程序中开了一个很大的数组在bss段中，可以申请很多很多堆块，然后在bss段保存它们的地址。这道题不能打印有效信息，但能够产生任意长度的堆溢出，因此考虑利用方式：unlink。 利用方式请见：我的unlink笔记 经过调试发现，unlink可以进行。  我们可以在此之后将bss段中的地址改成got表地址，然后将got表中free函数的地址">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-9/1.png">
@@ -48,7 +48,7 @@
   };
 </script>
 
-  <title>buuctf-pwn write-ups (9) | CoLin's Pwnhome</title>
+  <title>buuctf-pwn write-ups (9) | CoLin's BLOG</title>
   
 
 
@@ -99,7 +99,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -167,7 +167,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

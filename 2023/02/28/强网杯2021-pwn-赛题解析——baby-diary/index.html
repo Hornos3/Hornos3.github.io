@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="强网杯2021 pwn 赛题解析——baby_diary">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94baby-diary/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="这是一道经典的堆题，可以写入、读取和删除。其中最值得研究的就是write函数最后调用的一个函数，其中涉及几个迷之计算。  Step 1: 漏洞分析  我们进入unknown_handle函数（名字是笔者自己起的）：  后面有一个unknown_cal函数，这个函数对输入的字符串进行了一系列的操作。首先将各个字符取出将它们的ASCII码全加起来保存到一个变量a中，然后循环进行下面的计算：如果a大于0">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94baby-diary/1.png">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title>强网杯2021 pwn 赛题解析——baby_diary | CoLin's Pwnhome</title>
+  <title>强网杯2021 pwn 赛题解析——baby_diary | CoLin's BLOG</title>
   
 
 
@@ -107,7 +107,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -175,7 +175,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

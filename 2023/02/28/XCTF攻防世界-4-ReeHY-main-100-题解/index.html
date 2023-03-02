@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="XCTF攻防世界 4-ReeHY-main-100 题解">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/XCTF%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-4-ReeHY-main-100-%E9%A2%98%E8%A7%A3/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="昨天整理做过的题目时发现的这道题，简单看了下觉得挺有参考意义的，在此回顾。 源文件：my_github 这是一道典型的堆题。内部一共实现了增加、删除、编辑3个功能。  经过分析，漏洞主要有：  在create_exploit函数中的两个整型溢出漏洞，使chunk地址可以写到缓冲区的高地址处 在delete_exploit函数中的double free漏洞，释放后没有清空指针    经过gdb调试发">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/XCTF%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-4-ReeHY-main-100-%E9%A2%98%E8%A7%A3/1.png">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>XCTF攻防世界 4-ReeHY-main-100 题解 | CoLin's Pwnhome</title>
+  <title>XCTF攻防世界 4-ReeHY-main-100 题解 | CoLin's BLOG</title>
   
 
 
@@ -101,7 +101,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -169,7 +169,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

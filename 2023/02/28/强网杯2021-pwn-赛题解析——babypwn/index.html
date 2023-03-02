@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="强网杯2021 pwn 赛题解析——babypwn">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="这道题增加了沙箱机制，通过seccomp-tools可以轻松获取沙箱的具体内容。  其中的重点就是禁用了execve系统调用，无法直接通过one_gadget、system等直接getshell。这种情况下最为常用的利用方式就是set_context函数，具体如何利用，往下看。 本题的逆向分析很简单，注意bss中结构体的识别：前8字节是地址，后8字节是大小。在show函数中发现了一个简单的加密函数">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/1.png">
@@ -50,7 +50,7 @@
   };
 </script>
 
-  <title>强网杯2021 pwn 赛题解析——babypwn | CoLin's Pwnhome</title>
+  <title>强网杯2021 pwn 赛题解析——babypwn | CoLin's BLOG</title>
   
 
 
@@ -101,7 +101,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -169,7 +169,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

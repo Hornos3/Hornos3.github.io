@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="ARM pwn 入门 (4)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-4/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="3. callme 本题有多个文件，根据题意来看是需要依次调用callme_one、callme_two、callme_three这3个库函数。这三个函数会进行flag的解密，但是需要满足前三个参数等于特定值。这就需要我们去elf文件中寻找合适的gadget了。  而本题正好给出了一个不能再合适的gadget，因为本题的考点就在这里：  因此思路就很简单了，直接重复调用这个gadget修改前3个">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-4/1.png">
@@ -55,7 +55,7 @@
   };
 </script>
 
-  <title>ARM pwn 入门 (4) | CoLin's Pwnhome</title>
+  <title>ARM pwn 入门 (4) | CoLin's BLOG</title>
   
 
 
@@ -106,7 +106,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -174,7 +174,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">

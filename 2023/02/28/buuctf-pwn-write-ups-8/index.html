@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="buuctf-pwn write-ups (8)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-8/index.html">
-<meta property="og:site_name" content="CoLin&#39;s Pwnhome">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
 <meta property="og:description" content="buu062-gyctf_2020_borrowstack 栈迁移。常规的栈迁移方法是返回到leave指令，之前修改rbp到合适的值。我们将rbp修改到bss段的内部，将栈迁移到这里。需要注意不能将栈迁移到变量bank的开头，因为后面还需要调用puts等函数，往上可能会覆盖某些重要数据。因此迁移的地址应该尽量靠后（下面脚本中迁移的地址是bank+0xA0）。使用puts函数读取got表，获取到l">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-8/1.png">
@@ -56,7 +56,7 @@
   };
 </script>
 
-  <title>buuctf-pwn write-ups (8) | CoLin's Pwnhome</title>
+  <title>buuctf-pwn write-ups (8) | CoLin's BLOG</title>
   
 
 
@@ -107,7 +107,7 @@
 
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">CoLin's Pwnhome</h1>
+      <h1 class="site-title">CoLin's BLOG</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
@@ -175,7 +175,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's Pwnhome">
+      <meta itemprop="name" content="CoLin's BLOG">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
