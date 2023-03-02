@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="课后习题和问题  3.1~3.3  略 略 对于主机B发送到主机A的报文段，源端口号为y，目的端口号为x。 UDP的速度快，有些应用如实时视频可能不需要数据完全可靠，不希望受到拥塞控制。 因为语音和图像要求数据可靠准确，而UDP不能保证。标准答案：大多数防火墙被配置为阻止UDP通信，因此使用TCP处理视频和语音通信可以让通信通过防火墙。 可能，需要在应用层设置另外的校验程序，UDP本身是不提供可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络——第3章习题">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="课后习题和问题  3.1~3.3  略 略 对于主机B发送到主机A的报文段，源端口号为y，目的端口号为x。 UDP的速度快，有些应用如实时视频可能不需要数据完全可靠，不希望受到拥塞控制。 因为语音和图像要求数据可靠准确，而UDP不能保证。标准答案：大多数防火墙被配置为阻止UDP通信，因此使用TCP处理视频和语音通信可以让通信通过防火墙。 可能，需要在应用层设置另外的校验程序，UDP本身是不提供可">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/e493f4c3298f450eac99777b8cc6b5cc.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAc3VwZXJtYXgyMDIw,size_20,color_FFFFFF,t_70,g_se,x_16">
+<meta property="article:published_time" content="2023-03-02T15:46:40.000Z">
+<meta property="article:modified_time" content="2023-03-02T15:47:10.398Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/e493f4c3298f450eac99777b8cc6b5cc.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAc3VwZXJtYXgyMDIw,size_20,color_FFFFFF,t_70,g_se,x_16">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机网络——第3章习题 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络——第3章习题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:46:40 / Modified: 23:47:10" itemprop="dateCreated datePublished" datetime="2023-03-02T23:46:40+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>10 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
+<h3 id="31~33"><a class="markdownIt-Anchor" href="#31~33"></a> 3.1~3.3</h3>
+<ol>
+<li>略</li>
+<li>略</li>
+<li>对于主机B发送到主机A的报文段，源端口号为y，目的端口号为x。</li>
+<li>UDP的速度快，有些应用如实时视频可能不需要数据完全可靠，不希望受到拥塞控制。</li>
+<li>因为语音和图像要求数据可靠准确，而UDP不能保证。标准答案：大多数防火墙被配置为阻止UDP通信，因此使用TCP处理视频和语音通信可以让通信通过防火墙。</li>
+<li>可能，需要在应用层设置另外的校验程序，UDP本身是不提供可靠数据传输的。</li>
+<li>是。注意<font color=red>UDP数据包中是没有IP地址的</font>，主机C是通过应用中的套接字来确定，在套接字接口处，有操作系统向进程提供IP地址，以确定各个报文段的源。</li>
+<li>不同的套接字。对于每一个持久连接，Web服务器都会创建一个单独的“连接套接字”，每一个连接套接字都由一个四元组表示：源IP地址、源端口号、目的IP地址、目的端口号。当主机C接收IP数据报时，检查报文中的这4个字段，以确定将这个数据报上传到哪一个套接字。用于连接两台主机的套接字中都以80作为目的端口。注意<font color=red>当传输层将TCP报文段的有效负载传递给应用程序进程时，不会指定源IP地址，因为这是由套接字标识符隐式指定的，这与UDP不同。可以理解为，TCP会将从不同源发送的报文段分到不同的套接字，因此不需要另外指定源IP。</font></li>
+</ol>
+<h3 id="34"><a class="markdownIt-Anchor" href="#34"></a> 3.4</h3>
+<ol start="9">
+<li>标识一个ACK是对应于哪一个报文段的。<font color=red>接收方的确认报文如果在链路中发生了错误，发送方就只能重新发送一次这个报文，但是接收方不知道这个报文是一个新的报文还是上一个报文的重传，因此需要标识。</font></li>
+<li>如果报文丢失，就需要重传报文，设置定时器的目的是防止丢包导致无限等待，在定时器到达一定的时间之后认定为丢包，即直接重传。如果收到了ACK，则重启该定时器。</li>
+<li>是，在往返时延固定的情况下，定时器只要检测到在往返时延之内没有接收到希望的ACK报文即可重传报文。</li>
+<li><a target="_blank" rel="noopener" href="https://media.pearsoncmg.com/aw/ecs_kurose_compnetwork_7/cw/content/interactiveanimations/go-back-n-protocol/index.html">小程序</a><br />
+a. 毁掉第一个分组之后，会发送4个序号相同的ACK报文，并开启定时器，在一段时间之后发送方重新发送5个报文。这里解释一下，由于第一个报文被毁，因此接收方只能够发送上一次成功接收的序号的ACK，发送方能够收到4个相同序号的ACK，其需要等待一段时间确认第5个ACK是否正在发送，如果能够成功收到第5个报文，则说明发送方发送数据报到接收方时出现了失序，序号最小的数据报反而是最后被接收的；如果计时器结束，就全部进行重传。<br />
+b. 此时窗口会移动，因为发送方接收到了序号更大的ACK，这说明前面的数据报都已经被成功接收，即使第一个ACK丢失也不影响窗口右移。<br />
+c. 无法发送第6个分组，因为窗口大小只有5。</li>
+<li><a target="_blank" rel="noopener" href="https://media.pearsoncmg.com/aw/ecs_kurose_compnetwork_7/cw/content/interactiveanimations/selective-repeat-protocol/index.html">小程序</a><br />
+选择重传的不同之处在于，其ACK报文与GBN的ACK报文表达的含义不同了，选择重传的ACK报文只能表示该序号的数据报正常接收，而GBN的ACK报文表示该序号及小于该序号的所有数据报均已经被正常接收。因此选择重传只会重传没有收到ACK的序号的数据报，并在窗口的第一个数据报收到时调整窗口的位置，使得窗口的第一个序号永远处于没有被确认的状态。</li>
+</ol>
+<h3 id="35"><a class="markdownIt-Anchor" href="#35"></a> 3.5</h3>
+<ol start="14">
+<li>a. 错误，TCP协议中接收方需要发送确认数据报，与随数据捎带确认没有关系。<br />
+b. 错误，rwnd全称为receive window，即接收窗口，其值等于接收缓存-（接收到的字节数-主机应用进程从缓存读出的字节数），因此该值是一直在动态变化的。<br />
+c. 正确。<br />
+d. 错误，报文段的序号是按照字节编址的，下一个报文段的序号应该等于该报文段的序号+该报文段的长度。<br />
+e. 正确。<br />
+f. 错误。TimeoutInterval = EstimatedRTT + 4 × DevRTT = (1-α) × EstimatedRTT + α × SampleRTT + 4 × ((1-β) × DevRTT + β × |SampleRTT - EstimatedRTT|)，无法推导出该题结论。<br />
+g. 错误，TCP通信双方的序号是各自决定的，因此确认号与序号没有直接的关系。</li>
+<li>20字节；90</li>
+<li>3个报文段：<br />
+Seq=43, Ack=80<br />
+Seq=80, Ack=44<br />
+Seq=44, Ack=81</li>
+</ol>
+<h3 id="37"><a class="markdownIt-Anchor" href="#37"></a> 3.7</h3>
+<ol start="17">
+<li>R/2，TCP可以通过调度使得链路中多个连接的吞吐量基本公平。</li>
+<li>错误，应该被设置为门限值的一半。</li>
+<li>略</li>
+</ol>
+<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
+<ol>
+<li>e. 可能相同。<br />
+f. 同一台主机不可能相同。</li>
+<li>主机A连接：源端口80，目的端口26145；主机C连接：源端口80，目的端口7532</li>
+<li>11010001，接收方将带有反码的4个8比特求和，结果为全1则验证完成。1比特的差错可以出来，但2比特的错误可能不能检测出来。</li>
+<li>a. 00111110<br />
+b. 10111111<br />
+c. 将最低位的0改成1，1改成0。</li>
+<li>不能绝对确信。</li>
+<li>在发送方发送分组1时，接收方接收完成并发送一个ACK，但ACK损坏，发送方收到损坏的ACK之后重传分组1，但接收方要的不是分组1，因此会返回NAK，发送方误以为分组1传输错误就会继续重传，由此陷入死锁状态。</li>
+<li>不理解题意。</li>
+<li>与rdt2.2的FSM相同</li>
+<li>略</li>
+<li><img src="https://img-blog.csdnimg.cn/e493f4c3298f450eac99777b8cc6b5cc.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAc3VwZXJtYXgyMDIw,size_20,color_FFFFFF,t_70,g_se,x_16" alt="" /><br />
+需要将计时器设置为最大往返时延与处理时间之和，每一次发送新的数据分组时重启计时器。</li>
+<li>不能正常工作。如果在收到重复的数据包或数据包损坏的情况下不发送数据包，那么发送方就永远无法收到来自接收方的任何确认信息，就会一直等待下去，进入死锁的状态。注意rdt 3.0之前的所有版本都是没有计时器的。</li>
+<li>仅有一个比特差错时，能够正常运行。如果定时器过早超时，那么对于序号为n的分组将会重传n次。流程：发送1分组，在ACK1被接收前计时器超时，重传1次1分组，然后接收到1ACK，发送2分组，在ACK2被接收前计时器超时，重传1次2分组，然后接收到来自第1次重传1分组的ACK1回应，第2次重传2分组，然后收到ACK2，发送3分组，超时第一次重传3分组，接收到两次2分组重传的回应ACK2，再重传2次3分组……可以发现1分组重传了1次，2分组重传了2次，……n分组将会重传n次。</li>
+<li>如果能够重排报文顺序，首先发送老1分组，回应的老ACK1迟迟未到，重传1次老1分组，收到ACK1，然后发送0分组，接收方接收到0分组之后发送1个0分组ACK，此时链路中有1个ACK0和1个ACK1，且ACK1是先进入链路的，但如果ACK0首先被收到，那么会发送新1分组，如果此时接收到ACK1分组，注意这个分组确认的是老1分组，那么发送方就会误以为新1分组已经被收到，会继续发送新0分组，如果新1分组没能被收到，那么接收方就会产生错误，迟迟无法收到新1分组。</li>
+<li>不会，因为如果只使用NAK，当发送方发送数据的频率较低时，如果编号为x的数据包没能成功接收，那么接收方只有在接收到编号为x+1的数据包时才能察觉到编号为x的数据包接收错误，才能发送NAK，这会降低效率。如果发送方要发送大量的数据，且该端到端连接很少丢包，则只使用NAK协议会比使用ACK的协议更好，因为少发送了很多的确认数据包。</li>
+<li>RTT=30ms，传输时延为0.012ms，如果不考虑ACK分组的传输时延与接收方的处理时间，那么一个分组从开始发送到接收到确认信息一共需要30.012ms，其中忙的时间为0.012ms，要使得忙的时间超过90%，那么需要在前面分组还没有被确认的情况下发送新的分组，设一共需要发送x个分组才能使忙的时间超过90%，则有0.012x/30.012&gt;90%，解得x=2251，这即是窗口的最小值</li>
+<li>能增加信道利用率，因为发送方能够持续不断地接收到ACK，从而发送分组的时间间隔就会短很多，但出现差错时很难检测到，且发送方的ACK会占用带宽资源。</li>
+<li>略</li>
+<li>报文格式与SR协议相同。</li>
+<li>略</li>
+<li>略</li>
+<li>略</li>
+<li>a. k-4~k+3都有可能。极端情况：所有分组全部被正常接收，但所有ACK全部丢失，此时接收方分组第一个序号为k，但发送方分组第一个序号为k-4；另所有分组全部传回ACK，则发送方分组第四个序号为k+3，此时发送方与接收方窗口位置相同。<br />
+b. k-4~k-1都有可能。发送方发送k-5，接收方收到并且返回ACK(k-5)。发送方收到之前就超时，重发k-5。 发送方收到ACK(k-5)， 发送k-4, k-3, k-2, k-1。接收方收到重发k-5，返回ACK(k-5)。收到k-4, k-3, k-2, k-1，返回ACK(k-4)，ACK(k-3)，ACK(k-2)，ACK(k-1)</li>
+<li>对于GBN协议，窗口的最大值为k-1；对于SR协议，窗口的最大值为k/2。需要保证当接收方全部接收到且ACK全部丢失时，接收方能够识别出发送方重传的任何一个分组是老分组而不是新分组。</li>
+<li>a. 正确。当出现超时重传时，可能会收到落在窗口前面的ACK。<br />
+b. 正确。同样是超时重传，另外窗口的第一个ACK丢失也可能导致收到落在窗口前面的ACK。<br />
+c. 正确<br />
+d. 正确</li>
+<li>因为UDP协议是即时传输，应用程序将数据传递给UDP之后UDP协议就会尽快进行传输，而TCP可能还会对这些数据进行缓存、分片等操作，从而降低了应用程序的控制能力。因为TCP有拥塞控制，而UDP没有，应用程序使用UDP可以完全自行调节发送速度等。</li>
+<li>a. 在序号不重复利用的情况下，TCP报文的序号最大值为2<sup>32</sup>-1，那么L的最大值应该为2<sup>32</sup>。<br />
+b. 需要使用8012999个分组来封装这么多数据，加上首部分组的长度，一共需要传输2<sup>32</sup>+8012999×64字节的数据，需要大约237s的时间。</li>
+<li>a. 第一个报文段是由主机A发送，序号为127，含80字节数据，因此第二个报文段的序号为207。源端口号302，目的端口号80。<br />
+b. 第一个报文段的确认中确认号为207，源端口号80，目的端口号302。<br />
+c. 如果第二个报文段首先到达，则确认号为127。因为第二个报文段的序号不对。<br />
+d. 如果第一个确认丢失，丢失的确认报文段中确认号为207。第二个确认（确认号为247）在第一个超时间间隔之后到达，在此之前发送方重传第一个报文段，然后收到了确认号为247的第二个确认报文段，于是不再重传，接收方收到重传的第一个报文段之后再一次返回确认号为247的确认报文段。</li>
+<li>本题中主机B读出数据的速率小于发送方发送的速率，因此主机B在发回来的确认报文段中会填入剩余缓存数量，表示剩余能够接受的窗口大小，当返回的窗口大小为0时，A将逐渐减缓发送数据，直到窗口为0时暂停发送。最终的传输速率不会超过50Mbps。</li>
+<li>略</li>
+<li>a. 当数据输入到套接字的速度过快时，容易导致丢包，进而产生很多重复的数据包占用带宽资源，降低总吞吐量。如果路由器缓存容量增加，则会增加缓存中报文的等待时延，当等待时延过大使得发送方超时是又会进行重传，进一步增加了链路中重复报文的数量，可能会导致吞吐量进一步减少。<br />
+b. 有助于，因为这样将不会有多余的重复报文占用带宽和缓存。</li>
+<li>公式回顾：$$\operatorname{EstimatedRTT}=\operatorname{EstimatedRTT}×(1-\alpha)+\operatorname{SampleRTT}\times\alpha\<br />
+\operatorname{DevRTT}=\operatorname{DevRTT}\times(1-\beta)+|\operatorname{DevRTT}-\operatorname{EstimatedRTT}|\times\beta\<br />
+\operatorname{TimeoutInterval}=\operatorname{EstimatedRTT}+4\times\operatorname{DevRTT}$$<br />
+记忆技巧：EstimatedRTT相当于通过前几个RTT加权计算出来的RTT预估值，DevRTT相当于RTT的波动情况，TimeoutInterval相当于此链路中大多数情况下不会超过的RTT值。计算略。</li>
+<li>a. <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo><mi mathvariant="normal">EstimatedRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mo><mi mathvariant="normal">SampleRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub><mo>×</mo><mn>0.</mn><msup><mn>9</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>+</mo><mn>0.1</mn><mo>×</mo><msub><mo><mi mathvariant="normal">SampleRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\operatorname{EstimatedRTT}_i=\sum_{j=0}^{i-1}\operatorname{SampleRTT}_i\times0.9^{i+1}+0.1\times\operatorname{SampleRTT}_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">E</span><span class="mord mathrm">s</span><span class="mord mathrm">t</span><span class="mord mathrm">i</span><span class="mord mathrm">m</span><span class="mord mathrm">a</span><span class="mord mathrm">t</span><span class="mord mathrm">e</span><span class="mord mathrm">d</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.400382em;vertical-align:-0.43581800000000004em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.964564em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.43581800000000004em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">S</span><span class="mord mathrm">a</span><span class="mord mathrm">m</span><span class="mord mathrm">p</span><span class="mord mathrm">l</span><span class="mord mathrm">e</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.21752399999999997em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord">0</span><span class="mord">.</span><span class="mord"><span class="mord">9</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.93858em;vertical-align:-0.24414em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">S</span><span class="mord mathrm">a</span><span class="mord mathrm">m</span><span class="mord mathrm">p</span><span class="mord mathrm">l</span><span class="mord mathrm">e</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.21752399999999997em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span></span></span></span><br />
+b. 略<br />
+c. 当n趋于无穷时，可以发现越近的RTT对EstimatedRTT的影响最大。</li>
+<li>如果ACK超时，那么重传之后收到的ACK可能不是对应于重传的分组而是一开始发送的分组，这样计算得到的RTT就小于正确的RTT。</li>
+<li>LastByteRcvd≤SendBase-1。SendBase是最早未被确认的字节序号，LastByteRcvd是被接收方接收的最大字节序号。如果链路中没有正在传输的分组，则是等于号，否则为小于号。</li>
+<li>y≤LastByteRcvd。假设TCP接收方丢弃失序的报文段的场合：在生成ACK的时间，y等于LastByteRcvd，当ACK报文传回发送方的时候，可能有新的报文到达接收方。</li>
+<li>这样会导致重传更加频繁，如两个数据包反序就会导致重传，容易占用大量带宽。</li>
+<li>主机A向主机B发送5个报文段且第2个丢失。<br />
+a. 对于GBN，A发送的第一批5个报文段收到4个，发送了4个编号为1的ACK。然后A发送4个报文段，收到4个ACK。一共有8个ACK。对于SR，A发送的第一批5个收到4个，发送了4个不同编号的ACK，然后A发送1个报文段即可，收到1个ACK，一共有5个ACK。TCP协议在发送方接收到3个重传ACK之后就即刻重发，只重发了1个报文段，一共有5个ACK。（<font color=red>注意TCP有缓存机制</font>）<br />
+b. TCP，因为TCP在检测到3个重复ACK之后就立即重传。</li>
+<li>当出现丢包事件时，发送方发送的速率，每个RTT是必须大约等于cwnd报文段。首先发送方发送的速率不能大于cwnd，这是固定的限制条件。发送速率总是大约为cwnd/RTT。</li>
+<li>对于图3-46b，即在有限缓存情况下，发送方仅当在确定了一个分组丢失之后才重传，如果<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>i</mi><mi>n</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{in}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.010556em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>增加超过了R/2，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>不能增加超过R/3。如果发送速率超过了R/2，则多余的分组一定会丢失，因此增加了链路中重传的报文数量，故接收速率不仅不能增加，还可能会下降。对于图3-46c，即发送方也许会提前发生超时并重传在队列中已经被推迟但还未丢失的分组。这种情况下初始数据分组和重传分组都可能到达接收方，此时可用的吞吐量更加有限。如果一个分组平均重传次数是固定的，那么<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>i</mi><mi>n</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{in}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.010556em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>增加可能会导致<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>增加，但实际情况下发送速率增加必然会增加重传次数，因此最终<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>不会增加。</li>
+<li>a. TCP慢启动运行时的时间间隔为1~6、23~26。<br />
+b. TCP拥塞避免运行时的时间间隔为6~16、17~22。<br />
+c. 在第16个传输轮回之后，拥塞窗口长度cwnd没有变为1，因此是由于发现了3个冗余ACK而导致的。<br />
+d. 是根据检测出超时而导致的。<br />
+e. ssthresh的值设置为32。<br />
+f. 在第18个传输轮回里，ssthresh的值设置为上一个传输轮回的cwnd的一半，即为21。<br />
+g. 在第24个传输轮回中，ssthresh的值被设置为上一个传输轮回的cwnd的一半，即14。<br />
+h. 第70个报文段是在第7个传输轮回中被发送。<br />
+i. 拥塞的窗口长度为ssthresh+3（因为收到了3个冗余ACK，这是快速恢复的内容，不考），ssthresh的值为4，即变为拥塞长度的一半。cwnd=7。<br />
+j. 如果使用TCP tahoe，则在第16个轮回后cwnd会变为1。在第19个传输轮回，ssthresh的值为21，拥塞窗口的长度为4。<br />
+k. 从第17个传输轮回到第22个，分别传输了：1、2、4、8、16、21个分组，一共52个。</li>
+<li>TCP的AIMD算法的收敛特性。假设TCP不采用乘性减，而是采用按某一个常量减少窗口。所得的AIAD算法将不能收敛于一个平等共享算法。如果是按照某一个常量减少窗口，则不能够收敛到45°线。假设某个时刻两个连接的传输速率为(r<sub>1</sub>, r<sub>2</sub>)，在没有丢包的情况下，这个点将沿着东北方向（45°）线移动，直到穿过135°的带宽阈值线。如果此时两个连接在一个传输轮回都发生了丢包，那么这个点将沿着225°线沿着西南方向后退，没有向中线移动。如果只有其中一个传输轮回发生了丢包，那么这个点或者向正西移动，或者向正南移动。即使这个点距离传输轮回更近，也没有收敛的意思。考虑到在传输速率过大时，传输速率较大的连接更容易发生丢包，因此这里这个点向中线移动的概率更大，但不能收敛到中线。</li>
+<li>如果发生了超时，不减少窗口大小，那么发送方会发送很多的重复数据包，而发生超时时链路可能已经非常拥塞，因此这会恶化情况。因此减少窗口大小可以在一定程度上缓解链路的拥塞情况。</li>
+<li>本题出现的情况是，链路的传输速率小于应用程序向套接字输入数据的速度，当发送缓存满时，就无法向套接字输入数据了。考虑到链路中不会有任何分组丢失和计时器超时，因此此问题无法通过拥塞控制来解决。实际上当发送缓存满时，进程传输数据的速率自动就降下来了，因为此时发送缓存将这个进程的任务进行了阻塞。</li>
+<li>a. 6RTT<br />
+b. 平均吞吐量为(6+7+8+9+10+11)/6=8.5MSS。</li>
+<li>a. 连接速率从W/2RTT变化到W/RTT，在该周期的结束只丢失了一个分组。这个过程中一共传输了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>2</mn></mfrac><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mn>2</mn></mfrac><mo>=</mo><mfrac><mrow><mn>3</mn><msup><mi>W</mi><mn>2</mn></msup></mrow><mn>8</mn></mfrac><mo>+</mo><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>4</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{\frac{3W}{2}(\frac{W}{2}+1)}{2}=\frac{3W^2}{8}+\frac{3W}{4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.506265em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.161265em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.5508em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.36292em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01792em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913142857142857em;"><span style="top:-2.931em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，丢包率=这个值的倒数。<br />
+b. 一条连接的丢包率为L，要证明平均速率的值，即证一个RTT之内平均传输了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1.22</mn><msqrt><mi>L</mi></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1.22}{\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>个数据包。考虑a中出现的理想情况，当W足够大时，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≈</mo><mfrac><mn>8</mn><mrow><mn>3</mn><msup><mi>W</mi><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">L\approx\frac{8}{3W^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，注意W的单位是分组数。可以求出<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>=</mo><msqrt><mfrac><mn>8</mn><mrow><mn>3</mn><mi>L</mi></mrow></mfrac></msqrt></mrow><annotation encoding="application/x-tex">W=\sqrt{\frac{8}{3L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.84em;vertical-align:-0.604946em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.235054em;"><span class="svg-align" style="top:-3.8em;"><span class="pstrut" style="height:3.8em;"></span><span class="mord" style="padding-left:1em;"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight">L</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span style="top:-3.195054em;"><span class="pstrut" style="height:3.8em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.8800000000000001em;"><svg width='400em' height='1.8800000000000001em' viewBox='0 0 400000 1944' preserveAspectRatio='xMinYMin slice'><path d='M983 90
+l0 -0
+c4,-6.7,10,-10,18,-10 H400000v40
+H1013.1s-83.4,268,-264.1,840c-180.7,572,-277,876.3,-289,913c-4.7,4.7,-12.7,7,-24,7
+s-12,0,-12,0c-1.3,-3.3,-3.7,-11.7,-7,-25c-35.3,-125.3,-106.7,-373.3,-214,-744
+c-10,12,-21,25,-33,39s-32,39,-32,39c-6,-5.3,-15,-14,-27,-26s25,-30,25,-30
+c26.7,-32.7,52,-63,76,-91s52,-60,52,-60s208,722,208,722
+c56,-175.3,126.3,-397.3,211,-666c84.7,-268.7,153.8,-488.2,207.5,-658.5
+c53.7,-170.3,84.5,-266.8,92.5,-289.5z
+M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.604946em;"><span></span></span></span></span></span></span></span></span>。平均速率应该为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>2</mn></mfrac><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mrow><mn>2</mn><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></mfrac><mo>=</mo><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mrow><mn>4</mn><mi mathvariant="normal">RTT</mi><mo>⁡</mo></mrow></mfrac><mo>≈</mo><mfrac><mn>1.22</mn><msqrt><mi>L</mi></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{\frac{3W}{2}(\frac{W}{2}+1)}{2(\frac{W}{2}+1)}=\frac{3W}{4\operatorname{RTT}}\approx\frac{1.22}{\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.82253em;vertical-align:-0.661265em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.161265em;"><span style="top:-2.579535em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.5508em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.661265em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">R</span><span class="mord mathrm mtight">T</span><span class="mord mathrm mtight">T</span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>4</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{3W}{4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>是一个周期平均传输的分组数量。</li>
+<li>a. 这条TCP连接取得最大窗口长度时，该链路处于满负荷状态。一个RTT是150ms，因此10Mbps=x×1500×8/RTT，求得x=125。<br />
+b. 这条连接的平均窗口长度为：(125+125/2)/2=94个报文段，平均吞吐量为94×1500×8/0.15=7.52Mbps。<br />
+c. 从丢包恢复之后，再一次到达最大窗口一共经历了x-x/2个RTT，即63个RTT，即9.45s。</li>
+<li>发送方和接收方之间的链路速率与双向传播时延之积，实际上就等于链路在一个时刻正在传输的最大的分组数量（将链路速率的单位设置为分组数量而不是比特数量）。在前一题中，在出现丢包的时候，cwnd减半，容易发现减半之后链路并没有满负荷工作。现在链路出现了缓存，当发送方的发送速率小于链路的带宽时，缓存可以同时发送分组使得链路保持饱和状态。这个缓存不能太短，否则会过早返回冗余ACK导致发送端暂缓传输（也就是该链路不忙于发送数据），所以必须足够大，大到一个RTT传输的数据量，这样，缓存区满时，再发送包会立刻引发重传。需要注意这里缓存的工作方式。如果发送方在一个RTT之内发送的数据大于一个RTT内能够传输的数据量，那么链路缓存将会缓存发送方最后发送的几个数据包，并使得在这个RTT时间内，发送方除去这几个数据包之外其他的数据包的数据量正好等于这个RTT内链路能够发送的最大数据量。在下一个RTT传输数据时，首先将缓存中的数据发送出去，然后发送发送方的前面一部分数据，再将这个RTT无法发送的数据包进行缓存。正因如此，当缓存满时，在一个RTT之内就会出现丢包的情况，发送方检测到冗余的ACK，将发送窗口减为一半，此时就需要将缓存中的数据包进行发送，逐渐减少缓存中的数据包数量以确保链路处于饱和状态。</li>
+<li>a. 125000<br />
+b. 7.5Gbps<br />
+c. 156.25min，可以使用乘型增的方式增加。</li>
+<li>由45题可知，使用RTT为单位度量的T与W有函数关系，即T=W/2，平均吞吐量=3W/4RTT，因此平均吞吐量可以用T表示。</li>
+<li>a. 拥塞链路的带宽为每秒30个报文段，在时刻0，C1的数据速率为200个报文段/s，而C2为100，远远超过链路带宽，因此会减半，直到二者的拥塞窗口都为1时，数据速率等于链路速率。<br />
+b. 不会。</li>
+<li>a. 时刻1，C1=15，C2=10，产生拥塞。时刻2，C1=7，C2=5，产生拥塞。时刻3，C1=3，C2=2，产生拥塞。时刻4，C1=1，C2=1，不产生拥塞。时刻5，C1=2，C2=2，产生拥塞。之后偶数时刻等于时刻4的情况，奇数时刻等于时刻5的情况。在2200ms之后情况等于时刻4的情况，拥塞窗口为1。（2100ms~2200ms时产生拥塞）<br />
+b. 会。<br />
+c. 是。<br />
+d. 不能。可以让两个连接交替拥塞，这样可以提高利用率。</li>
+<li>这个乘型增的机制是当一个RTT内没有丢包事件发生时，窗口数量将乘以1+a。对于连续的几个RTT，记第一个RTT的编号为0，窗口长度为W/2，设最后一个RTT（编号为n）的窗口长度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup><mo>=</mo><mi>W</mi></mrow><annotation encoding="application/x-tex">\frac{W}{2}\times (1+a)^n=W</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">W</span></span></span></span>，W为链路最大传输速率（单位为分组数/RTT）。然后丢包，窗口变为一半。因此易得<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">(1+a)^n=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>，这些RTT一共发送了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mfrac><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><mi>a</mi></mfrac><mo>=</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mfrac><mrow><mn>2</mn><mi>a</mi><mo>+</mo><mn>1</mn></mrow><mi>a</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{W}{2}\times\frac{(1+a)^{n+1}-1}{a}=\frac{W}{2}\times\frac{2a+1}{a}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.4539199999999999em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10892em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">a</span><span class="mclose mtight"><span class="mclose mtight">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913142857142857em;"><span style="top:-2.931em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>个分组，丢包率为其倒数：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mi>a</mi></mrow><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mn>2</mn><mi>a</mi><mo stretchy="false">)</mo><mi>W</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">L=\frac{2a}{(1+2a)W}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.365108em;vertical-align:-0.52em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span><span class="mclose mtight">)</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。在这个体系中，TCP连接将其拥塞窗口长度从W/2增加到W的周期时间不变。</li>
+<li>使用公式，一条连接的平均吞吐量=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>1.22</mn><mi>M</mi><mi>S</mi><mi>S</mi></mrow><mrow><mi>R</mi><mi>T</mi><mi>T</mi><msqrt><mi>L</mi></msqrt></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{1.22MSS}{RTT\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.410331em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
+c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
+c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
+c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
+s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
+c69,-144,104.5,-217.7,106.5,-221
+l0 -0
+c5.3,-9.3,12,-14,20,-14
+H400000v40H845.2724
+s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
+c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
+M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span><span class="mord mathnormal mtight" style="margin-right:0.05764em;">S</span><span class="mord mathnormal mtight" style="margin-right:0.05764em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，取MSS=1500，RTT=100ms，求得L的值为2×10<sup>-12</sup>。</li>
+<li>优点：可以略过慢启动和一部分拥塞避免的过程，可以让传输速率提升地更快。缺点：二者对于新的链路环境可能需要多次调整。建议可以增加链路缓存，让链路的使用情况变化地平缓一些。</li>
+<li>a. 服务器将向Y发送响应，这个响应可能无法被收到。<br />
+b. 可以确认。SYNACK将初始序号发送给了Y，其他人无法知道正确的初始序号。</li>
+<li>a. S/R&lt;RTT&lt;3S/R</li>
+</ol>
+<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
+|:-😐:-😐:-😐:-😐:-😐<br />
+|0|发送SYN|0|0|<br />
+|1RTT|接收SYNACK|0|0|<br />
+|1RTT+1S/R|发送分组1完毕|1|0|<br />
+|2RTT+1S/R|接收ACK1|2|2|<br />
+|2RTT+2S/R|发送分组2完毕|2|1|<br />
+|2RTT+3S/R|发送分组3完毕|2|0|<br />
+|3RTT+2S/R|接收ACK2|3|2|<br />
+|3RTT+3S/R|发送分组4完毕，接收ACK3|4|3|<br />
+|3RTT+4S/R|发送分组5完毕|4|2|</p>
+<p>在此之后，分组6和7将分别在3RTT+5R/S和3RTT+6R/S被发送，而考虑到4RTT+3R/S&lt;3RTT+6R/S，因此ACK4先于分组7发送被接收，因此分组7发送完毕后窗口依然不为0，同理4RTT+4R/S&lt;3RTT+7R/S（分组8发送完成的时间），因此ACK5先于分组8发送被接收，由此之后的所有时刻窗口都不会为0，于是就一直发送。最终需要时间为4RTT+14R/S。</p>
+<p>b. RTT&gt;3S/R</p>
+<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
+|:-😐:-😐:-😐:-😐:-😐<br />
+|0|发送SYN|0|0|<br />
+|1RTT|接收SYNACK|0|0|<br />
+|1RTT+1S/R|发送分组1完毕|1|0|<br />
+|2RTT+1S/R|接收ACK1|2|2|<br />
+|2RTT+2S/R|发送分组2完毕|2|1|<br />
+|2RTT+3S/R|发送分组3完毕|2|0|<br />
+|3RTT+2S/R|接收ACK2|3|2|<br />
+|3RTT+3S/R|发送分组4完毕，接收ACK3|4|3|<br />
+|3RTT+4S/R|发送分组5完毕|4|2|<br />
+|3RTT+5S/R|发送分组6完毕|4|1|<br />
+|3RTT+6S/R|发送分组7完毕|4|0|<br />
+|4RTT+3S/R|接收ACK4|5|2|<br />
+|4RTT+4S/R|发送分组8完毕，接收ACK5|6|3|<br />
+|4RTT+5S/R|发送分组9完毕，接收ACK6|7|4|<br />
+|4RTT+6S/R|发送分组10完毕，接收ACK7|8|5|</p>
+<p>在此之后，发送到第15个分组之前窗口数量都不会变成0了，因此总时间为5RTT+11R/S。</p>
+<p>c. RTT&lt;S/R</p>
+<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
+|:-😐:-😐:-😐:-😐:-😐<br />
+|0|发送SYN|0|0|<br />
+|1RTT|接收SYNACK|0|0|<br />
+|1RTT+1S/R|发送分组1完毕|1|0|<br />
+|2RTT+1S/R|接收ACK1|2|2|<br />
+|2RTT+2S/R|发送分组2完毕|2|1|<br />
+|3RTT+2S/R|接收ACK2|3|2|<br />
+|2RTT+3S/R|发送分组3完毕|3|2|<br />
+|3RTT+3S/R|接收ACK3|4|3|<br />
+|2RTT+4S/R|发送分组4完毕|4|3|</p>
+<p>考虑到发送一个分组的传输时延大于RTT，因此分组5发送完毕之前分组4就已经确认，剩余窗口大小等于窗口大小-1，而窗口大小不断增加，因此后面所有分组都将连续发送。共需要3RTT+15S/R。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" rel="prev" title="计算机网络——第3章">
+      <i class="fa fa-chevron-left"></i> 计算机网络——第3章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/" rel="next" title="计算机网络——第4,5章">
+      计算机网络——第4,5章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text"> 课后习题和问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#31~33"><span class="nav-number">1.1.</span> <span class="nav-text"> 3.1~3.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#34"><span class="nav-number">1.2.</span> <span class="nav-text"> 3.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#35"><span class="nav-number">1.3.</span> <span class="nav-text"> 3.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#37"><span class="nav-number">1.4.</span> <span class="nav-text"> 3.7</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%A0%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text"> 习题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">912k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:49</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
