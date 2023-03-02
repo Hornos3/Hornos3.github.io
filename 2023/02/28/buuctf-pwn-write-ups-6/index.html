@@ -27,25 +27,25 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="buu047-cmcc_simplerop 和上一道题的思路完全相同。 1234567891011121314151617181920212223242526272829303132from pwn import *context.log_level&#x3D;&amp;#x27;debug&amp;#x27;# io &#x3D; process(&amp;#x27;.&#x2F;pwn&amp;#x27;)io &#x3D; remote(&amp;#x27;node4">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/71aff38bece04a26a36e2d9a3e1ff1e3.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/f746484ce3754ae7b30226894ed46457.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/7cb4c23ae1e5418a82e63d8cc84d1b11.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/bf6791a8aeb14847909ccaef41b8f23e.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/bf45dcdd71764f459b5edd1810b1fd6f.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/cd88c318d7ee4385a4e21b7ed411a321.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/63e222cebc324b75a52166d4b5f3ac64.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/7ef08d5aec4f4fabac0726c69a330ec6.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/da71226d729c4aaeb2e5419d62a3c347.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/173d05bbcc0e4410b2b2d4e165316c8c.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/5f1b656e104a4a95be5983efb53a5508.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/c5e6c8ec278b4fec94deef62617b8ee4.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/efc3384eb0684838a1af617e3a303d17.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/af41c306274c4102920ff3da574a1184.jpeg">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/4.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/5.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/6.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/7.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/8.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/9.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/10.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/11.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/12.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/13.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/14.jpeg">
 <meta property="article:published_time" content="2023-02-28T14:09:00.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.064Z">
+<meta property="article:modified_time" content="2023-03-01T03:31:03.198Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/71aff38bece04a26a36e2d9a3e1ff1e3.png">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/">
 
@@ -192,10 +192,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:09:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:09:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:09:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:09:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:03" itemprop="dateModified" datetime="2023-03-01T11:31:03+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -260,35 +266,35 @@
 <p>第一道C++ pwn题。这也是我第一次认真在做一道C++ pwn的题目。<br />
 当然首先，我们需要会逆向C<ins>程序。C</ins>是C的超集，有很多C中没有的东西。其中最为重要的就是类与对象的识别了。<br />
 在这一题中，程序的符号表貌似没有被删除，我们可以看到IDA为我们分析出来的各种函数名与类名称。<br />
-<img src="https://img-blog.csdnimg.cn/71aff38bece04a26a36e2d9a3e1ff1e3.png" alt="" /><br />
+<img src="1.png" alt="" /><br />
 其中容易发现程序中定义了两个类：User和Admin，而且似乎有三个main中定义的lambda函数。</p>
 <p>程序中无法查看User类的具体结构，因此我们需要手动创建User类结构体，在IDA的Structures窗口中定义：Ins快捷键创建结构体，Del删除结构体，D/A/*创建结构体成员（常用D），N修改成员名，U删除成员。如下图：（具体为什么要这样定义看下面的分析）<br />
-<img src="https://img-blog.csdnimg.cn/f746484ce3754ae7b30226894ed46457.png" alt="" /></p>
+<img src="2.png" alt="" /></p>
 <p>通过User类的构造函数发现，构造函数在User，User+8，User+0x58处进行了赋值操作，这里的后面两个均是使用strncpy函数赋值，因此判断是字符串。第一个声明赋值指向的是这样一个结构，有两个函数指针，判断是User类的虚函数表，因为C++类的虚函数表通常都是放在类的最开头位置。可以看到User类中定义了两个虚函数get_password和shell。使用快捷键Y可以修改参数的类型，修改为合适的类型之后，反汇编出来的代码中就不会有一大堆强制转型了，看上去舒服很多。<br />
-<img src="https://img-blog.csdnimg.cn/7cb4c23ae1e5418a82e63d8cc84d1b11.png" alt="" /><br />
+<img src="3.png" alt="" /><br />
 又通过User类的get_password方法可以判断出后面两个大小为0x50的字符串中到底哪个是用户名哪个是密码。使用快捷键N可以修改参数或变量的名字，修改之后的User类构造函数如下图：<br />
-<img src="https://img-blog.csdnimg.cn/bf6791a8aeb14847909ccaef41b8f23e.png" alt="" /><br />
+<img src="4.png" alt="" /><br />
 另外，在main函数中发现了login变量，其属于User类，且位于bss段中，判断是User类全局变量对象。我们将bss段中的这个对象修改类型发现大小正好符合，说明我们之前定义的User类结构是正确的。<br />
-<img src="https://img-blog.csdnimg.cn/bf45dcdd71764f459b5edd1810b1fd6f.png" alt="" /><br />
-<img src="https://img-blog.csdnimg.cn/cd88c318d7ee4385a4e21b7ed411a321.png" alt="" /><br />
+<img src="5.png" alt="" /><br />
+<img src="6.png" alt="" /><br />
 再看一下Admin类的构造函数，发现其调用了User类的构造函数，因此判断Admin类是User类的子类。<br />
-<img src="https://img-blog.csdnimg.cn/63e222cebc324b75a52166d4b5f3ac64.png" alt="" /><br />
+<img src="7.png" alt="" /><br />
 从Admin类虚函数表中含有User类函数也可以说明Admin类是User的子类，且Admin类覆写了User类的shell方法，打开发现User类的shell没有任何作用，而Admin类的shell方法就是直接执行’/bin/sh’，是一个后门。而get_password类没有覆写，在User类中仅仅是用了virtual声明而已。<br />
-<img src="https://img-blog.csdnimg.cn/7ef08d5aec4f4fabac0726c69a330ec6.png" alt="" /><br />
+<img src="8.png" alt="" /><br />
 现在，我们已经将程序中主要的类、对象分析完毕，main函数的前半部分我们可以读懂了。<br />
-<img src="https://img-blog.csdnimg.cn/da71226d729c4aaeb2e5419d62a3c347.png" alt="" /><br />
+<img src="9.png" alt="" /><br />
 在main函数中，实例化了一个Admin对象，用户名为admin，密码为2jctf_pa5sw0rd。然后接受用户的输入设置全局User类对象的用户名和密码。</p>
 <p>然后main函数用lambda函数做了一些什么事情，我们进入password_checker的某个函数看一下。<br />
-<img src="https://img-blog.csdnimg.cn/173d05bbcc0e4410b2b2d4e165316c8c.png" alt="" /><br />
+<img src="10.png" alt="" /><br />
 这个函数进行密码输入的比较，如果输入密码正确就执行exec函数指针指向的函数。<br />
 根据这个函数的声明，推测password_checker应该是一个结构体，其中包含了后面的lambda函数（注意这个函数应该是一个定义于password_checker结构体中的lambda函数，注意password_checker与lambda函数之间是以::连接）<br />
-<img src="https://img-blog.csdnimg.cn/5f1b656e104a4a95be5983efb53a5508.png" alt="" /><br />
+<img src="11.png" alt="" /><br />
 在password_checker函数中发现了checker结构体的赋值操作，password_checker中只有这一个函数指针存在。<br />
-<img src="https://img-blog.csdnimg.cn/c5e6c8ec278b4fec94deef62617b8ee4.png" alt="" /><br />
+<img src="12.png" alt="" /><br />
 因此这一段代码原本的作用是：检查密码是否输入正确，如果正确则执行greeting_func函数：<br />
-<img src="https://img-blog.csdnimg.cn/efc3384eb0684838a1af617e3a303d17.png" alt="" /><br />
+<img src="13.png" alt="" /><br />
 但是经过实地运行发现，在lambda函数中会发生段错误，错就错在exec函数指针上。原本指针的值应为0x400A90，但是执行到这里的时候发现已经被改成了0x400090。<br />
-<img src="https://img-blog.csdnimg.cn/af41c306274c4102920ff3da574a1184.jpeg" alt="" /><br />
+<img src="14.jpeg" alt="" /><br />
 进一步跟踪调试发现，是strip_newline函数自动识别换行符（ASCII码为0xA），然后给这个地址错误地修改了，变成了一个无效的值。</p>
 <p>这给了我们提示：strip_newline是在lambda函数中调用的，但是却能够修改exec函数的地址，通过调试我们不难发现，exec是一个指针，通过main函数调用password_checker函数获取，但是这是password_checker的局部变量，其地址应该在main函数栈帧的低地址处（main函数实际上没有栈帧，这里类比其他函数的栈帧方便理解），也就是main函数执行时esp的低地址处，而调用其他函数时这里的地址自然就有可能会受到影响。由此可见，如果我们输入密码的时候修改这里的地址值到Admin类的shell函数地址，就能够拿到shell了。</p>
 <p>因此，本题的漏洞点在于返回局部变量的值，属于逻辑错误。子函数返回到父函数的返回值不应该是子函数局部变量的值。漏洞本身不难，但是对于逆向C++而言还是一次很好的训练与学习。</p>

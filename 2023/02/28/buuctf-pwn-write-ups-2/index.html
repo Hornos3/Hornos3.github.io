@@ -27,14 +27,14 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="重点讲解第26题：babyheap的解题方法。  buu017-not_the_same_3dsctf_2016 1234567891011from pwn import *# io &#x3D; process(&amp;#x27;.&#x2F;pwn&amp;#x27;)io &#x3D; remote(&amp;#x27;node4.buuoj.cn&amp;#x27;, 25850)elf &#x3D; ELF(&amp;#x27;.&#x2F;pwn&amp;#x27;)payloa">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/0481579d7899474cbe33733f3aa828e4.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/b90efebb8ce54bd7ae8349c3569acd6f.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/3.png">
 <meta property="article:published_time" content="2023-02-28T14:05:00.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.164Z">
+<meta property="article:modified_time" content="2023-03-01T03:30:57.590Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-2/">
 
@@ -181,10 +181,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:05:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:05:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:05:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:05:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:57" itemprop="dateModified" datetime="2023-03-01T11:30:57+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -258,13 +264,13 @@ exp：</p>
 <p>第一道堆题。<br />
 <strong>解法：unsorted bin overlapping chunks + fastbin attack</strong><br />
 提供了分配chunk、填充chunk、释放chunk、打印chunk内容4个功能。其中填充chunk功能没有进行边界检查，可以产生堆溢出：<br />
-<img src="https://img-blog.csdnimg.cn/819fff57a2e84971a375beb1be6ffc31.png" alt="" /><br />
+<img src="1.png" alt="" /><br />
 简单看了一下，试了几下之后，发现这道题和前面所有题都截然不同，难度完全不是一个档次。<br />
 首先，这道题中<strong>对于内存的分配使用的是calloc而非malloc函数</strong>，这使得我们要想获得libc的加载地址必须首先进行堆块重叠后释放内部堆块，这样才能够通过读取外部堆块获取关键地址。另外，<strong>本题的堆块大小保存在一个单独的数组之中，可读取的大小也在这里保存，因此直接在堆中修改chunk的size并不能增加我们读取的长度</strong>。要想实现堆块的重叠就必须首先释放堆块，通过堆溢出修改堆块的size后分配回来。但这样的话，由于calloc的特性，堆块中的所有内容都将被抹除，也就无法获取到地址的值。因此，要保留地址的值，我们不能将这个堆块全部分配回来。要知道，虽然内部重叠堆块的prev_size和size等信息虽然被清零，但仍然能够读取后面的内容，所以我们选择将修改过大小的堆块部分分配回来，留下一个last_remainder堆块保留在原先的内部堆块的内部。这样就可以通过访问内部堆块获取到地址的值了。<br />
-<img src="https://img-blog.csdnimg.cn/0481579d7899474cbe33733f3aa828e4.png" alt="" /></p>
+<img src="2.png" alt="" /></p>
 <p>获取到了这里的地址，我们就可以获取到system函数和__free_hook的地址。本题环境为2.23，无tcache的影响，有通过fastbin attack修改__malloc_hook的可行性。</p>
 <p>这是一开始__malloc_hook附近的情况：<br />
-<img src="https://img-blog.csdnimg.cn/b90efebb8ce54bd7ae8349c3569acd6f.png" alt="" /><br />
+<img src="3.png" alt="" /><br />
 要想在__malloc_hook附近分配chunk，首先需要通过检查：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (fastbin_index (chunksize (victim)) != idx, <span class="number">0</span>))</span><br><span class="line">  &#123;</span><br><span class="line">    errstr = <span class="string">&quot;malloc(): memory corruption (fast)&quot;</span>;</span><br><span class="line">  errout:</span><br><span class="line">    malloc_printerr (check_action, errstr, chunk2mem (victim), av);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
 <p>下面是fastbin_index的宏定义：</p>

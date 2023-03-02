@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="这道题增加了沙箱机制，通过seccomp-tools可以轻松获取沙箱的具体内容。  其中的重点就是禁用了execve系统调用，无法直接通过one_gadget、system等直接getshell。这种情况下最为常用的利用方式就是set_context函数，具体如何利用，往下看。 本题的逆向分析很简单，注意bss中结构体的识别：前8字节是地址，后8字节是大小。在show函数中发现了一个简单的加密函数">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/7a4279ec88e74e9cb4d47dca9c3a0456.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/d9ef1b3c1668495bb168ed3f51841a9c.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/f14dc06b21fd48248692237b77a64de6.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/bbadd28a80ff448791bfc3028b498852.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/4.png">
 <meta property="article:published_time" content="2023-02-28T15:02:06.000Z">
-<meta property="article:modified_time" content="2023-03-01T03:05:23.591Z">
+<meta property="article:modified_time" content="2023-03-01T03:31:37.550Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/7a4279ec88e74e9cb4d47dca9c3a0456.png">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/">
 
@@ -190,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:05:23" itemprop="dateModified" datetime="2023-03-01T11:05:23+08:00">2023-03-01</time>
+                <time title="Modified: 2023-03-01 11:31:37" itemprop="dateModified" datetime="2023-03-01T11:31:37+08:00">2023-03-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,17 +239,17 @@
 
       
         <p>这道题增加了沙箱机制，通过seccomp-tools可以轻松获取沙箱的具体内容。</p>
-<p><img src="https://img-blog.csdnimg.cn/7a4279ec88e74e9cb4d47dca9c3a0456.png" alt="" /><br />
+<p><img src="1.png" alt="" /><br />
 其中的重点就是禁用了execve系统调用，无法直接通过one_gadget、system等直接getshell。这种情况下最为常用的利用方式就是set_context函数，具体如何利用，往下看。</p>
 <p>本题的逆向分析很简单，注意bss中结构体的识别：前8字节是地址，后8字节是大小。在show函数中发现了一个简单的加密函数：</p>
-<p><img src="https://img-blog.csdnimg.cn/d9ef1b3c1668495bb168ed3f51841a9c.png" alt="" /><br />
+<p><img src="2.png" alt="" /><br />
 其每一轮的计算如下图所示，红色部分是因为溢出而无法计算的部分，每一轮的计算结果就相当于是所有黄色部分对应位异或的结果。<br />
-<img src="https://img-blog.csdnimg.cn/f14dc06b21fd48248692237b77a64de6.png" alt="" /><br />
+<img src="3.png" alt="" /><br />
 那么这个函数应该如何解密呢？观察到每一轮的计算又可以分为3小轮，最后一轮是某个值与自身左移13位的异或。第二轮是另外一个值与自身右移17位的异或得到第三轮的初始值。第一轮是输入与输入自身左移5位的异或得到第二轮的初始值。如此设计解密算法也就不难了，相信了解一些算法的读者都能编写脚本。解密函数如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_bits</span>(<span class="params">value, start, end</span>):</span><br><span class="line">    <span class="keyword">return</span> (value &gt;&gt; start) &amp; ((<span class="number">1</span> &lt;&lt; (end - start)) - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">value</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        low13 = get_bits(value, <span class="number">0</span>, <span class="number">13</span>)</span><br><span class="line">        mid13 = get_bits(value, <span class="number">13</span>, <span class="number">26</span>)</span><br><span class="line">        mid13 ^= low13</span><br><span class="line">        high6 = get_bits(value, <span class="number">26</span>, <span class="number">32</span>)</span><br><span class="line">        high6 ^= get_bits(mid13, <span class="number">0</span>, <span class="number">6</span>)</span><br><span class="line">        value = low13 + (mid13 &lt;&lt; <span class="number">13</span>) + (high6 &lt;&lt; <span class="number">26</span>)</span><br><span class="line"></span><br><span class="line">        high17 = get_bits(value, <span class="number">15</span>, <span class="number">32</span>)</span><br><span class="line">        low15 = get_bits(value, <span class="number">0</span>, <span class="number">15</span>)</span><br><span class="line">        low15 ^= get_bits(high17, <span class="number">2</span>, <span class="number">17</span>)</span><br><span class="line">        value = low15 + (high17 &lt;&lt; <span class="number">15</span>)</span><br><span class="line"></span><br><span class="line">        first5 = get_bits(value, <span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">        second5 = get_bits(value, <span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">        second5 ^= first5</span><br><span class="line">        third5 = get_bits(value, <span class="number">10</span>, <span class="number">15</span>)</span><br><span class="line">        third5 ^= second5</span><br><span class="line">        fourth5 = get_bits(value, <span class="number">15</span>, <span class="number">20</span>)</span><br><span class="line">        fourth5 ^= third5</span><br><span class="line">        fifth5 = get_bits(value, <span class="number">20</span>, <span class="number">25</span>)</span><br><span class="line">        fifth5 ^= fourth5</span><br><span class="line">        sixth5 = get_bits(value, <span class="number">25</span>, <span class="number">30</span>)</span><br><span class="line">        sixth5 ^= fifth5</span><br><span class="line">        last2 = get_bits(value, <span class="number">30</span>, <span class="number">32</span>)</span><br><span class="line">        last2 ^= get_bits(sixth5, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        value = first5 + (second5 &lt;&lt; <span class="number">5</span>) + (third5 &lt;&lt; <span class="number">10</span>) + (fourth5 &lt;&lt; <span class="number">15</span>) + \</span><br><span class="line">            (fifth5 &lt;&lt; <span class="number">20</span>) + (sixth5 &lt;&lt; <span class="number">25</span>) + (last2 &lt;&lt; <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
 <p>通过show函数，我们能够获取到堆块的地址。不过需要注意的是，show函数加密的并非堆块自身的地址，而是堆块前8字节的值。通过调试我们可以发现，在程序初始化时调用的seccomp系列函数会申请一些堆块，我们通过申请到这些堆块有可能使得堆块的前8字节是一个堆块地址，以此来获取堆区地址。</p>
 <p>本题的libc环境是2.27版本，有机会改写钩子到setcontext函数【<strong>插一句：在笔者的2.31版本libc中，setcontext函数的栈迁移指令从<code>mov rsp, [rdi+0xA0]</code>被改成了<code>mov rsp,[rdx+0xA0]</code>，这使得本题在2.31环境下无法利用，因为在执行到这里的时候无法控制rdx的值</strong>】。自然而然地，我们容易想到使用unlink堆块重叠的利用方式。在chunk中写一个假chunk，在假chunk的prev_size写入这个chunk的地址，然后将fd和bk指针写到合适的位置，就能够触发unlink。和同年的easy_diary相比，利用难度还更低些。</p>
-<p><img src="https://img-blog.csdnimg.cn/bbadd28a80ff448791bfc3028b498852.png" alt="" /><br />
+<p><img src="4.png" alt="" /><br />
 这里需要注意一下edit函数中的一个看似奇怪的函数。这个函数在read之后调用，会将第一个出现的’\x11’字符替换为0x0。乍一看，这个字符并不是字符串的结束符，但转念一想，不难发现这是出题人在为我们创造off by null的条件：'\x11’很有可能是某个chunk的size的最低1字节。可以通过这个特性修改chunk的大小和prev_inuse位。由于chunk的大小被修改了，因此在这个chunk的最后面还需要写上一个有效的size值，最低位为1，以绕过检查。</p>
 <p>在成功unlink之后，就可以利用堆块重叠修改tcache chunk的fd指针到__free_hook。将其改写到setcontext内部即可实现栈迁移。然后构造好ROP链，打开文件、读文件、写数据。在笔者的机器上，通过调试将rdx改为与rdi的值相等实现栈迁移，但不知何故打开flag文件总是失败。</p>
 <p>exp:（基于20.04，且需要调试修改rdx的值）</p>

@@ -27,12 +27,12 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04 Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第9~16个源码，重点对源码进行分析与解读。一些2.23版本中出现过的漏洞将不再赘述。 如果本文的分析有任何错漏之处，还请各位读者">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/1.png">
 <meta property="article:published_time" content="2023-02-28T14:25:13.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.524Z">
+<meta property="article:modified_time" content="2023-03-02T08:24:34.157Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-8/">
 
@@ -179,10 +179,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:25:13 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:25:13+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:25:13" itemprop="dateCreated datePublished" datetime="2023-02-28T22:25:13+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-02 16:24:34" itemprop="dateModified" datetime="2023-03-02T16:24:34+08:00">2023-03-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -263,7 +269,7 @@ Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
 <p>之后，一场好戏的开始只需要malloc一个0x100的chunk。让我们凑近点看看，下面到底会发生什么。</p>
 <p>首先到达判断是否切割last_remainder。<font color=red><strong>注意：切割last_remainder的条件还是比较苛刻的，需要4个条件同时满足：(1) last_remainder存在，(2) 要分配的大小在small bins范围，(3) 这个last_remainder是unsorted bin里面唯一一个chunk，(4) 这个last_remainder的大小要大于(申请大小+最小chunk的大小【0x20】)。</strong></font>很明显这里第3个条件不满足，因为此时unsorted bin中不仅有p1的残余还有p3。首先将p1放入small bins（此时p1的size=0x3f0，正好是最后一个small bins存放的大小），然后将p3放入large bins，与p2应该放在一个bins中。</p>
 <p>将p2放入large bins的同时会将栈区的内容修改掉，步骤如下图所示，与上一篇文章的house_of_storm的流程实际上是相同的：</p>
-<p><img src="https://img-blog.csdnimg.cn/fcea4765c18e4c10aaab01f8d6299792.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBATDNIX0NvTGlu,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
+<p><img src="1.png" alt="" /></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 3820~3822, Step 1, 2</span></span><br><span class="line">    victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line"><span class="comment">// line 3856~3859, Step 3, 4, 5, 6</span></span><br><span class="line">	victim-&gt;fd_nextsize = fwd;</span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">    fwd-&gt;bk_nextsize = victim;</span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line"><span class="comment">// line 3861, Step 7</span></span><br><span class="line">	bck = fwd-&gt;bk;</span><br><span class="line"><span class="comment">// line 3869~3872, Step 8, 9, 10, 11</span></span><br><span class="line">	victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
 <p>这样就将两个栈区内容成功修改。</p>
 <h1 id="10-mmap_overlapping_chunks"><a class="markdownIt-Anchor" href="#10-mmap_overlapping_chunks"></a> 10. mmap_overlapping_chunks</h1>

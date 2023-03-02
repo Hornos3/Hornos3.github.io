@@ -27,13 +27,13 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="刚刚接触pwn的时候就听说过how2heap的大名，奈何那时懒得搭环境无法真实测试。现在环境已经基本完成搭建，于是对how2heap中的内容进行深入学习并记录笔记，温故而知新。本文是基于对how2heap教学项目中源码的分析与理解而完成的学习笔记。 how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Gli">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/e11840261fe44692a5a97963baa426aa.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-1/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-1/2.png">
 <meta property="article:published_time" content="2023-02-28T14:18:00.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.512Z">
+<meta property="article:modified_time" content="2023-03-02T08:10:59.846Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-1/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-1/">
 
@@ -180,10 +180,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:18:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:18:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:18:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:18:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-02 16:10:59" itemprop="dateModified" datetime="2023-03-02T16:10:59+08:00">2023-03-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -237,7 +243,7 @@ Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir
 <p>测试环境：Ubuntu 16.04<br />
 Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 <p>按照顺序，本文分析glibc 2_23文件夹中的第1~6个源码。<br />
-<img src="https://img-blog.csdnimg.cn/259410f4b62e4827805f09a9decddb3f.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
+<img src="1.png" alt="" /></p>
 <h1 id="1-fastbin_dup"><a class="markdownIt-Anchor" href="#1-fastbin_dup"></a> 1. fastbin_dup</h1>
 <p>本程序演示fastbin的double_free漏洞。只需要在两次free中间再进行其他free操作，就可以在fastbin链表中存放两个相同的chunk。这个不难理解。</p>
 <h1 id="2-fastbin_dup_consolidate"><a class="markdownIt-Anchor" href="#2-fastbin_dup_consolidate"></a> 2. fastbin_dup_consolidate</h1>
@@ -307,7 +313,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 <h1 id="6-house_of_lore"><a class="markdownIt-Anchor" href="#6-house_of_lore"></a> 6. house_of_lore</h1>
 <p>本程序演示house_of_lore漏洞，这是一种利用small_bins的攻击方式。</p>
 <p>small bins/large bins/unsorted bins的双向链表结构如下图所示<br />
-<img src="https://img-blog.csdnimg.cn/e11840261fe44692a5a97963baa426aa.png?x-oss-process=image/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBAQWdDbOKGkQ==,size_20,color_FFFFFF,t_70,g_se,x_16#pic_center" alt="" /></p>
+<img src="2.png" alt="" /></p>
 <p>同unsorted bin类似，small bin也类似于链栈结构，但是双向链表。将small bins中位于链尾的chunk的bk指针修改为想要写的地址，在small bin中的chunk被分配完之后，再次分配就能在该地址创建chunk。</p>
 <p>但是在目标地址处还需要进行一些预处理工作。由于glibc的检查机制，导致直接挟持堆不可行。</p>
 <p>下面是_int_malloc函数中查找small bins片段的代码：</p>

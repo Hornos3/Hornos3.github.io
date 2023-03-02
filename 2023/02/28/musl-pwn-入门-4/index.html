@@ -28,9 +28,9 @@
 <meta property="og:description" content="在前面的介绍中，我们学习了musl pwn的基本原理，下面我们就通过一道经典例题进一步巩固。 这是DefCon Quals 2021中的一道题mooosl，直接在github上搜这道题的名字就可以找到作者发布的附件，内含说明、作者的exp、源码以及二进制程序。 注：我本来以为题目给的musl 1.2.2的libc和自己机子上面的一样，结果发现差得太远了，白花了我大半天时间。😭 参考文章  1.">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/cbb4c310bd414edcb3f3ea06674157fc.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/f43608de7cf84425b053c5562b3a9abd.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/musl-pwn-%E5%85%A5%E9%97%A8-4/1.png">
 <meta property="article:published_time" content="2023-02-28T14:42:38.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.244Z">
+<meta property="article:modified_time" content="2023-03-01T03:31:11.542Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://img-blog.csdnimg.cn/cbb4c310bd414edcb3f3ea06674157fc.png">
@@ -180,10 +180,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:42:38 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:42:38+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:42:38" itemprop="dateCreated datePublished" datetime="2023-02-28T22:42:38+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:11" itemprop="dateModified" datetime="2023-03-01T11:31:11+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -238,7 +244,7 @@
 <p>这是一个菜单题，包含三种操作store、query和delete，经过逆向分析之后可以知道这个菜单题的数据结构逻辑。<strong>程序中有一段0x8000大小的空间hashmap，可以保存0x1000个指针。这个指针是作者定义的结构体，结构体中包含有两个字符串，分别为key和value。进行store操作时，首先输入key，然后程序使用一个函数计算其哈希值（0-0xFFF），这个哈希值就是这个结构体需要保存到hashmap中的索引。如果有两个key的哈希值相同，则第二次store获取的结构体就会成为hashmap中的链首，结构体中还有一个指针用于形成链表，第一次store的结构体的地址就保存在第二次store的结构体之中。query则是根据输入的key值计算出哈希值对应的结构体并输出。delete会将找到的结构体移出hashmap。</strong></p>
 <p>本题的漏洞在delete函数中：</p>
 <p><img src="https://img-blog.csdnimg.cn/cbb4c310bd414edcb3f3ea06674157fc.png" alt="结构体的声明" /></p>
-<p><img src="https://img-blog.csdnimg.cn/f43608de7cf84425b053c5562b3a9abd.png" alt="" /></p>
+<p><img src="1.png" alt="" /></p>
 <p>注意delete中的if语句，这个if语句内部的功能是从hashmap中移出结构体实例，p_chain就是hashmap中的地址。但这里有一种情况没有考虑：当要删除的结构体位于链尾时，if语句的两个条件都不会满足，这样这个结构体就不会从链表中删除，而是留在其中。这就为我们UAF创造了条件。如果我们能够通过堆排布操作让另一个结构体的value地址等于这个已经被删除的结构体地址，那么通过query我们就能够获取到这个结构体中的内容，其中包含多个指针的地址。</p>
 <h1 id="2-解题第一步泄露信息"><a class="markdownIt-Anchor" href="#2-解题第一步泄露信息"></a> 2. 解题第一步——泄露信息</h1>
 <p>我们再来回顾一下<code>free</code>函数的流程：<code>free</code>的重点在于<code>nontrivial_free</code>，注意下面的代码片段：</p>

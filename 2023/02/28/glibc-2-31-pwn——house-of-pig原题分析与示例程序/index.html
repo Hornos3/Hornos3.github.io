@@ -27,21 +27,21 @@
 <meta property="og:site_name" content="CoLin&#39;s Pwnhome">
 <meta property="og:description" content="house of pig这种利用方式来源于XCTF 2021 final中的同名题，其原题使用的是libc 2.31版本，本文就根据这道题学习一下这种漏洞利用方式。 参考资料 这是一道C++ pwn，但漏洞本身与C++不同于C的特性关系不大。 一共提供了5个选项：  增，删，改，看，修改用户。我们一个一个来看。  1. 逆向分析  A. add message 除了修改用户之外，其他4个选项的具体">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/ef2e43c501774e869c2351c9f08673d9.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/52b3aad7e5414a09a652719d9e05208c.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/963c625db0b942a9b7472903a42bd8bc.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/f6a8a35dbff2431098447be93f2606c4.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/de4c3a87b6e24f33967aa4fa66b110d7.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/3a41f480c12f4b2da458f961d69d1c20.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/c5eaa0a6279c4606a97cfbae6886abdf.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/b717be8138e44761b9ed29f33d8ced4d.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/9502d487b17f498491346914265f9c1d.png">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/e7d5debc11e74fd49cf7e30fa9ed94e0.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/4.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/5.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/6.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/7.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/8.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/9.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/10.png">
 <meta property="article:published_time" content="2023-02-28T14:14:00.000Z">
-<meta property="article:modified_time" content="2023-02-28T15:20:26.208Z">
+<meta property="article:modified_time" content="2023-03-01T03:31:11.054Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/ef2e43c501774e869c2351c9f08673d9.png">
+<meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/1.png">
 
 <link rel="canonical" href="http://hornos3.github.com/2023/02/28/glibc-2-31-pwn%E2%80%94%E2%80%94house-of-pig%E5%8E%9F%E9%A2%98%E5%88%86%E6%9E%90%E4%B8%8E%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/">
 
@@ -188,10 +188,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2023-02-28 22:14:00 / Modified: 23:20:26" itemprop="dateCreated datePublished" datetime="2023-02-28T22:14:00+08:00">2023-02-28</time>
+              <time title="Created: 2023-02-28 22:14:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:14:00+08:00">2023-02-28</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:11" itemprop="dateModified" datetime="2023-03-01T11:31:11+08:00">2023-03-01</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -242,14 +248,14 @@
 <p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/242640#h3-6">参考资料</a></p>
 <p>这是一道C++ pwn，但漏洞本身与C++不同于C的特性关系不大。</p>
 <p>一共提供了5个选项：</p>
-<p><img src="https://img-blog.csdnimg.cn/ef2e43c501774e869c2351c9f08673d9.png" alt="" /><br />
+<p><img src="1.png" alt="" /><br />
 增，删，改，看，修改用户。我们一个一个来看。</p>
 <h1 id="1-逆向分析"><a class="markdownIt-Anchor" href="#1-逆向分析"></a> 1. 逆向分析</h1>
 <h2 id="a-add-message"><a class="markdownIt-Anchor" href="#a-add-message"></a> A. add message</h2>
 <p>除了修改用户之外，其他4个选项的具体操作因用户而异，一共有3个用户，peppa、mummy和daddy，对于add message操作而言，3个用户的操作基本相同，只有几个地方有差别。</p>
-<p><img src="https://img-blog.csdnimg.cn/52b3aad7e5414a09a652719d9e05208c.png" alt="" /><br />
+<p><img src="2.png" alt="" /><br />
 上图是peppa的add message函数，peppa可以遍历0~19的索引，并添加一个大小在0x90~0x430的chunk，在mummy的add函数中只能遍历0~\9的索引，并添加大小在0x90~0x450的chunk。<strong>对于peppa和mummy，其分配的chunk大小只能一次比一次大或者本次与上一次相等，daddy则没有这个限制</strong>。对于daddy，则是0~4的索引和0x90~0x440的chunk。另外，<strong>在daddy函数中如果添加chunk的索引为4，则还可以再分配一个大小为0xE8的chunk并写入最大长度为0xE8的内容。</strong> 3个用户在add之后可以立即向新分配的chunk中写入内容，但不是chunk中任何位置都能写。对于peppa，将chunk空间以48字节为大小分组，每一组48字节空间只能写前面16字节，对于mummy则是只能写中间16字节，对于daddy只能写后面16字节。在写入后，会设置两个标志位为0。</p>
-<p><img src="https://img-blog.csdnimg.cn/963c625db0b942a9b7472903a42bd8bc.png" alt="" /></p>
+<p><img src="3.png" alt="" /></p>
 <h2 id="b-view-message"><a class="markdownIt-Anchor" href="#b-view-message"></a> B. view message</h2>
 <p>查看，没有什么好说的，3个用户可以查看的索引范围和可以add的索引范围相同。而且查看时需要有一个标志位为0。这个标志位是add中设置的两个标志位中的第一个。本题限制view的次数最多为2次。</p>
 <h2 id="c-edit-message"><a class="markdownIt-Anchor" href="#c-edit-message"></a> C. edit message</h2>
@@ -258,16 +264,16 @@
 <p>删除，3个用户可以查看的索引范围和可以add的索引范围相同。删除后会将两个标志位置为1。</p>
 <h2 id="e-change-role"><a class="markdownIt-Anchor" href="#e-change-role"></a> E. change role</h2>
 <p>修改用户。这个部分的主体部分在main函数中实现。分析一下检查函数：<br />
-<img src="https://img-blog.csdnimg.cn/f6a8a35dbff2431098447be93f2606c4.png" alt="" /></p>
+<img src="4.png" alt="" /></p>
 <p>该函数使用了MD5计算摘要值，如何判断？查看MD5_initialize函数可以发现，这里定义了4个MD5计算的关键魔数，因此不难判断。</p>
-<p><img src="https://img-blog.csdnimg.cn/de4c3a87b6e24f33967aa4fa66b110d7.png" alt="" /></p>
+<p><img src="5.png" alt="" /></p>
 <p>在检查函数中，会对输入值与MD5摘要进行判断，判断条件：MD5摘要需要等于某个值，输入值的第一位应该是A或B或C。首字母不同，能够转换到的用户也不同。我们当然不能追求计算出来3个值使得其MD5摘要值相等，但该MD5的比较有bug：</p>
-<p><img src="https://img-blog.csdnimg.cn/3a41f480c12f4b2da458f961d69d1c20.png" alt="" /></p>
+<p><img src="6.png" alt="" /></p>
 <p>上图就是保存的MD5值，注意到第三个字节为’\0’，但原程序中比较MD5值使用的是<code>strcmp</code>函数，因此最多只会比较前面3个字节的值。计算出三个摘要的前3字节等于固定值的字符串还是可以实现的，下面是计算的代码，计算结果已经附在后面：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hashlib <span class="keyword">import</span> md5</span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line">alphabet = <span class="string">&#x27;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+=&#x27;</span></span><br><span class="line">length = <span class="number">6</span></span><br><span class="line">start_char = <span class="string">&#x27;ABC&#x27;</span></span><br><span class="line">current = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">calculate</span>(<span class="params">index: <span class="built_in">int</span></span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">64</span> ** (length - <span class="number">1</span>)):</span><br><span class="line">        cur_string = start_char[index]</span><br><span class="line">        current_copy = current[index]</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(length - <span class="number">1</span>):</span><br><span class="line">            cur_string += alphabet[current_copy % <span class="number">64</span>]</span><br><span class="line">            current_copy //= <span class="number">64</span></span><br><span class="line">        digest = md5(cur_string.encode()).hexdigest()</span><br><span class="line">        <span class="keyword">if</span> digest[<span class="number">0</span>:<span class="number">6</span>] == <span class="string">&#x27;3c4400&#x27;</span>:</span><br><span class="line">            <span class="built_in">print</span>(cur_string, <span class="string">&#x27;: &#x27;</span>, digest)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        current[index] += <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    threads = [threading.Thread(name=<span class="string">&#x27;t1&#x27;</span>, target=calculate, args=(<span class="number">0</span>,)),</span><br><span class="line">               threading.Thread(name=<span class="string">&#x27;t1&#x27;</span>, target=calculate, args=(<span class="number">1</span>,)),</span><br><span class="line">               threading.Thread(name=<span class="string">&#x27;t1&#x27;</span>, target=calculate, args=(<span class="number">2</span>,))]</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        threads[i].start()</span><br><span class="line"></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">AY7Hr0 :  3c4400d1ec4941bfc9e4846a9a4a409e</span></span><br><span class="line"><span class="string">CnY841 :  3c4400f378c82f5ceeb3f309b0ed1e6d</span></span><br><span class="line"><span class="string">BRgTa2 :  3c440036c7cad38b57f4b417df22a0c4</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
 <p>根据程序输出，我们获得了三个字符串，在转换用户时只需要输入这3个字符串就能够进行任意的用户转换操作。其中A表示peppa，B表示mummy，C表示daddy。</p>
 <p>在检查函数通过之后，如果我们会更换用户，则会将原来用户分配的chunk复制到一个程序预先分配号的一块空间，然后将新用户的chunk以及标志位等从那一块空间中复制出来。</p>
-<p><img src="https://img-blog.csdnimg.cn/c5eaa0a6279c4606a97cfbae6886abdf.png" alt="" /></p>
+<p><img src="7.png" alt="" /></p>
 <p>但是这里需要注意从mmap出来空间中复制过来的只有第二个标志位，第一个标志位并没有被复制过来。</p>
 <h1 id="2-漏洞分析"><a class="markdownIt-Anchor" href="#2-漏洞分析"></a> 2. 漏洞分析</h1>
 <p>本题的漏洞就在于用户的分配上。由于新用户只是复制了第二个标志位，对于某个chunk的索引而言，如果原用户的两个对应标志位均为0，而新用户的两个标志位为1，则用户转换后，两个标志位分别为0和1。注意view message和edit message检查的都是第1个标志位是否为0，对于新用户而言，这个索引原本的chunk是已经被释放的，但这样一来我们就可以再一次访问这个chunk，这就产生了UAF。</p>
@@ -292,7 +298,7 @@
 <li>step 5: 重复步骤2~4，但需要占满另外一个tcache，不能只通过占满一个tcache使两个chunk进入small bins，因此第二次执行步骤2应该填满一个存更大chunk的tcache，然后mummy对应分配的chunk也增加一些。</li>
 </ul>
 <p>在上述步骤完成后，堆中应该有1个chunk进入small bins，1个chunk进入unsorted bin，5个位于tcache，这7个chunk的大小相同，进入small bins的chunk是在第二次进行步骤2时需要分配比其大的chunk时将其从unsorted bin转入small bins中的。上述步骤完成后，peppa将会使用16个chunk，mummy将会使用7个chunk。下图即为该步骤完成后的堆环境，需要进行攻击的是大小为0xA0的chunk。</p>
-<p><img src="https://img-blog.csdnimg.cn/b717be8138e44761b9ed29f33d8ced4d.png" alt="" /></p>
+<p><img src="8.png" alt="" /></p>
 <h2 id="b-获取libc地址和堆地址"><a class="markdownIt-Anchor" href="#b-获取libc地址和堆地址"></a> B. 获取libc地址和堆地址</h2>
 <p>既然我们需要<code>__free_hook</code>的地址，就应该获得libc的基地址。这个基地址很好获得，只需要分配一个tcache装不下的chunk然后释放掉，通过UAF读取前面的16字节即可。此时这里应该保存的是unsorted bin的地址。</p>
 <p>在步骤A执行时，可以顺便获取到libc的基地址，只需要在unsorted bin中存在chunk时通过UAF进行view操作即可。</p>
@@ -301,7 +307,7 @@
 <p>在此之后我们就要正式进行house of pig的利用。</p>
 <h2 id="c-第一次large-bin-attack"><a class="markdownIt-Anchor" href="#c-第一次large-bin-attack"></a> C. 第一次large bin attack</h2>
 <p>首先我们需要将<code>_free_hook</code>周围的空间变成一个假chunk，这可以通过large bin attack轻松实现。</p>
-<p><img src="https://img-blog.csdnimg.cn/9502d487b17f498491346914265f9c1d.png" alt="" /></p>
+<p><img src="9.png" alt="" /></p>
 <p>高版本libc的large bin attack攻击方式如上图所示（摘自本人以前的博文），我们按照这种方式进行一次攻击。考虑到large bin中的<code>bk_nextsize</code>的偏移为0x20，因此需要使用mummy用户的chunk作为large bin chunk，这样可以修改到<code>bk_nextsize</code>。操作思路如下：</p>
 <ul>
 <li>step 1: 在mummy用户下分配0x450大小（带头部，下同）的chunk</li>
@@ -312,7 +318,7 @@
 <li>step 6: 通过UAF修改mummy用户0x450 free chunk中的<code>bk_nextsize</code>为<code>__free_hook</code>附近的地址</li>
 </ul>
 <p>注意这里对分配大小的控制，large bins的前面几个bins是以0x40为大小进行划分，如果分配chunk的大小就为0x450和0x440，这两个chunk可以链入到一个bin中，这是实现large bin attack的前提，如果不能链入同一个bin，就无法对<code>bk_nextsize</code>进行操作。然后考虑到需要让较大chunk进入large bins，必须要能够分配一个更大的chunk，这里mummy分配0x460的chunk就可以将0x450的chunk链入到large bins。下图是第一次large bin attack之后的bins情况。</p>
-<p><img src="https://img-blog.csdnimg.cn/e7d5debc11e74fd49cf7e30fa9ed94e0.png" alt="" /></p>
+<p><img src="10.png" alt="" /></p>
 <h2 id="d-第二次large-bin-attack"><a class="markdownIt-Anchor" href="#d-第二次large-bin-attack"></a> D. 第二次large bin attack</h2>
 <p>第二次large bin attack，我们的目标是将未来的假<code>_IO_FILE</code>地址写到<code>_IO_list_all</code>中。上一次large bin attack中使用的large bin是可以重用的，我们将<code>bk_nextsize</code>指针改到其他位置还能够再一次进行攻击。第二次large bin attack应该写的具体的堆地址应该根据堆环境进行确定，选择的偏移至关重要。为了方便起见，<strong>我们的伪造<code>_IO_FILE</code>结构体应该在daddy分配索引为4的chunk时附加送给我们的一个chunk中进行构造</strong>。向<code>_IO_list_all</code>中写入的是large bin chunk的地址，如果想要这里同时也指向假<code>_IO_FILE</code>指针，就需要计算好chunk的分配数量，在<code>calloc(0xE8)</code>时能够正好让这个chunk被拆分，这样就实现了此处可写。</p>
 <ul>
