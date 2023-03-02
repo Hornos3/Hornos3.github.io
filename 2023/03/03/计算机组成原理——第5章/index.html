@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="5.1 指令系统概述指令是用户使用计算机与计算机本身运行的基本功能单位。指令是计算机能够直接识别、执行的操作命令，是冯诺依曼结构计算机程序控制原理实现的载体。 指令系统是一台计算机中所有机器指令的集合。 5.2 指令格式5.2.1 指令字长度 &#x3D;&#x3D;指令字长&#x3D;&#x3D;：指令中包含的二进制位数 计算机根据指令字长是否固定可以分为&#x3D;&#x3D;定长和变长指令系统&#x3D;&#x3D; 定长指令系统的指令长度固定，结构简单，有利于CPU取">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理——第5章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="5.1 指令系统概述指令是用户使用计算机与计算机本身运行的基本功能单位。指令是计算机能够直接识别、执行的操作命令，是冯诺依曼结构计算机程序控制原理实现的载体。 指令系统是一台计算机中所有机器指令的集合。 5.2 指令格式5.2.1 指令字长度 &#x3D;&#x3D;指令字长&#x3D;&#x3D;：指令中包含的二进制位数 计算机根据指令字长是否固定可以分为&#x3D;&#x3D;定长和变长指令系统&#x3D;&#x3D; 定长指令系统的指令长度固定，结构简单，有利于CPU取">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-02T16:01:40.000Z">
+<meta property="article:modified_time" content="2023-03-02T16:05:10.485Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机组成原理——第5章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理——第5章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:40 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:40+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="5-1-指令系统概述"><a href="#5-1-指令系统概述" class="headerlink" title="5.1 指令系统概述"></a>5.1 指令系统概述</h2><p>指令是用户使用计算机与计算机本身运行的基本功能单位。指令是计算机能够直接识别、执行的操作命令，是冯诺依曼结构计算机程序控制原理实现的载体。</p>
+<p>指令系统是一台计算机中所有机器指令的集合。</p>
+<h2 id="5-2-指令格式"><a href="#5-2-指令格式" class="headerlink" title="5.2 指令格式"></a>5.2 指令格式</h2><h3 id="5-2-1-指令字长度"><a href="#5-2-1-指令字长度" class="headerlink" title="5.2.1 指令字长度"></a>5.2.1 指令字长度</h3><ul>
+<li>==指令字长==：指令中包含的二进制位数</li>
+<li>计算机根据指令字长是否固定可以分为==定长和变长指令系统==<ul>
+<li>定长指令系统的指令长度固定，结构简单，有利于CPU取指令、译码和指令顺序寻址，但平均指令长度较长，冗余状态较多，不容易扩展。</li>
+<li>变长指令系统的指令长度可变，结构灵活，冗余状态较少，平均指令长度较短，但取指令和译码有很多不便。</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-2-2-指令地址码"><a href="#5-2-2-指令地址码" class="headerlink" title="5.2.2 指令地址码"></a>5.2.2 指令地址码</h2><p>根据指令中地址码字段的个数可将指令分为：</p>
+<ul>
+<li>三地址指令——A~3~←(A~1~)OP(A~2~)</li>
+<li>双地址指令——A~1~←(A~1~)OP(A~2~)</li>
+<li>单地址指令——A~1~←OP(A~1~)，AC←(AC)OP(A~1~)</li>
+<li>零地址指令</li>
+</ul>
+<p>按照指令中操作数的物理位置分类可以分为：</p>
+<ul>
+<li>存储器-存储器型</li>
+<li>寄存器-寄存器型</li>
+<li>寄存器-存储器型</li>
+</ul>
+<p>根据指令的功能可以分为：</p>
+<ul>
+<li>传送指令</li>
+<li>定点算数运算指令</li>
+<li>位运算指令</li>
+<li>控制转移指令</li>
+</ul>
+<p>指令格式：操作码字段+寻址方式+地址码字段<br>操作码字段的位数与支持的最大指令数有关，对于定长操作码而言，最大指令数m与操作码字段长n满足n≥log~2~m。对于变长操作码，可以向不用的地址码字段进行扩展。寻址方式字段的位数与支持的寻址方式种类有关。地址码字段的作用及影响与位数和寻址方式有关。</p>
+<h2 id="5-3-寻址方式"><a href="#5-3-寻址方式" class="headerlink" title="5.3 寻址方式"></a>5.3 寻址方式</h2><p>指令的寻址方式只有顺序寻址和跳跃寻址两种。</p>
+<h3 id="5-3-1-指令寻址方式"><a href="#5-3-1-指令寻址方式" class="headerlink" title="5.3.1 指令寻址方式"></a>5.3.1 指令寻址方式</h3><h4 id="顺序寻址方式"><a href="#顺序寻址方式" class="headerlink" title="顺序寻址方式"></a>顺序寻址方式</h4><p>程序的指令序列在主存顺序存放，执行时从第一条指令开始逐条取出并执行，这种程序的顺序执行过程被称为顺序寻址方式。<br>CPU通过设置==程序计数器==对指令顺序号进行计数。每一次执行一条指令PC加1并指出下一条指令的地址，直到程序结束。</p>
+<h4 id="跳跃寻址方式"><a href="#跳跃寻址方式" class="headerlink" title="跳跃寻址方式"></a>跳跃寻址方式</h4><p>程序出现分支或转移时会改变程序的执行顺序，此时下条指令的地址不一定通过PC+1获得。</p>
+<h3 id="5-3-2-操作数寻址方式"><a href="#5-3-2-操作数寻址方式" class="headerlink" title="5.3.2 操作数寻址方式"></a>5.3.2 操作数寻址方式</h3><ul>
+<li>立即数寻址：地址码字段就是操作数本身。如MOV RAX, 200H中的200H。取指操作将数据和指令一并读入CPU内部的寄存器，指令执行速度快，便于程序设计，但数据大小受到字段的位数限制。</li>
+<li>寄存器寻址：操作数在CPU内部寄存器中。如MOV RAX, RBX。操作数在寄存器中，指令执行速度快，但能访问的数据大小一般与计算机字长有关，地址字段的位数与计算机通用寄存器数量相关。</li>
+<li>直接寻址：操作数在主存储器中，地址码字段给出操作数在内存中的地址。如MOV RAX, [4000H]。提供了访问主存的操作，获得数据需要访问主存，因此指令的执行速度较慢，地址字段的位数决定了访存的空间大小。</li>
+<li>间接寻址：地址码字段给出操作数主存地址的地址。即需要进行两次寻址，相当于二重指针。解决了直接寻址方式下字段的位数限制访存范围大小的问题，但需要访问主存两次，指令执行速度慢。</li>
+<li>寄存器间接寻址：地址码字段给出寄存器编号。如MOV RAX, [RBX]，需要首先访问寄存器获取寄存器的值，然后根据该值到主存中访存。其解决了直接寻址方式下地址字段的位数限制访存范围大小的问题，且获得数据只需要访问一次主存。</li>
+<li>相对寻址：将程序计数器PC中的内容加上指令中的形式地址，形成操作数的有效地址。如JMP指令。该寻址方式可节省指令中的地址位数，便于程序在内存中成块移动，注意PC的改变对计算有效地址的影响，有效地址值应该为当前指令的地址+偏移量+==当前指令的长度==。</li>
+<li>基址寻址：指定基址寄存器，与本指令地址无关。如MOV RAX, [RBP+10H]。使用基址寄存器可以访问更大的主存空间，对某一程序而言，==基址值设定后不变==，故要访问不同数据需要修改偏移量的值。</li>
+<li>变址寻址：指定一个变址寄存器，与本指令地址无关。因此首先需要根据寄存器编号找到寄存器，再将寄存器值与偏移相加获得有效地址，之后访存。如MOV RAX, [RSI+10H]。</li>
+</ul>
+<h2 id="5-5-指令格式设计"><a href="#5-5-指令格式设计" class="headerlink" title="5.5 指令格式设计"></a>5.5 指令格式设计</h2><ul>
+<li>根据指令数量的要求及是否支持操作码扩展，确定操作码字段的位数</li>
+<li>根据对操作数的要求确定地址码字段的个数</li>
+<li>根据寻址方式的要求，为每个地址码字段确定寻址方式字段位数</li>
+<li>确定采用定长指令还是变长指令</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/" rel="prev" title="计算机组成原理——第4章">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理——第4章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" rel="next" title="计算机组成原理——第6章">
+      计算机组成原理——第6章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-%E6%8C%87%E4%BB%A4%E7%B3%BB%E7%BB%9F%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">5.1 指令系统概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">5.2 指令格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-1-%E6%8C%87%E4%BB%A4%E5%AD%97%E9%95%BF%E5%BA%A6"><span class="nav-number">2.1.</span> <span class="nav-text">5.2.1 指令字长度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-2-%E6%8C%87%E4%BB%A4%E5%9C%B0%E5%9D%80%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">5.2.2 指令地址码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">5.3 寻址方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-1-%E6%8C%87%E4%BB%A4%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">5.3.1 指令寻址方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%BA%E5%BA%8F%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.1.</span> <span class="nav-text">顺序寻址方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B7%B3%E8%B7%83%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-number">4.1.2.</span> <span class="nav-text">跳跃寻址方式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3-2-%E6%93%8D%E4%BD%9C%E6%95%B0%E5%AF%BB%E5%9D%80%E6%96%B9%E5%BC%8F"><span class="nav-number">4.2.</span> <span class="nav-text">5.3.2 操作数寻址方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.</span> <span class="nav-text">5.5 指令格式设计</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">889k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:28</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

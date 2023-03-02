@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1.1 基本概念 数字信号：在时间和数值上离散变化的信号。 数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。 特点：  是二值信号 半导体期间处于开或关状态 结构简单、功耗低、便于集成 速度快、精度高、功能强、可靠性好  分类：  根据是否具有记忆功能分为数字逻辑电路和组合逻辑电路 时序逻辑电路：逻辑电路在任何时刻的稳定输出不仅取决于该时刻的输入，还与过去的输入有关 同步与异步">
+  <meta name="description" content="1.1 基本概念数字信号：在时间和数值上离散变化的信号。数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。特点：  是二值信号 半导体期间处于开或关状态 结构简单、功耗低、便于集成 速度快、精度高、功能强、可靠性好  分类：  根据是否具有记忆功能分为数字逻辑电路和组合逻辑电路 时序逻辑电路：逻辑电路在任何时刻的稳定输出不仅取决于该时刻的输入，还与过去的输入有关 同步与异步  研究方">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字逻辑 Chapter 1——基本知识">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-1%E2%80%94%E2%80%94%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="1.1 基本概念 数字信号：在时间和数值上离散变化的信号。 数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。 特点：  是二值信号 半导体期间处于开或关状态 结构简单、功耗低、便于集成 速度快、精度高、功能强、可靠性好  分类：  根据是否具有记忆功能分为数字逻辑电路和组合逻辑电路 时序逻辑电路：逻辑电路在任何时刻的稳定输出不仅取决于该时刻的输入，还与过去的输入有关 同步与异步">
+<meta property="og:description" content="1.1 基本概念数字信号：在时间和数值上离散变化的信号。数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。特点：  是二值信号 半导体期间处于开或关状态 结构简单、功耗低、便于集成 速度快、精度高、功能强、可靠性好  分类：  根据是否具有记忆功能分为数字逻辑电路和组合逻辑电路 时序逻辑电路：逻辑电路在任何时刻的稳定输出不仅取决于该时刻的输入，还与过去的输入有关 同步与异步  研究方">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-28T15:07:45.000Z">
 <meta property="article:modified_time" content="2023-03-01T03:31:47.138Z">
@@ -233,10 +233,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="11-基本概念"><a class="markdownIt-Anchor" href="#11-基本概念"></a> 1.1 基本概念</h1>
-<p>数字信号：在时间和数值上离散变化的信号。<br />
-数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。<br />
-特点：</p>
+        <h1 id="1-1-基本概念"><a href="#1-1-基本概念" class="headerlink" title="1.1 基本概念"></a>1.1 基本概念</h1><p>数字信号：在时间和数值上离散变化的信号。<br>数字逻辑电路：用于处理数字信号的电路，通过逻辑运算、判断来实现。<br>特点：</p>
 <ul>
 <li>是二值信号</li>
 <li>半导体期间处于开或关状态</li>
@@ -250,22 +247,11 @@
 <li>同步与异步</li>
 </ul>
 <p>研究方法：逻辑分析与逻辑设计</p>
-<h1 id="12-数制与转换"><a class="markdownIt-Anchor" href="#12-数制与转换"></a> 1.2 数制与转换</h1>
-<p>小数转换：乘n取整法</p>
-<h1 id="13-带符号二进制数的代码表示"><a class="markdownIt-Anchor" href="#13-带符号二进制数的代码表示"></a> 1.3 带符号二进制数的代码表示</h1>
-<p>原码：符号位0为正，1为负，其他不变<br />
-反码：符号位0为正，1为负，负数的其他位均取反<br />
-补码：正数与原码相同，负数为反码加1</p>
-<h1 id="14-几种常用编码"><a class="markdownIt-Anchor" href="#14-几种常用编码"></a> 1.4 几种常用编码</h1>
-<h2 id="141"><a class="markdownIt-Anchor" href="#141"></a> 1.4.1</h2>
-<p>8421码<br />
-2421码<br />
-余3码</p>
-<h2 id="142-可靠性编码"><a class="markdownIt-Anchor" href="#142-可靠性编码"></a> 1.4.2 可靠性编码</h2>
-<ol>
-<li>格雷码：任意两个相邻的数，其格雷码仅有1位不同。<br />
-二进制转格雷码方法：最高位不变，格雷码第i位为原二进制码第i位和第i+1位异或得到。<br />
-格雷码转二进制码方法：从高位向低位依次转换，二进制最高位即为格雷码最高位，往下第i位为格雷码第i位与第i+1位异或得到。</li>
+<h1 id="1-2-数制与转换"><a href="#1-2-数制与转换" class="headerlink" title="1.2 数制与转换"></a>1.2 数制与转换</h1><p>小数转换：乘n取整法</p>
+<h1 id="1-3-带符号二进制数的代码表示"><a href="#1-3-带符号二进制数的代码表示" class="headerlink" title="1.3 带符号二进制数的代码表示"></a>1.3 带符号二进制数的代码表示</h1><p>原码：符号位0为正，1为负，其他不变<br>反码：符号位0为正，1为负，负数的其他位均取反<br>补码：正数与原码相同，负数为反码加1</p>
+<h1 id="1-4-几种常用编码"><a href="#1-4-几种常用编码" class="headerlink" title="1.4 几种常用编码"></a>1.4 几种常用编码</h1><h2 id="1-4-1"><a href="#1-4-1" class="headerlink" title="1.4.1"></a>1.4.1</h2><p>8421码<br>2421码<br>余3码</p>
+<h2 id="1-4-2-可靠性编码"><a href="#1-4-2-可靠性编码" class="headerlink" title="1.4.2 可靠性编码"></a>1.4.2 可靠性编码</h2><ol>
+<li>格雷码：任意两个相邻的数，其格雷码仅有1位不同。<br>二进制转格雷码方法：最高位不变，格雷码第i位为原二进制码第i位和第i+1位异或得到。<br>格雷码转二进制码方法：从高位向低位依次转换，二进制最高位即为格雷码最高位，往下第i位为格雷码第i位与第i+1位异或得到。</li>
 <li>奇偶校验码：检验信息位中 <strong>“1”</strong> 的个数，对于奇校验，如果1的个数为奇数则校验位为<strong>0</strong>，偶校验则是1的个数为偶数时校验位为<strong>0</strong>。（别搞反了！）</li>
 </ol>
 
@@ -348,7 +334,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#11-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text"> 1.1 基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#12-%E6%95%B0%E5%88%B6%E4%B8%8E%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text"> 1.2 数制与转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-%E5%B8%A6%E7%AC%A6%E5%8F%B7%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E7%9A%84%E4%BB%A3%E7%A0%81%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text"> 1.3 带符号二进制数的代码表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text"> 1.4 几种常用编码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#141"><span class="nav-number">4.1.</span> <span class="nav-text"> 1.4.1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#142-%E5%8F%AF%E9%9D%A0%E6%80%A7%E7%BC%96%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text"> 1.4.2 可靠性编码</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-1-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">1.1 基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-2-%E6%95%B0%E5%88%B6%E4%B8%8E%E8%BD%AC%E6%8D%A2"><span class="nav-number">2.</span> <span class="nav-text">1.2 数制与转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-3-%E5%B8%A6%E7%AC%A6%E5%8F%B7%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E7%9A%84%E4%BB%A3%E7%A0%81%E8%A1%A8%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text">1.3 带符号二进制数的代码表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-4-%E5%87%A0%E7%A7%8D%E5%B8%B8%E7%94%A8%E7%BC%96%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">1.4 几种常用编码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-1"><span class="nav-number">4.1.</span> <span class="nav-text">1.4.1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-2-%E5%8F%AF%E9%9D%A0%E6%80%A7%E7%BC%96%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text">1.4.2 可靠性编码</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -362,14 +348,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">101</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -414,13 +400,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">912k</span>
+    <span title="Symbols count total">889k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:49</span>
+    <span title="Reading time total">13:28</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

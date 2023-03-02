@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第6章 中央处理器6.1 概述CPU的基本组成：运算器、控制器CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等 主要寄存器：  PC：程序计数器，即EIP(x86&#x2F;x86-64)&#x2F;PC(ARM&#x2F;MIPS) IR：指令寄存器，保存当前正在执行的指令 AR：地址寄存器，用于保存CPU访问主存的单元地址 DR：数据寄存器，用于保存从主存读入或将写入主存的数据 AC：累加寄存器 PSW">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理——第6章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="第6章 中央处理器6.1 概述CPU的基本组成：运算器、控制器CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等 主要寄存器：  PC：程序计数器，即EIP(x86&#x2F;x86-64)&#x2F;PC(ARM&#x2F;MIPS) IR：指令寄存器，保存当前正在执行的指令 AR：地址寄存器，用于保存CPU访问主存的单元地址 DR：数据寄存器，用于保存从主存读入或将写入主存的数据 AC：累加寄存器 PSW">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/de0f98f42136464585ebed5fce96d6d5.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3f0cfe89124c43659c4411dc548d251a.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/b777065d983a410c8cc1d0af5fcd6870.png">
+<meta property="article:published_time" content="2023-03-02T16:01:45.000Z">
+<meta property="article:modified_time" content="2023-03-02T16:05:10.457Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机组成原理——第6章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理——第6章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:45 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第6章-中央处理器"><a href="#第6章-中央处理器" class="headerlink" title="第6章 中央处理器"></a>第6章 中央处理器</h1><h2 id="6-1-概述"><a href="#6-1-概述" class="headerlink" title="6.1 概述"></a>6.1 概述</h2><p>CPU的基本组成：运算器、控制器<br>CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等</p>
+<p>主要寄存器：</p>
+<ul>
+<li>PC：程序计数器，即EIP(x86/x86-64)/PC(ARM/MIPS)</li>
+<li>IR：指令寄存器，保存当前正在执行的指令</li>
+<li>AR：地址寄存器，用于保存CPU访问主存的单元地址</li>
+<li>DR：数据寄存器，用于保存从主存读入或将写入主存的数据</li>
+<li>AC：累加寄存器</li>
+<li><p>PSW：程序状态字，保存由某些指令建立的条件标志</p>
+<h2 id="6-2-指令周期"><a href="#6-2-指令周期" class="headerlink" title="6.2 指令周期"></a>6.2 指令周期</h2><p>指令执行时，首先以PC为地址访问主存取指令，同时更新PC的值作为后续指令的地址。若为分支指令且满足分支条件，则重新修改PC值作为分支目标地址，否则经历<font color=red>取操作数、执行指令、存操作数</font>的基本过程。</p>
+</li>
+<li><p>时钟周期=节拍脉冲=震荡周期，可以完成一次微操作</p>
+</li>
+<li>机器周期=CPU周期，从主存读出一条指令的最短时间，可以完成一次复杂操作</li>
+<li>指令周期，从主存取一条指令并执行指令的时间，由若干机器周期构成，机器周期包含若干时钟周期。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png" alt=""></p>
+<p>时间控制的方式：</p>
+<ul>
+<li>定长指令周期：早期三级时序系统，机器周期数固定，节拍数固定，按照机器周期同步，mips单周期。</li>
+<li>变长指令周期：现代时序系统，机器周期数可变，节拍数可变，按照时钟周期同步，mips多周期。</li>
+</ul>
+<p>将一条指令从取出到执行完成所需要的时间称为指令周期，指令周期可分为：</p>
+<ul>
+<li>取指周期：以PC的内容为地址从主存中取出指令，并计算后续指令的地址。对于变长指令需要经过指令译码得到指令的实际字节长度之后才能计算并修改PC的值。</li>
+<li>译码/取操作数周期：对指令寄存器中的指令字进行指令译码，识别指令类型。根据指令地址码生成操作数有效地址，然后访问相应寄存器或主存单元。若为间接寻址则还需要加入间址周期（访存周期）得到操作数的地址。该周期内不能并行读取操作数，因此可能会经历多次取操作数周期。</li>
+<li>执行周期：向运算器等部件发送操作控制命令，对已经取出的操作数进行加工处理，并将处理状态送入PSW中。不同指令的执行周期不同。</li>
+<li>写回周期：将运算结果写回到目的寄存器或存储器中，将运算结果写回存储器较慢。<h2 id="6-3-数据通路及指令操作流程"><a href="#6-3-数据通路及指令操作流程" class="headerlink" title="6.3 数据通路及指令操作流程"></a>6.3 数据通路及指令操作流程</h2>数据通路——执行部件之间传输信息的路径。</li>
+<li>通路的建立由控制信号控制，受到时钟驱动。</li>
+<li>不同指令，同一指令在执行的不同阶段的数据通路不同。</li>
+<li>数据通路可以分为共享通路和专用通路。<h3 id="6-3-1-数据通路模型与定时"><a href="#6-3-1-数据通路模型与定时" class="headerlink" title="6.3.1 数据通路模型与定时"></a>6.3.1 数据通路模型与定时</h3>时钟信号上升沿时刻到寄存器输出稳定时刻之间有一段时延，称为<font color=red>寄存器延迟（clk_to_q）</font>。数据处理单元处理寄存器内容有一定时延，将所有输出信号稳定的延迟，也即所需稳定时间最长的输出信号的稳定时间，称为<font color=red>关键路径延迟（max）</font>。将计算结果保存到寄存器之后还需要稳定一段时间才能够接受下一个上升沿，称为<font color=red>寄存器建立时间（setup）</font>。时钟上升沿到来之前的数据输入需要保持一定时间的稳定，称为<font color=red>寄存器保持时间（hold）</font>。故<font color=red>数据通路的最小时钟周期必须大于T~clk_to_q~+T~max~+T~setup~</font>，其中T~max~占主导。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/de0f98f42136464585ebed5fce96d6d5.png" alt=""></p>
+<p>保持时间违例：两个寄存器在一个上升沿同时更新新值，其中一个寄存器经过寄存器延迟和最短路径延迟（T~min~）到达另一个寄存器输入端，为了不让该信号修改寄存器的值，应该满足<font color=red>寄存器保持时间T~hold~&lt;寄存器延迟T~clk_to_q~+组合逻辑最短路径延迟T~min~</font>。</p>
+<h3 id="6-3-2-单总线结构的数据通路"><a href="#6-3-2-单总线结构的数据通路" class="headerlink" title="6.3.2 单总线结构的数据通路"></a>6.3.2 单总线结构的数据通路</h3><p>数据通路的分类：</p>
+<ul>
+<li>共享通路（总线型）：主要部件都连接在公共总线上，各个部件之间通过总线进行数据传输。其结构简单，实现容易，但并发性较差，需要分时使用总线，效率较低。</li>
+<li>专用通路：并发度高，性能好，但设计复杂，成本高。可以看做多总线结构。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/3f0cfe89124c43659c4411dc548d251a.png" alt=""></p>
+<p>CPU的运算器、控制器、寄存器堆等核心部件均由一条内部的公共总线连接起来，构成单总线结构的数据通路。这条内部公共总线称为CPU的内总线。将连接CPU、内存及输入输出设备等部件构成计算机系统的总线称为系统总线或外总线。</p>
+<p>考虑执行指令add r0, r1，首先需要从寄存器堆中取出两个寄存器的值并输入到ALU的两个输入端，ALU的两个输入端连接有两个锁存器，可以分别保存两个寄存器的值，取出两个寄存器的值需要使用两个时钟周期，两次取值操作分别占用总线一个周期。之后ALU计算得到结果，通过总线输入到寄存器堆中，共需要3个周期和2个锁存器。</p>
+<p>如果能够添加一条总线直接连接ALU的一个输入和寄存器堆，则只需要两个时钟周期即可执行上述指令。第一步将一个寄存器的值保存到ALU一端的锁存器，第二步第二条总线将第二个寄存器的值输入到ALU另一端，ALU进行计算并通过第一条总线输出到寄存器堆中。共需2个时钟周期和1个锁存器。</p>
+<h4 id="指令执行示例"><a href="#指令执行示例" class="headerlink" title="指令执行示例"></a>指令执行示例</h4><p><strong>LOAD R0, 6#</strong><br>功能：将主存地址为6的内容写入R0寄存器</p>
+<ul>
+<li>取指令数据通路：<ul>
+<li>T1：PC保存到AR和X中，准备访问AR处地址的指令内容</li>
+<li>T2：X+1保存到Z中，程序计数器+1，准备将Z写到PC，Z即为下一条指令地址</li>
+<li>T3：Z保存到PC，从主存取出指令内容保存到DR</li>
+<li>T4：将DR保存到IR，至此取指完成，指令内容已经被保存到IR。</li>
+</ul>
+</li>
+<li>译码周期：略</li>
+<li>执行周期，完成指令要求的任务，即首先取内存地址为6的数据，再保存到寄存器R0<ul>
+<li>T1：将IR中的地址操作数部分（值为6）保存到AR，X保存PC的值</li>
+<li>T2：主存读取</li>
+<li>T3：主存将读取的数据保存到DR</li>
+<li>T4：将DR的内容保存到寄存器R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>MOVE R1, 10</strong></p>
+<ul>
+<li>执行周期：<ul>
+<li>T1：将指令中的地址操作数部分（值为10）保存到R1</li>
+</ul>
+</li>
+</ul>
+<p><strong>ADD R0, R1</strong></p>
+<ul>
+<li>执行周期<ul>
+<li>T1：将寄存器R0保存到X</li>
+<li>T2：R1的值输出到总线，ALU接收X和总线的数据，计算结果并保存到Z</li>
+<li>T3：将Z的值写入到R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>STORE R0, (R2)</strong></p>
+<ul>
+<li>执行周期，将R0的值保存到地址为R2的内存空间<ul>
+<li>T1：将R2的值保存到AR</li>
+<li>T2：将R0的值保存到DR</li>
+<li>T3：将DR的值写入到内存地址为AR的空间</li>
+</ul>
+</li>
+</ul>
+<p><strong>JMP 1000</strong></p>
+<ul>
+<li>执行周期<ul>
+<li>T1：将IR中的地址操作数（1000）保存到PC</li>
+</ul>
+</li>
+</ul>
+<h2 id="6-5-硬布线控制器"><a href="#6-5-硬布线控制器" class="headerlink" title="6.5 硬布线控制器"></a>6.5 硬布线控制器</h2><p>硬布线控制器可以看成产生固定时序控制信号的逻辑电路。<br>输入信号：指令译码，时钟信号，反馈信号<br>输出信号：功能部件控制信号序列<br>设计目标：最少元件，最快速度<br>理论基础：布尔代数<br>组成器件：门电路、触发器</p>
+<ul>
+<li>定长指令周期：使用2个机器周期，8个时钟周期，由于一些指令并不需要所有8个时钟周期，因此速度较慢（会浪费时间），但设计简单</li>
+<li>变长指令周期：时钟周期数量可变，速度快，但设计较复杂</li>
+</ul>
+<p>硬布线控制器模型：包含指令寄存器和指令译码器，时序发生器、硬布线控制器组合逻辑单元等几个部分，其中硬布线控制器组合逻辑单元用于产生指令执行所需要的所有控制信号序列，是控制器的核心。<br>输入来自：</p>
+<ul>
+<li>指令译码器的输出</li>
+<li>执行部件以及IO总线的反馈信号</li>
+<li>时序发生器的状态周期电位信号和节拍电位信号</li>
+</ul>
+<p>输出信号：微操作控制信号序列，可以看做所有输入信号的逻辑函数，每个控制信号都是由不同的指令译码信号、状态周期信号、节拍定位信号、状态反馈信号构成的逻辑与操作的和。（积之和范式）</p>
+<p>固定指令周期硬布线控制器设计过程</p>
+<ul>
+<li>设计三级时序产生器：所有指令固定机器周期数，节拍数</li>
+<li>列出所有机器指令的指令周期流程图，明确每个节拍的控制信号</li>
+<li>找出产生同一个微操作控制信号的条件</li>
+<li>写出各个微操作控制信号的布尔表达式</li>
+<li>化简各个表达式</li>
+<li>利用组合逻辑电路实现</li>
+</ul>
+<p>可变周期硬布线控制器设计步骤</p>
+<ul>
+<li>列出所有机器指令的指令周期流程图，明确每一个节拍的控制信号</li>
+<li>绘制指令执行状态转换图</li>
+<li>根据状态转换图构建状态集真值表，实现有限状态机组合逻辑</li>
+<li>实现控制器组合逻辑电路</li>
+</ul>
+<h2 id="6-6-微程序控制器"><a href="#6-6-微程序控制器" class="headerlink" title="6.6 微程序控制器"></a>6.6 微程序控制器</h2><h3 id="6-6-1-微程序控制器的基本概念"><a href="#6-6-1-微程序控制器的基本概念" class="headerlink" title="6.6.1 微程序控制器的基本概念"></a>6.6.1 微程序控制器的基本概念</h3><p>硬布线为同步逻辑，设计复杂，速度快，贵，且难以修改。一条指令有多个时钟周期，一个时钟周期对应一个状态，一个状态对应一组并发信号。<br>微程序为存储逻辑，设计简单，速度慢，偏移，容易修改。将并发信号实现保存为微指令，一条指令对应于多条微指令，状态等同于存储器地址。</p>
+<p>微地址寄存器μAR为控制存储器提供微指令地址，初始化为0，控制存储器0号单元应该为取指令微程序的第一条微指令。</p>
+<h3 id="6-6-2-微程序控制器组成原理"><a href="#6-6-2-微程序控制器组成原理" class="headerlink" title="6.6.2 微程序控制器组成原理"></a>6.6.2 微程序控制器组成原理</h3><p>利用软件方法设计硬件的技术，将完成指令所需的控制信号按照格式编写为微指令，并存放到<font color=red>控制存储器（控存ROM）</font>，一条机器指令对应于一段微程序，微程序中有多条微指令。<br>将存储技术与程序设计相结合，可以回避复杂的同步时序逻辑设计。</p>
+<p> 单总线CPU的微指令构造：</p>
+<ul>
+<li>操作控制字段：用于存储操作控制信号，每一位对应一个控制信号，也称微命令，可以同时给出多个操作信号。</li>
+<li>顺序控制字段：用于控制微程序的执行顺序，判别逻辑为0，下一条微指令地址从<font color=red>下址字段</font>获取，否则按照约定规则生成。一个微程序的最后一条微指令的判别字段非零，代表地址跳转。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/b777065d983a410c8cc1d0af5fcd6870.png" alt=""></p>
+<h3 id="6-6-3-微程序控制器设计"><a href="#6-6-3-微程序控制器设计" class="headerlink" title="6.6.3 微程序控制器设计"></a>6.6.3 微程序控制器设计</h3><p>微指令包含操作控制字段和顺序控制字段，一条微指令对应于一个时钟周期，微指令操作控制字段的信号在该时钟周期之内有效。指令需要多少时钟周期就包含多少微指令。操作控制字段的每一位都代表一个控制结构的开启与否。在一个时钟周期内，需要开启的控制字段在操作控制字段中的对应位会被设置为1。</p>
+<p>上面的顺序控制字段中P~1~表示下址字段是否有效，在取指周期的最后一个时钟周期，下址字段就无效，因为下一条微命令的地址不确定。其他的微程序的最后一个微命令的下址字段基本都为0。</p>
+<p>微指令设计原则：</p>
+<ul>
+<li>有利于缩短微指令字长度</li>
+<li>有利于减少控存容量</li>
+<li>有利于提高微程序执行速度</li>
+<li>有利于对微程序进行修改</li>
+<li>有利于提高微程序设计的灵活性</li>
+</ul>
+<p>微指令的直接表示法简单直观，便于输出控制，但微指令长度太长，控存容量大。优化方法：</p>
+<ul>
+<li>修改直接表示为编码表示，压缩互斥性的微指令，如4个互斥性的微指令可以不用4个二进制位表示，而是用2个二进制位替换。</li>
+<li>去掉下址字段，采用μPC=μPC+1的方式生成微指令地址。<ul>
+<li>微指令地址的形成方法有两种，一种是通过下址字段，另一种就是计数器法。前者微指令长，但控存容量大，后者微指令短，但需要加法器。</li>
+</ul>
+</li>
+<li>修改水平型微指令为垂直型微指令，牺牲了并行性。<ul>
+<li>水平型微指令：在一个微指令周期内能够同时给出多个微命令的微指令。并行操作能力强，效率高，灵活性强，字较长，微程序短，控存容量大，性能好。</li>
+<li>垂直型微指令：采用完全编码方法，将全部微命令编码化。字长短，微程序长，控存容量小，性能差，与指令相似，易于掌握，已经基本被淘汰。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/" rel="prev" title="计算机组成原理——第5章">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理——第5章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0%E4%B9%A0%E9%A2%98/" rel="next" title="计算机组成原理——第1章习题">
+      计算机组成原理——第1章习题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC6%E7%AB%A0-%E4%B8%AD%E5%A4%AE%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text">第6章 中央处理器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">6.1 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-%E6%8C%87%E4%BB%A4%E5%91%A8%E6%9C%9F"><span class="nav-number">1.2.</span> <span class="nav-text">6.2 指令周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF%E5%8F%8A%E6%8C%87%E4%BB%A4%E6%93%8D%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.3.</span> <span class="nav-text">6.3 数据通路及指令操作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-1-%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF%E6%A8%A1%E5%9E%8B%E4%B8%8E%E5%AE%9A%E6%97%B6"><span class="nav-number">1.3.1.</span> <span class="nav-text">6.3.1 数据通路模型与定时</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3-2-%E5%8D%95%E6%80%BB%E7%BA%BF%E7%BB%93%E6%9E%84%E7%9A%84%E6%95%B0%E6%8D%AE%E9%80%9A%E8%B7%AF"><span class="nav-number">1.3.2.</span> <span class="nav-text">6.3.2 单总线结构的数据通路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E4%BB%A4%E6%89%A7%E8%A1%8C%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">指令执行示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-%E7%A1%AC%E5%B8%83%E7%BA%BF%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-number">1.4.</span> <span class="nav-text">6.5 硬布线控制器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-6-%E5%BE%AE%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E5%99%A8"><span class="nav-number">1.5.</span> <span class="nav-text">6.6 微程序控制器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-1-%E5%BE%AE%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E5%99%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text">6.6.1 微程序控制器的基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-2-%E5%BE%AE%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E5%99%A8%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86"><span class="nav-number">1.5.2.</span> <span class="nav-text">6.6.2 微程序控制器组成原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6-3-%E5%BE%AE%E7%A8%8B%E5%BA%8F%E6%8E%A7%E5%88%B6%E5%99%A8%E8%AE%BE%E8%AE%A1"><span class="nav-number">1.5.3.</span> <span class="nav-text">6.6.3 微程序控制器设计</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">889k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:28</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

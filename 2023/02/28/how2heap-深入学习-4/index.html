@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。 按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码 如果本文的分析有任何错漏之处，还请各位读者不吝赐">
+  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感">
 <meta property="og:type" content="article">
 <meta property="og:title" content="how2heap 深入学习(4)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-4/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。 按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码 如果本文的分析有任何错漏之处，还请各位读者不吝赐">
+<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-28T14:21:37.000Z">
 <meta property="article:modified_time" content="2023-03-01T03:31:11.314Z">
@@ -214,7 +214,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>6.6k</span>
+              <span>6.5k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
@@ -233,16 +233,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
-Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br />
-参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 16.04<br />
-Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
-<p>本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。<br />
-按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码<br />
-如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="12-large_bin_attack"><a class="markdownIt-Anchor" href="#12-large_bin_attack"></a> 12. large_bin_attack</h1>
-<p>large_bin_attack可以用于在栈区写入一个较大的值。通常是为其他攻击方式做准备。</p>
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 16.04<br>Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
+<p>本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。<br>按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码<br>如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
+<h1 id="12-large-bin-attack"><a href="#12-large-bin-attack" class="headerlink" title="12. large_bin_attack"></a>12. large_bin_attack</h1><p>large_bin_attack可以用于在栈区写入一个较大的值。通常是为其他攻击方式做准备。</p>
 <p>首先，源码在栈区定义了两个变量stack_var1和stack_var2，类型为unsigned long。之后依次分配了大小为0x430(p1), 0x20, 0x510(p2), 0x20, 0x510(p3), 0x20大小的chunk。（0x20的chunk用于防止堆块合并）</p>
 <p>之后，释放p1和p2。此时unsorted bin的结构应为：</p>
 <p><code>unsorted bin head &lt;-&gt; p2 &lt;-&gt; p1</code></p>
@@ -261,6 +255,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 <p>由于在修改p2之后，bin的结构如图：</p>
 <p>所以遍历时会首先遍历到p1。通过源码进行调试发现这里直接跳过了else语句而从mark_bin开始执行。victim = p1，bck = fwd = main_arena + 984，这应该是p1现在的大小所对应的应该放入的small bin的位置（此时p1大小为0x391，属于small bins范围）。经历这4步之后，p1被成功链入到一个large bin中，目前一切正常。</p>
 <p>然后，_int_malloc会进行下一次循环，去处理p3。此时victim = p3，fwd = p2，bck = 0x7fffffffe460。这时，else语句中会被执行。内部4个语句执行完成后，p1，p2，p3和部分栈区结构如下：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -277,8 +272,8 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 <tr>
 <td style="text-align:center">p1 + 0x10</td>
-<td style="text-align:center">&lt;small bin addr&gt;</td>
-<td style="text-align:center">&lt;small bin addr&gt;</td>
+<td style="text-align:center">\<small bin addr\></td>
+<td style="text-align:center">\<small bin addr\></td>
 </tr>
 <tr>
 <td style="text-align:center">…</td>
@@ -298,7 +293,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 <tr>
 <td style="text-align:center">p2 + 0x20</td>
 <td style="text-align:center">0</td>
-<td style="text-align:center">&lt;p3&gt;（原为0x7fffffffe458，第三步修改）</td>
+<td style="text-align:center">\<p3\>（原为0x7fffffffe458，第三步修改）</td>
 </tr>
 <tr>
 <td style="text-align:center">…</td>
@@ -312,12 +307,12 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 <tr>
 <td style="text-align:center">p3 + 0x10</td>
-<td style="text-align:center">&lt;unsorted bin head&gt;</td>
-<td style="text-align:center">&lt;unsorted bin head&gt;</td>
+<td style="text-align:center">\<unsorted bin head\></td>
+<td style="text-align:center">\<unsorted bin head\></td>
 </tr>
 <tr>
 <td style="text-align:center">p3 + 0x20</td>
-<td style="text-align:center">&lt;p2&gt;（第一步修改）</td>
+<td style="text-align:center">\<p2\>（第一步修改）</td>
 <td style="text-align:center">0x7fffffffe458（第二步修改）</td>
 </tr>
 <tr>
@@ -328,16 +323,17 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 <tr>
 <td style="text-align:center">(stack)</td>
 <td style="text-align:center">stack_var1 = 0</td>
-<td style="text-align:center">stack_var2 = &lt;p3&gt;（第四步修改）</td>
+<td style="text-align:center">stack_var2 = \<p3\>（第四步修改）</td>
 </tr>
 </tbody>
 </table>
+</div>
 <p>可以看到，在else语句里面，stack_var2在第4步被修改。跳出else语句之后，第四条语句<code>bck-&gt;fd = victim;</code>将stack_var1成功修改为p3的地址。至此，目标地址修改完成。stack_var1和stack_var2现在的值为p3的地址。</p>
-<h1 id="13-mmap_overlapping_chunks"><a class="markdownIt-Anchor" href="#13-mmap_overlapping_chunks"></a> 13. mmap_overlapping_chunks</h1>
-<p>源码中第一句就说，这是一个应该能够在所有libc版本中利用的漏洞。</p>
+<h1 id="13-mmap-overlapping-chunks"><a href="#13-mmap-overlapping-chunks" class="headerlink" title="13. mmap_overlapping_chunks"></a>13. mmap_overlapping_chunks</h1><p>源码中第一句就说，这是一个应该能够在所有libc版本中利用的漏洞。</p>
 <p>在libc中，如果用户一次性申请的内存空间过大，malloc函数不会像通常那样从堆中分配内存给用户，而是调用mmap函数为用户映射一块单独的虚拟内存使用。同样，当用户将这块空间释放时，会调用munmap函数将这块空间返还给操作系统内核。</p>
 <p>通过mmap获取的chunk在size域的bit-1上有体现。size的bit-0，bit-1，bit-2三位是用于保存控制信息的，其中bit-1就表示该chunk是否由mmap产生。mmap chunk有prev size域，它表示mmap chunk的剩余大小（内核调用mmap函数时通常会分配一块大于用户需求的内存块）。同时mmap chunk的fd和bk指针没有意义，在free时也不会放入bins中。在释放时，mmap chunk必须是页对齐的。</p>
 <p>首先，程序分配一个小chunk用于初始化堆空间。然后分配一块大小为0x100000的chunk，这第一块chunk的位置是在libc的加载地址之上的，后面又分配了2个相同大小的大chunk就在libc的加载地址之下了，空间分配大致如下表：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -364,21 +360,20 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>此时，第三个mmap chunk的prev size为0，因为申请大小本身就是页对齐的，没有剩余空间。程序输出显示，第三个mmap chunk的size为0x101002。然后，我们只需要将这个chunk的大小改大，在释放的时候就能够将第二个mmap连带着释放掉。在程序中是将第三个chunk的size改为了0x202002，正好将第二个chunk全部覆盖。这实际上就是mmap版本的UAF。但是需要注意的是，由于munmap是将这块空间直接返还给了linux内核，因此释放后直接访问这段内存会导致程序崩溃。这点与一般的free不同。因此，现在需要做的就是将这段内存要回来，让两个指针指向相同位置。</p>
 <p>随后，第三个chunk被释放，第二个连带着被释放，接下来又分配一个大小为0x300000的chunk，这个chunk完全覆盖了第二个和第三个chunk，大小为0x301002。此时第四个chunk的初始地址比第二个chunk小0x200000，由于所有mmap chunk的类型均设定为long long，因此索引应该为0x40000，即第四个chunk下标为0x40000的地方就是第二个chunk的开头，这样就能够通过第四个chunk修改第二个chunk的值了。</p>
 <p>实际上这个漏洞还是比较好理解的，就是修改chunk的大小让chunk重叠。</p>
-<h1 id="14-overlapping_chunks"><a class="markdownIt-Anchor" href="#14-overlapping_chunks"></a> 14. overlapping_chunks</h1>
-<p>这是一个堆块重叠产生的漏洞利用。</p>
+<h1 id="14-overlapping-chunks"><a href="#14-overlapping-chunks" class="headerlink" title="14. overlapping_chunks"></a>14. overlapping_chunks</h1><p>这是一个堆块重叠产生的漏洞利用。</p>
 <p>首先有4个指针p1~p4，前三个分别分配0x100，0x100，0x80大小的chunk，然后将p1中的所有字节设为1，p2所有字节设为2，p3所有字节设为3。</p>
 <p>然后将p2释放，p2会链入unsorted bin中。接下来是漏洞关键步骤：修改p2的大小，将其改大为0x180，这样p3将完全被p2重叠。之后，分配0x178大小的chunk到p4，这使得p2被重新分配出来，直接从unsorted bin中弹出。后面的过程就很好理解了，由于p4完全包含p3，这使得我们可以在p4中写入数据时随意修改p3中的值。</p>
 <p>当然，从这里看，堆块重叠只是为其他漏洞利用方式做准备。</p>
-<h1 id="15-overlapping_chunks_2"><a class="markdownIt-Anchor" href="#15-overlapping_chunks_2"></a> 15. overlapping_chunks_2</h1>
-<p>这个文件与上面的overlapping_chunks基本上相似。</p>
+<h1 id="15-overlapping-chunks-2"><a href="#15-overlapping-chunks-2" class="headerlink" title="15. overlapping_chunks_2"></a>15. overlapping_chunks_2</h1><p>这个文件与上面的overlapping_chunks基本上相似。</p>
 <p>首先分配5个可用大小为1000的堆块，分别为p1~p5。之后释放p4，修改p2的大小使p2正好完全覆盖p3的同时保持其prev_in_use位为1。之后释放p2会将p3这块空间连带着释放掉，再将其分配回来到p6，就可以从p6里面写入数据随意修改p3的内容了。</p>
 <p>利用方式与overlapping_chunks相同，不再赘述。</p>
-<h1 id="16-poison_null_byte"><a class="markdownIt-Anchor" href="#16-poison_null_byte"></a> 16. poison_null_byte</h1>
-<p>这是一种只溢出一个字节的漏洞利用方式。前面也分析过一个类似的漏洞house_of_einherjar。与house_of_einherjar相同。这种漏洞利用也是溢出一个空字符\x00。</p>
+<h1 id="16-poison-null-byte"><a href="#16-poison-null-byte" class="headerlink" title="16. poison_null_byte"></a>16. poison_null_byte</h1><p>这是一种只溢出一个字节的漏洞利用方式。前面也分析过一个类似的漏洞house_of_einherjar。与house_of_einherjar相同。这种漏洞利用也是溢出一个空字符\x00。</p>
 <p>程序首先将堆区构造成如下的结构（barrier防止top chunk的影响）：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -417,7 +412,9 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>然后，将b释放，进入关键步骤：从a溢出一个字节到b的size使b的size从0x211修改为0x200。这样b的实际大小就缩小了0x10。由于需要绕过检查，我们要在b的结尾处伪造一个prev size，这与house_of_einherjar类似，具体请参考我的how2heap第一篇笔记。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -464,7 +461,9 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>之后，分配一个大小为0x110的堆块，这个堆块的起始地址将和原b的起始地址相同，且分配之后会对假prev_size进行调整，调整为0xf0。然后继续分配一个0x90大小的空间p2，p2紧跟在p1之后。此时堆空间如图：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -499,7 +498,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 <tr>
 <td style="text-align:center">0x2b0</td>
-<td style="text-align:center">&lt;unsorted bin chunk&gt;(size = 0x61)</td>
+<td style="text-align:center">\<unsorted bin chunk\>(size = 0x61)</td>
 </tr>
 <tr>
 <td style="text-align:center">…</td>
@@ -527,6 +526,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>接下来，首先释放b1，然后紧接着释放c，此时会惊奇地发现，b1和c竟然合并了。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603000</span><br><span class="line">Size: 0x111</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x603110</span><br><span class="line">Size: 0x321</span><br><span class="line">fd: 0x6032b0</span><br><span class="line">bk: 0x7ffff7dd1b78</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603430</span><br><span class="line">Size: 0x110</span><br><span class="line"></span><br><span class="line">Top chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603540</span><br><span class="line">Size: 0x20ac1</span><br></pre></td></tr></table></figure>
 <p>释放c时，_int_free检查到c的prev_size对应偏移处的chunk（b1）是一个unsorted bin free chunk，因此执行了malloc_consolidate函数将二者进行了合并，但是请注意，此时的p2仍然可以进行任意读写操作，这就导致了c完全覆盖了b2，接下来我们将c重新分配回去就可以通过向c写入数据以随意修改p2的内容。</p>
@@ -611,7 +611,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#12-large_bin_attack"><span class="nav-number">1.</span> <span class="nav-text"> 12. large_bin_attack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-mmap_overlapping_chunks"><span class="nav-number">2.</span> <span class="nav-text"> 13. mmap_overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-overlapping_chunks"><span class="nav-number">3.</span> <span class="nav-text"> 14. overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-overlapping_chunks_2"><span class="nav-number">4.</span> <span class="nav-text"> 15. overlapping_chunks_2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-poison_null_byte"><span class="nav-number">5.</span> <span class="nav-text"> 16. poison_null_byte</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#12-large-bin-attack"><span class="nav-number">1.</span> <span class="nav-text">12. large_bin_attack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#13-mmap-overlapping-chunks"><span class="nav-number">2.</span> <span class="nav-text">13. mmap_overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#14-overlapping-chunks"><span class="nav-number">3.</span> <span class="nav-text">14. overlapping_chunks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#15-overlapping-chunks-2"><span class="nav-number">4.</span> <span class="nav-text">15. overlapping_chunks_2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#16-poison-null-byte"><span class="nav-number">5.</span> <span class="nav-text">16. poison_null_byte</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -625,14 +625,14 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">89</span>
+          <span class="site-state-item-count">101</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -677,13 +677,13 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">912k</span>
+    <span title="Symbols count total">889k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:49</span>
+    <span title="Reading time total">13:28</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

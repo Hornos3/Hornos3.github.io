@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2.2 数值数据的表示 真值：使用”+”、”-“表示正负号的数值表示方式。 机器数：符号数值化的数据表示方法，使用0、1表示符号。 三种常见机器数（整数）： 原码：最高位为符号位，其余位值为数值的绝对值，符号位正数为0，负数为1。原码表示方便，但计算复杂，且有+0和-0两种0的表示方式。 反码：最高位符号位规则与原码相同，当数值为负数时，其余位值相对于原码全部取反。表示相对于原码较复杂，但计算简单">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理——第2章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="2.2 数值数据的表示 真值：使用”+”、”-“表示正负号的数值表示方式。 机器数：符号数值化的数据表示方法，使用0、1表示符号。 三种常见机器数（整数）： 原码：最高位为符号位，其余位值为数值的绝对值，符号位正数为0，负数为1。原码表示方便，但计算复杂，且有+0和-0两种0的表示方式。 反码：最高位符号位规则与原码相同，当数值为负数时，其余位值相对于原码全部取反。表示相对于原码较复杂，但计算简单">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-02T16:01:30.000Z">
+<meta property="article:modified_time" content="2023-03-02T16:05:10.465Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机组成原理——第2章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理——第2章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:30 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:30+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="2-2-数值数据的表示"><a href="#2-2-数值数据的表示" class="headerlink" title="2.2 数值数据的表示"></a>2.2 数值数据的表示</h2><ul>
+<li><font color=red>真值</font>：使用”+”、”-“表示正负号的数值表示方式。</li>
+<li><font color=red>机器数</font>：符号数值化的数据表示方法，使用0、1表示符号。</li>
+<li>三种常见机器数（整数）：<ul>
+<li><font color=red>原码</font>：最高位为符号位，其余位值为数值的绝对值，符号位正数为0，负数为1。原码表示方便，但计算复杂，且有+0和-0两种0的表示方式。</li>
+<li><font color=red>反码</font>：最高位符号位规则与原码相同，当数值为负数时，其余位值相对于原码全部取反。表示相对于原码较复杂，但计算简单，但0的表示同样不唯一。</li>
+<li><font color=red>补码</font>：表示负数时为反码+1。</li>
+<li>规则：对于总位数为n的二进制数，三种码对于正数的表示方法相同，可表示正数范围均为0~2^n-1^-1。原码表示负数x，二进制数的值为2^n-1^-x，反码表示为2^n^+x-1，补码表示为2^n^+x。反码的加法计算方法：二进制数直接相加后再加1。</li>
+</ul>
+</li>
+<li><font color=red>移码</font>：非符号位与补码相同，符号位与补码相反。编码方式是直接将真值加上一个常数偏移量，因此得名。</li>
+<li>定点数表示：X~0~.X~1~X~2~…，其表示范围为-1~1-2^-n^（使用补码形式进行编码）</li>
+<li>浮点数表示：一般格式为E~S~E~1~E~2~…E~n~M~S~M~1~M~2~…M~k~，其中E为阶码位，确定数据的范围，M为尾数，表示数的精度。其中阶码位和尾数位的最高位均表示符号。浮点数表示的不足之处是不同机器可能从相同的二进制数中提取出不同的浮点数。<ul>
+<li>IEEE754标准规定单精度浮点数阶码8位，有效尾数23位（<font color=red>不含尾数中的符号位，尾数中的符号位位于阶码前面，在最高位</font>）；双精度浮点数阶码11位，有效尾数52位。<font color=red>阶码采用移码的方式表示，常数为127。</font>其中有效尾数的整数位1被省略。对于单精度浮点数，若其偏指数（带有符号位的阶码的无符号值）为E，尾数为M，则真值可表示为2^E-127^×(-1)^S^×1.M。<ul>
+<li>当E=0、M=0时表示机器零，无论S等于0还是1。</li>
+<li>当E=0、M≠0时，真值为非规格化的浮点数，2^-126^×(-1)^S^×0.M。即这个数太接近0，即使阶码为0也必须让尾数的整数位为0才能表示，这样会影响数的表示精度。</li>
+<li>当1≤E≤254时，正常表示，是规格化的浮点数。</li>
+<li>当E=255、M=0时表示无穷大。</li>
+<li>当E=255、M≠0时表示NaN。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-4-数据信息的校验"><a href="#2-4-数据信息的校验" class="headerlink" title="2.4 数据信息的校验"></a>2.4 数据信息的校验</h2><h3 id="2-4-1-码距与校验"><a href="#2-4-1-码距与校验" class="headerlink" title="2.4.1 码距与校验"></a>2.4.1 码距与校验</h3><font color=red>码距</font>：信息编码中两个编码对应的二进制位不同的位的个数。如10101和10001的码距为1，只有1个二进制位不同。码距越大、抗干扰、纠错能力越强，数据冗余越大，编码效率越低。
+码距越大，纠错就越容易，当码距变大时，将一个合法编码转化为另一个合法编码需要修改多位，概率较低，且可以根据不合法编码与合法编码之间的码距，选择与不合法编码的码距最小的合法编码纠错。
+
+- 当码距d≥e+1时，可以检测出e个错误
+- 当码距d≥2t+1时，可以纠正t个错误
+- 当码距d≥e+t+1时（e≥t），可以在检测e个错误的同时纠正t个错误。
+
+### 2.4.2 奇偶校验
+检测二进制代码中1的个数的奇偶性进行校验。
+<font color=red>奇校验要让数据位和校验位整个的1的个数为奇数，偶校验则让1的个数为偶数</font>。因此奇校验是1的个数为偶数时校验码为1，而偶校验时1的个数为奇数时校验码为1。
+
+优点：检错简单，编码效率高。
+缺点：不能获取错误位置，只是一种检错码，无错结论不可靠（如果两位同时错误无法检测出来）
+
+改进：<font color=red>交叉奇偶校验</font>，将原始数据信息构建为行列矩阵式结构，每一行和每一列都产生一个偶校验位，最后生成一个公共校验位。当有一位出错时，可以根据行校验位和列校验位的检查判断出是哪一位出错。但当两位数据同事出错时，不能确定到底是哪两位出错（有两种情况）。<font color=red>可纠正1位错误、检查部分偶数位错误、不能检测出错误发生在数据位中任意一个矩形4个顶点上的错误。</font>
+
+<h3 id="2-4-3-CRC校验"><a href="#2-4-3-CRC校验" class="headerlink" title="2.4.3 CRC校验"></a>2.4.3 CRC校验</h3><p>Cyclic Redundancy Check，循环冗余校验，是一种基于模2运算建立编码规则的校验码。其中模2运算与异或运算的规则相同，在加的基础上不用进位。在此基础上可以获取模2乘法运算和除法运算的规则。</p>
+<p>编码规则：设CRC码长度n位，原始数据C~k-1~C~k-2~…C~0~共k位，校验位P~r-1~P~r-2~…P~0~共r位，则<font color=red>n=k+r≤2^r^-1</font>。生成一个多项式G(x)，将待发送的二进制数据用该多项式表示：G(x)=C~k-1~x^k-1^+C~k-2~x^k-2^+…+C~1~x+C~0~。G(x)需要满足：</p>
+<ul>
+<li>最高位和最低位必须为1。</li>
+<li>被传送信息任意一位出错时，被生成多项式除之后余数均不为0。</li>
+<li>不同位发生错误时，模2除运算后余数不同。</li>
+<li>对不为0的余数进行模2除运算能够使余数循环。</li>
+</ul>
+<p>编码方法：</p>
+<ul>
+<li>根据待校验信息的长度k按照k+r≤2^r^-1确定校验码位数。</li>
+<li>根据r和生成多项式的选择原则，选择一个位数为r+1的生成多项式。</li>
+<li>将有效信息左移r位得到r+k位的二进制数Q。</li>
+<li>对Q除生成多项式，以余数替换Q的低r位。</li>
+</ul>
+<p>校验方法：<br>用数据除生成多项式，余数为0即为正确。</p>
+<font color=red>CRC校验码的循环特性</font>：第i位出错的数据除以生成多项式获得的余数R~i~与第i+1位出错的数据除以生成多项式获得的余数R~i+1~满足：<font color=red>R~i+1~=R~i~左移1位后除以生成多项式获得的余数。</font>
+
+<p>纠错方法：<br>记录当数据最高位错误时除以生成多项式获取的余数R。<br>当待检测数据除以生成多项式获得的余数不是0也不是R时，一边对余数补零继续除，另一边对待检测数据循环左移，当余数的值为R时，将当前循环移位后的待检测数据的最高位取反，再移位回来即可完成纠错。</p>
+<h3 id="2-4-3-海明校验"><a href="#2-4-3-海明校验" class="headerlink" title="2.4.3 海明校验"></a>2.4.3 海明校验</h3><p>一种既能检错又能纠错的校验码，本质是多重奇偶校验。（海明码为偶校验）</p>
+<p>设海明校验码共n位，原始数据k位，校验位r位，满足k+r≤2^r^-1。<br>r位校验码（P~i~，i=1,2,…,r）分别位于海明编码的第2^i-1^位。海明码第i位的数据由若干个位于小于i的校验位校验。<font color=red>注意：第i位如果为数据位，那么参与检验该位的海明码的计算方式是——获取i的二进制表示，二进制中若第j位为1，则第j个海明码参与检验该值。如海明校验码的第11位，二进制表示为1011，则第1、2、4个校验码位参与校验该值。</font>当有1位出错时，只需要将指错字的所有位转换为一个数值，该数值即为出错的位的索引。如第11位出错，则4个指错字中第1、2、4位必然为1，4个指错字结合为1011，即为出现错误的那一位。这种纠错方式可以纠正海明校验码中任何一位的错误，包括校验位。但海明校验不一定能够分辨出一位错与两位错。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" rel="prev" title="计算机组成原理——第1章">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理——第1章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" rel="next" title="计算机组成原理——第3章">
+      计算机组成原理——第3章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E6%95%B0%E5%80%BC%E6%95%B0%E6%8D%AE%E7%9A%84%E8%A1%A8%E7%A4%BA"><span class="nav-number">1.</span> <span class="nav-text">2.2 数值数据的表示</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E6%95%B0%E6%8D%AE%E4%BF%A1%E6%81%AF%E7%9A%84%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.</span> <span class="nav-text">2.4 数据信息的校验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-%E7%A0%81%E8%B7%9D%E4%B8%8E%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.1.</span> <span class="nav-text">2.4.1 码距与校验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-CRC%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.2.</span> <span class="nav-text">2.4.3 CRC校验</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-3-%E6%B5%B7%E6%98%8E%E6%A0%A1%E9%AA%8C"><span class="nav-number">2.3.</span> <span class="nav-text">2.4.3 海明校验</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">889k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:28</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

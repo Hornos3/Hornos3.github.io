@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="3.2 D B A补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D计算过程：首先对阶，Y&#x3D;2^7^×5&#x2F;32，与X相加得到2^8^×34&#x2F;64，溢出。 D对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理——第3章习题">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="3.2 D B A补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D计算过程：首先对阶，Y&#x3D;2^7^×5&#x2F;32，与X相加得到2^8^×34&#x2F;64，溢出。 D对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-02T16:02:06.000Z">
+<meta property="article:modified_time" content="2023-03-02T16:05:10.473Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机组成原理——第3章习题 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理——第3章习题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:02:06 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:06+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="3-2"><a href="#3-2" class="headerlink" title="3.2"></a>3.2</h3><ol>
+<li>D</li>
+<li>B</li>
+<li>A<br>补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。</li>
+<li>C</li>
+<li>B</li>
+<li>D<br>计算过程：首先对阶，Y=2^7^×5/32，与X相加得到2^8^×34/64，溢出。</li>
+<li>D<br>对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，而另一个数的阶码此时显然不是溢出的。I正确。右规和尾数舍入都可能引起阶码上溢，右规是向右规格化操作，即将尾数右移，发生于尾数运算上溢时，当阶码值为最大阶码时即上溢；当尾数为全1时，入操作可能会导致上溢。II正确。左规时可能引起阶码下溢，左规发生在尾数过小时，即将尾数左移，III正确。尾数溢出时结果不一定溢出，IV正确。</li>
+</ol>
+<h3 id="3-3"><a href="#3-3" class="headerlink" title="3.3"></a>3.3</h3><ol>
+<li>并行进位能够让所有的一位全加器并行进行计算，而串行加法器的高位全加器只能在低位的全加器计算完成之后才能计算。</li>
+<li>在规范化之后阶码是否发生了溢出。</li>
+<li>运算结果的尾数位如果是11.0…或00.1…则为规格化数，否则不是。尾数符号位为01或10时向右规格化，尾数为11.1…或00.0…时向左规格化。</li>
+</ol>
+<h3 id="3-4"><a href="#3-4" class="headerlink" title="3.4"></a>3.4</h3><ol>
+<li>x=00.11010，y=00.10111，计算结果为01.10001溢出。</li>
+<li>x=00.11101，y=11.01100，计算结果为00.01001无溢出</li>
+<li>x=11.01001，y=11.01000，计算结果为10.01001溢出。</li>
+</ol>
+<h3 id="3-5"><a href="#3-5" class="headerlink" title="3.5"></a>3.5</h3><ol>
+<li>x=00.11011，-y=11.00011，计算结果为11.11110无溢出</li>
+<li>x=00.10111，-y=11.00010，计算结果为11.11001无溢出</li>
+<li>x=11.00001，-y=00.11001，计算结果为11.11010无溢出</li>
+</ol>
+<h3 id="3-6"><a href="#3-6" class="headerlink" title="3.6"></a>3.6</h3><ol>
+<li>00.00000 <strong>11101</strong><br>00.11111<br>——————<br>00.11111 11101<br>00.01111 1<strong>1110</strong><br>00.00000<br>——————<br>00.01111 11110<br>00.00111 11<strong>111</strong><br>00.11111<br>——————<br>01.00110 11111<br>00.10011 011<strong>11</strong><br>00.11111<br>——————<br>01.10010 01111<br>00.11001 0011<strong>1</strong><br>00.11111<br>——————<br>01.11000 00111<br>00.11100 00011</li>
+</ol>
+<p>计算结果：-0.1110000011</p>
+<p>2略</p>
+<h3 id="3-7"><a href="#3-7" class="headerlink" title="3.7"></a>3.7</h3><ol>
+<li>x~补~=00.10110，-x~补~=11.01010，y~补~=11.11101<br>00.00000 <strong>11110==10==</strong><br>11.01010<br>——————<br>11.01010<br>11.10101 0<strong>1111==01==</strong><br>00.10110<br>——————<br>00.01011<br>00.00101 10<strong>111==10==</strong><br>11.01010<br>——————<br>11.01111<br>11.10111 110<strong>11==11==</strong><br>00.00000<br>——————<br>11.10111<br>11.11011 1110<strong>1==11==</strong><br>00.00000<br>——————<br>11.11011<br>11.11101 11110 <strong>==11==</strong></li>
+</ol>
+<p>结果为1.1110111110</p>
+<p>2略</p>
+<h3 id="3-8"><a href="#3-8" class="headerlink" title="3.8"></a>3.8</h3><ol>
+<li>x=0.10101，y=0.11011，-y=1.00101<br>00.10101 0.0000<br>11.00101<br>——————<br>11.11010 0.0000<strong>0</strong><br>11.10100 0.00<strong>0</strong> (2^-1^)<br>00.11011<br>——————<br>00.01111 0.000<strong>01</strong><br>00.11110 0.0<strong>01</strong> (2^-2^)<br>11.00101<br>——————<br>00.00011 0.00<strong>011</strong><br>00.00110 0.0<strong>011</strong> (2^-3^)<br>11.00101<br>——————<br>11.01011 0.0<strong>0110</strong><br>1<font color=red>0</font>.10110 0.<strong>0110</strong> (2^-4^)<br>00.11011<br>——————<br>11.10001 0.<strong>01100</strong><br>11.00010 <strong>0.1100</strong> (2^-5^)<br>00.11011<br>——————<br>11.11101 <strong>0.11000</strong><br>这里余数为负数，因此还需要加一次。<br>00.11011<br>——————<br>00.11000 (2^-5^)</li>
+</ol>
+<p>结果为0.11000，余数为0.11×2^-5^</p>
+<h3 id="3-9"><a href="#3-9" class="headerlink" title="3.9"></a>3.9</h3><ol>
+<li><p>对阶，y=2^011^×(-0.001101)<br>加：x+y=2^011^×0.010111<br>规格化：=2^010^×0.101110</p>
+</li>
+<li><p>对阶，x=2^-100^×(-0.010001)<br>加：x+y=2^-100^×1.011001<br>规格化：2^-100^×(-0.100111)</p>
+</li>
+</ol>
+<h3 id="3-10"><a href="#3-10" class="headerlink" title="3.10"></a>3.10</h3><p>略</p>
+<h3 id="3-11"><a href="#3-11" class="headerlink" title="3.11"></a>3.11</h3><p>略</p>
+<h3 id="3-12"><a href="#3-12" class="headerlink" title="3.12"></a>3.12</h3><p>略</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/" rel="prev" title="计算机组成原理——第2章习题">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理——第2章习题
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/" rel="next" title="计算机组成原理——第4章习题">
+      计算机组成原理——第4章习题 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2"><span class="nav-number">1.</span> <span class="nav-text">3.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3"><span class="nav-number">2.</span> <span class="nav-text">3.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4"><span class="nav-number">3.</span> <span class="nav-text">3.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5"><span class="nav-number">4.</span> <span class="nav-text">3.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6"><span class="nav-number">5.</span> <span class="nav-text">3.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7"><span class="nav-number">6.</span> <span class="nav-text">3.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8"><span class="nav-number">7.</span> <span class="nav-text">3.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-9"><span class="nav-number">8.</span> <span class="nav-text">3.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-10"><span class="nav-number">9.</span> <span class="nav-text">3.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-11"><span class="nav-number">10.</span> <span class="nav-text">3.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-12"><span class="nav-number">11.</span> <span class="nav-text">3.12</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">889k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:28</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

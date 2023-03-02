@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="3.1 计算机中的运算注意移位运算中逻辑移位和算术移位的区别，算术移位不会修改符号位。 3.2 定点加减法运算3.2.1 补码加减法运算[x]_补+[y]_补&#x3D;[x+y]_补 \pmod M在以M为模时，两数的补码之和等于两数和的补码。 [x-y]_补&#x3D;[x]_补-[y]_补&#x3D;[x]_补+[-y]_补 \pmod M3.2.2 溢出及检测对于补码加法运算（减法可以转化为加法），溢出的检测方式有：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理——第3章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="3.1 计算机中的运算注意移位运算中逻辑移位和算术移位的区别，算术移位不会修改符号位。 3.2 定点加减法运算3.2.1 补码加减法运算[x]_补+[y]_补&#x3D;[x+y]_补 \pmod M在以M为模时，两数的补码之和等于两数和的补码。 [x-y]_补&#x3D;[x]_补-[y]_补&#x3D;[x]_补+[-y]_补 \pmod M3.2.2 溢出及检测对于补码加法运算（减法可以转化为加法），溢出的检测方式有：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/b090c86b886e4223a9f9d0e4868df23f.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/106b40cf74b9474cbf7a82e02a53d300.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/f40cee7d60844426a5445105abe02082.png">
+<meta property="article:published_time" content="2023-03-02T16:01:34.000Z">
+<meta property="article:modified_time" content="2023-03-02T16:05:10.481Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/b090c86b886e4223a9f9d0e4868df23f.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>计算机组成原理——第3章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理——第3章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:34 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:34+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="3-1-计算机中的运算"><a href="#3-1-计算机中的运算" class="headerlink" title="3.1 计算机中的运算"></a>3.1 计算机中的运算</h2><p>注意移位运算中逻辑移位和算术移位的区别，算术移位不会修改符号位。</p>
+<h2 id="3-2-定点加减法运算"><a href="#3-2-定点加减法运算" class="headerlink" title="3.2 定点加减法运算"></a>3.2 定点加减法运算</h2><h3 id="3-2-1-补码加减法运算"><a href="#3-2-1-补码加减法运算" class="headerlink" title="3.2.1 补码加减法运算"></a>3.2.1 补码加减法运算</h3><script type="math/tex; mode=display">[x]_补+[y]_补=[x+y]_补 \pmod M</script><p>在以M为模时，两数的补码之和等于两数和的补码。</p>
+<script type="math/tex; mode=display">[x-y]_补=[x]_补-[y]_补=[x]_补+[-y]_补 \pmod M</script><h3 id="3-2-2-溢出及检测"><a href="#3-2-2-溢出及检测" class="headerlink" title="3.2.2 溢出及检测"></a>3.2.2 溢出及检测</h3><p>对于补码加法运算（减法可以转化为加法），溢出的检测方式有：</p>
+<ul>
+<li>当正数与正数相加得到负数，或负数与负数相加得到正数时，有溢出。当两个运算数符号不同时，一定不会发生溢出。</li>
+<li>根据运算过程中最高数据位的进位和符号位的进位来判断。当最高数据位的进位与符号位的进位不一致时发生溢出。考虑正数加正数的情况，如果结果为负数，说明最高数据位的进位为1，而符号位的进位为0，不一致。若为负数加负数得到正数，则符号位的进位为1，最高数据位的进位为0（否则得到的结果中符号位为1），不一致。</li>
+<li>使用变形补码，即使用两个二进制数表示数据的符号。正数符号以00表示，负数为11。在运算过程中如果符号位出现了01或10则说明发生了溢出。</li>
+<li>使用软件的方法判断</li>
+<li>对于无符号数的溢出，只需要看两者相加后有没有溢出的进位即可。</li>
+</ul>
+<h3 id="3-2-3-加减法的逻辑实现"><a href="#3-2-3-加减法的逻辑实现" class="headerlink" title="3.2.3 加减法的逻辑实现"></a>3.2.3 加减法的逻辑实现</h3><h4 id="全加器"><a href="#全加器" class="headerlink" title="全加器"></a>全加器</h4><p>一位全加器需要接收两个操作数以及上一位的进位，输出该位的结果与下一位的进位。在设计过程中，如果需要使用减法，则将1与第二个操作数异或，然后进行加法操作。</p>
+<h4 id="多位串行加法器"><a href="#多位串行加法器" class="headerlink" title="多位串行加法器"></a>多位串行加法器</h4><p>将多个全加器串行在一起，上一位的进位传送到下一位的全加器中，多位串行全加器只能一位一位进行加法。</p>
+<p>注意如果需要同时实现加法与减法，则增加一个输入标识计算是加法还是减法，0为加法，1为减法。如果需要计算减法，就需要首先计算第二个操作数的相反数的补码。<font color=red>计算一个数相反数的补码的方法是：对这个数所有二进制位取反再加1。</font>因此减法标识位需要加到第一个全加器的进位中，然后让所有第二个操作数的位取反，即异或1。</p>
+<p>溢出检测方法：如果按照第一种溢出方法进行检测，将最高位输出结果与两个最高位输入进行检测，看是否满足正正得负或者负负得正的情况。如果按照第二种溢出方法检测则更加简单，只需要对最高位全加器的进位输出与次高位全加器的进位输出异或即可。</p>
+<p>缺点：串行进位，计算时间长。优化：并行计算，首先求出每一位进位的条件，然后用门电路连接输入与输出，这样能够实现仅依靠操作数输入而不需要前一位的进位就可以判断某一位是否会产生进位。</p>
+<h2 id="3-3-定点乘法运算"><a href="#3-3-定点乘法运算" class="headerlink" title="3.3 定点乘法运算"></a>3.3 定点乘法运算</h2><h3 id="3-3-1-原码一位乘法"><a href="#3-3-1-原码一位乘法" class="headerlink" title="3.3.1 原码一位乘法"></a>3.3.1 原码一位乘法</h3><p>二进制乘法的手工计算与十进制的乘法类似，都使用竖式计算。<br>缺点：</p>
+<ul>
+<li>需要多个输入的全加器<ul>
+<li>解决方式：基于全加器循环累加0或被乘数</li>
+</ul>
+</li>
+<li>需要长度足够的结果寄存器<ul>
+<li>解决方式：从部分积和乘数寄存器中获取结果</li>
+</ul>
+</li>
+<li>对应乘数的不同位，部分积的左移次数不同，且整个过程中总的移位次数较多。<ul>
+<li>解决方式：右移部分积</li>
+</ul>
+</li>
+</ul>
+<p>原码一位乘法流程：</p>
+<p><img src="https://img-blog.csdnimg.cn/b090c86b886e4223a9f9d0e4868df23f.png" alt=""></p>
+<h3 id="3-3-2-补码一位乘法"><a href="#3-3-2-补码一位乘法" class="headerlink" title="3.3.2 补码一位乘法"></a>3.3.2 补码一位乘法</h3><script type="math/tex; mode=display">[x×y]_补=[x]_补\times 0.y_1y_2...y_n-[x]_补\times y_0\\
+=[x]_补\times\sum_{i=0}^n(y_{i+1}-y_i)2^{-i}</script><p>由上面公式可推出运算规则：</p>
+<ul>
+<li>如果y~n+1~=y~n~，部分积加0，算数右移1位。</li>
+<li>如果y~n~y~n+1~=01，部分积加[x]~补~，算数右移1位。</li>
+<li>如果y~n~y~n+1~=10，部分积加[-x]~补~，算数右移1位。</li>
+<li>重复进行n+1步，最后一步不右移。</li>
+</ul>
+<font color=red>注意补码乘数在运算开始时符号位为1位，且后面要补一个0。</font>
+
+<h2 id="3-4-定点除法计算"><a href="#3-4-定点除法计算" class="headerlink" title="3.4 定点除法计算"></a>3.4 定点除法计算</h2><h3 id="3-4-1-原码一位除法"><a href="#3-4-1-原码一位除法" class="headerlink" title="3.4.1 原码一位除法"></a>3.4.1 原码一位除法</h3><h4 id="原码恢复余数除法"><a href="#原码恢复余数除法" class="headerlink" title="原码恢复余数除法"></a>原码恢复余数除法</h4><p>每一次需要尝试，如果不够减还需要重新加回去。<br><img src="https://img-blog.csdnimg.cn/106b40cf74b9474cbf7a82e02a53d300.png" alt=""></p>
+<h4 id="原码不恢复余数除法"><a href="#原码不恢复余数除法" class="headerlink" title="原码不恢复余数除法"></a>原码不恢复余数除法</h4><p>当不够减时，下一次计算则是左移之后加，即加减交替。不够减或不够加商都上0，否则都上1。<br><img src="https://img-blog.csdnimg.cn/f40cee7d60844426a5445105abe02082.png" alt=""></p>
+<h2 id="3-5-浮点运算"><a href="#3-5-浮点运算" class="headerlink" title="3.5 浮点运算"></a>3.5 浮点运算</h2><h3 id="3-5-1-浮点加减法计算"><a href="#3-5-1-浮点加减法计算" class="headerlink" title="3.5.1 浮点加减法计算"></a>3.5.1 浮点加减法计算</h3><h4 id="规格化浮点数"><a href="#规格化浮点数" class="headerlink" title="规格化浮点数"></a>规格化浮点数</h4><p>将一个浮点数按照指定的格式进行转换，规格化浮点数的尾数形式为00.1…或11.0…。如果是00.0…或11.1…这个形式，则需要进行左移，将尾数向左移动，每一次移动阶码-1，直到尾数为规范形式。当尾数为01或10开头时需要右移，阶码+1。</p>
+<h4 id="浮点数加减"><a href="#浮点数加减" class="headerlink" title="浮点数加减"></a>浮点数加减</h4><ul>
+<li>对阶：求出两个数的阶码的差，然后右移阶码小的数的尾数并增加其阶码直到二者阶码相等。</li>
+<li>尾数加减</li>
+<li>结果规格化</li>
+<li>右移舍入规则：<ul>
+<li>0舍1入：如果右移出去的是1，则在最低位加1</li>
+<li>恒置1：只要1被移出就将最后一位置为1。</li>
+</ul>
+</li>
+<li>溢出处理：当阶码的尾数为01开头说明为尾数上溢，为10开头说明为下溢。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/" rel="prev" title="计算机组成原理——第2章">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理——第2章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/" rel="next" title="计算机组成原理——第4章">
+      计算机组成原理——第4章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E8%AE%A1%E7%AE%97%E6%9C%BA%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97"><span class="nav-number">1.</span> <span class="nav-text">3.1 计算机中的运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E5%AE%9A%E7%82%B9%E5%8A%A0%E5%87%8F%E6%B3%95%E8%BF%90%E7%AE%97"><span class="nav-number">2.</span> <span class="nav-text">3.2 定点加减法运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-%E8%A1%A5%E7%A0%81%E5%8A%A0%E5%87%8F%E6%B3%95%E8%BF%90%E7%AE%97"><span class="nav-number">2.1.</span> <span class="nav-text">3.2.1 补码加减法运算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2-%E6%BA%A2%E5%87%BA%E5%8F%8A%E6%A3%80%E6%B5%8B"><span class="nav-number">2.2.</span> <span class="nav-text">3.2.2 溢出及检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-3-%E5%8A%A0%E5%87%8F%E6%B3%95%E7%9A%84%E9%80%BB%E8%BE%91%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.</span> <span class="nav-text">3.2.3 加减法的逻辑实现</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E5%8A%A0%E5%99%A8"><span class="nav-number">2.3.1.</span> <span class="nav-text">全加器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E4%BD%8D%E4%B8%B2%E8%A1%8C%E5%8A%A0%E6%B3%95%E5%99%A8"><span class="nav-number">2.3.2.</span> <span class="nav-text">多位串行加法器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E5%AE%9A%E7%82%B9%E4%B9%98%E6%B3%95%E8%BF%90%E7%AE%97"><span class="nav-number">3.</span> <span class="nav-text">3.3 定点乘法运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-1-%E5%8E%9F%E7%A0%81%E4%B8%80%E4%BD%8D%E4%B9%98%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">3.3.1 原码一位乘法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-2-%E8%A1%A5%E7%A0%81%E4%B8%80%E4%BD%8D%E4%B9%98%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">3.3.2 补码一位乘法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E5%AE%9A%E7%82%B9%E9%99%A4%E6%B3%95%E8%AE%A1%E7%AE%97"><span class="nav-number">4.</span> <span class="nav-text">3.4 定点除法计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-1-%E5%8E%9F%E7%A0%81%E4%B8%80%E4%BD%8D%E9%99%A4%E6%B3%95"><span class="nav-number">4.1.</span> <span class="nav-text">3.4.1 原码一位除法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%A0%81%E6%81%A2%E5%A4%8D%E4%BD%99%E6%95%B0%E9%99%A4%E6%B3%95"><span class="nav-number">4.1.1.</span> <span class="nav-text">原码恢复余数除法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%A0%81%E4%B8%8D%E6%81%A2%E5%A4%8D%E4%BD%99%E6%95%B0%E9%99%A4%E6%B3%95"><span class="nav-number">4.1.2.</span> <span class="nav-text">原码不恢复余数除法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-%E6%B5%AE%E7%82%B9%E8%BF%90%E7%AE%97"><span class="nav-number">5.</span> <span class="nav-text">3.5 浮点运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-%E6%B5%AE%E7%82%B9%E5%8A%A0%E5%87%8F%E6%B3%95%E8%AE%A1%E7%AE%97"><span class="nav-number">5.1.</span> <span class="nav-text">3.5.1 浮点加减法计算</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%84%E6%A0%BC%E5%8C%96%E6%B5%AE%E7%82%B9%E6%95%B0"><span class="nav-number">5.1.1.</span> <span class="nav-text">规格化浮点数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B5%AE%E7%82%B9%E6%95%B0%E5%8A%A0%E5%87%8F"><span class="nav-number">5.1.2.</span> <span class="nav-text">浮点数加减</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">101</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">889k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">13:28</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
