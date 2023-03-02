@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="3.2 D B A补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D计算过程：首先对阶，Y&#x3D;2^7^×5&#x2F;32，与X相加得到2^8^×34&#x2F;64，溢出。 D对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，">
+  <meta name="description" content="3.2  D B A 补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D 计算过程：首先对阶，Y&#x3D;27×5&#x2F;32，与X相加得到28×34&#x2F;64，溢出。 D 对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第3章习题">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="3.2 D B A补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D计算过程：首先对阶，Y&#x3D;2^7^×5&#x2F;32，与X相加得到2^8^×34&#x2F;64，溢出。 D对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，">
+<meta property="og:description" content="3.2  D B A 补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。 C B D 计算过程：首先对阶，Y&#x3D;27×5&#x2F;32，与X相加得到28×34&#x2F;64，溢出。 D 对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T16:02:06.000Z">
 <meta property="article:modified_time" content="2023-03-02T16:05:10.473Z">
@@ -208,7 +208,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.8k</span>
+              <span>1.7k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
@@ -227,53 +227,145 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="3-2"><a href="#3-2" class="headerlink" title="3.2"></a>3.2</h3><ol>
+        <h3 id="32"><a class="markdownIt-Anchor" href="#32"></a> 3.2</h3>
+<ol>
 <li>D</li>
 <li>B</li>
-<li>A<br>补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。</li>
+<li>A<br />
+补充：补码负数乘以2相当于将数据位左移1位，当原数数据位的最高位为1时，乘以2会产生溢出。补码负数除以2相当于将数据位右移1位，并在最高位补1（也即算数右移），当最低位为1时，除2有余数1。</li>
 <li>C</li>
 <li>B</li>
-<li>D<br>计算过程：首先对阶，Y=2^7^×5/32，与X相加得到2^8^×34/64，溢出。</li>
-<li>D<br>对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，而另一个数的阶码此时显然不是溢出的。I正确。右规和尾数舍入都可能引起阶码上溢，右规是向右规格化操作，即将尾数右移，发生于尾数运算上溢时，当阶码值为最大阶码时即上溢；当尾数为全1时，入操作可能会导致上溢。II正确。左规时可能引起阶码下溢，左规发生在尾数过小时，即将尾数左移，III正确。尾数溢出时结果不一定溢出，IV正确。</li>
+<li>D<br />
+计算过程：首先对阶，Y=2<sup>7</sup>×5/32，与X相加得到2<sup>8</sup>×34/64，溢出。</li>
+<li>D<br />
+对阶操作不会引起阶码上溢或下溢。因为对阶仅仅是让阶码小的数将阶码增加到与另一个数的阶码相等，而另一个数的阶码此时显然不是溢出的。I正确。右规和尾数舍入都可能引起阶码上溢，右规是向右规格化操作，即将尾数右移，发生于尾数运算上溢时，当阶码值为最大阶码时即上溢；当尾数为全1时，入操作可能会导致上溢。II正确。左规时可能引起阶码下溢，左规发生在尾数过小时，即将尾数左移，III正确。尾数溢出时结果不一定溢出，IV正确。</li>
 </ol>
-<h3 id="3-3"><a href="#3-3" class="headerlink" title="3.3"></a>3.3</h3><ol>
+<h3 id="33"><a class="markdownIt-Anchor" href="#33"></a> 3.3</h3>
+<ol>
 <li>并行进位能够让所有的一位全加器并行进行计算，而串行加法器的高位全加器只能在低位的全加器计算完成之后才能计算。</li>
 <li>在规范化之后阶码是否发生了溢出。</li>
 <li>运算结果的尾数位如果是11.0…或00.1…则为规格化数，否则不是。尾数符号位为01或10时向右规格化，尾数为11.1…或00.0…时向左规格化。</li>
 </ol>
-<h3 id="3-4"><a href="#3-4" class="headerlink" title="3.4"></a>3.4</h3><ol>
+<h3 id="34"><a class="markdownIt-Anchor" href="#34"></a> 3.4</h3>
+<ol>
 <li>x=00.11010，y=00.10111，计算结果为01.10001溢出。</li>
 <li>x=00.11101，y=11.01100，计算结果为00.01001无溢出</li>
 <li>x=11.01001，y=11.01000，计算结果为10.01001溢出。</li>
 </ol>
-<h3 id="3-5"><a href="#3-5" class="headerlink" title="3.5"></a>3.5</h3><ol>
+<h3 id="35"><a class="markdownIt-Anchor" href="#35"></a> 3.5</h3>
+<ol>
 <li>x=00.11011，-y=11.00011，计算结果为11.11110无溢出</li>
 <li>x=00.10111，-y=11.00010，计算结果为11.11001无溢出</li>
 <li>x=11.00001，-y=00.11001，计算结果为11.11010无溢出</li>
 </ol>
-<h3 id="3-6"><a href="#3-6" class="headerlink" title="3.6"></a>3.6</h3><ol>
-<li>00.00000 <strong>11101</strong><br>00.11111<br>——————<br>00.11111 11101<br>00.01111 1<strong>1110</strong><br>00.00000<br>——————<br>00.01111 11110<br>00.00111 11<strong>111</strong><br>00.11111<br>——————<br>01.00110 11111<br>00.10011 011<strong>11</strong><br>00.11111<br>——————<br>01.10010 01111<br>00.11001 0011<strong>1</strong><br>00.11111<br>——————<br>01.11000 00111<br>00.11100 00011</li>
+<h3 id="36"><a class="markdownIt-Anchor" href="#36"></a> 3.6</h3>
+<ol>
+<li></li>
 </ol>
+<p>00.00000 <strong>11101</strong><br />
+00.11111<br />
+——————<br />
+00.11111 11101<br />
+00.01111 1<strong>1110</strong><br />
+00.00000<br />
+——————<br />
+00.01111 11110<br />
+00.00111 11<strong>111</strong><br />
+00.11111<br />
+——————<br />
+01.00110 11111<br />
+00.10011 011<strong>11</strong><br />
+00.11111<br />
+——————<br />
+01.10010 01111<br />
+00.11001 0011<strong>1</strong><br />
+00.11111<br />
+——————<br />
+01.11000 00111<br />
+00.11100 00011</p>
 <p>计算结果：-0.1110000011</p>
 <p>2略</p>
-<h3 id="3-7"><a href="#3-7" class="headerlink" title="3.7"></a>3.7</h3><ol>
-<li>x~补~=00.10110，-x~补~=11.01010，y~补~=11.11101<br>00.00000 <strong>11110==10==</strong><br>11.01010<br>——————<br>11.01010<br>11.10101 0<strong>1111==01==</strong><br>00.10110<br>——————<br>00.01011<br>00.00101 10<strong>111==10==</strong><br>11.01010<br>——————<br>11.01111<br>11.10111 110<strong>11==11==</strong><br>00.00000<br>——————<br>11.10111<br>11.11011 1110<strong>1==11==</strong><br>00.00000<br>——————<br>11.11011<br>11.11101 11110 <strong>==11==</strong></li>
+<h3 id="37"><a class="markdownIt-Anchor" href="#37"></a> 3.7</h3>
+<ol>
+<li></li>
 </ol>
+<p>x<sub>补</sub>=00.10110，-x<sub>补</sub>=11.01010，y<sub>补</sub>=11.11101<br />
+00.00000 <strong>11110<mark>10</mark></strong><br />
+11.01010<br />
+——————<br />
+11.01010<br />
+11.10101 0<strong>1111<mark>01</mark></strong><br />
+00.10110<br />
+——————<br />
+00.01011<br />
+00.00101 10<strong>111<mark>10</mark></strong><br />
+11.01010<br />
+——————<br />
+11.01111<br />
+11.10111 110<strong>11<mark>11</mark></strong><br />
+00.00000<br />
+——————<br />
+11.10111<br />
+11.11011 1110<strong>1<mark>11</mark></strong><br />
+00.00000<br />
+——————<br />
+11.11011<br />
+11.11101 11110 <strong><mark>11</mark></strong></p>
 <p>结果为1.1110111110</p>
 <p>2略</p>
-<h3 id="3-8"><a href="#3-8" class="headerlink" title="3.8"></a>3.8</h3><ol>
-<li>x=0.10101，y=0.11011，-y=1.00101<br>00.10101 0.0000<br>11.00101<br>——————<br>11.11010 0.0000<strong>0</strong><br>11.10100 0.00<strong>0</strong> (2^-1^)<br>00.11011<br>——————<br>00.01111 0.000<strong>01</strong><br>00.11110 0.0<strong>01</strong> (2^-2^)<br>11.00101<br>——————<br>00.00011 0.00<strong>011</strong><br>00.00110 0.0<strong>011</strong> (2^-3^)<br>11.00101<br>——————<br>11.01011 0.0<strong>0110</strong><br>1<font color=red>0</font>.10110 0.<strong>0110</strong> (2^-4^)<br>00.11011<br>——————<br>11.10001 0.<strong>01100</strong><br>11.00010 <strong>0.1100</strong> (2^-5^)<br>00.11011<br>——————<br>11.11101 <strong>0.11000</strong><br>这里余数为负数，因此还需要加一次。<br>00.11011<br>——————<br>00.11000 (2^-5^)</li>
+<h3 id="38"><a class="markdownIt-Anchor" href="#38"></a> 3.8</h3>
+<ol>
+<li></li>
 </ol>
-<p>结果为0.11000，余数为0.11×2^-5^</p>
-<h3 id="3-9"><a href="#3-9" class="headerlink" title="3.9"></a>3.9</h3><ol>
-<li><p>对阶，y=2^011^×(-0.001101)<br>加：x+y=2^011^×0.010111<br>规格化：=2^010^×0.101110</p>
-</li>
-<li><p>对阶，x=2^-100^×(-0.010001)<br>加：x+y=2^-100^×1.011001<br>规格化：2^-100^×(-0.100111)</p>
-</li>
+<p>x=0.10101，y=0.11011，-y=1.00101<br />
+00.10101 0.0000<br />
+11.00101<br />
+——————<br />
+11.11010 0.0000<strong>0</strong><br />
+11.10100 0.00<strong>0</strong> (2<sup>-1</sup>)<br />
+00.11011<br />
+——————<br />
+00.01111 0.000<strong>01</strong><br />
+00.11110 0.0<strong>01</strong> (2<sup>-2</sup>)<br />
+11.00101<br />
+——————<br />
+00.00011 0.00<strong>011</strong><br />
+00.00110 0.0<strong>011</strong> (2<sup>-3</sup>)<br />
+11.00101<br />
+——————<br />
+11.01011 0.0<strong>0110</strong><br />
+1<font color=red>0</font>.10110 0.<strong>0110</strong> (2<sup>-4</sup>)<br />
+00.11011<br />
+——————<br />
+11.10001 0.<strong>01100</strong><br />
+11.00010 <strong>0.1100</strong> (2<sup>-5</sup>)<br />
+00.11011<br />
+——————<br />
+11.11101 <strong>0.11000</strong><br />
+这里余数为负数，因此还需要加一次。<br />
+00.11011<br />
+——————<br />
+00.11000 (2<sup>-5</sup>)</p>
+<p>结果为0.11000，余数为0.11×2<sup>-5</sup></p>
+<h3 id="39"><a class="markdownIt-Anchor" href="#39"></a> 3.9</h3>
+<ol>
+<li></li>
 </ol>
-<h3 id="3-10"><a href="#3-10" class="headerlink" title="3.10"></a>3.10</h3><p>略</p>
-<h3 id="3-11"><a href="#3-11" class="headerlink" title="3.11"></a>3.11</h3><p>略</p>
-<h3 id="3-12"><a href="#3-12" class="headerlink" title="3.12"></a>3.12</h3><p>略</p>
+<p>对阶，y=2<sup>011</sup>×(-0.001101)<br />
+加：x+y=2<sup>011</sup>×0.010111<br />
+规格化：=2<sup>010</sup>×0.101110</p>
+<ol start="2">
+<li></li>
+</ol>
+<p>对阶，x=2<sup>-100</sup>×(-0.010001)<br />
+加：x+y=2<sup>-100</sup>×1.011001<br />
+规格化：2<sup>-100</sup>×(-0.100111)</p>
+<h3 id="310"><a class="markdownIt-Anchor" href="#310"></a> 3.10</h3>
+<p>略</p>
+<h3 id="311"><a class="markdownIt-Anchor" href="#311"></a> 3.11</h3>
+<p>略</p>
+<h3 id="312"><a class="markdownIt-Anchor" href="#312"></a> 3.12</h3>
+<p>略</p>
 
     </div>
 
@@ -354,7 +446,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2"><span class="nav-number">1.</span> <span class="nav-text">3.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3"><span class="nav-number">2.</span> <span class="nav-text">3.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4"><span class="nav-number">3.</span> <span class="nav-text">3.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5"><span class="nav-number">4.</span> <span class="nav-text">3.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6"><span class="nav-number">5.</span> <span class="nav-text">3.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-7"><span class="nav-number">6.</span> <span class="nav-text">3.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-8"><span class="nav-number">7.</span> <span class="nav-text">3.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-9"><span class="nav-number">8.</span> <span class="nav-text">3.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-10"><span class="nav-number">9.</span> <span class="nav-text">3.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-11"><span class="nav-number">10.</span> <span class="nav-text">3.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-12"><span class="nav-number">11.</span> <span class="nav-text">3.12</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#32"><span class="nav-number">1.</span> <span class="nav-text"> 3.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#33"><span class="nav-number">2.</span> <span class="nav-text"> 3.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#34"><span class="nav-number">3.</span> <span class="nav-text"> 3.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#35"><span class="nav-number">4.</span> <span class="nav-text"> 3.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#36"><span class="nav-number">5.</span> <span class="nav-text"> 3.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#37"><span class="nav-number">6.</span> <span class="nav-text"> 3.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#38"><span class="nav-number">7.</span> <span class="nav-text"> 3.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#39"><span class="nav-number">8.</span> <span class="nav-text"> 3.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#310"><span class="nav-number">9.</span> <span class="nav-text"> 3.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#311"><span class="nav-number">10.</span> <span class="nav-text"> 3.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#312"><span class="nav-number">11.</span> <span class="nav-text"> 3.12</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -420,13 +512,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

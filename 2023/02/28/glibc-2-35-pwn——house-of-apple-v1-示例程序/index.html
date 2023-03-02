@@ -236,7 +236,10 @@
         <p>house of apple这种利用方式针对于新版的glibc，在<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-273418.htm">这个资料</a>中有详细的分析与说明。这里根据该资料进行简单总结，并编写示例程序便于理解。</p>
 <p>在house of pig中，我们需要使用两次large bin attack攻击作为前菜，第一次需要修改<code>_IO_list_all</code>指针的值，第二次需要修改<code>__free_hook</code>附近空间的值。而与之形成对比的是，house of apple只需要1次large bin attack即可完成攻击。这里需要注意：<font color=red><strong>house of apple并不是一个可以直接getshell的攻击方式，它更像是一种攻击思路，一种只使用一次large bin attack进行FSOP的思路，在house of apple之后可以接上多种多样的攻击方式来达到我们最终的目的。考虑到与<code>FILE</code>结构体有关的函数有很多都是可以利用的，因此在具体的情境下，攻击的流程一般较为灵活。</strong></font></p>
 <blockquote>
-<p>使用house of apple的条件为：<br>1、程序从main函数返回或能调用exit函数<br>2、能泄露出heap地址和libc地址<br>3、 能使用一次largebin attack（一次即可）</p>
+<p>使用house of apple的条件为：<br />
+1、程序从main函数返回或能调用exit函数<br />
+2、能泄露出heap地址和libc地址<br />
+3、 能使用一次largebin attack（一次即可）</p>
 </blockquote>
 <p>house of apple v1通过exit函数触发，exit调用到<code>_IO_flush_all_lockp</code>，后者遍历<code>_IO_list_all</code>中的<code>FILE</code>结构体并依次执行跳表中的overflow函数。在本利用方式中，使用伪造的<code>FILE</code>结构体，<code>vtable</code>填写<code>_IO_wstrn_jumps</code>，这样可以执行到<code>_IO_wstrn_overflow</code>函数，而<code>_IO_wstrn_overflow</code>会进行一系列赋值操作，将假<code>FILE</code>结构体的<code>_wide_data</code>字段保存的地址附近写入多个值。</p>
 <p>具体的利用方式详见下面的示例程序，在开头提到的资料中还有针对house of apple攻击后的一系列可能的后续操作。</p>
@@ -386,13 +389,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

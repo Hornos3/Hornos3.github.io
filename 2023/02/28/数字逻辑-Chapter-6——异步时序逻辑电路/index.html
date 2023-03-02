@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="6.1 特点与分类特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。 6.2 脉冲异步时序逻辑电路6.2.1 结构模型对输入信号的要求：  输入信号为脉冲信号 输入脉冲的宽度必须保证触发器可靠翻转 输入脉冲的间隔，必须保证前一个脉冲引起的电路响应完全结束">
+  <meta name="description" content="6.1 特点与分类 特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。 分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。  6.2 脉冲异步时序逻辑电路  6.2.1 结构模型 对输入信号的要求：  输入信号为脉冲信号 输入脉冲的宽度必须保证触发器可靠翻转 输入脉冲的间隔，必须保证前一个脉冲引起的电">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字逻辑 Chapter 6——异步时序逻辑电路">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="6.1 特点与分类特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。 6.2 脉冲异步时序逻辑电路6.2.1 结构模型对输入信号的要求：  输入信号为脉冲信号 输入脉冲的宽度必须保证触发器可靠翻转 输入脉冲的间隔，必须保证前一个脉冲引起的电路响应完全结束">
+<meta property="og:description" content="6.1 特点与分类 特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。 分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。  6.2 脉冲异步时序逻辑电路  6.2.1 结构模型 对输入信号的要求：  输入信号为脉冲信号 输入脉冲的宽度必须保证触发器可靠翻转 输入脉冲的间隔，必须保证前一个脉冲引起的电">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/1.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/2.png">
@@ -236,15 +236,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="6-1-特点与分类"><a href="#6-1-特点与分类" class="headerlink" title="6.1 特点与分类"></a>6.1 特点与分类</h1><p>特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。<br>分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。</p>
-<h1 id="6-2-脉冲异步时序逻辑电路"><a href="#6-2-脉冲异步时序逻辑电路" class="headerlink" title="6.2 脉冲异步时序逻辑电路"></a>6.2 脉冲异步时序逻辑电路</h1><h2 id="6-2-1-结构模型"><a href="#6-2-1-结构模型" class="headerlink" title="6.2.1 结构模型"></a>6.2.1 结构模型</h2><p>对输入信号的要求：</p>
+        <h1 id="61-特点与分类"><a class="markdownIt-Anchor" href="#61-特点与分类"></a> 6.1 特点与分类</h1>
+<p>特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。<br />
+分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。</p>
+<h1 id="62-脉冲异步时序逻辑电路"><a class="markdownIt-Anchor" href="#62-脉冲异步时序逻辑电路"></a> 6.2 脉冲异步时序逻辑电路</h1>
+<h2 id="621-结构模型"><a class="markdownIt-Anchor" href="#621-结构模型"></a> 6.2.1 结构模型</h2>
+<p>对输入信号的要求：</p>
 <ul>
 <li>输入信号为脉冲信号</li>
 <li>输入脉冲的宽度必须保证触发器可靠翻转</li>
 <li>输入脉冲的间隔，必须保证前一个脉冲引起的电路响应完全结束后，后一个脉冲才能到来</li>
-<li><font color=red>不允许在两个或两个以上的输入端同时出现脉冲（必然有极短的时间差），因此在绘制真值表、状态表时需要注意，如果有多个信号输入，每一种情况只能有一个信号取值为1，其余全为0，减少了很多情况的讨论。也因此，异步时序的状态表有所不同，其次态的每一分栏均为其中一个变量取值为1，而不是三个变量的联合取值</font>
-
-</li>
+<li><font color=red>不允许在两个或两个以上的输入端同时出现脉冲（必然有极短的时间差），因此在绘制真值表、状态表时需要注意，如果有多个信号输入，每一种情况只能有一个信号取值为1，其余全为0，减少了很多情况的讨论。也因此，异步时序的状态表有所不同，其次态的每一分栏均为其中一个变量取值为1，而不是三个变量的联合取值</font></li>
 </ul>
 <p>输出信号的形式：</p>
 <ul>
@@ -262,7 +264,9 @@
 <li>输入变量x为脉冲信号，由输入脉冲直接引起电路状态改变</li>
 <li>由次态逻辑产生各触发器控制输入信号（Y1,Y2,…,Yr），而且还产生触发器的时钟控制信号（CLK1,CLK2,…,CLKr）</li>
 </ul>
-<h2 id="6-2-2-脉冲异步时序逻辑分析"><a href="#6-2-2-脉冲异步时序逻辑分析" class="headerlink" title="6.2.2 脉冲异步时序逻辑分析"></a>6.2.2 脉冲异步时序逻辑分析</h2><p>分析方法：与同步时序大致相同，同样采用状态表、状态图、时间图作为工具<br>注意：</p>
+<h2 id="622-脉冲异步时序逻辑分析"><a class="markdownIt-Anchor" href="#622-脉冲异步时序逻辑分析"></a> 6.2.2 脉冲异步时序逻辑分析</h2>
+<p>分析方法：与同步时序大致相同，同样采用状态表、状态图、时间图作为工具<br />
+注意：</p>
 <ul>
 <li>当存储元件采用钟控触发器时，对触发器的时钟控制端应该作为激励函数处理（仅当时钟端有脉冲作用时，才会根据和触发器的输入确定状态转移方向，否则触发器状态不变）</li>
 <li>根据对输入的约束，分析时可以排除两个或两个以上输入端同时出现脉冲以及输入端无脉冲出现情况</li>
@@ -274,8 +278,10 @@
 <li>作出状态表和状态图</li>
 <li>用文字描述电路的逻辑功能（必要时画出时间图）</li>
 </ul>
-<p>注意：<br>在脉冲异步的次态真值表中，↓表示下跳，即仅当时钟端有↓出现时，相应触发器状态才能有所变化，否则状态不变</p>
-<h1 id="6-3-脉冲异步时序逻辑电路的设计"><a href="#6-3-脉冲异步时序逻辑电路的设计" class="headerlink" title="6.3 脉冲异步时序逻辑电路的设计"></a>6.3 脉冲异步时序逻辑电路的设计</h1><p>设计步骤与同步时序相同：</p>
+<p>注意：<br />
+在脉冲异步的次态真值表中，↓表示下跳，即仅当时钟端有↓出现时，相应触发器状态才能有所变化，否则状态不变</p>
+<h1 id="63-脉冲异步时序逻辑电路的设计"><a class="markdownIt-Anchor" href="#63-脉冲异步时序逻辑电路的设计"></a> 6.3 脉冲异步时序逻辑电路的设计</h1>
+<p>设计步骤与同步时序相同：</p>
 <ul>
 <li>形成原始状态图和原始状态表</li>
 <li>状态化简，求出最小状态表</li>
@@ -283,7 +289,10 @@
 <li>选定触发器类型，并求出激励函数和输出函数最简表达式</li>
 <li>画出逻辑电路图</li>
 </ul>
-<p>下面是带有时钟信号的钟控触发器激励表<br><img src="1.png" alt=""><br>在设计时对于状态表中与时钟端有关的变量，需要标明上升沿或下降沿以明确接线，如下图。<br><img src="2.png" alt=""></p>
+<p>下面是带有时钟信号的钟控触发器激励表<br />
+<img src="1.png" alt="" /><br />
+在设计时对于状态表中与时钟端有关的变量，需要标明上升沿或下降沿以明确接线，如下图。<br />
+<img src="2.png" alt="" /></p>
 
     </div>
 
@@ -364,7 +373,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#6-1-%E7%89%B9%E7%82%B9%E4%B8%8E%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">6.1 特点与分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-2-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">6.2 脉冲异步时序逻辑电路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-1-%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text">6.2.1 结构模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-2-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E5%88%86%E6%9E%90"><span class="nav-number">2.2.</span> <span class="nav-text">6.2.2 脉冲异步时序逻辑分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-3-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text">6.3 脉冲异步时序逻辑电路的设计</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#61-%E7%89%B9%E7%82%B9%E4%B8%8E%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text"> 6.1 特点与分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#62-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text"> 6.2 脉冲异步时序逻辑电路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#621-%E7%BB%93%E6%9E%84%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.1.</span> <span class="nav-text"> 6.2.1 结构模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#622-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E5%88%86%E6%9E%90"><span class="nav-number">2.2.</span> <span class="nav-text"> 6.2.2 脉冲异步时序逻辑分析</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#63-%E8%84%89%E5%86%B2%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF%E7%9A%84%E8%AE%BE%E8%AE%A1"><span class="nav-number">3.</span> <span class="nav-text"> 6.3 脉冲异步时序逻辑电路的设计</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -430,13 +439,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

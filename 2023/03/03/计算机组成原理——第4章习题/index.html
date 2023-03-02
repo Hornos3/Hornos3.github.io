@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="4.1 存取时间：存取器的访问时间，指一次存储器操作到该操作完成所经历的时间。读写时间可能不同。 存取周期：连续两次启动访问操作之间的最短时间间隔。 存储器带宽：单位时间内存储器能够传输的信息量，注意不能理解为存储器一个存储单元能够存储的比特位数，存储器带宽指的是速度，与网络带宽可以类比。 存储单元：存储器中的最小存储单位。也称为存储元。 边界对齐的数据存放：按照数据类型的大小进行边界对齐。不同数">
+  <meta name="description" content="4.1  存取时间：存取器的访问时间，指一次存储器操作到该操作完成所经历的时间。读写时间可能不同。 存取周期：连续两次启动访问操作之间的最短时间间隔。 存储器带宽：单位时间内存储器能够传输的信息量，注意不能理解为存储器一个存储单元能够存储的比特位数，存储器带宽指的是速度，与网络带宽可以类比。 存储单元：存储器中的最小存储单位。也称为存储元。 边界对齐的数据存放：按照数据类型的大小进行边界对齐。不">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第4章习题">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="4.1 存取时间：存取器的访问时间，指一次存储器操作到该操作完成所经历的时间。读写时间可能不同。 存取周期：连续两次启动访问操作之间的最短时间间隔。 存储器带宽：单位时间内存储器能够传输的信息量，注意不能理解为存储器一个存储单元能够存储的比特位数，存储器带宽指的是速度，与网络带宽可以类比。 存储单元：存储器中的最小存储单位。也称为存储元。 边界对齐的数据存放：按照数据类型的大小进行边界对齐。不同数">
+<meta property="og:description" content="4.1  存取时间：存取器的访问时间，指一次存储器操作到该操作完成所经历的时间。读写时间可能不同。 存取周期：连续两次启动访问操作之间的最短时间间隔。 存储器带宽：单位时间内存储器能够传输的信息量，注意不能理解为存储器一个存储单元能够存储的比特位数，存储器带宽指的是速度，与网络带宽可以类比。 存储单元：存储器中的最小存储单位。也称为存储元。 边界对齐的数据存放：按照数据类型的大小进行边界对齐。不">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T16:02:09.000Z">
 <meta property="article:modified_time" content="2023-03-02T16:05:10.437Z">
@@ -227,7 +227,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="4-1"><a href="#4-1" class="headerlink" title="4.1"></a>4.1</h2><ul>
+        <h2 id="41"><a class="markdownIt-Anchor" href="#41"></a> 4.1</h2>
+<ul>
 <li>存取时间：存取器的访问时间，指一次存储器操作到该操作完成所经历的时间。读写时间可能不同。</li>
 <li>存取周期：连续两次启动访问操作之间的最短时间间隔。</li>
 <li>存储器带宽：单位时间内存储器能够传输的信息量，注意<font color=red>不能理解为存储器一个存储单元能够存储的比特位数，存储器带宽指的是速度，与网络带宽可以类比</font>。</li>
@@ -260,28 +261,42 @@
 <li>写回法：写cache时不同时修改主存的内容，每一个cache行必须设置一个脏位判断该位是否被修改。某行被换出时根据脏位决定是否需要更新主存。</li>
 <li>写穿法：写cache的同时写主存。</li>
 </ul>
-<h3 id="4-2"><a href="#4-2" class="headerlink" title="4.2"></a>4.2</h3><ol>
-<li>A<br>分析：RAM是易失性存储器，ROM是非易失性存储器，正确。RAM作为随机存储器一般用于内存等，只有在上电时才能够保存数据，而ROM作为只读存储器，其内容是在烧录时写死的，即使掉电也不会丢失数据。RAM和ROM都可以使用随机存取方式进行信息访问，正确。ROM不能用于cache，且不需要刷新。</li>
-<li>A<br>分析：DRAM芯片为4M×8位，一块芯片容量为4MB，存储器容量为256MB，故一共有64块芯片。假设其为位扩展，一块芯片有4M个字，故地址线宽度为11位。数据引脚为8位。注意<font color=red>DRAM地址线一般采用复用技术，即CPU分时传送行、列地址，并分别由行选通信号RAS和列选通信号CAS连通</font>。原本4M需要22位地址才能寻址，但将其看做一个矩阵，行和列都只有2^11^行，因此复用只需要11位地址线。</li>
-<li>D<br>4KB的ROM需要2块ROM芯片，4K×4的RAM芯片一块只能存储2KB，因此需要30块。</li>
-<li>D<br>需要进行字位扩展，将字长从4比特扩展为8比特，一共需要8个芯片，分为4组，一组两个进行位扩展。第2组可以寻址0800H~0FFFH的地址，其最小地址为0800H。</li>
-<li>C<br>为了保证其地址引脚数量最少，行数与列数的最大值需要尽可能小，2K=32×64，因此可以选择32行64列或64行32列，又需要考虑减少刷新开销，因此行数应该尽可能少，选择32行64列。</li>
-<li>B<br>工作频率1333MHz，即每秒可以访存1333M次，总线宽度64位，一次访存可获得8字节数据。又因为采用的是3通道地址总线，因此总带宽为1333M×3×8 B/s=32GB/s。</li>
+<h3 id="42"><a class="markdownIt-Anchor" href="#42"></a> 4.2</h3>
+<ol>
+<li>A<br />
+分析：RAM是易失性存储器，ROM是非易失性存储器，正确。RAM作为随机存储器一般用于内存等，只有在上电时才能够保存数据，而ROM作为只读存储器，其内容是在烧录时写死的，即使掉电也不会丢失数据。RAM和ROM都可以使用随机存取方式进行信息访问，正确。ROM不能用于cache，且不需要刷新。</li>
+<li>A<br />
+分析：DRAM芯片为4M×8位，一块芯片容量为4MB，存储器容量为256MB，故一共有64块芯片。假设其为位扩展，一块芯片有4M个字，故地址线宽度为11位。数据引脚为8位。注意<font color=red>DRAM地址线一般采用复用技术，即CPU分时传送行、列地址，并分别由行选通信号RAS和列选通信号CAS连通</font>。原本4M需要22位地址才能寻址，但将其看做一个矩阵，行和列都只有2<sup>11</sup>行，因此复用只需要11位地址线。</li>
+<li>D<br />
+4KB的ROM需要2块ROM芯片，4K×4的RAM芯片一块只能存储2KB，因此需要30块。</li>
+<li>D<br />
+需要进行字位扩展，将字长从4比特扩展为8比特，一共需要8个芯片，分为4组，一组两个进行位扩展。第2组可以寻址0800H~0FFFH的地址，其最小地址为0800H。</li>
+<li>C<br />
+为了保证其地址引脚数量最少，行数与列数的最大值需要尽可能小，2K=32×64，因此可以选择32行64列或64行32列，又需要考虑减少刷新开销，因此行数应该尽可能少，选择32行64列。</li>
+<li>B<br />
+工作频率1333MHz，即每秒可以访存1333M次，总线宽度64位，一次访存可获得8字节数据。又因为采用的是3通道地址总线，因此总带宽为1333M×3×8 B/s=32GB/s。</li>
 <li>D</li>
 <li>B</li>
-<li>B<br>注意CDROM指的是光盘，是顺序存储。</li>
+<li>B<br />
+注意CDROM指的是光盘，是顺序存储。</li>
 <li>A</li>
 <li>A</li>
-<li>C<br>cache有16块用2路组相联，因此一共有8组，一组32B，因此主存第129号单元所在的主存块应该位于第4组。</li>
+<li>C<br />
+cache有16块用2路组相联，因此一共有8组，一组32B，因此主存第129号单元所在的主存块应该位于第4组。</li>
 <li>C</li>
-<li>C<br>分析：主存块大小4个字，一个字32位，能存放4K字数据，就有1K行，每一行保存的信息有：直接相联映射应该主存映射地址的区地址18位1个字，4个字的数据。考虑到采用写回的方式，需要1位有效位和1位脏位，一行一共有18+128+2=148位数据，1K行就有148K位。本题易错点：<font color=red>求的是位数不是字数，写回方式有脏位，直接相联映射应该保存地址的多少位</font>。</li>
+<li>C<br />
+分析：主存块大小4个字，一个字32位，能存放4K字数据，就有1K行，每一行保存的信息有：直接相联映射应该主存映射地址的区地址18位1个字，4个字的数据。考虑到采用写回的方式，需要1位有效位和1位脏位，一行一共有18+128+2=148位数据，1K行就有148K位。本题易错点：<font color=red>求的是位数不是字数，写回方式有脏位，直接相联映射应该保存地址的多少位</font>。</li>
 <li>D</li>
-<li>B<br>分析：采用页式存储管理方式，且有TLB，那么该指令首先需要访问x处的数据。首先访问TLB，如果TLB命中，则物理地址已知，然后访问cache。如果cache命中，则写cache，同时需要写主存，这个过程访存次数为1（注意TLB和cache不属于主存）。不妨可以另外计算最多需要多少次访问主存：如果TLB没有命中，那么首先需要访问主存中的页表（假设为一级页表），获取物理地址之后到cache中查找没有找到，还需要从主存中调入这部分数据到cache，然后写cache写主存，一共访存3次。</li>
-<li>D<br>cache就是主存中内容的部分复制，cache如果命中page一定会命中。</li>
+<li>B<br />
+分析：采用页式存储管理方式，且有TLB，那么该指令首先需要访问x处的数据。首先访问TLB，如果TLB命中，则物理地址已知，然后访问cache。如果cache命中，则写cache，同时需要写主存，这个过程访存次数为1（注意TLB和cache不属于主存）。不妨可以另外计算最多需要多少次访问主存：如果TLB没有命中，那么首先需要访问主存中的页表（假设为一级页表），获取物理地址之后到cache中查找没有找到，还需要从主存中调入这部分数据到cache，然后写cache写主存，一共访存3次。</li>
+<li>D<br />
+cache就是主存中内容的部分复制，cache如果命中page一定会命中。</li>
 <li>A</li>
-<li>D<br>缺页中断处理完成之后应该重新执行触发缺页中断的那条指令。</li>
+<li>D<br />
+缺页中断处理完成之后应该重新执行触发缺页中断的那条指令。</li>
 </ol>
-<h3 id="4-3"><a href="#4-3" class="headerlink" title="4.3"></a>4.3</h3><ol>
+<h3 id="43"><a class="markdownIt-Anchor" href="#43"></a> 4.3</h3>
+<ol>
 <li>采用层次化体系可以在提高CPU的性能同时最大限度地降低成本。</li>
 <li>用于进行位扩展。</li>
 <li>其中的数据不稳定，长时间不刷新会丢失。进行一次类似读操作让其电容重新充电。</li>
@@ -291,39 +306,82 @@
 <li>防止cache与主存中数据不一致问题。</li>
 <li>略</li>
 </ol>
-<h3 id="4-4"><a href="#4-4" class="headerlink" title="4.4"></a>4.4</h3><p>32KB容量按照16位字编址则有16K个字，地址寄存器应为14位，数据寄存器为16位。</p>
-<h3 id="4-5"><a href="#4-5" class="headerlink" title="4.5"></a>4.5</h3><p>可以设计出32K×32位、64K×16位、128K×8位。图略。</p>
-<h3 id="4-6"><a href="#4-6" class="headerlink" title="4.6"></a>4.6</h3><p>256K×8位存储器中最高64KB为只读，低192KB可读可写，因此考虑使用6片32K×8位RAM位扩展加2片64K×4位字扩展。</p>
-<h3 id="4-7"><a href="#4-7" class="headerlink" title="4.7"></a>4.7</h3><p>128K字中最高32K字只读，低96K字可读可写，考虑使用12片16K×8位静态RAM芯片进行字位扩展，1组2片共6组；加2片16K×16位ROM芯片进行位扩展。</p>
-<h3 id="4-8"><a href="#4-8" class="headerlink" title="4.8"></a>4.8</h3><p>DRAM是时分复用的地址线，64K=256×256，即一共有256行，每个芯片需要在2ms之内将这256行全部刷新至少一次，按照异步刷新的规则，间隔时间应该为2ms/256=7.8125μs。<br>如果采用集中刷新方式，则存储器刷新一次需要使用256个读写周期，CPU的“死”时间为0.5×256=128ms。</p>
-<h3 id="4-9"><a href="#4-9" class="headerlink" title="4.9"></a>4.9</h3><p>DRAM芯片时分复用，有256行256列，故地址线输入需要8个引脚，数据线1个引脚，加上读写标志2个引脚，共11个。</p>
-<h3 id="4-10"><a href="#4-10" class="headerlink" title="4.10"></a>4.10</h3><p>异步刷新。<br>16K=128×128，刷新周期为2ms/128=15.625μs。</p>
-<h3 id="4-11"><a href="#4-11" class="headerlink" title="4.11"></a>4.11</h3><p>cache容量为2^14^块，每块32位字。<br>按照全相联映射，将这些数据按照地址顺序依次装入cache后cache的内容：<br>000000 87568756<br>000002 87792301<br>004001 9ABEFCD0<br>007FFF 4FFFFC68<br>3FFFFE 01BF2460<br>按照直接相联映射：<br>00 0000 87568756<br>01 0001 9ABEFCD0<br>00 0002 87792301<br>01 3FFF 4FFFFC68<br>FF 3FFE 01BF2460<br>按照四路组相联映射：<br>000 000 87568756<br>000 002 87792301<br>001 001 9ABEFCD0<br>001 FFF 4FFFFC68<br>3FF FFE 01BF2460</p>
-<h3 id="4-12"><a href="#4-12" class="headerlink" title="4.12"></a>4.12</h3><p>主存4096×128=512K个字，地址19位。<br>cache 64×128=8K个字，地址13位。<br>主存地址分为3个部分，组内偏移7位，标识一个组中的128个字。组号4位，标识cache中的16个组。组标记8位，标识地址的最高8位。</p>
-<h3 id="4-13"><a href="#4-13" class="headerlink" title="4.13"></a>4.13</h3><p>cache容量16KB，一块8个字，每个字32位，即32B，则cache共有512行。映射方式采用4路组相联，可分为128组。<br>CPU每一次读一个字，其中第0~7号单元应该在同一块，8~15号单元在同一块，以此类推，100个字只在第一次访问第0、8、16、…、96号单元时没有命中，共13次没有命中，共访问了1000次，没有使用LRU算法淘汰某一行，因此命中率为98.7%。<br>若cache比主存快10倍，其访问时间就是0.1倍。设主存一次访问时间为t，则使用cache后一次访问的平均时间为t×1.3%+0.1t×98.7%=11.17%t，速度提升了8.95倍。</p>
-<h3 id="4-14"><a href="#4-14" class="headerlink" title="4.14"></a>4.14</h3><ol>
+<h3 id="44"><a class="markdownIt-Anchor" href="#44"></a> 4.4</h3>
+<p>32KB容量按照16位字编址则有16K个字，地址寄存器应为14位，数据寄存器为16位。</p>
+<h3 id="45"><a class="markdownIt-Anchor" href="#45"></a> 4.5</h3>
+<p>可以设计出32K×32位、64K×16位、128K×8位。图略。</p>
+<h3 id="46"><a class="markdownIt-Anchor" href="#46"></a> 4.6</h3>
+<p>256K×8位存储器中最高64KB为只读，低192KB可读可写，因此考虑使用6片32K×8位RAM位扩展加2片64K×4位字扩展。</p>
+<h3 id="47"><a class="markdownIt-Anchor" href="#47"></a> 4.7</h3>
+<p>128K字中最高32K字只读，低96K字可读可写，考虑使用12片16K×8位静态RAM芯片进行字位扩展，1组2片共6组；加2片16K×16位ROM芯片进行位扩展。</p>
+<h3 id="48"><a class="markdownIt-Anchor" href="#48"></a> 4.8</h3>
+<p>DRAM是时分复用的地址线，64K=256×256，即一共有256行，每个芯片需要在2ms之内将这256行全部刷新至少一次，按照异步刷新的规则，间隔时间应该为2ms/256=7.8125μs。<br />
+如果采用集中刷新方式，则存储器刷新一次需要使用256个读写周期，CPU的“死”时间为0.5×256=128ms。</p>
+<h3 id="49"><a class="markdownIt-Anchor" href="#49"></a> 4.9</h3>
+<p>DRAM芯片时分复用，有256行256列，故地址线输入需要8个引脚，数据线1个引脚，加上读写标志2个引脚，共11个。</p>
+<h3 id="410"><a class="markdownIt-Anchor" href="#410"></a> 4.10</h3>
+<p>异步刷新。<br />
+16K=128×128，刷新周期为2ms/128=15.625μs。</p>
+<h3 id="411"><a class="markdownIt-Anchor" href="#411"></a> 4.11</h3>
+<p>cache容量为2<sup>14</sup>块，每块32位字。<br />
+按照全相联映射，将这些数据按照地址顺序依次装入cache后cache的内容：<br />
+000000 87568756<br />
+000002 87792301<br />
+004001 9ABEFCD0<br />
+007FFF 4FFFFC68<br />
+3FFFFE 01BF2460<br />
+按照直接相联映射：<br />
+00 0000 87568756<br />
+01 0001 9ABEFCD0<br />
+00 0002 87792301<br />
+01 3FFF 4FFFFC68<br />
+FF 3FFE 01BF2460<br />
+按照四路组相联映射：<br />
+000 000 87568756<br />
+000 002 87792301<br />
+001 001 9ABEFCD0<br />
+001 FFF 4FFFFC68<br />
+3FF FFE 01BF2460</p>
+<h3 id="412"><a class="markdownIt-Anchor" href="#412"></a> 4.12</h3>
+<p>主存4096×128=512K个字，地址19位。<br />
+cache 64×128=8K个字，地址13位。<br />
+主存地址分为3个部分，组内偏移7位，标识一个组中的128个字。组号4位，标识cache中的16个组。组标记8位，标识地址的最高8位。</p>
+<h3 id="413"><a class="markdownIt-Anchor" href="#413"></a> 4.13</h3>
+<p>cache容量16KB，一块8个字，每个字32位，即32B，则cache共有512行。映射方式采用4路组相联，可分为128组。<br />
+CPU每一次读一个字，其中第0~7号单元应该在同一块，8~15号单元在同一块，以此类推，100个字只在第一次访问第0、8、16、…、96号单元时没有命中，共13次没有命中，共访问了1000次，没有使用LRU算法淘汰某一行，因此命中率为98.7%。<br />
+若cache比主存快10倍，其访问时间就是0.1倍。设主存一次访问时间为t，则使用cache后一次访问的平均时间为t×1.3%+0.1t×98.7%=11.17%t，速度提升了8.95倍。</p>
+<h3 id="414"><a class="markdownIt-Anchor" href="#414"></a> 4.14</h3>
+<ol>
 <li>对于第一段代码，数组访问按行优先访问，对于内存空间而言是线性按序访问，具有较好的空间局部性。但每一个数组元素只使用一次，因此对于数组元素而言没有时间局部性。第二段代码数组按照列优先访问，在内存空间中的访问是跳跃式的，因此没有很好的空间局部性，同样也不存在时间局部性。</li>
 <li>在两段代码中，变量sum均被频繁访问，因此具有很好的时间局部性，由于变量sum是单个变量，与其邻近地址空间的数据没有直接关系，因此不存在空间局部性。</li>
 <li>for循环体对指令访问具有时间局部性，一条指令会被循环执行多次，而for循环有多条指令，这些指令之间具备一定的空间局部性。</li>
 </ol>
-<h3 id="4-15"><a href="#4-15" class="headerlink" title="4.15"></a>4.15</h3><p>VPN：虚拟页号数量为2GB/4KB=512M，需要29位<br>VPO：虚拟页偏移4KB，需要12位<br>PPN：物理页号数量为8MB/4KB=2K，需要11位<br>PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
-<h3 id="4-16"><a href="#4-16" class="headerlink" title="4.16"></a>4.16</h3><ol>
+<h3 id="415"><a class="markdownIt-Anchor" href="#415"></a> 4.15</h3>
+<p>VPN：虚拟页号数量为2GB/4KB=512M，需要29位<br />
+VPO：虚拟页偏移4KB，需要12位<br />
+PPN：物理页号数量为8MB/4KB=2K，需要11位<br />
+PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
+<h3 id="416"><a class="markdownIt-Anchor" href="#416"></a> 4.16</h3>
+<ol>
 <li>失效的有2、3、5、7页</li>
 <li>分别为3072、无效、4095、无效、3072、无效</li>
 </ol>
-<h3 id="4-17"><a href="#4-17" class="headerlink" title="4.17"></a>4.17</h3><p>TLB采用4路组相联技术，共16项，可分为4组。cache容量16KB，每块32B，共512组，采用4路组相联，共128组。</p>
+<h3 id="417"><a class="markdownIt-Anchor" href="#417"></a> 4.17</h3>
+<p>TLB采用4路组相联技术，共16项，可分为4组。cache容量16KB，每块32B，共512组，采用4路组相联，共128组。</p>
 <ol>
 <li>页大小为128KB，需要使用17位保存页内偏移，虚拟页号需要使用14位保存。虚拟页号中高12位表示TLB标记，低2位表示TLB索引。</li>
 <li>物理地址中18位表示物理页号，14位表示偏移地址。</li>
 <li>要使得物理地址与cache建立映射，cache中每一组存放32字节，行内地址偏移为物理地址的最低5位。往上7位是组索引，用于标识cache中的128组，其余的20位为组标记。</li>
 </ol>
-<h3 id="4-18"><a href="#4-18" class="headerlink" title="4.18"></a>4.18</h3><ol>
+<h3 id="418"><a class="markdownIt-Anchor" href="#418"></a> 4.18</h3>
+<ol>
 <li>页式虚拟存储管理中一页大小8KB，需要13位表示页内偏移，虚拟地址其余的19位表示页号，即A=19。TLB采用全相联映射，因此B与A的位数相同，B=19。物理地址中高11位表示页框号，C=11。低13位表示物理地址页内偏移，D=13。cache采用二路组相联，数据区大小64KB，主存块大小64B，需要块内索引6位，G=6。cache一共有1024行，512组，需要9位标识块索引，F=H=9。剩余的9位用于物理地址块标识，E=9。B存放的是虚拟页号。</li>
 <li>cache组号为4099 mod 512=3。H字段的值为4099 / 512 = 8。</li>
 <li>缺页处理的开销大，因为缺页需要从辅存中调入页面，访问速度比访问主存速度慢很多。</li>
 <li>提高效率。</li>
 </ol>
-<h3 id="4-19"><a href="#4-19" class="headerlink" title="4.19"></a>4.19</h3><ol>
+<h3 id="419"><a class="markdownIt-Anchor" href="#419"></a> 4.19</h3>
+<ol>
 <li>主存的实页号共16位，页内地址12位，物理地址占28位。</li>
 <li>TLB采用的是全相联映射方式，使用SRAM实现。</li>
 <li>2路组相联映射。共8组，数据位32B。还需要添加脏位和1位LRU位用于标识LRU淘汰块。总容量：数据512B，tag有20×16/8=40B，脏位和有效位、LRU位3×16/8=6B，共558B。</li>
@@ -409,7 +467,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1"><span class="nav-number">1.</span> <span class="nav-text">4.1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2"><span class="nav-number">1.1.</span> <span class="nav-text">4.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3"><span class="nav-number">1.2.</span> <span class="nav-text">4.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4"><span class="nav-number">1.3.</span> <span class="nav-text">4.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5"><span class="nav-number">1.4.</span> <span class="nav-text">4.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6"><span class="nav-number">1.5.</span> <span class="nav-text">4.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-7"><span class="nav-number">1.6.</span> <span class="nav-text">4.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-8"><span class="nav-number">1.7.</span> <span class="nav-text">4.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-9"><span class="nav-number">1.8.</span> <span class="nav-text">4.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-10"><span class="nav-number">1.9.</span> <span class="nav-text">4.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-11"><span class="nav-number">1.10.</span> <span class="nav-text">4.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-12"><span class="nav-number">1.11.</span> <span class="nav-text">4.12</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-13"><span class="nav-number">1.12.</span> <span class="nav-text">4.13</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-14"><span class="nav-number">1.13.</span> <span class="nav-text">4.14</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-15"><span class="nav-number">1.14.</span> <span class="nav-text">4.15</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-16"><span class="nav-number">1.15.</span> <span class="nav-text">4.16</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-17"><span class="nav-number">1.16.</span> <span class="nav-text">4.17</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-18"><span class="nav-number">1.17.</span> <span class="nav-text">4.18</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-19"><span class="nav-number">1.18.</span> <span class="nav-text">4.19</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#41"><span class="nav-number">1.</span> <span class="nav-text"> 4.1</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#42"><span class="nav-number">1.1.</span> <span class="nav-text"> 4.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#43"><span class="nav-number">1.2.</span> <span class="nav-text"> 4.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#44"><span class="nav-number">1.3.</span> <span class="nav-text"> 4.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#45"><span class="nav-number">1.4.</span> <span class="nav-text"> 4.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#46"><span class="nav-number">1.5.</span> <span class="nav-text"> 4.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#47"><span class="nav-number">1.6.</span> <span class="nav-text"> 4.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#48"><span class="nav-number">1.7.</span> <span class="nav-text"> 4.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#49"><span class="nav-number">1.8.</span> <span class="nav-text"> 4.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#410"><span class="nav-number">1.9.</span> <span class="nav-text"> 4.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#411"><span class="nav-number">1.10.</span> <span class="nav-text"> 4.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#412"><span class="nav-number">1.11.</span> <span class="nav-text"> 4.12</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#413"><span class="nav-number">1.12.</span> <span class="nav-text"> 4.13</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#414"><span class="nav-number">1.13.</span> <span class="nav-text"> 4.14</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#415"><span class="nav-number">1.14.</span> <span class="nav-text"> 4.15</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#416"><span class="nav-number">1.15.</span> <span class="nav-text"> 4.16</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#417"><span class="nav-number">1.16.</span> <span class="nav-text"> 4.17</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#418"><span class="nav-number">1.17.</span> <span class="nav-text"> 4.18</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#419"><span class="nav-number">1.18.</span> <span class="nav-text"> 4.19</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -475,13 +533,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

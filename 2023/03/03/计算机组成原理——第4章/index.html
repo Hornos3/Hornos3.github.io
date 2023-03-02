@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="4.1 存储器概述存储器可以分为：  随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。 顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。 直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。 只读存储器ROM。  存储系统的层次结构现实世界中，一个存储器的存储速度、存储">
+  <meta name="description" content="4.1 存储器概述 存储器可以分为：  随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。 顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。 直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。 只读存储器ROM。   存储系统的层次结构 现实世界中，一个存储器的存储速">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第4章">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="4.1 存储器概述存储器可以分为：  随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。 顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。 直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。 只读存储器ROM。  存储系统的层次结构现实世界中，一个存储器的存储速度、存储">
+<meta property="og:description" content="4.1 存储器概述 存储器可以分为：  随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。 顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。 直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。 只读存储器ROM。   存储系统的层次结构 现实世界中，一个存储器的存储速">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/d81df6d4e65d4db7b38b6124e0362f81.png">
 <meta property="og:image" content="https://img-blog.csdnimg.cn/f7aa512bdb234f61aeb467eec7ffda55.png">
@@ -213,7 +213,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>4.7k</span>
+              <span>4.6k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
@@ -232,38 +232,50 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="4-1-存储器概述"><a href="#4-1-存储器概述" class="headerlink" title="4.1 存储器概述"></a>4.1 存储器概述</h2><p>存储器可以分为：</p>
+        <h2 id="41-存储器概述"><a class="markdownIt-Anchor" href="#41-存储器概述"></a> 4.1 存储器概述</h2>
+<p>存储器可以分为：</p>
 <ul>
 <li>随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。</li>
 <li>顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。</li>
 <li>直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。</li>
 <li>只读存储器ROM。</li>
 </ul>
-<h4 id="存储系统的层次结构"><a href="#存储系统的层次结构" class="headerlink" title="存储系统的层次结构"></a>存储系统的层次结构</h4><p>现实世界中，一个存储器的存储速度、存储容量和成本往往是相互矛盾的，因此需要多种不同类型的存储器。典型的存储系统是一个金字塔结构，从上到下依次为==寄存器、高速缓存、主存、磁带、磁盘等==。越往上访问速度越快，单位容量的成本越高，越往下存储容量越大。</p>
+<h4 id="存储系统的层次结构"><a class="markdownIt-Anchor" href="#存储系统的层次结构"></a> 存储系统的层次结构</h4>
+<p>现实世界中，一个存储器的存储速度、存储容量和成本往往是相互矛盾的，因此需要多种不同类型的存储器。典型的存储系统是一个金字塔结构，从上到下依次为<mark>寄存器、高速缓存、主存、磁带、磁盘等</mark>。越往上访问速度越快，单位容量的成本越高，越往下存储容量越大。</p>
 <p>存储体系层次化结构的理论基础：时间局部性原理和空间局部性原理。</p>
-<h4 id="主存中数据的存放"><a href="#主存中数据的存放" class="headerlink" title="主存中数据的存放"></a>主存中数据的存放</h4><ul>
+<h4 id="主存中数据的存放"><a class="markdownIt-Anchor" href="#主存中数据的存放"></a> 主存中数据的存放</h4>
+<ul>
 <li>存储字长：主存的一个存储单元能够存储的二进制位数。</li>
 <li>数据字长：计算机一次能处理的二进制数的位数。</li>
 <li>数据的边界对齐：在数据对齐的情况下，访问主存的次数相对于不对齐会减少一些，虽然浪费了一些空间，但是能够提升速度。以32位系统为例，双字数据的地址应该以8为倍数对齐，字数据地址应该以4为倍数对齐，以此类推。</li>
 <li>大小端存储：采用多字节方式访问主存时主存中的字节顺序。存储器的低字节单元中存放的是数据的高字节时，称为大端，反之称为小端。</li>
 </ul>
-<h2 id="4-2-半导体存储器"><a href="#4-2-半导体存储器" class="headerlink" title="4.2 半导体存储器"></a>4.2 半导体存储器</h2><h3 id="4-2-1-静态MOS存储器"><a href="#4-2-1-静态MOS存储器" class="headerlink" title="4.2.1 静态MOS存储器"></a>4.2.1 静态MOS存储器</h3><p>存储器以静态MOS存储元为基本单元构成的存储器称为静态MOS存储器（SRAM）。</p>
-<p><img src="https://img-blog.csdnimg.cn/d81df6d4e65d4db7b38b6124e0362f81.png" alt=""></p>
-<h4 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h4><ul>
-<li>要想获取该单元存储的数据是0还是1，需要看A点和B点的电位。当A点为高电平而B点为低电平时，存储1，反之存储0。当A点为高电位时，T~2~导通，T~1~断路。</li>
-<li>T~3~和T~4~为补充电荷使用。无论A还是B为高电平，这两个三极管一定导通，当A为高电平时，B接地，因此从T~4~过来的电荷都漏掉了，B点的电压还是0V，而A点则可以维持高电平。反之同理。</li>
+<h2 id="42-半导体存储器"><a class="markdownIt-Anchor" href="#42-半导体存储器"></a> 4.2 半导体存储器</h2>
+<h3 id="421-静态mos存储器"><a class="markdownIt-Anchor" href="#421-静态mos存储器"></a> 4.2.1 静态MOS存储器</h3>
+<p>存储器以静态MOS存储元为基本单元构成的存储器称为静态MOS存储器（SRAM）。</p>
+<p><img src="https://img-blog.csdnimg.cn/d81df6d4e65d4db7b38b6124e0362f81.png" alt="" /></p>
+<h4 id="工作原理"><a class="markdownIt-Anchor" href="#工作原理"></a> 工作原理</h4>
+<ul>
+<li>要想获取该单元存储的数据是0还是1，需要看A点和B点的电位。当A点为高电平而B点为低电平时，存储1，反之存储0。当A点为高电位时，T<sub>2</sub>导通，T<sub>1</sub>断路。</li>
+<li>T<sub>3</sub>和T<sub>4</sub>为补充电荷使用。无论A还是B为高电平，这两个三极管一定导通，当A为高电平时，B接地，因此从T<sub>4</sub>过来的电荷都漏掉了，B点的电压还是0V，而A点则可以维持高电平。反之同理。</li>
 <li>读取：当X地址译码线与Y地址译码线均导通时，4个三极管均导通，A的电平输出到左边，B的电平输出到右边。</li>
-<li>写入：两个地址线导通后左边与右边一个输入高电平，一个输入低电平。设原来单元中存储1，现需要将其写为0，则需要向左边输入0V，右边输入高电平，这样放走了左边A的电荷之后，右边的T~2~就断路，B不再接地，其电荷量增加，导通T~1~使A的电荷完全被导走，以此达到新的稳态。注意这其中的步骤顺序。</li>
+<li>写入：两个地址线导通后左边与右边一个输入高电平，一个输入低电平。设原来单元中存储1，现需要将其写为0，则需要向左边输入0V，右边输入高电平，这样放走了左边A的电荷之后，右边的T<sub>2</sub>就断路，B不再接地，其电荷量增加，导通T<sub>1</sub>使A的电荷完全被导走，以此达到新的稳态。注意这其中的步骤顺序。</li>
 </ul>
-<p>单译码结构：一维的线性结构，索引一个存储单元只需要一个地址线。索引2^n^地址空间需要2^n^条地址线。<br>双译码结构：二维的地址结构，索引一个单元需要两个地址线。索引2^n^地址空间需要2^n/2+1^条地址线。</p>
-<h3 id="4-2-2-动态MOS存储器"><a href="#4-2-2-动态MOS存储器" class="headerlink" title="4.2.2 动态MOS存储器"></a>4.2.2 动态MOS存储器</h3><p>SRAM的不足之处有：晶体管数量较多，存储密度低，功耗大。<br><img src="https://img-blog.csdnimg.cn/f7aa512bdb234f61aeb467eec7ffda55.png" alt=""><br><img src="https://img-blog.csdnimg.cn/5f21cadb698247aebf6be87ab01dccf8.png" alt=""></p>
-<h4 id="工作原理-1"><a href="#工作原理-1" class="headerlink" title="工作原理"></a>工作原理</h4><ul>
-<li>处于保持状态时，预充、两条译码线均为低电平，若此时A为高电平，B为低电平，则B接地，A上有大量电荷，因此电容C~2~带电，可以让A的高电平状态维持一段时间，但电荷还是会有流失，因此保持状态如果时间过长，其中的数据就会丢失。</li>
+<p>单译码结构：一维的线性结构，索引一个存储单元只需要一个地址线。索引2<sup>n</sup>地址空间需要2<sup>n</sup>条地址线。<br />
+双译码结构：二维的地址结构，索引一个单元需要两个地址线。索引2<sup>n</sup>地址空间需要2<sup>n/2+1</sup>条地址线。</p>
+<h3 id="422-动态mos存储器"><a class="markdownIt-Anchor" href="#422-动态mos存储器"></a> 4.2.2 动态MOS存储器</h3>
+<p>SRAM的不足之处有：晶体管数量较多，存储密度低，功耗大。<br />
+<img src="https://img-blog.csdnimg.cn/f7aa512bdb234f61aeb467eec7ffda55.png" alt="" /><br />
+<img src="https://img-blog.csdnimg.cn/5f21cadb698247aebf6be87ab01dccf8.png" alt="" /></p>
+<h4 id="工作原理-2"><a class="markdownIt-Anchor" href="#工作原理-2"></a> 工作原理</h4>
+<ul>
+<li>处于保持状态时，预充、两条译码线均为低电平，若此时A为高电平，B为低电平，则B接地，A上有大量电荷，因此电容C<sub>2</sub>带电，可以让A的高电平状态维持一段时间，但电荷还是会有流失，因此保持状态如果时间过长，其中的数据就会丢失。</li>
 <li>刷新状态：预充和一条译码线（X译码线）导通，进行充电。如果原来A上带有电荷，但由于泄露已经较为微弱。在导通X译码线和预充之后，A得到了直接的电荷补充，而B由于此时仍然接地，因此无法得到电荷。双地址结构的DRAM刷新是按行进行的。</li>
-<li>读数据：首先导通预充信号充电，使得左右两个C~D~充满电。若此时A为高电平，充电完成后先导通X地址译码线，这样左边C~D~会为C~2~充电，==自身电荷量增加==，而右边的C~D~将电荷部分转移到C~1~中，==自身电荷量减少==。然后导通Y地址译码线，左边输出的电平略高于V~CC~/2，右边输出的电平略低于V~CC~/2。</li>
-<li>写数据：首先导通Y地址译码线，并写入高电平和低电平，设向原来保存1的单元写入数据0，则右边输入高电平，左边输入低电平，因此右边C~D~带电荷。然后导通X地址译码线。先是C~2~上的电荷量大量减少，使得B不再接地，然后B接收到右边C~D~的电荷，让A接地。</li>
+<li>读数据：首先导通预充信号充电，使得左右两个C<sub>D</sub>充满电。若此时A为高电平，充电完成后先导通X地址译码线，这样左边C<sub>D</sub>会为C<sub>2</sub>充电，<mark>自身电荷量增加</mark>，而右边的C<sub>D</sub>将电荷部分转移到C<sub>1</sub>中，<mark>自身电荷量减少</mark>。然后导通Y地址译码线，左边输出的电平略高于V<sub>CC</sub>/2，右边输出的电平略低于V<sub>CC</sub>/2。</li>
+<li>写数据：首先导通Y地址译码线，并写入高电平和低电平，设向原来保存1的单元写入数据0，则右边输入高电平，左边输入低电平，因此右边C<sub>D</sub>带电荷。然后导通X地址译码线。先是C<sub>2</sub>上的电荷量大量减少，使得B不再接地，然后B接收到右边C<sub>D</sub>的电荷，让A接地。</li>
 </ul>
-<h4 id="DRAM的刷新"><a href="#DRAM的刷新" class="headerlink" title="DRAM的刷新"></a>DRAM的刷新</h4><ul>
+<h4 id="dram的刷新"><a class="markdownIt-Anchor" href="#dram的刷新"></a> DRAM的刷新</h4>
+<ul>
 <li>最大刷新周期：信息存储到丢失之前的这段时间，两次刷新时间间隔不能超过最大刷新周期。</li>
 <li>刷新周期：存储器实际上完成两次刷新的之间的时间间隔。</li>
 <li>DRAM按行进行刷新，为减少刷新的周期，可以减少存储矩阵行数，增加列数。</li>
@@ -275,13 +287,17 @@
 <li>分散刷新：将存储周期（时间较短，1μs左右）分为两个部分，第一个部分用于读写，第二个部分用于刷新。优点：不存在死区。缺点：速度慢。</li>
 <li>异步刷新：将所有行的刷新平均分配到刷新周期之内，如刷新周期为2ms，共有256行，则将刷新周期分为256等份，每一个等份的前面所有存储周期用于读写，最后的一个存储周期用于刷新。</li>
 </ul>
-<h2 id="4-3-主存的组织和CPU的连接"><a href="#4-3-主存的组织和CPU的连接" class="headerlink" title="4.3 主存的组织和CPU的连接"></a>4.3 主存的组织和CPU的连接</h2><h3 id="4-3-2-存储器的扩展"><a href="#4-3-2-存储器的扩展" class="headerlink" title="4.3.2 存储器的扩展"></a>4.3.2 存储器的扩展</h3><ul>
+<h2 id="43-主存的组织和cpu的连接"><a class="markdownIt-Anchor" href="#43-主存的组织和cpu的连接"></a> 4.3 主存的组织和CPU的连接</h2>
+<h3 id="432-存储器的扩展"><a class="markdownIt-Anchor" href="#432-存储器的扩展"></a> 4.3.2 存储器的扩展</h3>
+<ul>
 <li>位扩展：又称为字长扩展或数据总线扩展，将所有存储芯片的地址线、读写控制线并联，将输出合并得到数据内容，可以理解为，如果一块芯片的一个单元只能保存一位信息，则第一块芯片只保存所有地址中的第一位信息，第二块芯片只保存所有地址的第二位信息，等等。</li>
 <li>字扩展：又称容量扩展或地址总线扩展，其不会增加数据的位宽，每一次寻址只会访问一块芯片，其他芯片没有被访问，输出也只是接受一个芯片的输出。将扩展出来的数据位线（地址的高位）连接到译码器来确定访问哪一块存储芯片。</li>
 <li>字位同时扩展：上面两种方式的结合。</li>
 </ul>
-<h2 id="4-5-高速缓冲存储器"><a href="#4-5-高速缓冲存储器" class="headerlink" title="4.5 高速缓冲存储器"></a>4.5 高速缓冲存储器</h2><p>cache：在CPU与主存之间添加一块小容量的快速的SRAM，以提升访问主存的性能。依据的原理是空间局部性。</p>
-<h3 id="4-5-3-cache的基本原理"><a href="#4-5-3-cache的基本原理" class="headerlink" title="4.5.3 cache的基本原理"></a>4.5.3 cache的基本原理</h3><p>CPU通过字节地址访问快速的cache，首先需要确定需要访问的数据是否在cache中。</p>
+<h2 id="45-高速缓冲存储器"><a class="markdownIt-Anchor" href="#45-高速缓冲存储器"></a> 4.5 高速缓冲存储器</h2>
+<p>cache：在CPU与主存之间添加一块小容量的快速的SRAM，以提升访问主存的性能。依据的原理是空间局部性。</p>
+<h3 id="453-cache的基本原理"><a class="markdownIt-Anchor" href="#453-cache的基本原理"></a> 4.5.3 cache的基本原理</h3>
+<p>CPU通过字节地址访问快速的cache，首先需要确定需要访问的数据是否在cache中。</p>
 <ul>
 <li>数据命中：数据在cache中。</li>
 <li>命中访问时间：当数据命中时数据的访问时间，包括查找时间和cache访问时间两部分。</li>
@@ -291,31 +307,46 @@
 <li>缺失率：1-命中率。</li>
 <li>访问效率：cache的命中访问时间与cache/主存系统的平均访问时间的比值。</li>
 </ul>
-<h3 id="4-5-4-cache读、写流程与关键技术"><a href="#4-5-4-cache读、写流程与关键技术" class="headerlink" title="4.5.4 cache读、写流程与关键技术"></a>4.5.4 cache读、写流程与关键技术</h3><h4 id="读"><a href="#读" class="headerlink" title="读"></a>读</h4><p>读入时查找cache中是否有需要读取的数据，有则读取，没有则调入这一块数据后再读取。</p>
-<h4 id="写"><a href="#写" class="headerlink" title="写"></a>写</h4><p>写比读复杂一些。<br>首先查找目标地址处的数据是否保存在cache，如果有则写入数据到cache。这里有两种策略：==写回策略和写穿策略==，写回策略在将数据写入cache之后立即结束操作，会导致cache与主存中数据的不一致；写穿策略在cache中数据被修改后再将数据写入到主存中，速度较慢。<br>如果目标地址处的数据不在cache，则也有两种选择：一种是将数据直接写入到主存，另一种是将这一块地址的内容载入到cache后写入到cache，至于之后是否需要写入主存使用的就是写回策略和写穿策略两种策略了。</p>
-<h3 id="4-5-5-相联存储器"><a href="#4-5-5-相联存储器" class="headerlink" title="4.5.5 相联存储器"></a>4.5.5 相联存储器</h3><p>相联存储器可用于判断对应地址的数据是否保存在该存储器中，基本数单元是键值对，键是主存地址，值是主存地址下的数据。由于相联存储器可以进行所有键值对的并行查找，因此只需查找一次就可以确定一个键值对。</p>
-<p><img src="https://img-blog.csdnimg.cn/11f8cf36bbcf4f479515775306c6d33b.png" alt=""></p>
-<h3 id="4-5-6-地址映射"><a href="#4-5-6-地址映射" class="headerlink" title="4.5.6 地址映射"></a>4.5.6 地址映射</h3><p>地址映射即为将主存地址空间映射到cache的地址空间，将存放在主存的程序或数据载入到cache块的规则。</p>
+<h3 id="454-cache读-写流程与关键技术"><a class="markdownIt-Anchor" href="#454-cache读-写流程与关键技术"></a> 4.5.4 cache读、写流程与关键技术</h3>
+<h4 id="读"><a class="markdownIt-Anchor" href="#读"></a> 读</h4>
+<p>读入时查找cache中是否有需要读取的数据，有则读取，没有则调入这一块数据后再读取。</p>
+<h4 id="写"><a class="markdownIt-Anchor" href="#写"></a> 写</h4>
+<p>写比读复杂一些。<br />
+首先查找目标地址处的数据是否保存在cache，如果有则写入数据到cache。这里有两种策略：<mark>写回策略和写穿策略</mark>，写回策略在将数据写入cache之后立即结束操作，会导致cache与主存中数据的不一致；写穿策略在cache中数据被修改后再将数据写入到主存中，速度较慢。<br />
+如果目标地址处的数据不在cache，则也有两种选择：一种是将数据直接写入到主存，另一种是将这一块地址的内容载入到cache后写入到cache，至于之后是否需要写入主存使用的就是写回策略和写穿策略两种策略了。</p>
+<h3 id="455-相联存储器"><a class="markdownIt-Anchor" href="#455-相联存储器"></a> 4.5.5 相联存储器</h3>
+<p>相联存储器可用于判断对应地址的数据是否保存在该存储器中，基本数单元是键值对，键是主存地址，值是主存地址下的数据。由于相联存储器可以进行所有键值对的并行查找，因此只需查找一次就可以确定一个键值对。</p>
+<p><img src="https://img-blog.csdnimg.cn/11f8cf36bbcf4f479515775306c6d33b.png" alt="" /></p>
+<h3 id="456-地址映射"><a class="markdownIt-Anchor" href="#456-地址映射"></a> 4.5.6 地址映射</h3>
+<p>地址映射即为将主存地址空间映射到cache的地址空间，将存放在主存的程序或数据载入到cache块的规则。</p>
 <ul>
 <li>全相联：各个主存块都可以映射到cache中的任意一个数据块。</li>
 <li>直接相联：各个主存块只能映射到cache的固定某一块。</li>
 <li>组相联：各个主存块只能映射到cache固定组中的任意块。</li>
 </ul>
-<h4 id="全相联映射"><a href="#全相联映射" class="headerlink" title="全相联映射"></a>全相联映射</h4><p>主存中每一个数据块都可以放置到cache中的任意一个数据块中，是一对多的映射关系。新的数据块可以载入到cache中任意一个空闲位置，只有cache满时才会进行数据块置换。</p>
+<h4 id="全相联映射"><a class="markdownIt-Anchor" href="#全相联映射"></a> 全相联映射</h4>
+<p>主存中每一个数据块都可以放置到cache中的任意一个数据块中，是一对多的映射关系。新的数据块可以载入到cache中任意一个空闲位置，只有cache满时才会进行数据块置换。</p>
 <p>在全相联映射中，主存地址被划分为两部分：块号和块内地址。如果一块的大小为1024字节，则块内地址共10位，高位为块号。在cache中会保存块号和主存中该块号下的数据内容。</p>
 <p>优点：cache利用率高，块冲突率低。缺点：淘汰算法复杂。适用于小容量的cache。</p>
-<h4 id="直接相联映射"><a href="#直接相联映射" class="headerlink" title="直接相联映射"></a>直接相联映射</h4><p>在直接相联映射中，主存地址分为三部分：区号、区内块号、块内地址。其中区内块号为x，cache行数为y，则该块在cache中应该保存在第x行的位置。区内块号表示的数值应该与cache中的行数相同。</p>
+<h4 id="直接相联映射"><a class="markdownIt-Anchor" href="#直接相联映射"></a> 直接相联映射</h4>
+<p>在直接相联映射中，主存地址分为三部分：区号、区内块号、块内地址。其中区内块号为x，cache行数为y，则该块在cache中应该保存在第x行的位置。区内块号表示的数值应该与cache中的行数相同。</p>
 <p>优点：淘汰算法简单。缺点：利用率较低，块冲突率高。使用率大容量cache。</p>
-<h4 id="组相联映射"><a href="#组相联映射" class="headerlink" title="组相联映射"></a>组相联映射</h4><p>组相联映射将主存地址分为3部分：组号、组内块号、块内地址。cache中所有行分为若干组，设一组有m行，共n组，则主存地址组号为x时应该保存在cache中的第x mod n组，组内块号为y的地址处应该保存在cache中的保存该组号的组中的任意一行。</p>
-<h3 id="4-5-7-替换算法"><a href="#4-5-7-替换算法" class="headerlink" title="4.5.7 替换算法"></a>4.5.7 替换算法</h3><ul>
+<h4 id="组相联映射"><a class="markdownIt-Anchor" href="#组相联映射"></a> 组相联映射</h4>
+<p>组相联映射将主存地址分为3部分：组号、组内块号、块内地址。cache中所有行分为若干组，设一组有m行，共n组，则主存地址组号为x时应该保存在cache中的第x mod n组，组内块号为y的地址处应该保存在cache中的保存该组号的组中的任意一行。</p>
+<h3 id="457-替换算法"><a class="markdownIt-Anchor" href="#457-替换算法"></a> 4.5.7 替换算法</h3>
+<ul>
 <li>先进先出算法</li>
 <li>最不经常使用算法：替换访问次数最少的cache</li>
 <li>近期最少使用算法：为每一行维持一个计数器，命中时计数器清零，否则加1，将计数器最大的行换出。</li>
 <li>随机替换算法</li>
 </ul>
-<h2 id="4-6-虚拟存储器"><a href="#4-6-虚拟存储器" class="headerlink" title="4.6 虚拟存储器"></a>4.6 虚拟存储器</h2><p>虚拟存储器处于主存-辅存存储层次，为了解决主存容量不足的问题，为程序设计者提供比主存空间大的编程空间。<br>虚拟存储器可以分为：页式、段式和段页式。<br>三种地址空间：虚拟地址空间、主存的地址空间、辅存地址空间。</p>
-<p>在虚拟存储系统中运行时，CPU以虚拟地址访问主存，使用存储管理部件==MMU==找到虚拟地址与物理地址的对应关系，并判断该虚拟地址对应的物理地址是否在主存中，如果在则将虚拟地址转化为物理地址，CPU直接访问主存单元；否则将包含这个字的一页或一段调入主存，并在MMU中填写相关的标记信息。</p>
-<h3 id="4-6-3-页式虚拟存储器"><a href="#4-6-3-页式虚拟存储器" class="headerlink" title="4.6.3 页式虚拟存储器"></a>4.6.3 页式虚拟存储器</h3><p>虚拟地址被划分为虚拟页号VPN和虚拟页偏移VPO两部分，同时物理地址按照相同的划分方式分为物理页号PPN（页框号）和物理页偏移PPO。</p>
+<h2 id="46-虚拟存储器"><a class="markdownIt-Anchor" href="#46-虚拟存储器"></a> 4.6 虚拟存储器</h2>
+<p>虚拟存储器处于主存-辅存存储层次，为了解决主存容量不足的问题，为程序设计者提供比主存空间大的编程空间。<br />
+虚拟存储器可以分为：页式、段式和段页式。<br />
+三种地址空间：虚拟地址空间、主存的地址空间、辅存地址空间。</p>
+<p>在虚拟存储系统中运行时，CPU以虚拟地址访问主存，使用存储管理部件<mark>MMU</mark>找到虚拟地址与物理地址的对应关系，并判断该虚拟地址对应的物理地址是否在主存中，如果在则将虚拟地址转化为物理地址，CPU直接访问主存单元；否则将包含这个字的一页或一段调入主存，并在MMU中填写相关的标记信息。</p>
+<h3 id="463-页式虚拟存储器"><a class="markdownIt-Anchor" href="#463-页式虚拟存储器"></a> 4.6.3 页式虚拟存储器</h3>
+<p>虚拟地址被划分为虚拟页号VPN和虚拟页偏移VPO两部分，同时物理地址按照相同的划分方式分为物理页号PPN（页框号）和物理页偏移PPO。</p>
 <p>页面命中时CPU硬件执行的步骤：</p>
 <ul>
 <li>CPU将虚拟地址传送给MMU。</li>
@@ -332,7 +363,7 @@
 <li>返回原来进行继续执行。</li>
 </ul>
 <p>如果存储系统中包含cache，则可以将部分页表的内容保存到cache中。</p>
-<p>转换旁路缓冲区：==TLB==，用于缓冲经常访问的页表项PTE，实质是一个小容量的cache，大多采用全相联或组相联形式以提高访问速度，且采用随机替换算法。通常==称TLB中保存的表为快表，主存中保存的表称为慢表==。</p>
+<p>转换旁路缓冲区：<mark>TLB</mark>，用于缓冲经常访问的页表项PTE，实质是一个小容量的cache，大多采用全相联或组相联形式以提高访问速度，且采用随机替换算法。通常<mark>称TLB中保存的表为快表，主存中保存的表称为慢表</mark>。</p>
 
     </div>
 
@@ -413,7 +444,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-%E5%AD%98%E5%82%A8%E5%99%A8%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">4.1 存储器概述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="nav-number">1.0.1.</span> <span class="nav-text">存储系统的层次结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E5%AD%98%E4%B8%AD%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E6%94%BE"><span class="nav-number">1.0.2.</span> <span class="nav-text">主存中数据的存放</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-%E5%8D%8A%E5%AF%BC%E4%BD%93%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text">4.2 半导体存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-1-%E9%9D%99%E6%80%81MOS%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text">4.2.1 静态MOS存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.1.</span> <span class="nav-text">工作原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-2-%E5%8A%A8%E6%80%81MOS%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text">4.2.2 动态MOS存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">工作原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DRAM%E7%9A%84%E5%88%B7%E6%96%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text">DRAM的刷新</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-%E4%B8%BB%E5%AD%98%E7%9A%84%E7%BB%84%E7%BB%87%E5%92%8CCPU%E7%9A%84%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text">4.3 主存的组织和CPU的连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-2-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E6%89%A9%E5%B1%95"><span class="nav-number">3.1.</span> <span class="nav-text">4.3.2 存储器的扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-%E9%AB%98%E9%80%9F%E7%BC%93%E5%86%B2%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">4.5 高速缓冲存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-3-cache%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">4.5.3 cache的基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-4-cache%E8%AF%BB%E3%80%81%E5%86%99%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text">4.5.4 cache读、写流程与关键技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB"><span class="nav-number">4.2.1.</span> <span class="nav-text">读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99"><span class="nav-number">4.2.2.</span> <span class="nav-text">写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-5-%E7%9B%B8%E8%81%94%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">4.3.</span> <span class="nav-text">4.5.5 相联存储器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-6-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.</span> <span class="nav-text">4.5.6 地址映射</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.1.</span> <span class="nav-text">全相联映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.2.</span> <span class="nav-text">直接相联映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.3.</span> <span class="nav-text">组相联映射</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-5-7-%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95"><span class="nav-number">4.5.</span> <span class="nav-text">4.5.7 替换算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">4.6 虚拟存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-6-3-%E9%A1%B5%E5%BC%8F%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text">4.6.3 页式虚拟存储器</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#41-%E5%AD%98%E5%82%A8%E5%99%A8%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text"> 4.1 存储器概述</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="nav-number">1.0.1.</span> <span class="nav-text"> 存储系统的层次结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BB%E5%AD%98%E4%B8%AD%E6%95%B0%E6%8D%AE%E7%9A%84%E5%AD%98%E6%94%BE"><span class="nav-number">1.0.2.</span> <span class="nav-text"> 主存中数据的存放</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#42-%E5%8D%8A%E5%AF%BC%E4%BD%93%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.</span> <span class="nav-text"> 4.2 半导体存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#421-%E9%9D%99%E6%80%81mos%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.1.</span> <span class="nav-text"> 4.2.1 静态MOS存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.1.1.</span> <span class="nav-text"> 工作原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#422-%E5%8A%A8%E6%80%81mos%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">2.2.</span> <span class="nav-text"> 4.2.2 动态MOS存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86-2"><span class="nav-number">2.2.1.</span> <span class="nav-text"> 工作原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dram%E7%9A%84%E5%88%B7%E6%96%B0"><span class="nav-number">2.2.2.</span> <span class="nav-text"> DRAM的刷新</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#43-%E4%B8%BB%E5%AD%98%E7%9A%84%E7%BB%84%E7%BB%87%E5%92%8Ccpu%E7%9A%84%E8%BF%9E%E6%8E%A5"><span class="nav-number">3.</span> <span class="nav-text"> 4.3 主存的组织和CPU的连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#432-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E6%89%A9%E5%B1%95"><span class="nav-number">3.1.</span> <span class="nav-text"> 4.3.2 存储器的扩展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#45-%E9%AB%98%E9%80%9F%E7%BC%93%E5%86%B2%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text"> 4.5 高速缓冲存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#453-cache%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text"> 4.5.3 cache的基本原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#454-cache%E8%AF%BB-%E5%86%99%E6%B5%81%E7%A8%8B%E4%B8%8E%E5%85%B3%E9%94%AE%E6%8A%80%E6%9C%AF"><span class="nav-number">4.2.</span> <span class="nav-text"> 4.5.4 cache读、写流程与关键技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB"><span class="nav-number">4.2.1.</span> <span class="nav-text"> 读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%99"><span class="nav-number">4.2.2.</span> <span class="nav-text"> 写</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#455-%E7%9B%B8%E8%81%94%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">4.3.</span> <span class="nav-text"> 4.5.5 相联存储器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#456-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.</span> <span class="nav-text"> 4.5.6 地址映射</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.1.</span> <span class="nav-text"> 全相联映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.2.</span> <span class="nav-text"> 直接相联映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%84%E7%9B%B8%E8%81%94%E6%98%A0%E5%B0%84"><span class="nav-number">4.4.3.</span> <span class="nav-text"> 组相联映射</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#457-%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95"><span class="nav-number">4.5.</span> <span class="nav-text"> 4.5.7 替换算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#46-%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text"> 4.6 虚拟存储器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#463-%E9%A1%B5%E5%BC%8F%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8"><span class="nav-number">5.1.</span> <span class="nav-text"> 4.6.3 页式虚拟存储器</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -479,13 +510,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

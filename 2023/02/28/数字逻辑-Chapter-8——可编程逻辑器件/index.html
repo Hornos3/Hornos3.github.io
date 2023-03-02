@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="8.1 PLD8.1.1 PLD基本结构PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式4种主要类型：  可编程只读存储器PROM 可编程逻辑阵列PLA 可编程阵列逻辑PAL 通用阵列逻辑GAL  8.2 低密度可编程逻辑器件8.2.1 可编程只读存储器PROM半导体存储器按功能分类">
+  <meta name="description" content="8.1 PLD  8.1.1 PLD基本结构 PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式 4种主要类型：  可编程只读存储器PROM 可编程逻辑阵列PLA 可编程阵列逻辑PAL 通用阵列逻辑GAL   8.2 低密度可编程逻辑器件  8.2.1 可编程只读存储器PROM 半导">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字逻辑 Chapter 8——可编程逻辑器件">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-8%E2%80%94%E2%80%94%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="8.1 PLD8.1.1 PLD基本结构PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式4种主要类型：  可编程只读存储器PROM 可编程逻辑阵列PLA 可编程阵列逻辑PAL 通用阵列逻辑GAL  8.2 低密度可编程逻辑器件8.2.1 可编程只读存储器PROM半导体存储器按功能分类">
+<meta property="og:description" content="8.1 PLD  8.1.1 PLD基本结构 PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式 4种主要类型：  可编程只读存储器PROM 可编程逻辑阵列PLA 可编程阵列逻辑PAL 通用阵列逻辑GAL   8.2 低密度可编程逻辑器件  8.2.1 可编程只读存储器PROM 半导">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-28T15:14:29.000Z">
 <meta property="article:modified_time" content="2023-03-01T03:31:50.178Z">
@@ -233,15 +233,21 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="8-1-PLD"><a href="#8-1-PLD" class="headerlink" title="8.1 PLD"></a>8.1 PLD</h1><h2 id="8-1-1-PLD基本结构"><a href="#8-1-1-PLD基本结构" class="headerlink" title="8.1.1 PLD基本结构"></a>8.1.1 PLD基本结构</h2><p>PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式<br>4种主要类型：</p>
+        <h1 id="81-pld"><a class="markdownIt-Anchor" href="#81-pld"></a> 8.1 PLD</h1>
+<h2 id="811-pld基本结构"><a class="markdownIt-Anchor" href="#811-pld基本结构"></a> 8.1.1 PLD基本结构</h2>
+<p>PLD阵列由一个与阵列和一个或阵列构成，与阵列输出为输入的与-或函数，每个与门的输出产生某些输入变量的与项作为或阵列的输入。每个或门的输出端产生输入变量的与或表达式<br />
+4种主要类型：</p>
 <ul>
 <li>可编程只读存储器PROM</li>
 <li>可编程逻辑阵列PLA</li>
 <li>可编程阵列逻辑PAL</li>
 <li>通用阵列逻辑GAL</li>
 </ul>
-<h1 id="8-2-低密度可编程逻辑器件"><a href="#8-2-低密度可编程逻辑器件" class="headerlink" title="8.2 低密度可编程逻辑器件"></a>8.2 低密度可编程逻辑器件</h1><h1 id="8-2-1-可编程只读存储器PROM"><a href="#8-2-1-可编程只读存储器PROM" class="headerlink" title="8.2.1 可编程只读存储器PROM"></a>8.2.1 可编程只读存储器PROM</h1><p>半导体存储器按功能分类：随机存放存储器RAM，只读存储器ROM</p>
-<p>PROM逻辑结构：主要由地址译码器和存储器两部分组成<br>由一个固定连接的与阵列和一个可编程连接的或阵列构成</p>
+<h1 id="82-低密度可编程逻辑器件"><a class="markdownIt-Anchor" href="#82-低密度可编程逻辑器件"></a> 8.2 低密度可编程逻辑器件</h1>
+<h1 id="821-可编程只读存储器prom"><a class="markdownIt-Anchor" href="#821-可编程只读存储器prom"></a> 8.2.1 可编程只读存储器PROM</h1>
+<p>半导体存储器按功能分类：随机存放存储器RAM，只读存储器ROM</p>
+<p>PROM逻辑结构：主要由地址译码器和存储器两部分组成<br />
+由一个固定连接的与阵列和一个可编程连接的或阵列构成</p>
 <p>分类：</p>
 <ul>
 <li>一次编程ROM（PROM）：所有存储元均被加工成同一状态，用户可以通过编程将某些存储元的状态改变为另一状态，这种编程只能执行一次，编程完毕之后不能再改变。</li>
@@ -249,11 +255,20 @@
 <li>电可抹可编程（EEPROM）：擦除速度快，允许改写次数远高于EPROM</li>
 <li>快闪存储器（Flash Mem）</li>
 </ul>
-<h2 id="8-2-2-可编程逻辑阵列PLA"><a href="#8-2-2-可编程逻辑阵列PLA" class="headerlink" title="8.2.2 可编程逻辑阵列PLA"></a>8.2.2 可编程逻辑阵列PLA</h2><p>与阵列和或阵列均可编程。</p>
-<h2 id="8-2-3-可编程阵列逻辑PAL"><a href="#8-2-3-可编程阵列逻辑PAL" class="headerlink" title="8.2.3 可编程阵列逻辑PAL"></a>8.2.3 可编程阵列逻辑PAL</h2><p>与阵列可编程，或阵列固定。</p>
-<h2 id="8-2-4-通用逻辑阵列GAL"><a href="#8-2-4-通用逻辑阵列GAL" class="headerlink" title="8.2.4 通用逻辑阵列GAL"></a>8.2.4 通用逻辑阵列GAL</h2><p>与PAL相同，与阵列可编程而或阵列固定，但在输出端集成有输出宏单元（OLMC），允许用户定义每个输出的结构和功能。</p>
-<h1 id="8-3-高密度可编程逻辑器件"><a href="#8-3-高密度可编程逻辑器件" class="headerlink" title="8.3 高密度可编程逻辑器件"></a>8.3 高密度可编程逻辑器件</h1><h2 id="8-3-1-现场可编程门阵列"><a href="#8-3-1-现场可编程门阵列" class="headerlink" title="8.3.1 现场可编程门阵列"></a>8.3.1 现场可编程门阵列</h2><p>FPGA</p>
-<h1 id="8-4-在系统编程技术简介"><a href="#8-4-在系统编程技术简介" class="headerlink" title="8.4 在系统编程技术简介"></a>8.4 在系统编程技术简介</h1><h2 id="8-4-1-ISP"><a href="#8-4-1-ISP" class="headerlink" title="8.4.1 ISP"></a>8.4.1 ISP</h2><h2 id="8-4-2-ISP逻辑器件"><a href="#8-4-2-ISP逻辑器件" class="headerlink" title="8.4.2 ISP逻辑器件"></a>8.4.2 ISP逻辑器件</h2><p>归纳：<br>可编程的部分有：</p>
+<h2 id="822-可编程逻辑阵列pla"><a class="markdownIt-Anchor" href="#822-可编程逻辑阵列pla"></a> 8.2.2 可编程逻辑阵列PLA</h2>
+<p>与阵列和或阵列均可编程。</p>
+<h2 id="823-可编程阵列逻辑pal"><a class="markdownIt-Anchor" href="#823-可编程阵列逻辑pal"></a> 8.2.3 可编程阵列逻辑PAL</h2>
+<p>与阵列可编程，或阵列固定。</p>
+<h2 id="824-通用逻辑阵列gal"><a class="markdownIt-Anchor" href="#824-通用逻辑阵列gal"></a> 8.2.4 通用逻辑阵列GAL</h2>
+<p>与PAL相同，与阵列可编程而或阵列固定，但在输出端集成有输出宏单元（OLMC），允许用户定义每个输出的结构和功能。</p>
+<h1 id="83-高密度可编程逻辑器件"><a class="markdownIt-Anchor" href="#83-高密度可编程逻辑器件"></a> 8.3 高密度可编程逻辑器件</h1>
+<h2 id="831-现场可编程门阵列"><a class="markdownIt-Anchor" href="#831-现场可编程门阵列"></a> 8.3.1 现场可编程门阵列</h2>
+<p>FPGA</p>
+<h1 id="84-在系统编程技术简介"><a class="markdownIt-Anchor" href="#84-在系统编程技术简介"></a> 8.4 在系统编程技术简介</h1>
+<h2 id="841-isp"><a class="markdownIt-Anchor" href="#841-isp"></a> 8.4.1 ISP</h2>
+<h2 id="842-isp逻辑器件"><a class="markdownIt-Anchor" href="#842-isp逻辑器件"></a> 8.4.2 ISP逻辑器件</h2>
+<p>归纳：<br />
+可编程的部分有：</p>
 <ul>
 <li>PROM的或门阵列</li>
 <li>PLA的与/或门阵列</li>
@@ -346,7 +361,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#8-1-PLD"><span class="nav-number">1.</span> <span class="nav-text">8.1 PLD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-1-1-PLD%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text">8.1.1 PLD基本结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-2-%E4%BD%8E%E5%AF%86%E5%BA%A6%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">8.2 低密度可编程逻辑器件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-2-1-%E5%8F%AF%E7%BC%96%E7%A8%8B%E5%8F%AA%E8%AF%BB%E5%AD%98%E5%82%A8%E5%99%A8PROM"><span class="nav-number">3.</span> <span class="nav-text">8.2.1 可编程只读存储器PROM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-2-%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E9%98%B5%E5%88%97PLA"><span class="nav-number">3.1.</span> <span class="nav-text">8.2.2 可编程逻辑阵列PLA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-3-%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%98%B5%E5%88%97%E9%80%BB%E8%BE%91PAL"><span class="nav-number">3.2.</span> <span class="nav-text">8.2.3 可编程阵列逻辑PAL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-2-4-%E9%80%9A%E7%94%A8%E9%80%BB%E8%BE%91%E9%98%B5%E5%88%97GAL"><span class="nav-number">3.3.</span> <span class="nav-text">8.2.4 通用逻辑阵列GAL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-3-%E9%AB%98%E5%AF%86%E5%BA%A6%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text">8.3 高密度可编程逻辑器件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-3-1-%E7%8E%B0%E5%9C%BA%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%97%A8%E9%98%B5%E5%88%97"><span class="nav-number">4.1.</span> <span class="nav-text">8.3.1 现场可编程门阵列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-4-%E5%9C%A8%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF%E7%AE%80%E4%BB%8B"><span class="nav-number">5.</span> <span class="nav-text">8.4 在系统编程技术简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#8-4-1-ISP"><span class="nav-number">5.1.</span> <span class="nav-text">8.4.1 ISP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-4-2-ISP%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">5.2.</span> <span class="nav-text">8.4.2 ISP逻辑器件</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#81-pld"><span class="nav-number">1.</span> <span class="nav-text"> 8.1 PLD</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#811-pld%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="nav-number">1.1.</span> <span class="nav-text"> 8.1.1 PLD基本结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#82-%E4%BD%8E%E5%AF%86%E5%BA%A6%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text"> 8.2 低密度可编程逻辑器件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#821-%E5%8F%AF%E7%BC%96%E7%A8%8B%E5%8F%AA%E8%AF%BB%E5%AD%98%E5%82%A8%E5%99%A8prom"><span class="nav-number">3.</span> <span class="nav-text"> 8.2.1 可编程只读存储器PROM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#822-%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E9%98%B5%E5%88%97pla"><span class="nav-number">3.1.</span> <span class="nav-text"> 8.2.2 可编程逻辑阵列PLA</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#823-%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%98%B5%E5%88%97%E9%80%BB%E8%BE%91pal"><span class="nav-number">3.2.</span> <span class="nav-text"> 8.2.3 可编程阵列逻辑PAL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#824-%E9%80%9A%E7%94%A8%E9%80%BB%E8%BE%91%E9%98%B5%E5%88%97gal"><span class="nav-number">3.3.</span> <span class="nav-text"> 8.2.4 通用逻辑阵列GAL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#83-%E9%AB%98%E5%AF%86%E5%BA%A6%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">4.</span> <span class="nav-text"> 8.3 高密度可编程逻辑器件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#831-%E7%8E%B0%E5%9C%BA%E5%8F%AF%E7%BC%96%E7%A8%8B%E9%97%A8%E9%98%B5%E5%88%97"><span class="nav-number">4.1.</span> <span class="nav-text"> 8.3.1 现场可编程门阵列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#84-%E5%9C%A8%E7%B3%BB%E7%BB%9F%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF%E7%AE%80%E4%BB%8B"><span class="nav-number">5.</span> <span class="nav-text"> 8.4 在系统编程技术简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#841-isp"><span class="nav-number">5.1.</span> <span class="nav-text"> 8.4.1 ISP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#842-isp%E9%80%BB%E8%BE%91%E5%99%A8%E4%BB%B6"><span class="nav-number">5.2.</span> <span class="nav-text"> 8.4.2 ISP逻辑器件</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -412,13 +427,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

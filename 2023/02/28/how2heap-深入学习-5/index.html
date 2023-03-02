@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不">
+  <meta name="description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。 如果本文的分析有任何错漏之处，还请各位读者不吝">
 <meta property="og:type" content="article">
 <meta property="og:title" content="how2heap 深入学习(5)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-5/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不">
+<meta property="og:description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 16.04 Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3 按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。 如果本文的分析有任何错漏之处，还请各位读者不吝">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-02-28T14:22:16.000Z">
 <meta property="article:modified_time" content="2023-03-01T03:31:11.314Z">
@@ -233,12 +233,16 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 16.04<br>Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
-<p>按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。<br>如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="17-unsafe-unlink"><a href="#17-unsafe-unlink" class="headerlink" title="17. unsafe_unlink"></a>17. unsafe_unlink</h1><p>众所周知，unlink是一种常用的堆漏洞利用方式，最为常见的利用场景是可以进行unlink而且堆指针保存在全局变量中。（例题：XCTF攻防世界-Noleak）</p>
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
+Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br />
+参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 16.04<br />
+Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
+<p>按照顺序，本文分析glibc 2_23文件夹中的第17~19个源码，这也是glibc 2.23 how2heap给出的最后3个源码。<br />
+如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
+<h1 id="17-unsafe_unlink"><a class="markdownIt-Anchor" href="#17-unsafe_unlink"></a> 17. unsafe_unlink</h1>
+<p>众所周知，unlink是一种常用的堆漏洞利用方式，最为常见的利用场景是可以进行unlink而且堆指针保存在全局变量中。（例题：XCTF攻防世界-Noleak）</p>
 <p>这种漏洞利用方式不是借助于fastbin完成，因此需要申请较大的堆块。在源码中定义了一个全局变量chunk0_ptr，为其分配了一个大小为0x90的堆块。之后又分配了一个0x90堆块chunk1_ptr，这也是接下来被攻击的chunk。设第一个chunk的起始地址为x，全局变量的地址为y，现在的内存情况如下：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -275,9 +279,7 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>接下来，我们需要在chunk0_ptr的chunk中伪造一个chunk，为接下来的unlink做准备。伪造后的堆区长这样：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -319,16 +321,18 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>注意：这里将第二个chunk的prev_in_use位修改为了0，fake prev size就是假chunk的大小，将fake prev size设为0x80是为了让后面一个chunk能够通过prev chunk找到我们构造的假chunk。fake chunk的假fd和bk指针的构造很重要，后面会用到。</p>
 <p>接下来，我们将第二个chunk释放，释放时第二个chunk会和第一个chunk里面的假chunk合并。这样就造成了堆块的重叠。</p>
 <p>下面解释一下为什么这之后能够进行任一地址写。</p>
-<h2 id="为什么要设置fd-y-0x18，bk-y-0x10？"><a href="#为什么要设置fd-y-0x18，bk-y-0x10？" class="headerlink" title="为什么要设置fd=y-0x18，bk=y-0x10？"></a>为什么要设置fd=y-0x18，bk=y-0x10？</h2><p>这是为了绕过libc的检查。</p>
+<h2 id="为什么要设置fdy-0x18bky-0x10"><a class="markdownIt-Anchor" href="#为什么要设置fdy-0x18bky-0x10"></a> 为什么要设置fd=y-0x18，bk=y-0x10？</h2>
+<p>这是为了绕过libc的检查。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> unlink(AV, P, BK, FD) &#123;                                            \</span></span><br><span class="line"><span class="meta">    FD = P-&gt;fd;								      \</span></span><br><span class="line"><span class="meta">    BK = P-&gt;bk;								      \</span></span><br><span class="line"><span class="meta">    <span class="keyword">if</span> (__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, 0))		      \</span></span><br><span class="line"><span class="meta">      malloc_printerr (check_action, <span class="string">&quot;corrupted double-linked list&quot;</span>, P, AV);  \</span></span><br><span class="line"><span class="meta">    <span class="keyword">else</span> &#123;								      \</span></span><br><span class="line"><span class="meta">        FD-&gt;bk = BK;							      \</span></span><br><span class="line"><span class="meta">        BK-&gt;fd = FD;							      \</span></span><br><span class="line"><span class="meta">        <span class="keyword">if</span> (!in_smallbin_range (P-&gt;size)				      \</span></span><br><span class="line"><span class="meta">            &amp;&amp; __builtin_expect (P-&gt;fd_nextsize != NULL, 0)) &#123;		      \</span></span><br><span class="line"><span class="meta">	    <span class="keyword">if</span> (__builtin_expect (P-&gt;fd_nextsize-&gt;bk_nextsize != P, 0)	      \</span></span><br><span class="line"><span class="meta">		|| __builtin_expect (P-&gt;bk_nextsize-&gt;fd_nextsize != P, 0))    \</span></span><br><span class="line"><span class="meta">	      malloc_printerr (check_action,				      \</span></span><br><span class="line"><span class="meta">			       <span class="string">&quot;corrupted double-linked list (not small)&quot;</span>,    \</span></span><br><span class="line"><span class="meta">			       P, AV);					      \</span></span><br><span class="line"><span class="meta">            <span class="keyword">if</span> (FD-&gt;fd_nextsize == NULL) &#123;				      \</span></span><br><span class="line"><span class="meta">                <span class="keyword">if</span> (P-&gt;fd_nextsize == P)				      \</span></span><br><span class="line"><span class="meta">                  FD-&gt;fd_nextsize = FD-&gt;bk_nextsize = FD;		      \</span></span><br><span class="line"><span class="meta">                <span class="keyword">else</span> &#123;							      \</span></span><br><span class="line"><span class="meta">                    FD-&gt;fd_nextsize = P-&gt;fd_nextsize;			      \</span></span><br><span class="line"><span class="meta">                    FD-&gt;bk_nextsize = P-&gt;bk_nextsize;			      \</span></span><br><span class="line"><span class="meta">                    P-&gt;fd_nextsize-&gt;bk_nextsize = FD;			      \</span></span><br><span class="line"><span class="meta">                    P-&gt;bk_nextsize-&gt;fd_nextsize = FD;			      \</span></span><br><span class="line"><span class="meta">                  &#125;							      \</span></span><br><span class="line"><span class="meta">              &#125; <span class="keyword">else</span> &#123;							      \</span></span><br><span class="line"><span class="meta">                P-&gt;fd_nextsize-&gt;bk_nextsize = P-&gt;bk_nextsize;		      \</span></span><br><span class="line"><span class="meta">                P-&gt;bk_nextsize-&gt;fd_nextsize = P-&gt;fd_nextsize;		      \</span></span><br><span class="line"><span class="meta">              &#125;								      \</span></span><br><span class="line"><span class="meta">          &#125;								      \</span></span><br><span class="line"><span class="meta">      &#125;									      \</span></span><br><span class="line"><span class="meta">&#125;</span></span><br></pre></td></tr></table></figure>
 <p>在unlink的源码中有一个检查是：<code>__builtin_expect (FD-&gt;bk != P || BK-&gt;fd != P, 0)</code>。因此需要保证此chunk的fd的bk等于bk的fd等于此chunk。由于C语言按照偏移获取结构体的成员，fd的偏移为0x10，bk的偏移为0x18。在全局变量中保存的就是第一个chunk，将fd指向y-0x18，那么fd-&gt;bk就为y；将bk指向y-0x10，那么bk-&gt;fd就为y。y中保存的正好就是x，这也就成功绕过了检查。检查通过之后，heap会进行堆块的合并操作，同时修改全局变量指针的值。</p>
 <p>因为P = x，FD = y - 0x18，BK = y - 0x10，在语句<code>BK-&gt;fd = FD;</code>执行之后，全局变量的chunk0_ptr的值就变成了y-0x18。这样，我们就可以通过chunk0_ptr对其本身进行修改，此时可将chunk0_ptr的值修改为任意值。<font color=red>注意：不要被绕晕了，这个时候，全局变量保存的不再是第一个chunk的起始地址，而是通过unlink操作被修改了，但是libc误认为这里仍然保存的是一个chunk的指针，因此可以让这个全局变量自己修改自己。</font>在源码中，将这里修改到了栈区，之后再次使用这个指针就可以修改栈区的内容了。</p>
-<h1 id="18-unsorted-bin-attack"><a href="#18-unsorted-bin-attack" class="headerlink" title="18. unsorted_bin_attack"></a>18. unsorted_bin_attack</h1><p>这种攻击方式实际上在前面已经提到过，比较简单。将第一个unsorted bin chunk的bk指针修改为我们想要写的地址附近，然后把这个chunk分配回去就能够让unsorted bin head指向我们想要的地址，然后再调用malloc函数就能分配一块内存到我们想要的地址了。</p>
-<h1 id="19-unsorted-bin-into-stack"><a href="#19-unsorted-bin-into-stack" class="headerlink" title="19. unsorted_bin_into_stack"></a>19. unsorted_bin_into_stack</h1><p>也是unsorted bin attack。首先分配两个0x110的chunk，后一个防止top chunk影响。然后释放第一个chunk。接下来在堆块中伪造一个chunk，设置size为0x110，bk为这个假堆块头。接下来是漏洞关键操作：修改第一个chunk的size和bk。程序将第一个chunk的size改小为0x20，bk改为假chunk。将size改小是为了后面分配0x100大小的堆块时能够跳过这个堆块直接分配到栈上的假chunk。</p>
+<h1 id="18-unsorted_bin_attack"><a class="markdownIt-Anchor" href="#18-unsorted_bin_attack"></a> 18. unsorted_bin_attack</h1>
+<p>这种攻击方式实际上在前面已经提到过，比较简单。将第一个unsorted bin chunk的bk指针修改为我们想要写的地址附近，然后把这个chunk分配回去就能够让unsorted bin head指向我们想要的地址，然后再调用malloc函数就能分配一块内存到我们想要的地址了。</p>
+<h1 id="19-unsorted_bin_into_stack"><a class="markdownIt-Anchor" href="#19-unsorted_bin_into_stack"></a> 19. unsorted_bin_into_stack</h1>
+<p>也是unsorted bin attack。首先分配两个0x110的chunk，后一个防止top chunk影响。然后释放第一个chunk。接下来在堆块中伪造一个chunk，设置size为0x110，bk为这个假堆块头。接下来是漏洞关键操作：修改第一个chunk的size和bk。程序将第一个chunk的size改小为0x20，bk改为假chunk。将size改小是为了后面分配0x100大小的堆块时能够跳过这个堆块直接分配到栈上的假chunk。</p>
 <p>后面调用malloc函数时，首先从unsorted bin中查找到了第一个chunk。但是因为这个chunk的大小被改小了，libc判定空间不足，就将这个chunk移到了small bins中。之后检查到了假chunk并将其返回。既然chunk已经分配到了栈上，那么就可以直接修改main函数的返回地址（如果有canary可能不能直接修改）并劫持控制流。</p>
 <p>至此，how2heap glibc 2.23的所有源码已经分析完成。之后会进行glibc 2.27源码的分析。实际上glibc 2.23和2.27的最大区别就是tcache。其他方面区别不大，因此glibc 2.27的分析可能会短很多。实际上，在分析调试how2heap源码中，有很多地方仍然没有深入到原子操作去进行。待到我的水平再上一层时可能会来解决这一部分问题。但现在，所有给出的堆漏洞已经了解其利用方法，通过做题可以加深我们对漏洞利用方式的判断与应用。谢谢。</p>
 
@@ -411,7 +415,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#17-unsafe-unlink"><span class="nav-number">1.</span> <span class="nav-text">17. unsafe_unlink</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E7%BD%AEfd-y-0x18%EF%BC%8Cbk-y-0x10%EF%BC%9F"><span class="nav-number">1.1.</span> <span class="nav-text">为什么要设置fd&#x3D;y-0x18，bk&#x3D;y-0x10？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-unsorted-bin-attack"><span class="nav-number">2.</span> <span class="nav-text">18. unsorted_bin_attack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-unsorted-bin-into-stack"><span class="nav-number">3.</span> <span class="nav-text">19. unsorted_bin_into_stack</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#17-unsafe_unlink"><span class="nav-number">1.</span> <span class="nav-text"> 17. unsafe_unlink</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E7%BD%AEfdy-0x18bky-0x10"><span class="nav-number">1.1.</span> <span class="nav-text"> 为什么要设置fd&#x3D;y-0x18，bk&#x3D;y-0x10？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#18-unsorted_bin_attack"><span class="nav-number">2.</span> <span class="nav-text"> 18. unsorted_bin_attack</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#19-unsorted_bin_into_stack"><span class="nav-number">3.</span> <span class="nav-text"> 19. unsorted_bin_into_stack</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -477,13 +481,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

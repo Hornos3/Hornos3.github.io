@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1.2 计算机系统的组成计算机系统由硬件系统和软件系统组成。 冯诺依曼计算机的工作原理： 冯诺依曼计算机由两部分：存储程序和程序控制构成。 - 存储程序将程序存放在计算机的存储器中。 - 程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。  ## 1.3 计算机系统的层次结构  可将计算机的层次结构分为6个基本层次： - 高级语言层 -">
+  <meta name="description" content="1.2 计算机系统的组成 计算机系统由硬件系统和软件系统组成。 冯诺依曼计算机的工作原理： 冯诺依曼计算机由两部分：存储程序和程序控制构成。  存储程序将程序存放在计算机的存储器中。 程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。   1.3 计算机系统的层次结构 可将计算机的层次结构分为6个基本层次：  高级语言层 汇编语言层">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第1章">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="1.2 计算机系统的组成计算机系统由硬件系统和软件系统组成。 冯诺依曼计算机的工作原理： 冯诺依曼计算机由两部分：存储程序和程序控制构成。 - 存储程序将程序存放在计算机的存储器中。 - 程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。  ## 1.3 计算机系统的层次结构  可将计算机的层次结构分为6个基本层次： - 高级语言层 -">
+<meta property="og:description" content="1.2 计算机系统的组成 计算机系统由硬件系统和软件系统组成。 冯诺依曼计算机的工作原理： 冯诺依曼计算机由两部分：存储程序和程序控制构成。  存储程序将程序存放在计算机的存储器中。 程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。   1.3 计算机系统的层次结构 可将计算机的层次结构分为6个基本层次：  高级语言层 汇编语言层">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T16:01:21.000Z">
 <meta property="article:modified_time" content="2023-03-02T16:05:10.465Z">
@@ -227,52 +227,46 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="1-2-计算机系统的组成"><a href="#1-2-计算机系统的组成" class="headerlink" title="1.2 计算机系统的组成"></a>1.2 计算机系统的组成</h2><p>计算机系统由硬件系统和软件系统组成。</p>
-<font color=red>冯诺依曼计算机的工作原理</font>：
-冯诺依曼计算机由两部分：存储程序和程序控制构成。
-- 存储程序将程序存放在计算机的存储器中。
-- 程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。
-
-## 1.3 计算机系统的层次结构
-
-可将计算机的层次结构分为6个基本层次：
-- 高级语言层
-- 汇编语言层
-- 操作系统层
-- 指令集架构层
-- 微代码层
-- 逻辑门层
-
-其中上三层属于软件层，下三层属于硬件层。高层是低层功能的扩展，低层是高层的基础。
-
-- 不同的用户位于不同的层次
-- 不同层次具有不同属性
-- 不同层次使用不同工具
-- 不同层次代码效率不同
-
-透明性概念：用户在高层中所看到的计算机并不会展现出计算机低层的特性，但并不代表这些特性不存在。
-
-## 1.4 计算机性能指标与评价
-### 1.4.1 基本性能指标
-<font color=red>字长</font>：CPU一次处理的数据位数，用二进制数的长度来衡量。字长一般与计算机内部寄存器、运算器、数据总线的位宽相等。
-
-字长影响计算精确度，字长越长精确度越高。另外还影响数据的表示范围和精度。字长越长，定点数的表示范围就越大，浮点数的表示范围越大，精度越高。
-
-<font color=red>总线宽度</font>：数据总线一次并行传输的最大信息位数。
-
-<font color=red>主存容量</font>：主存中能够存储的最大信息量，一般以M×N表示，M表示存储单元数（字容量），N表示每个存储单元存储的二进制位数（位容量）。
-
-<font color=red>存储带宽</font>：单位时间内与主存交换的二进制数据量，单位B/s。（影响存储带宽的指标包括数据位宽和数据传输速率）
-
-### 1.4.2 与时间有关的性能指标
-<font color=red>时钟周期</font>：计算机中最基本的最小的时间单位，一个时钟周期内CPU仅完成一个基本的动作。是时钟频率的倒数，常记为T。CPU内核工作的时钟频率称为<font color=red>主频</font>，常记作f。<font color=red>外频</font>：指CPU(内存)与主板之间同步的时钟频率(系统总线的工作频率)；<font color=red>倍频</font>：CPU主频与外频之间的倍数；<font color=red>主频=外频×倍频</font>。
-
-<font color=red>CPI</font>：Clock Cycles Per Instruction，执行每一条指令所需要的平均时钟周期数。
-<font color=red>CPI = 程序中所有指令的时钟周期数之和 / 程序指令总数 = Σ(程序中各类指令的CPI × 程序中该类指令的比例)</font>
-
+        <h2 id="12-计算机系统的组成"><a class="markdownIt-Anchor" href="#12-计算机系统的组成"></a> 1.2 计算机系统的组成</h2>
+<p>计算机系统由硬件系统和软件系统组成。</p>
+<p><font color=red>冯诺依曼计算机的工作原理</font>：<br />
+冯诺依曼计算机由两部分：存储程序和程序控制构成。</p>
+<ul>
+<li>存储程序将程序存放在计算机的存储器中。</li>
+<li>程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。</li>
+</ul>
+<h2 id="13-计算机系统的层次结构"><a class="markdownIt-Anchor" href="#13-计算机系统的层次结构"></a> 1.3 计算机系统的层次结构</h2>
+<p>可将计算机的层次结构分为6个基本层次：</p>
+<ul>
+<li>高级语言层</li>
+<li>汇编语言层</li>
+<li>操作系统层</li>
+<li>指令集架构层</li>
+<li>微代码层</li>
+<li>逻辑门层</li>
+</ul>
+<p>其中上三层属于软件层，下三层属于硬件层。高层是低层功能的扩展，低层是高层的基础。</p>
+<ul>
+<li>不同的用户位于不同的层次</li>
+<li>不同层次具有不同属性</li>
+<li>不同层次使用不同工具</li>
+<li>不同层次代码效率不同</li>
+</ul>
+<p>透明性概念：用户在高层中所看到的计算机并不会展现出计算机低层的特性，但并不代表这些特性不存在。</p>
+<h2 id="14-计算机性能指标与评价"><a class="markdownIt-Anchor" href="#14-计算机性能指标与评价"></a> 1.4 计算机性能指标与评价</h2>
+<h3 id="141-基本性能指标"><a class="markdownIt-Anchor" href="#141-基本性能指标"></a> 1.4.1 基本性能指标</h3>
+<p><font color=red>字长</font>：CPU一次处理的数据位数，用二进制数的长度来衡量。字长一般与计算机内部寄存器、运算器、数据总线的位宽相等。</p>
+<p>字长影响计算精确度，字长越长精确度越高。另外还影响数据的表示范围和精度。字长越长，定点数的表示范围就越大，浮点数的表示范围越大，精度越高。</p>
+<p><font color=red>总线宽度</font>：数据总线一次并行传输的最大信息位数。</p>
+<p><font color=red>主存容量</font>：主存中能够存储的最大信息量，一般以M×N表示，M表示存储单元数（字容量），N表示每个存储单元存储的二进制位数（位容量）。</p>
+<p><font color=red>存储带宽</font>：单位时间内与主存交换的二进制数据量，单位B/s。（影响存储带宽的指标包括数据位宽和数据传输速率）</p>
+<h3 id="142-与时间有关的性能指标"><a class="markdownIt-Anchor" href="#142-与时间有关的性能指标"></a> 1.4.2 与时间有关的性能指标</h3>
+<p><font color=red>时钟周期</font>：计算机中最基本的最小的时间单位，一个时钟周期内CPU仅完成一个基本的动作。是时钟频率的倒数，常记为T。CPU内核工作的时钟频率称为<font color=red>主频</font>，常记作f。<font color=red>外频</font>：指CPU(内存)与主板之间同步的时钟频率(系统总线的工作频率)；<font color=red>倍频</font>：CPU主频与外频之间的倍数；<font color=red>主频=外频×倍频</font>。</p>
+<p><font color=red>CPI</font>：Clock Cycles Per Instruction，执行每一条指令所需要的平均时钟周期数。<br />
+<font color=red>CPI = 程序中所有指令的时钟周期数之和 / 程序指令总数 = Σ(程序中各类指令的CPI × 程序中该类指令的比例)</font></p>
 <p><font color=red>CPU时间</font>：即执行一个程序所需的物理时间，等于执行程序所需的时间周期数量 × 时间周期 = CPI × 程序中的指令数量 × 时间周期。</p>
 <p><font color=red>IPC</font>：CPI的倒数，每个时钟周期能够执行的指令条数。</p>
-<p><font color=red>MIPS</font>：Million Instructions Per Second，每秒多少百万条指令。计算公式：<script type="math/tex">MIPS=\frac{IC}{T_{cpu}\times10^6}</script>其中IC表示程序中指令数量。$T_{cpu}$表示程序的CPU时间。如果上面的公式去掉10^6^，则表示的是每秒可以执行多少条指令。公式变形：<script type="math/tex">MIPS=\frac{f}{CPI}=IPC\times f</script>这里时钟频率f的单位为MHz。</p>
+<p><font color=red>MIPS</font>：Million Instructions Per Second，每秒多少百万条指令。计算公式：$$MIPS=\frac{IC}{T_{cpu}\times10<sup>6}$$其中IC表示程序中指令数量。$T_{cpu}$表示程序的CPU时间。如果上面的公式去掉10</sup>6^，则表示的是每秒可以执行多少条指令。公式变形：$$MIPS=\frac{f}{CPI}=IPC\times f$$这里时钟频率f的单位为MHz。</p>
 
     </div>
 
@@ -353,7 +347,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BB%84%E6%88%90"><span class="nav-number">1.</span> <span class="nav-text">1.2 计算机系统的组成</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#12-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%BB%84%E6%88%90"><span class="nav-number">1.</span> <span class="nav-text"> 1.2 计算机系统的组成</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13-%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text"> 1.3 计算机系统的层次结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14-%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87%E4%B8%8E%E8%AF%84%E4%BB%B7"><span class="nav-number">3.</span> <span class="nav-text"> 1.4 计算机性能指标与评价</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#141-%E5%9F%BA%E6%9C%AC%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-number">3.1.</span> <span class="nav-text"> 1.4.1 基本性能指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#142-%E4%B8%8E%E6%97%B6%E9%97%B4%E6%9C%89%E5%85%B3%E7%9A%84%E6%80%A7%E8%83%BD%E6%8C%87%E6%A0%87"><span class="nav-number">3.2.</span> <span class="nav-text"> 1.4.2 与时间有关的性能指标</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -419,13 +413,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

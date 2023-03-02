@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="3.1 数字集成电路分类集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢  3.2 半导体期间开关特性3.2">
+  <meta name="description" content="3.1 数字集成电路分类 集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等 数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢   3.2 半导体期间开关特">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字逻辑 Chapter 3——门电路和触发器">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="3.1 数字集成电路分类集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢  3.2 半导体期间开关特性3.2">
+<meta property="og:description" content="3.1 数字集成电路分类 集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等 数字集成电路根据采用的半导体期间可以分为两类：  双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。 单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢   3.2 半导体期间开关特">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/1.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/2.png">
@@ -33,6 +33,9 @@
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/4.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/5.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/6.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/7.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/8.png">
+<meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/9.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/10.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/11.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-3%E2%80%94%E2%80%94%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8C%E8%A7%A6%E5%8F%91%E5%99%A8/12.png">
@@ -226,14 +229,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.6k</span>
+              <span>1.7k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
+              <span>2 mins.</span>
             </span>
 
         </div>
@@ -245,42 +248,60 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="3-1-数字集成电路分类"><a href="#3-1-数字集成电路分类" class="headerlink" title="3.1 数字集成电路分类"></a>3.1 数字集成电路分类</h1><p>集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等<br>数字集成电路根据采用的半导体期间可以分为两类：</p>
+        <h1 id="31-数字集成电路分类"><a class="markdownIt-Anchor" href="#31-数字集成电路分类"></a> 3.1 数字集成电路分类</h1>
+<p>集成电路进行数字系统设计的优点：可靠性高、可维护性好、功耗低、成本低等<br />
+数字集成电路根据采用的半导体期间可以分为两类：</p>
 <ol>
 <li>双极型集成电路：采用双极型半导体期间作为元件。特点：速度快、负载能力强，但功耗较大、集成度较低。</li>
 <li>单极型集成电路(MOS)：采用金属、一氧化物半导体场效应管作为元件。特点：结构简单、制造方便、集成度高、功耗低，但速度较慢</li>
 </ol>
-<h1 id="3-2-半导体期间开关特性"><a href="#3-2-半导体期间开关特性" class="headerlink" title="3.2 半导体期间开关特性"></a>3.2 半导体期间开关特性</h1><h2 id="3-2-1-晶体二极管"><a href="#3-2-1-晶体二极管" class="headerlink" title="3.2.1 晶体二极管"></a>3.2.1 晶体二极管</h2><p>正向特性：有门槛电压，即二极管开始导通的正向电压，又称阈值电压。<br>反向特性：在反向电压作用下处于截止状态，反向电阻大，相当于断开。</p>
-<h2 id="3-2-2-晶体三极管"><a href="#3-2-2-晶体三极管" class="headerlink" title="3.2.2 晶体三极管"></a>3.2.2 晶体三极管</h2><p>截止、放大、饱和3种状态。</p>
-<h1 id="3-3-逻辑门电路"><a href="#3-3-逻辑门电路" class="headerlink" title="3.3 逻辑门电路"></a>3.3 逻辑门电路</h1><h2 id="3-3-1-简单逻辑门电路"><a href="#3-3-1-简单逻辑门电路" class="headerlink" title="3.3.1 简单逻辑门电路"></a>3.3.1 简单逻辑门电路</h2><ol>
-<li>与门<br><img src="1.png" alt=""></li>
+<h1 id="32-半导体期间开关特性"><a class="markdownIt-Anchor" href="#32-半导体期间开关特性"></a> 3.2 半导体期间开关特性</h1>
+<h2 id="321-晶体二极管"><a class="markdownIt-Anchor" href="#321-晶体二极管"></a> 3.2.1 晶体二极管</h2>
+<p>正向特性：有门槛电压，即二极管开始导通的正向电压，又称阈值电压。<br />
+反向特性：在反向电压作用下处于截止状态，反向电阻大，相当于断开。</p>
+<h2 id="322-晶体三极管"><a class="markdownIt-Anchor" href="#322-晶体三极管"></a> 3.2.2 晶体三极管</h2>
+<p>截止、放大、饱和3种状态。</p>
+<h1 id="33-逻辑门电路"><a class="markdownIt-Anchor" href="#33-逻辑门电路"></a> 3.3 逻辑门电路</h1>
+<h2 id="331-简单逻辑门电路"><a class="markdownIt-Anchor" href="#331-简单逻辑门电路"></a> 3.3.1 简单逻辑门电路</h2>
+<ol>
+<li>与门<br />
+<img src="1.png" alt="" /></li>
 <li>或门</li>
 </ol>
-<p><img src="2.png" alt=""></p>
-<ol>
-<li>非门</li>
-</ol>
-<p><img src="3.png" alt=""></p>
-<h2 id="3-3-2-TTL集成逻辑门电路和CMOS电路"><a href="#3-3-2-TTL集成逻辑门电路和CMOS电路" class="headerlink" title="3.3.2 TTL集成逻辑门电路和CMOS电路"></a>3.3.2 TTL集成逻辑门电路和CMOS电路</h2><p>TTL功耗大、集成度低，广泛用户中小规模集成电路中<br>常用TTL集成电路芯片有74系列</p>
+<p><img src="2.png" alt="" /><br />
+3. 非门</p>
+<p><img src="3.png" alt="" /></p>
+<h2 id="332-ttl集成逻辑门电路和cmos电路"><a class="markdownIt-Anchor" href="#332-ttl集成逻辑门电路和cmos电路"></a> 3.3.2 TTL集成逻辑门电路和CMOS电路</h2>
+<p>TTL功耗大、集成度低，广泛用户中小规模集成电路中<br />
+常用TTL集成电路芯片有74系列</p>
 <p>两种特殊门电路：</p>
 <ol>
-<li>集电极开路门(OC门)<br> 一种输出端可以直接相互连接的特殊逻辑门，可以实现“线与”逻辑<br><img src="4.png" alt=""></li>
-<li>三态输出门(TS门)<br> 常用于数字系统中总线传输控制，可以让共享总线的输入输出设备根据控制信号从总线获取或向总线发送数据<br> 三种输出状态：高电平、低电平、高阻</li>
+<li>集电极开路门(OC门)<br />
+一种输出端可以直接相互连接的特殊逻辑门，可以实现“线与”逻辑<br />
+<img src="4.png" alt="" /></li>
+<li>三态输出门(TS门)<br />
+常用于数字系统中总线传输控制，可以让共享总线的输入输出设备根据控制信号从总线获取或向总线发送数据<br />
+三种输出状态：高电平、低电平、高阻</li>
 </ol>
-<p><img src="5.png" alt=""></p>
-<p>正逻辑与负逻辑<br>正逻辑：用高电平表示逻辑1<br>负逻辑：用低电平表示逻辑1</p>
-<h1 id="3-4-触发器"><a href="#3-4-触发器" class="headerlink" title="3.4 触发器"></a>3.4 触发器</h1><p>触发器：一种具有记忆功能的电子器件，用于存储一位二进制信息<br>特点：</p>
+<p><img src="5.png" alt="" /></p>
+<p>正逻辑与负逻辑<br />
+正逻辑：用高电平表示逻辑1<br />
+负逻辑：用低电平表示逻辑1</p>
+<h1 id="34-触发器"><a class="markdownIt-Anchor" href="#34-触发器"></a> 3.4 触发器</h1>
+<p>触发器：一种具有记忆功能的电子器件，用于存储一位二进制信息<br />
+特点：</p>
 <ul>
-<li>有两个互补的输出端$Q,\bar Q$</li>
-<li>有两个稳定状态，$Q=1,\bar Q=0$称为“1”状态，否则称为“0”状态。输入信号不变时，触发器状态稳定不变</li>
+<li>有两个互补的输出端<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q,\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span></li>
+<li>有两个稳定状态，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">Q=1,\bar Q=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>称为“1”状态，否则称为“0”状态。输入信号不变时，触发器状态稳定不变</li>
 <li>在一定输入信号作用下，触发器可以从一个稳定状态转移到另一个稳定状态</li>
 <li>输出状态不仅与现时输入有关，还与原来输出状态有关</li>
 <li>按功能分类：RS型触发器、D型触发器、T型触发器、JK型触发器等</li>
 </ul>
-<p>现态：$Q^n,\bar{Q^n}$，简记为$Q,\bar Q$<br>次态：$Q^{n+1},\bar Q^{n+1}$</p>
-<h2 id="3-4-1-基本R-S触发器"><a href="#3-4-1-基本R-S触发器" class="headerlink" title="3.4.1 基本R-S触发器"></a>3.4.1 基本R-S触发器</h2><p><img src="6.png" alt=""></p>
+<p>现态：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mi>n</mi></msup><mo separator="true">,</mo><mover accent="true"><msup><mi>Q</mi><mi>n</mi></msup><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q^n,\bar{Q^n}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.590392em;"><span style="top:-2.9890000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span></span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.25em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span>，简记为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo separator="true">,</mo><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">Q,\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span><br />
+次态：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo separator="true">,</mo><msup><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">Q^{n+1},\bar Q^{n+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span></p>
+<h2 id="341-基本r-s触发器"><a class="markdownIt-Anchor" href="#341-基本r-s触发器"></a> 3.4.1 基本R-S触发器</h2>
+<p><img src="6.png" alt="" /></p>
 <p>功能表：</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -312,53 +333,48 @@
 </tr>
 </tbody>
 </table>
-</div>
-<font color=red>输出方程：$Q^{n+1}=\bar S+RQ$</font>
-约束方程：$R+S=1$
-
-基本R-S触发器在RS不同时实现的是赋值功能，赋R的值。
-
-## 3.4.2 常用的几种时钟控制触发器
-
-### 1. 钟控R-S触发器
-![](7.png)
-
-当$CP=0$时，$Q$状态不变
-当$CP=1$时，R-S输入功能表与基本R-S触发器功能表相反。
-
-<font color=red>输出方程：$Q^{n+1}=S+\bar RQ$</font>
-约束方程：$RS=0$
-
-激励表：
-![](8.png)
-
-### 2. 钟控D触发器
-
-![](9.png)
-
-实际上就是将R-S触发器的S换成了D，R换成了~D。因此D输入什么就储存什么。
-
-<font color=red>输出方程：$Q^{n+1}=D$</font>
-
-<h3 id="3-钟控J-K触发器"><a href="#3-钟控J-K触发器" class="headerlink" title="3. 钟控J-K触发器"></a>3. 钟控J-K触发器</h3><p><img src="10.png" alt=""></p>
+<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mover accent="true"><mi>S</mi><mo>ˉ</mo></mover><mo>+</mo><mi>R</mi><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=\bar S+RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9034399999999999em;vertical-align:-0.08333em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal">Q</span></span></span></span></font><br />
+约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>+</mo><mi>S</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">R+S=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></p>
+<p>基本R-S触发器在RS不同时实现的是赋值功能，赋R的值。</p>
+<h2 id="342-常用的几种时钟控制触发器"><a class="markdownIt-Anchor" href="#342-常用的几种时钟控制触发器"></a> 3.4.2 常用的几种时钟控制触发器</h2>
+<h3 id="1-钟控r-s触发器"><a class="markdownIt-Anchor" href="#1-钟控r-s触发器"></a> 1. 钟控R-S触发器</h3>
+<p><img src="7.png" alt="" /></p>
+<p>当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">CP=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>时，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">Q</span></span></span></span>状态不变<br />
+当<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mi>P</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">CP=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>时，R-S输入功能表与基本R-S触发器功能表相反。</p>
+<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>S</mi><mo>+</mo><mover accent="true"><mi>R</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=S+\bar RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span></font><br />
+约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>S</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">RS=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span></p>
+<p>激励表：<br />
+<img src="8.png" alt="" /></p>
+<h3 id="2-钟控d触发器"><a class="markdownIt-Anchor" href="#2-钟控d触发器"></a> 2. 钟控D触发器</h3>
+<p><img src="9.png" alt="" /></p>
+<p>实际上就是将R-S触发器的S换成了D，R换成了~D。因此D输入什么就储存什么。</p>
+<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span></font></p>
+<h3 id="3-钟控j-k触发器"><a class="markdownIt-Anchor" href="#3-钟控j-k触发器"></a> 3. 钟控J-K触发器</h3>
+<p><img src="10.png" alt="" /></p>
 <p>实际上就是相较于钟控R-S触发器添加了JK端均为1的处理：反转。JK端输入不同时赋J的值。</p>
-<font color=red>输出方程：$Q^{n+1}=J\bar Q+\bar KQ$</font>
-
-<h3 id="4-钟控T触发器"><a href="#4-钟控T触发器" class="headerlink" title="4. 钟控T触发器"></a>4. 钟控T触发器</h3><p><img src="11.png" alt=""></p>
+<p><font color=red>输出方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>J</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>K</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=J\bar Q+\bar KQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.19444em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span></font></p>
+<h3 id="4-钟控t触发器"><a class="markdownIt-Anchor" href="#4-钟控t触发器"></a> 4. 钟控T触发器</h3>
+<p><img src="11.png" alt="" /></p>
 <p>即将钟控J-K触发器的JK端接在一起。T=1反转，T=0不变</p>
-<h2 id="3-4-3-主从R-S触发器"><a href="#3-4-3-主从R-S触发器" class="headerlink" title="3.4.3 主从R-S触发器"></a>3.4.3 主从R-S触发器</h2><p>空翻现象：在一个时钟周期内触发器发生2次及以上的变化，会造成系统状态的不稳定和工作的紊乱。<br>主从R-S触发器可以看做两个R-S触发器串联形成，这两个触发器的时钟信号互补。当主触发器解锁时，其信号变化对从触发器无影响。<br>从触发器的状态取决于主触发器解锁到锁定最后一课的状态，根据此状态设定从触发器。因此整个触发器输出信号只可能在时钟信号由1变为0时改变，提升了系统的同步性。</p>
+<h2 id="343-主从r-s触发器"><a class="markdownIt-Anchor" href="#343-主从r-s触发器"></a> 3.4.3 主从R-S触发器</h2>
+<p>空翻现象：在一个时钟周期内触发器发生2次及以上的变化，会造成系统状态的不稳定和工作的紊乱。<br />
+主从R-S触发器可以看做两个R-S触发器串联形成，这两个触发器的时钟信号互补。当主触发器解锁时，其信号变化对从触发器无影响。<br />
+从触发器的状态取决于主触发器解锁到锁定最后一课的状态，根据此状态设定从触发器。因此整个触发器输出信号只可能在时钟信号由1变为0时改变，提升了系统的同步性。</p>
 <ol>
-<li>主从R-S触发器<br><img src="12.png" alt=""></li>
+<li>主从R-S触发器<br />
+<img src="12.png" alt="" /></li>
 </ol>
-<p>其中$R_D,S_D$为直接清零端和直接置1端，一般情况下为高电平，为低电平时可以直接为从触发器强制赋值。</p>
-<ol>
-<li>主从J-K触发器<br>在主从R-S触发器的基础上，加从$\bar Q$到主触发器S端的反馈与从Q到R端的反馈：R=K，S=J</li>
+<p>其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>D</mi></msub><mo separator="true">,</mo><msub><mi>S</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">R_D,S_D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.00773em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">D</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为直接清零端和直接置1端，一般情况下为高电平，为低电平时可以直接为从触发器强制赋值。</p>
+<ol start="2">
+<li>主从J-K触发器<br />
+在主从R-S触发器的基础上，加从<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover></mrow><annotation encoding="application/x-tex">\bar Q</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span></span></span></span>到主触发器S端的反馈与从Q到R端的反馈：R=K，S=J</li>
 </ol>
-<p><img src="13.png" alt=""></p>
-<ol>
-<li>典型维持：阻塞D触发器<br>钟控D触发器的改进版，只在时钟信号由0变成1（称上升沿）时读取D信号并设置触发器状态，其余时间Q不变</li>
+<p><img src="13.png" alt="" /></p>
+<ol start="3">
+<li>典型维持：阻塞D触发器<br />
+钟控D触发器的改进版，只在时钟信号由0变成1（称上升沿）时读取D信号并设置触发器状态，其余时间Q不变</li>
 </ol>
-<p><img src="14.png" alt=""></p>
+<p><img src="14.png" alt="" /></p>
 
     </div>
 
@@ -439,7 +455,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#3-1-%E6%95%B0%E5%AD%97%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">3.1 数字集成电路分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-2-%E5%8D%8A%E5%AF%BC%E4%BD%93%E6%9C%9F%E9%97%B4%E5%BC%80%E5%85%B3%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text">3.2 半导体期间开关特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-1-%E6%99%B6%E4%BD%93%E4%BA%8C%E6%9E%81%E7%AE%A1"><span class="nav-number">2.1.</span> <span class="nav-text">3.2.1 晶体二极管</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-2-%E6%99%B6%E4%BD%93%E4%B8%89%E6%9E%81%E7%AE%A1"><span class="nav-number">2.2.</span> <span class="nav-text">3.2.2 晶体三极管</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-3-%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text">3.3 逻辑门电路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-1-%E7%AE%80%E5%8D%95%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.1.</span> <span class="nav-text">3.3.1 简单逻辑门电路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-2-TTL%E9%9B%86%E6%88%90%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8CCMOS%E7%94%B5%E8%B7%AF"><span class="nav-number">3.2.</span> <span class="nav-text">3.3.2 TTL集成逻辑门电路和CMOS电路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-4-%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">3.4 触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-1-%E5%9F%BA%E6%9C%ACR-S%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.1.</span> <span class="nav-text">3.4.1 基本R-S触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%92%9F%E6%8E%A7J-K%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.1.1.</span> <span class="nav-text">3. 钟控J-K触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%92%9F%E6%8E%A7T%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.1.2.</span> <span class="nav-text">4. 钟控T触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-3-%E4%B8%BB%E4%BB%8ER-S%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text">3.4.3 主从R-S触发器</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#31-%E6%95%B0%E5%AD%97%E9%9B%86%E6%88%90%E7%94%B5%E8%B7%AF%E5%88%86%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text"> 3.1 数字集成电路分类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#32-%E5%8D%8A%E5%AF%BC%E4%BD%93%E6%9C%9F%E9%97%B4%E5%BC%80%E5%85%B3%E7%89%B9%E6%80%A7"><span class="nav-number">2.</span> <span class="nav-text"> 3.2 半导体期间开关特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#321-%E6%99%B6%E4%BD%93%E4%BA%8C%E6%9E%81%E7%AE%A1"><span class="nav-number">2.1.</span> <span class="nav-text"> 3.2.1 晶体二极管</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#322-%E6%99%B6%E4%BD%93%E4%B8%89%E6%9E%81%E7%AE%A1"><span class="nav-number">2.2.</span> <span class="nav-text"> 3.2.2 晶体三极管</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#33-%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.</span> <span class="nav-text"> 3.3 逻辑门电路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#331-%E7%AE%80%E5%8D%95%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF"><span class="nav-number">3.1.</span> <span class="nav-text"> 3.3.1 简单逻辑门电路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#332-ttl%E9%9B%86%E6%88%90%E9%80%BB%E8%BE%91%E9%97%A8%E7%94%B5%E8%B7%AF%E5%92%8Ccmos%E7%94%B5%E8%B7%AF"><span class="nav-number">3.2.</span> <span class="nav-text"> 3.3.2 TTL集成逻辑门电路和CMOS电路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#34-%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text"> 3.4 触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#341-%E5%9F%BA%E6%9C%ACr-s%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.1.</span> <span class="nav-text"> 3.4.1 基本R-S触发器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#342-%E5%B8%B8%E7%94%A8%E7%9A%84%E5%87%A0%E7%A7%8D%E6%97%B6%E9%92%9F%E6%8E%A7%E5%88%B6%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.</span> <span class="nav-text"> 3.4.2 常用的几种时钟控制触发器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%92%9F%E6%8E%A7r-s%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.1.</span> <span class="nav-text"> 1. 钟控R-S触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%92%9F%E6%8E%A7d%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.2.</span> <span class="nav-text"> 2. 钟控D触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%92%9F%E6%8E%A7j-k%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.3.</span> <span class="nav-text"> 3. 钟控J-K触发器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E9%92%9F%E6%8E%A7t%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.2.4.</span> <span class="nav-text"> 4. 钟控T触发器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#343-%E4%B8%BB%E4%BB%8Er-s%E8%A7%A6%E5%8F%91%E5%99%A8"><span class="nav-number">4.3.</span> <span class="nav-text"> 3.4.3 主从R-S触发器</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -505,13 +521,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

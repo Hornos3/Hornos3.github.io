@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="5.2 A三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址） A寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。 A16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范">
+  <meta name="description" content="5.2  A 三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址） A 寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。 A 16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第5章习题">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="5.2 A三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址） A寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。 A16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范">
+<meta property="og:description" content="5.2  A 三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址） A 寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。 A 16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T16:02:13.000Z">
 <meta property="article:modified_time" content="2023-03-02T16:05:10.469Z">
@@ -227,22 +227,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="5-2"><a href="#5-2" class="headerlink" title="5.2"></a>5.2</h3><ol>
-<li>A<br>三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址）</li>
-<li>A<br>寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。</li>
-<li>A<br>16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范围为0~255。</li>
+        <h3 id="52"><a class="markdownIt-Anchor" href="#52"></a> 5.2</h3>
+<ol>
+<li>A<br />
+三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址）</li>
+<li>A<br />
+寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。</li>
+<li>A<br />
+16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范围为0~255。</li>
 <li>C</li>
 <li>C</li>
 <li>A</li>
 <li>D</li>
 <li>D</li>
-<li>D<br>注意本题为大端序，LSB位于高地址处。</li>
+<li>D<br />
+注意本题为大端序，LSB位于高地址处。</li>
 <li>B</li>
-<li>C<br>无符号整数大于则ZF=0，CF=0。</li>
+<li>C<br />
+无符号整数大于则ZF=0，CF=0。</li>
 <li>A</li>
 <li>略</li>
 </ol>
-<h3 id="5-3"><a href="#5-3" class="headerlink" title="5.3"></a>5.3</h3><ol>
+<h3 id="53"><a class="markdownIt-Anchor" href="#53"></a> 5.3</h3>
+<ol>
 <li>指令是用户使用计算机与计算机本身运行的基本功能单位。指令系统是计算机系统性能的几种体现，是计算机软、硬件的设计基础。</li>
 <li>计算机设计多种操作数寻址方式是为了提升寻址的灵活性，同时可以在一定程度上减少地址寻址所使用的指令位数。</li>
 <li>作为寻址方式字段给出。</li>
@@ -251,37 +258,57 @@
 <li>定长指令便于机器解码执行，结构规整，有利于设计硬件，但不容易扩展。变长指令灵活，但不易解码。</li>
 <li>指令的地址码指的是指令中用于寻址的地址值，通常指定操作数的地址，地址码的字段的作用随着指令类型和寻址方式的不同而不同。指令中的操作码用于区分不同功能的指令，标识指令的种类。</li>
 </ol>
-<h3 id="5-4"><a href="#5-4" class="headerlink" title="5.4"></a>5.4</h3><ol>
+<h3 id="54"><a class="markdownIt-Anchor" href="#54"></a> 5.4</h3>
+<ol>
 <li>立即数</li>
 <li>直接</li>
 <li>寄存器</li>
 <li>寄存器间接</li>
 </ol>
-<p>注：寻址方式区分技巧<br>需要两次找其他值的是间接。间接寻址指的是操作数地址的地址在主存，寄存器间接寻址指的是操作数地址在寄存器，前一个需要两次访问主存，后一个需要首先访问寄存器再访问主存。</p>
-<h3 id="5-5"><a href="#5-5" class="headerlink" title="5.5"></a>5.5</h3><ol>
+<p>注：寻址方式区分技巧<br />
+需要两次找其他值的是间接。间接寻址指的是操作数地址的地址在主存，寄存器间接寻址指的是操作数地址在寄存器，前一个需要两次访问主存，后一个需要首先访问寄存器再访问主存。</p>
+<h3 id="55"><a class="markdownIt-Anchor" href="#55"></a> 5.5</h3>
+<ol>
 <li>操作数地址码由寻址方式字段和寄存器号字段组成。16个通用寄存器需要4位标识，8种寻址方式需要3位标识，剩余字段数量为9位，故单操作数指令最多为512条。</li>
 <li>4条。</li>
 <li>0~7，对于直接寻址，应该是使用寻址方式这3位来寻址。</li>
-<li>变址寻址考虑到寄存器16位，因此寻址范围为2^16^个字即64KW。</li>
+<li>变址寻址考虑到寄存器16位，因此寻址范围为2<sup>16</sup>个字即64KW。</li>
 </ol>
-<h3 id="5-6"><a href="#5-6" class="headerlink" title="5.6"></a>5.6</h3><ol>
-<li>若操作码字段不固定，已经设计出m条双操作数指令，n条无操作数指令。对于双操作数指令，有4位可用于标识指令码，现在已经设计了m条，还剩下16-m种前4位的组合可以用于单操作数指令和无操作数指令。对于单操作数指令，有10位可用于标识指令码，去除前4位，不管无操作数指令，可知单操作数指令对于指令前10位一共有(16-m)×64种组合可用。还需要考虑到无操作数指令，无操作数指令全部16位都可以用于标识指令码，则前10位的一种组合可设计64条无操作数指令，那么n条无操作数指令一共需要占用单操作数指令前10位组合中的$\lceil\frac{n}{64}\rceil$种组合，故单操作数指令一共可以设计$(16-m)\times 64-\lceil\frac{n}{64}\rceil$条。</li>
-<li>双操作数指令取最大数为15，因为要留出一种前4位的组合给单操作数指令和无操作数指令，单操作数指令取最大数为63，因为要留出一种前10位的组合给无操作数指令。此时无操作数指令最多只能设计64条。<h3 id="5-7"><a href="#5-7" class="headerlink" title="5.7"></a>5.7</h3></li>
+<h3 id="56"><a class="markdownIt-Anchor" href="#56"></a> 5.6</h3>
+<ol>
+<li>若操作码字段不固定，已经设计出m条双操作数指令，n条无操作数指令。对于双操作数指令，有4位可用于标识指令码，现在已经设计了m条，还剩下16-m种前4位的组合可以用于单操作数指令和无操作数指令。对于单操作数指令，有10位可用于标识指令码，去除前4位，不管无操作数指令，可知单操作数指令对于指令前10位一共有(16-m)×64种组合可用。还需要考虑到无操作数指令，无操作数指令全部16位都可以用于标识指令码，则前10位的一种组合可设计64条无操作数指令，那么n条无操作数指令一共需要占用单操作数指令前10位组合中的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>种组合，故单操作数指令一共可以设计<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>16</mn><mo>−</mo><mi>m</mi><mo stretchy="false">)</mo><mo>×</mo><mn>64</mn><mo>−</mo><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">(16-m)\times 64-\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">6</span><span class="mord">4</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>条。</li>
+<li>双操作数指令取最大数为15，因为要留出一种前4位的组合给单操作数指令和无操作数指令，单操作数指令取最大数为63，因为要留出一种前10位的组合给无操作数指令。此时无操作数指令最多只能设计64条。</li>
+</ol>
+<h3 id="57"><a class="markdownIt-Anchor" href="#57"></a> 5.7</h3>
+<ol>
 <li>290-256-3=31，转移指令第二个字节为0x1F，第三个字节为0。</li>
-<li>110-128-3=-31，转移指令第二个字节为0xE1，第三个字节为0xFF。<h3 id="5-8"><a href="#5-8" class="headerlink" title="5.8"></a>5.8</h3></li>
+<li>110-128-3=-31，转移指令第二个字节为0xE1，第三个字节为0xFF。</li>
+</ol>
+<h3 id="58"><a class="markdownIt-Anchor" href="#58"></a> 5.8</h3>
+<ol>
 <li>4420H=0100 0100 0010 0000=010001 00 00100000，寻址方式为直接寻址，形式地址为0x20，有效地址为0x20。</li>
 <li>2244H=0010 0010 0100 0100=001000 10 01000100，寻址方式为变址寄存器X2变址，形式地址为0x44，有效地址为0x1122+0x44=0x1166。</li>
 <li>1322H=0001 0011 0010 0010=000100 11 00100010，寻址方式为相对寻址，形式地址为0x22，有效地址为0x1234+2+0x22=0x1258。</li>
 <li>3521H=0011 0101 0010 0001=001101 01 00100001，寻址方式为变址寄存器X1变址，形式地址为0x21，有效地址为0x37+0x21=0x58。</li>
 </ol>
-<h3 id="5-9"><a href="#5-9" class="headerlink" title="5.9"></a>5.9</h3><ol>
+<h3 id="59"><a class="markdownIt-Anchor" href="#59"></a> 5.9</h3>
+<ol>
 <li>增加的32条指令中的前6位不能与原来的60条指令中的任意一条的前6位相等，否则会冲突，因此这32条指令的前6位只有4种可能的值，每一种可能的值需要设计8条指令，因此扩展操作码总共9位，这32条指令的操作码为111100000~111111111。</li>
-<li>平均长度为(60×6+32×9)/92≈7.04。<h3 id="5-10"><a href="#5-10" class="headerlink" title="5.10"></a>5.10</h3>add $s0, $a1, $t7。<h3 id="5-11"><a href="#5-11" class="headerlink" title="5.11"></a>5.11</h3>略<h3 id="5-12"><a href="#5-12" class="headerlink" title="5.12"></a>5.12</h3></li>
+<li>平均长度为(60×6+32×9)/92≈7.04。</li>
+</ol>
+<h3 id="510"><a class="markdownIt-Anchor" href="#510"></a> 5.10</h3>
+<p>add $s0, $a1, $t7。</p>
+<h3 id="511"><a class="markdownIt-Anchor" href="#511"></a> 5.11</h3>
+<p>略</p>
+<h3 id="512"><a class="markdownIt-Anchor" href="#512"></a> 5.12</h3>
+<ol>
 <li>最多有16条指令，该计算机最多有8个通用寄存器。</li>
 <li>16位，因为主存空间128KB，含64KW。</li>
-<li>0~2^16^-1</li>
-<li>0010 0011 0001 0101=2315H。<h3 id="5-13"><a href="#5-13" class="headerlink" title="5.13"></a>5.13</h3>略</li>
+<li>0~2<sup>16</sup>-1</li>
+<li>0010 0011 0001 0101=2315H。</li>
 </ol>
+<h3 id="513"><a class="markdownIt-Anchor" href="#513"></a> 5.13</h3>
+<p>略</p>
 
     </div>
 
@@ -362,7 +389,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2"><span class="nav-number">1.</span> <span class="nav-text">5.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-3"><span class="nav-number">2.</span> <span class="nav-text">5.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-4"><span class="nav-number">3.</span> <span class="nav-text">5.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-5"><span class="nav-number">4.</span> <span class="nav-text">5.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-6"><span class="nav-number">5.</span> <span class="nav-text">5.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-7"><span class="nav-number">6.</span> <span class="nav-text">5.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-8"><span class="nav-number">7.</span> <span class="nav-text">5.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-9"><span class="nav-number">8.</span> <span class="nav-text">5.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-10"><span class="nav-number">9.</span> <span class="nav-text">5.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-11"><span class="nav-number">10.</span> <span class="nav-text">5.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-12"><span class="nav-number">11.</span> <span class="nav-text">5.12</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-13"><span class="nav-number">12.</span> <span class="nav-text">5.13</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#52"><span class="nav-number">1.</span> <span class="nav-text"> 5.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#53"><span class="nav-number">2.</span> <span class="nav-text"> 5.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#54"><span class="nav-number">3.</span> <span class="nav-text"> 5.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#55"><span class="nav-number">4.</span> <span class="nav-text"> 5.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#56"><span class="nav-number">5.</span> <span class="nav-text"> 5.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#57"><span class="nav-number">6.</span> <span class="nav-text"> 5.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#58"><span class="nav-number">7.</span> <span class="nav-text"> 5.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#59"><span class="nav-number">8.</span> <span class="nav-text"> 5.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#510"><span class="nav-number">9.</span> <span class="nav-text"> 5.10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#511"><span class="nav-number">10.</span> <span class="nav-text"> 5.11</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#512"><span class="nav-number">11.</span> <span class="nav-text"> 5.12</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#513"><span class="nav-number">12.</span> <span class="nav-text"> 5.13</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -428,13 +455,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="课后习题和问题4.1 网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。 数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。 路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。 转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转发到哪一">
+  <meta name="description" content="课后习题和问题  4.1  网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。 数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。 路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。 转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络——第4章习题">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="课后习题和问题4.1 网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。 数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。 路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。 转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转发到哪一">
+<meta property="og:description" content="课后习题和问题  4.1  网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。 数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。 路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。 转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T15:48:47.000Z">
 <meta property="article:modified_time" content="2023-03-02T15:48:57.642Z">
@@ -227,23 +227,33 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="课后习题和问题"><a href="#课后习题和问题" class="headerlink" title="课后习题和问题"></a>课后习题和问题</h2><h3 id="4-1"><a href="#4-1" class="headerlink" title="4.1"></a>4.1</h3><ol>
+        <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
+<h3 id="41"><a class="markdownIt-Anchor" href="#41"></a> 4.1</h3>
+<ol>
 <li>网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。</li>
 <li>数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。</li>
 <li>路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。</li>
 <li>转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转发到哪一个端口。</li>
-<li>因特网的网络层提供单一的服务，称为尽力而为服务。传送的分组既不能保证以它们发送的顺序被接收，也不能保证它们最终交付；既不能保证端到端时延，也不能保证有最小的带宽。<h3 id="4-2"><a href="#4-2" class="headerlink" title="4.2"></a>4.2</h3></li>
+<li>因特网的网络层提供单一的服务，称为尽力而为服务。传送的分组既不能保证以它们发送的顺序被接收，也不能保证它们最终交付；既不能保证端到端时延，也不能保证有最小的带宽。</li>
+</ol>
+<h3 id="42"><a class="markdownIt-Anchor" href="#42"></a> 4.2</h3>
+<ol start="6">
 <li>输入端口、输出端口、交换端口由硬件实现，其数据表处理功能比软件快很多；路由选择处理器由软件实现，维护路由表以及其他的路由信息，并计算转发表。数据平面使用硬件实现，控制平面使用软件实现。</li>
 <li>在高速路由器的输入端口存储转发表的副本可以大大减少路由器进行路由选择的时间，无需每一次都计算一次路径。转发决策能在每个输入端口本地做出，无须基于每个分组调用集中式路由选择处理器，因此避免了集中式处理的瓶颈。</li>
 <li>基于目的地转发意味着路由器仅会根据数据报的目的IP地址来决定转发端口，通用转发除了数据报的最终目的地之外还有其他的影响因素，如转发决策可以基于数据报的TCP/UDP源端口号和目的端口号进行转发。</li>
 <li>使用最长前缀匹配原则来确定应该转发到哪一个端口。</li>
-<li>经过内存交换：在输入端口与输出端口之间的交换是在CPU的直接控制之下完成的，一个分组到达一个输入端口时，该端口会通过中断方式向路由选择处理器发出信号，该分组从输入端口处被复制到处理器内存中，理由选择处理器提取目的地址，在转发表中查找到适当的转发端口，并将该分组复制到输出端口的缓存中。<br>经过总线交换：输入端口经过一条共享总线将分组直接传送到输出端口，不需要路由选择处理器的干预。让输入端口为分组预先计划一个交换机内部标签，指示本地输出端口，使分组在总线上传送和传输到输出端口。该分组能够由所有输出端口收到，但只有与该标签匹配的端口才能保存该分组。<br>经互联网络交换：使用一个更为复杂的互联网络，如纵横式交换机结构，每条垂直的总线在交叉点与每条水平的总线交叉，交叉点通过交换结构控制器能够在任何时候开启和闭合。当分组到达端口A需要转发到Y时，交换机控制器闭合A和Y总线交叉部分的交叉点，然后即可转发。只有互联网络交换可以并行交换多个分组。</li>
+<li>经过内存交换：在输入端口与输出端口之间的交换是在CPU的直接控制之下完成的，一个分组到达一个输入端口时，该端口会通过中断方式向路由选择处理器发出信号，该分组从输入端口处被复制到处理器内存中，理由选择处理器提取目的地址，在转发表中查找到适当的转发端口，并将该分组复制到输出端口的缓存中。<br />
+经过总线交换：输入端口经过一条共享总线将分组直接传送到输出端口，不需要路由选择处理器的干预。让输入端口为分组预先计划一个交换机内部标签，指示本地输出端口，使分组在总线上传送和传输到输出端口。该分组能够由所有输出端口收到，但只有与该标签匹配的端口才能保存该分组。<br />
+经互联网络交换：使用一个更为复杂的互联网络，如纵横式交换机结构，每条垂直的总线在交叉点与每条水平的总线交叉，交叉点通过交换结构控制器能够在任何时候开启和闭合。当分组到达端口A需要转发到Y时，交换机控制器闭合A和Y总线交叉部分的交叉点，然后即可转发。只有互联网络交换可以并行交换多个分组。</li>
 <li>如果数据报到达的速率大于数据报处理的速率，当输入端口的数据报缓存满时，后面到达的数据报就可能会丢失。加快路由器处理器的处理速率即可消除排队。</li>
 <li>如果数据报被大量送入输入端口，速率大于转发速率时，会导致输出端口排队，到达一定程度后出现丢失。无法防止这种丢失。</li>
 <li>HOL阻塞，即线头阻塞，即在一个输入端口的缓存中，后面的分组由于前面的分组等待转移到输出端口而产生等待时延的现象，又称线路前部阻塞。出现于输入端口。</li>
 <li>FIFO</li>
 <li>不同的数据报中的数据的重要程度不同，对时延的要求也不同，因此需要为分组设置优先权。</li>
-<li>RR指循环排队原则，WFQ指加权公平排队原则，二者的基本差异是RR将所有类通信都一视同仁地看待，而WFQ则将通信分为多个不同优先权的分组，优先权表现在一个循环周期内某一类分组处理的时间比例。当WFQ中所有类具有相同的服务权重时，与RR相同。<h3 id="4-3"><a href="#4-3" class="headerlink" title="4.3"></a>4.3</h3></li>
+<li>RR指循环排队原则，WFQ指加权公平排队原则，二者的基本差异是RR将所有类通信都一视同仁地看待，而WFQ则将通信分为多个不同优先权的分组，优先权表现在一个循环周期内某一类分组处理的时间比例。当WFQ中所有类具有相同的服务权重时，与RR相同。</li>
+</ol>
+<h3 id="43"><a class="markdownIt-Anchor" href="#43"></a> 4.3</h3>
+<ol start="17">
 <li>IP数据报首部中含有上层协议字段，可用于标识上层协议。</li>
 <li>TTL（time to live），每一次转发都会减1，当该值被减为0时即丢弃。</li>
 <li>不用，IP数据报只检验其头部信息。</li>
@@ -258,26 +268,60 @@
 <li>能够自动配置主机的IP地址。</li>
 <li>专用网络地址指在各个子网中可以重复使用的网络IP地址。具有专用网络地址的数据报不会出现在大型公共因特网中，否则数据报将无法确定到底应该发送到哪一台主机。</li>
 <li>有，如源IP和目的IP。</li>
-<li>是，因为IPv6载荷包裹在IPv4数据报中。<h2 id="习题"><a href="#习题" class="headerlink" title="习题"></a>习题</h2></li>
-<li>a. 路由器A的转发表：其中1项的目的地址为H3，转发端口为3。<br>b. 无法实现，因为路由器转发仅根据目的地址转发，而不根据数据来源转发。</li>
-<li>a. 不能，因为交换结构是共享总线时，一次只能转发一个分组。<br>b. 不能，因为交换结构是内存交换时，一次也只能转发一个分组。<br>c. 不能，因为两个分组转发到相同的输出端口，交换结构为纵横式时，允许不同端口同时转发不同分组，但一个端口在一个时刻不能同时转发多个分组。</li>
+<li>是，因为IPv6载荷包裹在IPv4数据报中。</li>
+</ol>
+<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
+<ol>
+<li>a. 路由器A的转发表：其中1项的目的地址为H3，转发端口为3。<br />
+b. 无法实现，因为路由器转发仅根据目的地址转发，而不根据数据来源转发。</li>
+<li>a. 不能，因为交换结构是共享总线时，一次只能转发一个分组。<br />
+b. 不能，因为交换结构是内存交换时，一次也只能转发一个分组。<br />
+c. 不能，因为两个分组转发到相同的输出端口，交换结构为纵横式时，允许不同端口同时转发不同分组，但一个端口在一个时刻不能同时转发多个分组。</li>
 <li>内存和总线交换结构：每一次只能转发一个分组，因此最大时延为(n-1)D。纵横式：不同端口的输出可以交互进行，因此最大时延为0。</li>
 <li>在第一个时隙，第一个输入端口的X分组到达X输出端口，另外剩余两个端口的最前两个Y分组选择一个到达Y输出端口，之后的分组还需要两个时隙完成传输，故最少需要3个时隙。最大也是3个时隙。</li>
-<li>a.<br>目的地址为192.0.0.0/10时输出到0端口，前缀11100000 00<br>目的地址为192.64.0.0/16时输出到1端口，前缀11100000 01000000<br>目的地址为192.0.0.0/7且不属于端口0、1的地址范围时输出到2端口，前缀1110000<br>其余输出到3端口<br>b. 第一个地址根据最长前缀匹配原则匹配到其他，输出到3端口<br>第二个地址可匹配端口2，且不匹配端口0、1，输出到2端口<br>第三个地址匹配到其他，输出到3端口</li>
-<li>首先看前缀长的。<br>接口1前缀010，匹配64~95，地址数量为32。<br>接口2前缀011，匹配96~127，地址数量为32。<br>接口0前缀00，匹配0~63，地址数量为64。<br>接口2前缀10，匹配128~191，地址数量为64。<br>接口2可匹配96~191，地址数量为96。<br>接口3前缀11，匹配192~255，地址数量为64。</li>
-<li>首先看前缀长的。<br>接口2前缀111，匹配224~255，地址数量为32。<br>接口1前缀10，匹配128~191，地址数量为64。<br>接口0前缀1，匹配192~223，地址数量为32。<br>接口3匹配0~127，地址数量为128。</li>
+<li>a.<br />
+目的地址为192.0.0.0/10时输出到0端口，前缀11100000 00<br />
+目的地址为192.64.0.0/16时输出到1端口，前缀11100000 01000000<br />
+目的地址为192.0.0.0/7且不属于端口0、1的地址范围时输出到2端口，前缀1110000<br />
+其余输出到3端口<br />
+b. 第一个地址根据最长前缀匹配原则匹配到其他，输出到3端口<br />
+第二个地址可匹配端口2，且不匹配端口0、1，输出到2端口<br />
+第三个地址匹配到其他，输出到3端口</li>
+<li>首先看前缀长的。<br />
+接口1前缀010，匹配64~95，地址数量为32。<br />
+接口2前缀011，匹配96~127，地址数量为32。<br />
+接口0前缀00，匹配0~63，地址数量为64。<br />
+接口2前缀10，匹配128~191，地址数量为64。<br />
+接口2可匹配96~191，地址数量为96。<br />
+接口3前缀11，匹配192~255，地址数量为64。</li>
+<li>首先看前缀长的。<br />
+接口2前缀111，匹配224~255，地址数量为32。<br />
+接口1前缀10，匹配128~191，地址数量为64。<br />
+接口0前缀1，匹配192~223，地址数量为32。<br />
+接口3匹配0~127，地址数量为128。</li>
 <li>首先分配需求大的子网，子网2分配一个25地址，即223.1.17.0/25，子网1分配一个26地址，即223.1.17.128/26，子网3分配剩余地址，即223.1.17.192/26。</li>
 <li>略</li>
-<li><p>244.0.0.0/10 → 端口0<br>224.64.0.0/16 → 端口1<br>224.0.0.0/7 → 端口2<br>0.0.0.0/0 → 端口3</p>
-</li>
-<li><p>128.119.40.(64\80\96\112)/28</p>
-</li>
-<li>子网1：214.97.254.0/24<br>子网2：214.97.255.0/25 - 214.97.255.0/29<br>子网3：214.97.255.128/25<br>子网4：214.97.255.0/31<br>子网5：214.97.255.2/31<br>子网6：214.97.255.4/30</li>
+<li></li>
+</ol>
+<p>244.0.0.0/10 → 端口0<br />
+224.64.0.0/16 → 端口1<br />
+224.0.0.0/7 → 端口2<br />
+0.0.0.0/0 → 端口3</p>
+<ol start="11">
+<li>128.119.40.(64\80\96\112)/28</li>
+<li>子网1：214.97.254.0/24<br />
+子网2：214.97.255.0/25 - 214.97.255.0/29<br />
+子网3：214.97.255.128/25<br />
+子网4：214.97.255.0/31<br />
+子网5：214.97.255.2/31<br />
+子网6：214.97.255.4/30</li>
 <li>略</li>
 <li>将会产生4个分片，表示均为422，偏移分别为0、85、170、255，前3个分片的MF为1，数据量700字节，最后一个为0，数据量300字节。</li>
-<li>5MB=5×10^6^字节，首部字段的长度为40字节（含IP首部和TCP首部），故每个数据报最大数据量为1460字节，需要将5MB分为3425个数据报。</li>
-<li>a. 192.168.1.1~192.168.1.3<br>b. 源IP地址：192.168.1.1，端口3345；转换IP地址：24.34.112.235，端口4000。其余5个类似。</li>
-<li>a. 通过标识号识别，由于每一台主机的标识号都是连号的，可以将所有的分组编号提取出来，检测其中连号或单号的数量，可以大致检测出主机的数量，通过这样的方式检测出的主机数量不会大于实际的主机数量，因为不同主机在不同的时间段可能会使用同一个编号。<br>b. 不能。这样就无法通过标识号的规律对数据报进行源关联。</li>
+<li>5MB=5×10<sup>6</sup>字节，首部字段的长度为40字节（含IP首部和TCP首部），故每个数据报最大数据量为1460字节，需要将5MB分为3425个数据报。</li>
+<li>a. 192.168.1.1~192.168.1.3<br />
+b. 源IP地址：192.168.1.1，端口3345；转换IP地址：24.34.112.235，端口4000。其余5个类似。</li>
+<li>a. 通过标识号识别，由于每一台主机的标识号都是连号的，可以将所有的分组编号提取出来，检测其中连号或单号的数量，可以大致检测出主机的数量，通过这样的方式检测出的主机数量不会大于实际的主机数量，因为不同主机在不同的时间段可能会使用同一个编号。<br />
+b. 不能。这样就无法通过标识号的规律对数据报进行源关联。</li>
 <li>不可能设计这种技术。TCP首先需要创建一个连接，一方通过NAT地址转换可以找到另一方NAT的网关，但不能定位到NAT内部子网的另一方。</li>
 <li>略</li>
 <li>略</li>
@@ -364,7 +408,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">课后习题和问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1"><span class="nav-number">1.1.</span> <span class="nav-text">4.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2"><span class="nav-number">1.2.</span> <span class="nav-text">4.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3"><span class="nav-number">1.3.</span> <span class="nav-text">4.3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%A0%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">习题</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%BE%E5%90%8E%E4%B9%A0%E9%A2%98%E5%92%8C%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text"> 课后习题和问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#41"><span class="nav-number">1.1.</span> <span class="nav-text"> 4.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#42"><span class="nav-number">1.2.</span> <span class="nav-text"> 4.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#43"><span class="nav-number">1.3.</span> <span class="nav-text"> 4.3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%A0%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text"> 习题</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -430,13 +474,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

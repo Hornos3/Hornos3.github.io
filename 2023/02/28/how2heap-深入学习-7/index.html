@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。 7. ho">
+  <meta name="description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04 Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。 如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="how2heap 深入学习(7)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="how2heap下载网址: 传送门Glibc源码查看网址：传送门参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。 7. ho">
+<meta property="og:description" content="how2heap下载网址: 传送门 Glibc源码查看网址：传送门 参考书籍：CTF竞赛权威指南-pwn篇 测试环境：Ubuntu 18.04 Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5 按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。 如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/1.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/2.png">
@@ -240,32 +240,37 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br>Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br>参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 18.04<br>Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
-<p>按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。<br>如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="7-house-of-mind-fastbin"><a href="#7-house-of-mind-fastbin" class="headerlink" title="7. house_of_mind_fastbin"></a>7. house_of_mind_fastbin</h1><p>这是一种伪造arena以将一个大chunk中的一处值改为很大的利用方式，和glibc 2.23差别不大，但是2.23的分析感觉逻辑不是太清晰，还是再写一遍吧。</p>
+        <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
+Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br />
+参考书籍：CTF竞赛权威指南-pwn篇</p>
+<p>测试环境：Ubuntu 18.04<br />
+Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
+<p>按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。<br />
+如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
+<h1 id="7-house_of_mind_fastbin"><a class="markdownIt-Anchor" href="#7-house_of_mind_fastbin"></a> 7. house_of_mind_fastbin</h1>
+<p>这是一种伪造arena以将一个大chunk中的一处值改为很大的利用方式，和glibc 2.23差别不大，但是2.23的分析感觉逻辑不是太清晰，还是再写一遍吧。</p>
 <p><strong>Step 1: 分配0x1010的chunk，要改写的地址为(chunk head + 0x40)。</strong></p>
-<p>这里解释一下为什么改写的是chunk head + 0x40。<br>这个chunk是要作为伪造的arena使用的，参考2.27的arena结构体——malloc_state如下：</p>
+<p>这里解释一下为什么改写的是chunk head + 0x40。<br />
+这个chunk是要作为伪造的arena使用的，参考2.27的arena结构体——malloc_state如下：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* Serialize access.  */</span></span><br><span class="line">  __libc_lock_define (, mutex);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Flags (formerly in max_fast).  */</span></span><br><span class="line">  <span class="type">int</span> flags;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Set if the fastbin chunks contain recently inserted free blocks.  */</span></span><br><span class="line">  <span class="comment">/* Note this is a bool but not all targets support atomics on booleans.  */</span></span><br><span class="line">  <span class="type">int</span> have_fastchunks;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Fastbins */</span></span><br><span class="line">  mfastbinptr fastbinsY[NFASTBINS];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Base of the topmost chunk -- not otherwise kept in a bin */</span></span><br><span class="line">  mchunkptr top;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* The remainder from the most recent split of a small request */</span></span><br><span class="line">  mchunkptr last_remainder;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Normal bins packed as described above */</span></span><br><span class="line">  mchunkptr bins[NBINS * <span class="number">2</span> - <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Bitmap of bins */</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> binmap[BINMAPSIZE];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list for free arenas.  Access to this field is serialized</span></span><br><span class="line"><span class="comment">     by free_list_lock in arena.c.  */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next_free</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Number of threads attached to this arena.  0 if the arena is on</span></span><br><span class="line"><span class="comment">     the free list.  Access to this field is serialized by</span></span><br><span class="line"><span class="comment">     free_list_lock in arena.c.  */</span></span><br><span class="line">  INTERNAL_SIZE_T attached_threads;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Memory allocated from the system in this arena.  */</span></span><br><span class="line">  INTERNAL_SIZE_T system_mem;</span><br><span class="line">  INTERNAL_SIZE_T max_system_mem;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>后面分配的是0x60大小的fastbin chunk，会被链入到这个假chunk中，而链入的地址就是chunk head + 0x40。在2.23中这个地址为0x38，2.27由于添加了一个have_fastchunks这个成员，因此地址往后移动了8字节。</p>
 <table align=center>
-    <tr align=center>
-        <td> addr </td> <td> 0x0 </td> <td> 0x4 </td> <td> 0x8 </td> <td> 0xC </td>
-    </tr>
-    <tr align=center>
-        <td> 0x603420 </td> <td> mutex </td> <td> flag </td> <td> have_fastchunks </td> <td>-</td>
-    </tr>
-    <tr align=center>
-        <td> 0x603430 </td> <td colspan=2> fastbinsY[0] (for chunk size=0x20) </td> <td colspan=2> fastbinsY[1] (for chunk size=0x30) </td>
-    </tr>
-    <tr align=center>
-        <td> 0x603440 </td> <td colspan=2> fastbinsY[2] (for chunk size=0x40) </td> <td colspan=2> fastbinsY[3] (for chunk size=0x50)  </td>
-    </tr>
-    <tr align=center>
-        <td> 0x603450 </td> <td colspan=2> <font color=red> fastbinsY[4] (for chunk size=0x60) </font> </td> <td colspan=2> ...... </td>
-    </tr>
+	<tr align=center>
+		<td> addr </td> <td> 0x0 </td> <td> 0x4 </td> <td> 0x8 </td> <td> 0xC </td>
+	</tr>
+	<tr align=center>
+		<td> 0x603420 </td> <td> mutex </td> <td> flag </td> <td> have_fastchunks </td> <td>-</td>
+	</tr>
+	<tr align=center>
+		<td> 0x603430 </td> <td colspan=2> fastbinsY[0] (for chunk size=0x20) </td> <td colspan=2> fastbinsY[1] (for chunk size=0x30) </td>
+	</tr>
+	<tr align=center>
+		<td> 0x603440 </td> <td colspan=2> fastbinsY[2] (for chunk size=0x40) </td> <td colspan=2> fastbinsY[3] (for chunk size=0x50)  </td>
+	</tr>
+	<tr align=center>
+		<td> 0x603450 </td> <td colspan=2> <font color=red> fastbinsY[4] (for chunk size=0x60) </font> </td> <td colspan=2> ...... </td>
+	</tr>
 </table>
-
 <p><strong>Step 2: 设置假arena的system_mem为0xFFFFFF。</strong></p>
 <p>system_mem标志的是这个arena管理的空间大小。在_int_malloc函数中有这么一项检查：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (chunksize_nomask (victim) &lt;= <span class="number">2</span> * SIZE_SZ, <span class="number">0</span>)</span><br><span class="line">              || __builtin_expect (chunksize_nomask (victim)</span><br><span class="line">				   &gt; av-&gt;system_mem, <span class="number">0</span>))</span><br><span class="line">            malloc_printerr (<span class="string">&quot;malloc(): memory corruption&quot;</span>);</span><br></pre></td></tr></table></figure>
@@ -282,22 +287,26 @@
 <p><strong>Step 8: 修改0x60 chunk的non_main_arena标志位。</strong></p>
 <p><strong>Step 9: 释放最后一个chunk，修改假main_arena对应位置的值。</strong></p>
 <p>此时，当我们free时，libc会根据_heap_info的ar_ptr找到我们的假chunk，然后在假chunk里面更改内容。这也就是我们的目的。</p>
-<h1 id="8-house-of-storm"><a href="#8-house-of-storm" class="headerlink" title="8. house_of_storm"></a>8. house_of_storm</h1><p>源码要修改bss段的一个全局变量。</p>
+<h1 id="8-house_of_storm"><a class="markdownIt-Anchor" href="#8-house_of_storm"></a> 8. house_of_storm</h1>
+<p>源码要修改bss段的一个全局变量。</p>
 <p>Tips: 如果使用gdb调试需要加上-no-pie参数去掉pie，否则后面的检查通不过。</p>
 <p><strong>Step 1: 构造堆环境并进行堆风水检查。</strong></p>
 <p>本漏洞利用需要的堆环境为：一个unsorted bin chunk和一个large bins chunk，且unsorted bin chunk大于large bins chunk。</p>
 <p>首先分配0x4f0的chunk（之后将作为unsorted bin chunk），检查该chunk的地址最高非0位的值x，这里需要检查的原因在后面说明。具体检查方式：</p>
 <p>首先判断x是否小于0x10，x小于0x10不行。</p>
 <p>然后判断x的最低4位——bit-0~bit-3：</p>
-<p>bit-3必须为0；<br>bit-2为1时bit-1不能为0；</p>
+<p>bit-3必须为0；<br />
+bit-2为1时bit-1不能为0；</p>
 <p>由于要分配的大小在tcache范围，因此需要填满对应的tcache。</p>
-<p>然后分配0x4e0的chunk，之后将作为large bins chunk。<br>分配一个小chunk防止top chunk合并。<br>随后依次释放0x4e0和0x4f0，先释放小chunk。再分配回大chunk再释放，小chunk就能顺利进入large bins。<br>至此，堆结构构造完成。</p>
+<p>然后分配0x4e0的chunk，之后将作为large bins chunk。<br />
+分配一个小chunk防止top chunk合并。<br />
+随后依次释放0x4e0和0x4f0，先释放小chunk。再分配回大chunk再释放，小chunk就能顺利进入large bins。<br />
+至此，堆结构构造完成。</p>
 <p>检查原因：因为最高非0位是作为size呈现的，因此不能小于0x10这个最小值。其次，chunk的大小应该是0x10的倍数，因此bit-3不能为1。再次，bit-2是non_main_arena标志位，bit-1是mmap标志位，这两者也不能够有一定的组合：</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(_int_malloc glibc <span class="number">2.27</span> line <span class="number">3438</span>)</span><br><span class="line">  assert (!mem || chunk_is_mmapped (mem2chunk (mem)) ||</span><br><span class="line">          av == arena_for_chunk (mem2chunk (mem)));</span><br></pre></td></tr></table></figure>
 <p>不然也无法通过检查。</p>
 <p><strong>Step 2: 修改unsorted bin chunk和large bins chunk的bk，large bins chunk的bk_nextsize。</strong></p>
 <p>由于需要修改bss段内容，设需要修改的地址为y，要在这里伪造一个chunk，那么chunk头应该在y-0x10处。将unsorted bin chunk的bk修改为y-0x10，large bins chunk的bk修改为y-0x8。将large bins chunk的bk_nextsize修改为y-0x18-(偏移)。这个偏移指的是unsorted bin chunk的地址的非零字节数-1。</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -325,7 +334,7 @@
 <tr>
 <td style="text-align:center">large bin chunk + 0x20</td>
 <td style="text-align:center">fd_nextsize</td>
-<td style="text-align:center">y - 0x18 - \<offset\></td>
+<td style="text-align:center">y - 0x18 - &lt;offset&gt;</td>
 </tr>
 <tr>
 <td style="text-align:center">…</td>
@@ -334,35 +343,37 @@
 </tr>
 </tbody>
 </table>
-</div>
 <p>下面是修改完成后两个chunk的情况：（目标地址为0x6020A0）</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x603250</span><br><span class="line">Size: 0x4f1</span><br><span class="line">fd: 0x7ffff7dcdca0</span><br><span class="line">bk: 0x602090</span><br><span class="line"></span><br><span class="line">Free chunk (largebins) | PREV_INUSE</span><br><span class="line">Addr: 0x603a00</span><br><span class="line">Size: 0x4e1</span><br><span class="line">fd: 0x7ffff7dce0c0</span><br><span class="line">bk: 0x602098</span><br><span class="line">fd_nextsize: 0x603a00</span><br><span class="line">bk_nextsize: 0x602076</span><br></pre></td></tr></table></figure>
 <p><strong>Step 3: 调用calloc返回目标地址。</strong></p>
 <p>这里使用calloc而不使用malloc是为了避开tcache。而在这一步中蕴含了很多操作。</p>
 <p>由于last_remainder为空，因此unsorted bin中的这个chunk实际上并不会被切割，而是直接被分配到bins中去了。这里的unsorted bin chunk大于small bins的最大阈值，因此被分配到了large bins中。</p>
 <p>在glibc 2.23中对large bins的插入规则没有进行详细分析，这里解释一下。</p>
-<h2 id="large-bin的链入过程"><a href="#large-bin的链入过程" class="headerlink" title="large bin的链入过程"></a>large bin的链入过程</h2><p>在_int_malloc进入大循环中时，每一次会从unsorted bin中弹出一个chunk，不符合需求就将会被放入small bins或large bins中。假设unsorted bins中全部都会被放入一个large bins中。</p>
+<h2 id="large-bin的链入过程"><a class="markdownIt-Anchor" href="#large-bin的链入过程"></a> large bin的链入过程</h2>
+<p>在_int_malloc进入大循环中时，每一次会从unsorted bin中弹出一个chunk，不符合需求就将会被放入small bins或large bins中。假设unsorted bins中全部都会被放入一个large bins中。</p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// (line 3734)</span></span><br><span class="line">	bck = victim-&gt;bk;</span><br><span class="line">	......</span><br><span class="line"><span class="comment">// (line 3778~3779)</span></span><br><span class="line">	unsorted_chunks (av)-&gt;bk = bck;</span><br><span class="line">    bck-&gt;fd = unsorted_chunks (av);</span><br><span class="line">    ......</span><br><span class="line"><span class="comment">// (line 3820)</span></span><br><span class="line">	victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line">    ......</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      victim_index = largebin_index (size);</span><br><span class="line">      bck = bin_at (av, victim_index);</span><br><span class="line">      fwd = bck-&gt;fd;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* maintain large bins in sorted order */</span></span><br><span class="line">      <span class="keyword">if</span> (fwd != bck)</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="comment">/* Or with inuse bit to speed comparisons */</span></span><br><span class="line">          size |= PREV_INUSE;</span><br><span class="line">          <span class="comment">/* if smaller than smallest, bypass loop below */</span></span><br><span class="line">          assert (chunk_main_arena (bck-&gt;bk));</span><br><span class="line">          <span class="keyword">if</span> ((<span class="type">unsigned</span> <span class="type">long</span>) (size) &lt; (<span class="type">unsigned</span> <span class="type">long</span>) chunksize_nomask (bck-&gt;bk))</span><br><span class="line">            &#123;</span><br><span class="line">              fwd = bck;</span><br><span class="line">              bck = bck-&gt;bk;</span><br><span class="line"></span><br><span class="line">              victim-&gt;fd_nextsize = fwd-&gt;fd;</span><br><span class="line">              victim-&gt;bk_nextsize = fwd-&gt;fd-&gt;bk_nextsize;</span><br><span class="line">              fwd-&gt;fd-&gt;bk_nextsize = victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">            &#125;</span><br><span class="line">          <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">              assert (chunk_main_arena (fwd));</span><br><span class="line">              <span class="keyword">while</span> ((<span class="type">unsigned</span> <span class="type">long</span>) size &lt; chunksize_nomask (fwd))</span><br><span class="line">                &#123;</span><br><span class="line">                  fwd = fwd-&gt;fd_nextsize;</span><br><span class="line">				  assert (chunk_main_arena (fwd));</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">              <span class="keyword">if</span> ((<span class="type">unsigned</span> <span class="type">long</span>) size == (<span class="type">unsigned</span> <span class="type">long</span>) chunksize_nomask (fwd))</span><br><span class="line">                <span class="comment">/* Always insert in the second position.  */</span></span><br><span class="line">                fwd = fwd-&gt;fd;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                  victim-&gt;fd_nextsize = fwd;</span><br><span class="line">                  victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">                  fwd-&gt;bk_nextsize = victim;</span><br><span class="line">                  victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">                &#125;</span><br><span class="line">              bck = fwd-&gt;bk;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        victim-&gt;fd_nextsize = victim-&gt;bk_nextsize = victim;</span><br><span class="line">    &#125;</span><br><span class="line">	mark_bin (av, victim_index);</span><br><span class="line">    victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
 <p>上面是所有涉及到bins修改的代码。每一次循环时，进行操作的chunk是victim，bck = victim-&gt;bk。</p>
 <pre><code>a. 将victim脱离unsorted bin链，即line 3778~3779。
 b. 如果victim正好是请求的大小，直接返回，即line 3783~3808
 c. 发现是large bin，进入large bin调整过程，即line 3818
-</code></pre><p>调整之前，首先找到这个large bin应该被放入的bin的索引，即line 3820的调用largebin_index函数；bck设置为这个bin的头指针，fwd设置为bck的fd指针。下面是判断这个bin是否有chunk。这里有一处需要注意：如果这个bin没有chunk，那么bck会指向前一个chunk。这样找到bck-&gt;fd时找到的是下一个bin，而下一个bin指向的正好是当前bin，就像下面这样。这就可以解释为什么<code>fwd != bck</code>可以用来判断bin中是否有chunk。不过存放chunk的真正bin应该是bck-&gt;fd而不是bck，这点也需要注意，在gdb调试过程中可以发现。</p>
+</code></pre>
+<p>调整之前，首先找到这个large bin应该被放入的bin的索引，即line 3820的调用largebin_index函数；bck设置为这个bin的头指针，fwd设置为bck的fd指针。下面是判断这个bin是否有chunk。这里有一处需要注意：如果这个bin没有chunk，那么bck会指向前一个chunk。这样找到bck-&gt;fd时找到的是下一个bin，而下一个bin指向的正好是当前bin，就像下面这样。这就可以解释为什么<code>fwd != bck</code>可以用来判断bin中是否有chunk。不过存放chunk的真正bin应该是bck-&gt;fd而不是bck，这点也需要注意，在gdb调试过程中可以发现。</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00:0000│ r8 0x7ffff7dce0d0 (main_arena+1168) —▸ 0x7ffff7dce0c0 (main_arena+1152) —▸ 0x7ffff7dce0b0 (main_arena+1136) —▸ 0x7ffff7dce0a0 (main_arena+1120) —▸ 0x7ffff7dce090 (main_arena+1104) ◂— ...</span><br><span class="line">01:0008│    0x7ffff7dce0d8 (main_arena+1176) —▸ 0x7ffff7dce0c0 (main_arena+1152) —▸ 0x7ffff7dce0b0 (main_arena+1136) —▸ 0x7ffff7dce0a0 (main_arena+1120) —▸ 0x7ffff7dce090 (main_arena+1104) ◂— ...</span><br><span class="line">02:0010│    0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">03:0018│    0x7ffff7dce0e8 (main_arena+1192) —▸ 0x602250 ◂— 0x0</span><br><span class="line">04:0020│    0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">05:0028│    0x7ffff7dce0f8 (main_arena+1208) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">06:0030│    0x7ffff7dce100 (main_arena+1216) —▸ 0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">07:0038│    0x7ffff7dce108 (main_arena+1224) —▸ 0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br></pre></td></tr></table></figure>
 <p>如果这个bin中没有chunk，则将victim链入bin中，将fd_nextsize和bk_nextsize设为其自身。如果有，则继续下面的操作。这大致可以用几张图来展示。</p>
 <p>如果victim的size小于这个bin中最后一个chunk的size，则进行下面的操作，将victim链入到bin的最后位置。<font color=red><strong>注意：每一个bin的第一个chunk的bk和最后一个chunk的fd指向的并不是这个bin的头指针，而是上一个bin的头指针！</strong></font></p>
-<p><img src="1.png" alt=""></p>
+<p><img src="1.png" alt="" /></p>
 <p>否则，进行如下操作：</p>
-<p>找到应该插入的位置，如果没有找到与victim大小相同的chunk，则进行插入操作，更新fd, bk, fd_nextsize和bk_nextsize。如下图：<br><img src="2.png" alt=""></p>
+<p>找到应该插入的位置，如果没有找到与victim大小相同的chunk，则进行插入操作，更新fd, bk, fd_nextsize和bk_nextsize。如下图：<br />
+<img src="2.png" alt="" /></p>
 <p>如果找到了与victim大小相同的chunk，则在其后进行插入，使victim成为这个大小的chunk中第二靠前的chunk。如下图：</p>
-<p><img src="3.png" alt=""></p>
+<p><img src="3.png" alt="" /></p>
 <p>综上所述，large bin要维护的实际上是这样一个结构，其中每一个bin里面可以按照chunk的大小划分，bin head指向的是最大的chunk，那些大小相同的chunk中只有最靠前的chunk有fd_nextsize和bk_nextsize。</p>
-<p><img src="4.png" alt=""></p>
-<hr>
+<p><img src="4.png" alt="" /></p>
+<hr />
 <p>再回到这个漏洞上面来。整个漏洞的执行过程一共有十几个调整bin的步骤。在漏洞调整chunk之后，bins的结构如图：</p>
-<p><img src="5.png" alt=""></p>
+<p><img src="5.png" alt="" /></p>
 <p>调整的过程如下：</p>
-<p><img src="6.png" alt=""></p>
+<p><img src="6.png" alt="" /></p>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 3778~3779, Step 0</span></span><br><span class="line">	unsorted_chunks (av)-&gt;bk = bck;</span><br><span class="line">    bck-&gt;fd = unsorted_chunks (av);</span><br><span class="line"><span class="comment">// line 3820~3822, Step 1, 2</span></span><br><span class="line">    victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line"><span class="comment">// line 3856~3859, Step 3, 4, 5, 6</span></span><br><span class="line">	victim-&gt;fd_nextsize = fwd;</span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">    fwd-&gt;bk_nextsize = victim;</span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line"><span class="comment">// line 3861, Step 7</span></span><br><span class="line">	bck = fwd-&gt;bk;</span><br><span class="line"><span class="comment">// line 3869~3872, Step 8, 9, 10, 11</span></span><br><span class="line">	victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
 <p>之后再次进行一次循环，到达line 3778时将victim赋值为target-0x10（Step 0中已经将unsorted bin head赋值为target-0x10）。后面判断target-0x10这个chunk的大小，发现正好满足（Step 6中错位赋值所致），因此返回target。</p>
 <p>这个地方非常不好理解，要知道它为什么会返回target，我死抠源码抠了好几天才捋清楚这一整个过程到底是怎么一个流程。建议对照源码仔细消化理解，搞清楚每一步干了什么。gdb有的时候调试源码定位不准确，因此只能这样一步步去推演了。</p>
@@ -447,7 +458,7 @@ c. 发现是large bin，进入large bin调整过程，即line 3818
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-house-of-mind-fastbin"><span class="nav-number">1.</span> <span class="nav-text">7. house_of_mind_fastbin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-house-of-storm"><span class="nav-number">2.</span> <span class="nav-text">8. house_of_storm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#large-bin%E7%9A%84%E9%93%BE%E5%85%A5%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">large bin的链入过程</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#7-house_of_mind_fastbin"><span class="nav-number">1.</span> <span class="nav-text"> 7. house_of_mind_fastbin</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-house_of_storm"><span class="nav-number">2.</span> <span class="nav-text"> 8. house_of_storm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#large-bin%E7%9A%84%E9%93%BE%E5%85%A5%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text"> large bin的链入过程</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -513,13 +524,13 @@ c. 发现是large bin，进入large bin调整过程，即line 3818
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

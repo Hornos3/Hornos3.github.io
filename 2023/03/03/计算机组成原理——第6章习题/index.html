@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="6.1 指令周期：一条指令从取出到执行完成所需要的时间。 数据通路：数据在各功能部件之间传送的路径。 机器周期：将指令周期划分为多个机器周期（又称CPU周期）。 时钟周期：每个机器周期包含若干个时钟周期。  6.2 B B三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。 B主存空间">
+  <meta name="description" content="6.1  指令周期：一条指令从取出到执行完成所需要的时间。 数据通路：数据在各功能部件之间传送的路径。 机器周期：将指令周期划分为多个机器周期（又称CPU周期）。 时钟周期：每个机器周期包含若干个时钟周期。   6.2  B B 三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机组成原理——第6章习题">
 <meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="6.1 指令周期：一条指令从取出到执行完成所需要的时间。 数据通路：数据在各功能部件之间传送的路径。 机器周期：将指令周期划分为多个机器周期（又称CPU周期）。 时钟周期：每个机器周期包含若干个时钟周期。  6.2 B B三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。 B主存空间">
+<meta property="og:description" content="6.1  指令周期：一条指令从取出到执行完成所需要的时间。 数据通路：数据在各功能部件之间传送的路径。 机器周期：将指令周期划分为多个机器周期（又称CPU周期）。 时钟周期：每个机器周期包含若干个时钟周期。   6.2  B B 三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-02T16:02:25.000Z">
 <meta property="article:modified_time" content="2023-03-02T16:05:10.461Z">
@@ -227,25 +227,34 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="6-1"><a href="#6-1" class="headerlink" title="6.1"></a>6.1</h3><ul>
+        <h3 id="61"><a class="markdownIt-Anchor" href="#61"></a> 6.1</h3>
+<ul>
 <li>指令周期：一条指令从取出到执行完成所需要的时间。</li>
 <li>数据通路：数据在各功能部件之间传送的路径。</li>
 <li>机器周期：将指令周期划分为多个机器周期（又称CPU周期）。</li>
 <li>时钟周期：每个机器周期包含若干个时钟周期。</li>
 </ul>
-<h3 id="6-2"><a href="#6-2" class="headerlink" title="6.2"></a>6.2</h3><ol>
+<h3 id="62"><a class="markdownIt-Anchor" href="#62"></a> 6.2</h3>
+<ol>
 <li>B</li>
-<li>B<br>三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。</li>
-<li>B<br>主存空间为4GB，字长32位，因为指令按字边界对齐保存，所以PC至少为30位，指令寄存器IR的位数至少为32位，它是用来保存当前指令的内容的。</li>
-<li>D<br>A正确，B正确，C正确，时钟周期不能太短，D错误，一条指令可能需要不止一个时钟脉冲信号完成（多周期处理器），因此不是所有的时钟脉冲信号都开始执行一条新的指令。</li>
-<li>A<br>A错误，因为单总线结构数据通路无法让某些指令在一个时钟周期内完成。应该采用专用数据通路结构。B正确，要想在一个时钟周期之内完成一条指令的联系，因此一个时钟周期需要时间稍长一些，其时长取决于执行速度最慢的指令。C正确，在指令执行过程中控制信号不变。D正确，每个时钟周期执行一条指令，故CPI=1。</li>
-<li>B<br>A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地址进行访问。C正确。D正确。</li>
-<li>D<br>硬布线控制器的指令执行速度快，指令功能的修改和扩展难。</li>
+<li>B<br />
+三个寄存器都是通用寄存器，因此需要通用寄存器组。加法运算需要使用算数逻辑单元。寻址需要向存储器中获取数据。指令译码器不是在取数和执行过程中使用的，译码发生在取数之前。</li>
+<li>B<br />
+主存空间为4GB，字长32位，因为指令按字边界对齐保存，所以PC至少为30位，指令寄存器IR的位数至少为32位，它是用来保存当前指令的内容的。</li>
+<li>D<br />
+A正确，B正确，C正确，时钟周期不能太短，D错误，一条指令可能需要不止一个时钟脉冲信号完成（多周期处理器），因此不是所有的时钟脉冲信号都开始执行一条新的指令。</li>
+<li>A<br />
+A错误，因为单总线结构数据通路无法让某些指令在一个时钟周期内完成。应该采用专用数据通路结构。B正确，要想在一个时钟周期之内完成一条指令的联系，因此一个时钟周期需要时间稍长一些，其时长取决于执行速度最慢的指令。C正确，在指令执行过程中控制信号不变。D正确，每个时钟周期执行一条指令，故CPI=1。</li>
+<li>B<br />
+A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地址进行访问。C正确。D正确。</li>
+<li>D<br />
+硬布线控制器的指令执行速度快，指令功能的修改和扩展难。</li>
 <li>C</li>
 <li>C</li>
 <li>C</li>
 </ol>
-<h3 id="6-3"><a href="#6-3" class="headerlink" title="6.3"></a>6.3</h3><ol>
+<h3 id="63"><a class="markdownIt-Anchor" href="#63"></a> 6.3</h3>
+<ol>
 <li>CPU的基本功能有程序控制、操作控制、时序控制、数据加工、中断处理。</li>
 <li>CPU内部有：</li>
 </ol>
@@ -257,17 +266,18 @@
 <li>GR通用寄存器组</li>
 <li>PSW保存由运算指令创建的各种条件标志</li>
 </ul>
-<p>其中GR、PSW是程序员可见的，AR、DR、IR不是必需的。</p>
-<ol>
-<li>取指周期是从开始取指令到取指令完成的一段周期，完成的操作：访问PC指定的主存地址处的指令，形成后续指令地址。</li>
-<li>计算机设计时序系统的原因是指令执行过程中的所有操作必需遵守严格的顺序，对操作的开始时间和持续时间有严格的控制，以保证指令的正确执行。机器周期是指主存取出一条指令的最短时间。</li>
-<li>传统三级时序采用时钟周期、节拍电位和节拍脉冲来对操作控制信号进行定时控制，其中状态周期用电位来表示当前处于指令执行的哪个机器周期，节拍电位用电位表示当前处于机器周期的第几个节拍。采用三级时序的好处是可以简化控制器的设计。完成了时序发生器的设计后，所有控制信号都是状态周期电位、节拍电位、指令译码信号、状态反馈信号的组合逻辑。<br>现代时序系统的定时信号就是基本时钟，一个时钟周期就是一个节拍，指令需要多少个时钟周期就分配多少个时钟周期。其采用有限状态机来描述指令的执行过程，将不同指令执行的每个时钟周期均对应一个状态，每一个状态会对应特定的微操作控制信号。控制器的核心模块是有限状态机，由一个状态寄存器和有限状态机组合逻辑控制单元构成。有限状态机组合逻辑控制单元的输入包括现态、指令的译码信号和反馈信号，输出为次态，送入状态寄存器输入端，在时钟信号的作用下输入状态寄存器中，作为下一时刻的现态；所有操作控制信号的输出都只与现态有关。</li>
-<li>略</li>
-<li>组合逻辑控制器又称微程序控制器，控制器由各种类型的逻辑门电路和触发器构成，与微程序控制器相比，组合逻辑控制器具有结构复杂但速度快的特点，但指令功能修改和扩展较难。<br>微程序控制器的设计采用存储技术和程序设计技术，使复杂的控制逻辑得到简化，计算机通过读出存放在微程序控制器中微指令产生指令执行过程中所需要的控制信号，与硬布线控制器相比速度较慢。</li>
-<li>微程序是多条微指令的集合，用于实现指令的功能，属于机器指令级别，对用户透明，存放在CPU内的控制存储器中；程序则是为了完成某一应用功能所编写的指令（包括机器语言指令或高级语言指令）集合，运行时存放在计算机的主存中。<br>指令是指挥计算机执行某种功能的命令，是构成程序的基本单位，由操作码和地址字段构成；而微指令则用于微程序控制器中产生指令执行过程中所需要的微指令，是构成微程序的基本单位，由操作控制字段、判别测试字段和下址字段等组成。</li>
-<li>微指令编码方法有直接表示法、编码表示法和混合表示法3种。</li>
-<li>微程序控制器设计方法：</li>
-</ol>
+<p>其中GR、PSW是程序员可见的，AR、DR、IR不是必需的。<br />
+3. 取指周期是从开始取指令到取指令完成的一段周期，完成的操作：访问PC指定的主存地址处的指令，形成后续指令地址。<br />
+4. 计算机设计时序系统的原因是指令执行过程中的所有操作必需遵守严格的顺序，对操作的开始时间和持续时间有严格的控制，以保证指令的正确执行。机器周期是指主存取出一条指令的最短时间。<br />
+5. 传统三级时序采用时钟周期、节拍电位和节拍脉冲来对操作控制信号进行定时控制，其中状态周期用电位来表示当前处于指令执行的哪个机器周期，节拍电位用电位表示当前处于机器周期的第几个节拍。采用三级时序的好处是可以简化控制器的设计。完成了时序发生器的设计后，所有控制信号都是状态周期电位、节拍电位、指令译码信号、状态反馈信号的组合逻辑。<br />
+现代时序系统的定时信号就是基本时钟，一个时钟周期就是一个节拍，指令需要多少个时钟周期就分配多少个时钟周期。其采用有限状态机来描述指令的执行过程，将不同指令执行的每个时钟周期均对应一个状态，每一个状态会对应特定的微操作控制信号。控制器的核心模块是有限状态机，由一个状态寄存器和有限状态机组合逻辑控制单元构成。有限状态机组合逻辑控制单元的输入包括现态、指令的译码信号和反馈信号，输出为次态，送入状态寄存器输入端，在时钟信号的作用下输入状态寄存器中，作为下一时刻的现态；所有操作控制信号的输出都只与现态有关。<br />
+6. 略<br />
+7. 组合逻辑控制器又称微程序控制器，控制器由各种类型的逻辑门电路和触发器构成，与微程序控制器相比，组合逻辑控制器具有结构复杂但速度快的特点，但指令功能修改和扩展较难。<br />
+微程序控制器的设计采用存储技术和程序设计技术，使复杂的控制逻辑得到简化，计算机通过读出存放在微程序控制器中微指令产生指令执行过程中所需要的控制信号，与硬布线控制器相比速度较慢。<br />
+8. 微程序是多条微指令的集合，用于实现指令的功能，属于机器指令级别，对用户透明，存放在CPU内的控制存储器中；程序则是为了完成某一应用功能所编写的指令（包括机器语言指令或高级语言指令）集合，运行时存放在计算机的主存中。<br />
+指令是指挥计算机执行某种功能的命令，是构成程序的基本单位，由操作码和地址字段构成；而微指令则用于微程序控制器中产生指令执行过程中所需要的微指令，是构成微程序的基本单位，由操作控制字段、判别测试字段和下址字段等组成。<br />
+9. 微指令编码方法有直接表示法、编码表示法和混合表示法3种。<br />
+10. 微程序控制器设计方法：</p>
 <ul>
 <li>分析指令执行的数据通路，列出每一条指令在所有寻址方式下的执行操作流程和每一步需要的控制信号。</li>
 <li>对指令的操作流程进行细化，将每条指令的每个微操作分配到具体机器周期的各个时间节拍信号上。</li>
@@ -284,16 +294,33 @@
 <li>对每一个控制信号进行逻辑综合，得到每个控制信号的逻辑表达式。</li>
 <li>采用逻辑门、PLA或ROM实现逻辑表达式的功能。</li>
 </ul>
+<ol start="11">
+<li>略</li>
+<li>略</li>
+<li>略</li>
+</ol>
+<h3 id="64"><a class="markdownIt-Anchor" href="#64"></a> 6.4</h3>
 <ol>
-<li>略</li>
-<li>略</li>
-<li>略<h3 id="6-4"><a href="#6-4" class="headerlink" title="6.4"></a>6.4</h3></li>
 <li>观察到d旁边有一个+1，推断其是PC。d有箭头指向c，c有箭头指向主存，因此推断c为AR，故a为DR，b为IR。</li>
-<li>取指阶段：PC→AR→主存M→DR→IR；PC++<br>执行阶段：IR(A)→AR→主存M→DR→AC<h3 id="6-5"><a href="#6-5" class="headerlink" title="6.5"></a>6.5</h3>略<h3 id="6-6"><a href="#6-6" class="headerlink" title="6.6"></a>6.6</h3></li>
+<li>取指阶段：PC→AR→主存M→DR→IR；PC++<br />
+执行阶段：IR(A)→AR→主存M→DR→AC</li>
+</ol>
+<h3 id="65"><a class="markdownIt-Anchor" href="#65"></a> 6.5</h3>
+<p>略</p>
+<h3 id="66"><a class="markdownIt-Anchor" href="#66"></a> 6.6</h3>
+<ol>
 <li>当RegWrite出现恒0故障时，寄存器组全部不可写，因此会导致所有需要写回寄存器的指令故障。当RegWrite出现恒1故障时，寄存器组全部可写，会导致所有不需要写回寄存器的指令故障。</li>
 <li>RegDst出现恒0故障时，写入寄存器的编号无法传入，导致所有需要写回rd的指令出现故障（无法写回）。RegDst出现恒1故障时，会错误地传入rd寄存器编号，所有需要写回rt的指令会出现故障（选择写入的寄存器不是rt而错误地变成了rd）。</li>
-<li>MemWrite出现恒0故障时，数据存储器全部不可写，所有需要写存的指令会出现故障。MemWrite出现恒1故障时，所有不需要写存的指令会引起写存故障。<h3 id="6-7"><a href="#6-7" class="headerlink" title="6.7"></a>6.7</h3>略<h3 id="6-8"><a href="#6-8" class="headerlink" title="6.8"></a>6.8</h3>略<h3 id="6-9"><a href="#6-9" class="headerlink" title="6.9"></a>6.9</h3>略<h3 id="6-10"><a href="#6-10" class="headerlink" title="6.10"></a>6.10</h3>对于单总线CPU，数据通路的最小时钟周期必须大于T~clk_to_q~+T~max~+T~setup~，即180ps。最大频率为5.56GHz。</li>
+<li>MemWrite出现恒0故障时，数据存储器全部不可写，所有需要写存的指令会出现故障。MemWrite出现恒1故障时，所有不需要写存的指令会引起写存故障。</li>
 </ol>
+<h3 id="67"><a class="markdownIt-Anchor" href="#67"></a> 6.7</h3>
+<p>略</p>
+<h3 id="68"><a class="markdownIt-Anchor" href="#68"></a> 6.8</h3>
+<p>略</p>
+<h3 id="69"><a class="markdownIt-Anchor" href="#69"></a> 6.9</h3>
+<p>略</p>
+<h3 id="610"><a class="markdownIt-Anchor" href="#610"></a> 6.10</h3>
+<p>对于单总线CPU，数据通路的最小时钟周期必须大于T<sub>clk_to_q</sub>+T<sub>max</sub>+T<sub>setup</sub>，即180ps。最大频率为5.56GHz。</p>
 
     </div>
 
@@ -371,7 +398,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#6-1"><span class="nav-number">1.</span> <span class="nav-text">6.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-2"><span class="nav-number">2.</span> <span class="nav-text">6.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-3"><span class="nav-number">3.</span> <span class="nav-text">6.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-4"><span class="nav-number">4.</span> <span class="nav-text">6.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-5"><span class="nav-number">5.</span> <span class="nav-text">6.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-6"><span class="nav-number">6.</span> <span class="nav-text">6.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-7"><span class="nav-number">7.</span> <span class="nav-text">6.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-8"><span class="nav-number">8.</span> <span class="nav-text">6.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-9"><span class="nav-number">9.</span> <span class="nav-text">6.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-10"><span class="nav-number">10.</span> <span class="nav-text">6.10</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#61"><span class="nav-number">1.</span> <span class="nav-text"> 6.1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#62"><span class="nav-number">2.</span> <span class="nav-text"> 6.2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#63"><span class="nav-number">3.</span> <span class="nav-text"> 6.3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#64"><span class="nav-number">4.</span> <span class="nav-text"> 6.4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#65"><span class="nav-number">5.</span> <span class="nav-text"> 6.5</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#66"><span class="nav-number">6.</span> <span class="nav-text"> 6.6</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#67"><span class="nav-number">7.</span> <span class="nav-text"> 6.7</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#68"><span class="nav-number">8.</span> <span class="nav-text"> 6.8</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#69"><span class="nav-number">9.</span> <span class="nav-text"> 6.9</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#610"><span class="nav-number">10.</span> <span class="nav-text"> 6.10</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -437,13 +464,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">889k</span>
+    <span title="Symbols count total">945k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">13:28</span>
+    <span title="Reading time total">14:19</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
