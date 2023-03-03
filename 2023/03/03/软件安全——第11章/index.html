@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 11 Windows系统安全机制及漏洞防护技术  11.1 DEP DEP（Data Execution Protection&#x2F;NX）：禁用栈和堆区的代码执行，能够有效防止shellcode在栈和堆上执行 但会带来一定的兼容性和灵活性问题：如用于提取其他软件窗口上文字的软件，可能需要在栈或堆中执行代码，DEP启用后这类软件可能无法正常运行。 支持架构：Intel、AMD等 实现原">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件安全——第11章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC11%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Chapter 11 Windows系统安全机制及漏洞防护技术  11.1 DEP DEP（Data Execution Protection&#x2F;NX）：禁用栈和堆区的代码执行，能够有效防止shellcode在栈和堆上执行 但会带来一定的兼容性和灵活性问题：如用于提取其他软件窗口上文字的软件，可能需要在栈或堆中执行代码，DEP启用后这类软件可能无法正常运行。 支持架构：Intel、AMD等 实现原">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-03T01:45:20.000Z">
+<meta property="article:modified_time" content="2023-03-03T01:47:34.129Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC11%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>软件安全——第11章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC11%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件安全——第11章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:45:20 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:45:20+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="chapter-11-windows系统安全机制及漏洞防护技术"><a class="markdownIt-Anchor" href="#chapter-11-windows系统安全机制及漏洞防护技术"></a> Chapter 11 Windows系统安全机制及漏洞防护技术</h1>
+<h2 id="111-dep"><a class="markdownIt-Anchor" href="#111-dep"></a> 11.1 DEP</h2>
+<p>DEP（Data Execution Protection/NX）：禁用栈和堆区的代码执行，能够有效防止shellcode在栈和堆上执行</p>
+<p>但会带来一定的兼容性和灵活性问题：如用于提取其他软件窗口上文字的软件，可能需要在栈或堆中执行代码，DEP启用后这类软件可能无法正常运行。</p>
+<p>支持架构：Intel、AMD等</p>
+<p>实现原理：将栈和堆的访问权限（属性）设置为NX</p>
+<p>Windows选项：</p>
+<ul>
+<li>Optin：DEP仅用于系统服务与进程（个人版默认）</li>
+<li>Optout：排除列表程序外的所有程序启用（服务器版默认）</li>
+<li>AlwaysOn：所有进程全部启用</li>
+<li>AlwaysOff：所有进程全部禁用</li>
+</ul>
+<p><strong>绕过思路</strong>：Ret2Libc、ROP、JOP、COP等</p>
+<h2 id="112-栈溢出检查gs"><a class="markdownIt-Anchor" href="#112-栈溢出检查gs"></a> 11.2 栈溢出检查——GS</h2>
+<p>在所有函数栈帧高处放置一个Stack Guard（Windows中称为Stack Cookie，Linux中称为Canary），这是一个随机数，且可检验其是否改变。函数结束后会检查此处的值是否被修改。可以在一定程度上防范栈溢出。</p>
+<ul>
+<li>以.data节的第一个DWORD作为其种子，称为原始Cookie，所有函数的Cookie均使用这个种子生成。</li>
+<li>栈帧初始化后以ESP异或种子作为cookie使用，能够提升其随机性。</li>
+<li>函数返回前使用esp还原出种子</li>
+<li>调用<strong>Security_check_cookie</strong>函数进行校验。</li>
+</ul>
+<p>当满足以下情况时不使用此种保护：</p>
+<ul>
+<li>函数无缓冲区</li>
+<li>函数被定义为具有变量参数列表（即可变参数）</li>
+<li>函数使用无保护的关键字标记</li>
+<li>函数第一条语句中含内嵌汇编代码</li>
+<li>缓冲区不是8字节类型且不大于4字节</li>
+</ul>
+<p>使用#param strict_gs_check(on)选项可以强制对任意类型函数添加cookie</p>
+<p>变量重排技术：将字符串变量移动到栈帧的高地址，即紧靠cookie的位置，这样一旦发生溢出能够立即发现，无论溢出多少字节。如果字符串变量距离cookie有一段距离，那么其溢出有限字节可能不会被cookie发现。</p>
+<p>无法防御：</p>
+<ul>
+<li>未被保护的函数</li>
+<li>改写函数指针类攻击</li>
+<li>异常处理类攻击</li>
+<li>堆溢出攻击</li>
+<li>其他（如能够利用其他漏洞泄露cookie的值）</li>
+</ul>
+<p>绕过方法：</p>
+<ul>
+<li>利用未被保护的函数</li>
+<li>覆盖C++虚函数指针</li>
+<li>攻击异常处理机制</li>
+<li>同时替换栈和data中的cookie</li>
+</ul>
+<h2 id="113-aslr"><a class="markdownIt-Anchor" href="#113-aslr"></a> 11.3 ASLR</h2>
+<p>地址空间布局随机化，使栈和堆的基址在加载时随机确定、程序自身和关联库的基址在加载时也随机确定</p>
+<p>不足：</p>
+<ul>
+<li>需要和DEP配合使用。否则恶意代码可以通过程序进程表结构获取DLL加载基址</li>
+<li>ASLR的随机性较小（仅针对32位windows系统，32位/64位linux系统有更好的随机性）</li>
+<li>兼容性问题（一些老处理器不支持等问题）</li>
+<li>地址部分覆盖（对于windows 32位系统只能控制程序地址随机化后两个字节，前两个字节不变，对于Linux系统则是最低12位不变，因为内存需要4KB对齐）</li>
+</ul>
+<h2 id="114-safeseh"><a class="markdownIt-Anchor" href="#114-safeseh"></a> 11.4 SafeSEH</h2>
+<p>保护、检测和防止堆栈中的SEH函数指针被覆盖的技术</p>
+<ul>
+<li>检查异常处理程序是否位于栈中</li>
+<li>如果异常处理程序指针不是栈中地址，会再次检查是否属于一个Image的地址空间（mmap映射机制，不做要求）</li>
+</ul>
+<h2 id="115-emet"><a class="markdownIt-Anchor" href="#115-emet"></a> 11.5 EMET</h2>
+<p>Enhanced Mitigation Experience Toolkit，含DEP、ASLR、SEHOP等防护措施</p>
+<ul>
+<li>SEHOP：结构化异常处理覆写保护，对抗覆盖SEH攻击</li>
+<li>EAF：导出表地址过滤：禁止shellcode搜索API地址</li>
+<li>HeapSpray Allocations：将所有有可能被堆喷射的常见内存地址首先分配掉</li>
+<li>Null Page Allocation：使用提前占位的方式将空指针未初始化之前默认指向的地址首先分配掉</li>
+</ul>
+<hr />
+<p><strong>练习题</strong>：<br />
+<strong>1.</strong> 分析如下代码片段，回答下列问题：（29分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">foo</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">char</span> buf[<span class="number">0x20</span>];</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, buf);</span><br><span class="line">	<span class="built_in">printf</span>(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注：上述代码已开启Stack Cookie保护，未开启ASLR保护。<br />
+(1) 这段代码中存在的漏洞是________________________。（2分）<br />
+(2) 能否直接输入很多字符产生栈溢出？__________ ，简述Stack Cookie如何防止这一类栈溢出：___________________________________________________________________________________________________ （4分）<br />
+(3) 虽然我们不能直接进行栈溢出，但因为有____________漏洞的存在，使我们有可能_______________________________，从而绕过Stack Cookie的防护。注意，本程序没有开启ASLR防护，因此我们可以获取到_______________。请简述你的利用思路及这样利用能够成功的原因：________________________________________________________________________________，在这种绕过方式中，Stack cookie应作为printf的第___个参数输出。（10分）<br />
+(4) 这个函数的利用可能需要输入两次，在第一次输入后，你成功让这个函数又从头开始执行了一次，这样你就可以再一次进行输入。假设你第一次输入获取到的stack cookie为0xdeadbeef，函数第一次刚开始执行时esp=0x7f773484，则函数第二次执行时的stack cookie值应为 ____________（Stack cookie的生成方式即为GS栈溢出保护中的生成方式）（5分）</p>
+<p>答案：<br />
+(1) 格式化字符串漏洞、栈溢出漏洞<br />
+(2) 不能；Stack cookie是一个随机数，置于函数栈帧的高地址端，栈溢出发生时可能会覆盖Stack cookie，在函数返回时对Stack cookie进行检查，若发现被修改，则会直接报错退出程序<br />
+(3) 格式化字符串漏洞；泄露Stack cookie的值；foo函数的起始地址；利用格式化字符串漏洞打印出Stack cookie的值（%x）及修改返回地址（%n）；10<br />
+(4) 0xdeadbeeb</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC10%E7%AB%A0/" rel="prev" title="软件安全——第10章">
+      <i class="fa fa-chevron-left"></i> 软件安全——第10章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC12%E7%AB%A0/" rel="next" title="软件安全——第12章">
+      软件安全——第12章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-11-windows%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E6%9C%BA%E5%88%B6%E5%8F%8A%E6%BC%8F%E6%B4%9E%E9%98%B2%E6%8A%A4%E6%8A%80%E6%9C%AF"><span class="nav-number">1.</span> <span class="nav-text"> Chapter 11 Windows系统安全机制及漏洞防护技术</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#111-dep"><span class="nav-number">1.1.</span> <span class="nav-text"> 11.1 DEP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#112-%E6%A0%88%E6%BA%A2%E5%87%BA%E6%A3%80%E6%9F%A5gs"><span class="nav-number">1.2.</span> <span class="nav-text"> 11.2 栈溢出检查——GS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#113-aslr"><span class="nav-number">1.3.</span> <span class="nav-text"> 11.3 ASLR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#114-safeseh"><span class="nav-number">1.4.</span> <span class="nav-text"> 11.4 SafeSEH</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#115-emet"><span class="nav-number">1.5.</span> <span class="nav-text"> 11.5 EMET</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">16:47</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

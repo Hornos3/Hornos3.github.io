@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 2 软件安全基础知识  2.1 系统引导与控制权  BIOS Basic Input &amp; Output System：基本输入输出系统，存储在主板BIOS Flash或ROM芯片中，其为计算机提供最为底层和直接的硬件设置和控制。 在启动计算机时，BIOS会进行自检工作：检测系统中的一些关键设备是否存在以及是否能够正常工作，进行初始化并将控制权交给后续引导程序  显卡及其他">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件安全——第2章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Chapter 2 软件安全基础知识  2.1 系统引导与控制权  BIOS Basic Input &amp; Output System：基本输入输出系统，存储在主板BIOS Flash或ROM芯片中，其为计算机提供最为底层和直接的硬件设置和控制。 在启动计算机时，BIOS会进行自检工作：检测系统中的一些关键设备是否存在以及是否能够正常工作，进行初始化并将控制权交给后续引导程序  显卡及其他">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/4b547698ae2e4b68b97695849fea12c1.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/4c7b91f5faea4978b30f165b8e2212f8.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/72b8e16c4efc4bfabf00912aeb5766b0.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/3fe7d4c98db14f8e988bca22dd7dcdc5.png">
+<meta property="article:published_time" content="2023-03-03T01:44:11.000Z">
+<meta property="article:modified_time" content="2023-03-03T01:47:34.125Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/4b547698ae2e4b68b97695849fea12c1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>软件安全——第2章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件安全——第2章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:44:11 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:11+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="chapter-2-软件安全基础知识"><a class="markdownIt-Anchor" href="#chapter-2-软件安全基础知识"></a> Chapter 2 软件安全基础知识</h1>
+<h2 id="21-系统引导与控制权"><a class="markdownIt-Anchor" href="#21-系统引导与控制权"></a> 2.1 系统引导与控制权</h2>
+<h3 id="bios"><a class="markdownIt-Anchor" href="#bios"></a> BIOS</h3>
+<p>Basic Input &amp; Output System：基本输入输出系统，存储在主板BIOS Flash或ROM芯片中，其为计算机提供最为底层和直接的硬件设置和控制。</p>
+<p><strong>在启动计算机时，BIOS会进行自检工作</strong>：检测系统中的一些关键设备是否存在以及是否能够正常工作，进行初始化并将控制权交给后续引导程序</p>
+<ul>
+<li><strong>显卡及其他相关设备</strong>初始化</li>
+<li>显示<strong>系统BIOS启动画面</strong>，含系统BIOS版本号、类型、序列号等</li>
+<li>检测<strong>CPU</strong>类型和工作频率，内存容量，将结果显示在屏幕之上</li>
+<li>检测系统中安装的一些<strong>标准硬件设备和即插即用设备</strong>（硬盘、光盘、软驱、串并行接口等）</li>
+<li>根据用户指定顺序从硬盘/软盘/光驱启动，若从硬盘启动，则将控制权交由硬盘主引导程序。</li>
+</ul>
+<h3 id="mbr"><a class="markdownIt-Anchor" href="#mbr"></a> MBR</h3>
+<p>Master Boot Record：硬盘主引导程序，位于硬盘的<strong>第一个扇区</strong>。</p>
+<ul>
+<li>用于从主分区表中定位活动分区</li>
+<li>装载活动分区的引导程序，并移交控制权</li>
+</ul>
+<h3 id="dbr"><a class="markdownIt-Anchor" href="#dbr"></a> DBR</h3>
+<p>DOS Boot Record（OBR/PBR）：活动分区引导程序，位于分区的<strong>第一个扇区</strong>。</p>
+<ul>
+<li>用于加载操作系统引导程序，准备将控制权移交给操作系统。Windows XP的NTLDR和Windows 10的bootmgr</li>
+</ul>
+<h3 id="操作系统引导"><a class="markdownIt-Anchor" href="#操作系统引导"></a> 操作系统引导</h3>
+<ul>
+<li>将处理器以<strong>16位内存模式扩展为32（64）位内存模式</strong></li>
+<li>启动小型文件系统驱动，以<strong>识别FAT32和NTFS系统</strong></li>
+<li>读取<strong>boot.ini</strong>，进行多操作系统选择（或hiberfil.sys恢复休眠）</li>
+<li><strong>检测和配置硬件</strong>（NT或XP系统，则运行：-NTDETECT.COM，将硬件信息提交给NTLDR，写入HKEY_LOCAL_MACHINE中Hardware中）</li>
+</ul>
+<h3 id="系统内核加载"><a class="markdownIt-Anchor" href="#系统内核加载"></a> 系统内核加载</h3>
+<ul>
+<li>NTLDR加载<strong>内核程序</strong>NTOSKRNL.EXE以及硬件抽象层HAL.dll等</li>
+<li>读取并加载HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet下面指定的<strong>驱动程序</strong></li>
+<li>NTLDR将把<strong>控制权传递</strong>给NTOSKRNL.EXE，至此引导过程结束</li>
+</ul>
+<h3 id="windows系统装载"><a class="markdownIt-Anchor" href="#windows系统装载"></a> Windows系统装载</h3>
+<ul>
+<li>创建系统环境变量</li>
+<li>启动<strong>win32.sys</strong>（windows子系统内核模式）</li>
+<li>启动<strong>csrss.exe</strong>（windows子系统用户模式）</li>
+<li>启动winlogon.exe等一系列程序，显示图标等</li>
+<li>启动需要自启动的windows服务</li>
+<li>启动本地安全认证Lsass.exe</li>
+<li>显示登录界面等</li>
+<li>登录后启动当前用户环境下的自启动程序</li>
+<li>用户自行触发执行各种应用程序</li>
+</ul>
+<h3 id="font-colorred恶意代码获取控制权的方式font"><a class="markdownIt-Anchor" href="#font-colorred恶意代码获取控制权的方式font"></a> <font color=red>恶意代码获取控制权的方式</font></h3>
+<ul>
+<li>在计算机系统引导阶段获取控制权</li>
+<li>在操作系统启动阶段获取控制权</li>
+<li>在用户应用程序执行阶段获取控制权</li>
+</ul>
+<h2 id="22-80x86处理器工作模式"><a class="markdownIt-Anchor" href="#22-80x86处理器工作模式"></a> 2.2 80x86处理器工作模式</h2>
+<p>实地址模式、保护模式、虚拟8086模式<br />
+其中除保护模式外均为向下兼容8086处理器而设计。</p>
+<h3 id="实地址模式"><a class="markdownIt-Anchor" href="#实地址模式"></a> 实地址模式</h3>
+<ul>
+<li>80x86处理器于复位和加电时使用</li>
+<li>寻址方式：段地址+偏移地址，可寻址2<sup>20</sup>=1MB空间</li>
+<li>不能进行内存分页管理</li>
+<li>没有优先级的定义，所有指令均在ring0状态工作</li>
+<li><strong>如何切换到保护模式</strong>：在实地址模式下初始化控制寄存器，GDTR、LDTR等管理寄存器以及页表，之后置位CR0寄存器的保护模式使能位（第0位）</li>
+</ul>
+<h3 id="保护模式"><a class="markdownIt-Anchor" href="#保护模式"></a> 保护模式</h3>
+<ul>
+<li>80x86的常态工作模式</li>
+<li>32位的处理器支持32位寻址，可寻址空间：4GB</li>
+<li>支持内存分页机制，能够支持虚拟内存</li>
+<li>支持优先级机制，能够进行任务环境隔离</li>
+<li><strong>如何切换到实模式</strong>：修改CR0寄存器的保护模式使能位即可</li>
+</ul>
+<h3 id="虚拟8086模式"><a class="markdownIt-Anchor" href="#虚拟8086模式"></a> 虚拟8086模式</h3>
+<ul>
+<li>在保护模式下兼容80x86模式</li>
+<li><strong>作为任务在保护模式下运行</strong>，相当于开启了一个8086模式的虚拟机</li>
+<li>能够使用内存分页机制为每一个虚拟8086模式任务分配1MB的内存</li>
+</ul>
+<h2 id="23-windows内存结构和管理"><a class="markdownIt-Anchor" href="#23-windows内存结构和管理"></a> 2.3 Windows内存结构和管理</h2>
+<h3 id="dos实模式内存管理"><a class="markdownIt-Anchor" href="#dos实模式内存管理"></a> DOS实模式内存管理</h3>
+<p><img src="https://img-blog.csdnimg.cn/4b547698ae2e4b68b97695849fea12c1.png" alt="" /></p>
+<h3 id="windows虚拟地址空间布局"><a class="markdownIt-Anchor" href="#windows虚拟地址空间布局"></a> Windows虚拟地址空间布局</h3>
+<p>windows的32位系统共4GB内存中用户空间和内核空间各占2GB，其中用户空间在低地址处（Linux用户空间为3GB）</p>
+<h3 id="windows程序在内存中的映像"><a class="markdownIt-Anchor" href="#windows程序在内存中的映像"></a> Windows程序在内存中的映像</h3>
+<p><img src="https://img-blog.csdnimg.cn/4c7b91f5faea4978b30f165b8e2212f8.png" alt="" /></p>
+<h3 id="cpu特权级别与内存访问"><a class="markdownIt-Anchor" href="#cpu特权级别与内存访问"></a> CPU特权级别与内存访问</h3>
+<p>操作系统将处理器存取模式划分为用户模式（ring3）和内核模式（ring0）。用户应用程序仅能访问用户区地址，内核程序可以访问所有内存地址、硬件，使用所有处理器指令。</p>
+<h3 id="用户区内存的内容"><a class="markdownIt-Anchor" href="#用户区内存的内容"></a> 用户区内存的内容</h3>
+<ul>
+<li>应用程序代码</li>
+<li>dll文件代码</li>
+<li>全局变量</li>
+<li>线程栈</li>
+</ul>
+<p><font color=red>不同程序的内存相互隔离，能够从一个程序影响另一个程序很难。</font></p>
+<h3 id="内核区内存的内容"><a class="markdownIt-Anchor" href="#内核区内存的内容"></a> 内核区内存的内容</h3>
+<p>内核区数据为所有进程共享，含操作系统内核、线程调度、内存管理、文件系统、网络系统等支持代码。用户态代码无法访问。</p>
+<h3 id="font-colorred虚拟地址和物理地址的转换font"><a class="markdownIt-Anchor" href="#font-colorred虚拟地址和物理地址的转换font"></a> <font color=red>虚拟地址和物理地址的转换</font></h3>
+<p>x86 windows使用<font color=red>二级页表</font>的方式进行转换，可将虚拟地址转译为物理地址。<br />
+32位地址由：<strong>页目录索引（最高10位）、页表索引（中间10位）、字节索引（最低12位）<strong>构成。x86系统中默认分页大小为4KB，故页内字节索引为</strong>最低12位</strong>。<br />
+页目录基地址通过<strong>CR3寄存器</strong>获取，通过页目录索引找到页目录项（<strong>PDE</strong>），转到相应的页表索引。页目录是一个长度为1024的数组。【注意：页目录中存放的是每一个页表的起始地址，页表的存放可能是离散的】<br />
+在页表中通过页表索引找到页表项（<strong>PTE</strong>），指向虚拟地址所映射的物理地址。每个页表也是一个长度为1024的数组。【页表中存放的就是物理地址】<br />
+再加上字节索引，就能够映射到具体的物理地址中的某一个字节。<br />
+存放PDE和PTE的地址称为页帧号（<strong>PFN</strong>）<br />
+<img src="https://img-blog.csdnimg.cn/72b8e16c4efc4bfabf00912aeb5766b0.png" alt="" /></p>
+<h3 id="font-colorred思考题font"><a class="markdownIt-Anchor" href="#font-colorred思考题font"></a> <font color=red>思考题</font></h3>
+<ol>
+<li>windows编程时malloc实际上能支持的内存大小不大于2GB，因为用户能够分配的空间只有2GB，但这2GB中还包含代码、其他数据、控制信息等，因此这2GB无法全部被分配。</li>
+<li>不断增加物理内存，不能增加malloc分配的最大内存大小，因为机器字长的限制，每个程序的内存大小均为4GB，与物理地址的大小无关。</li>
+<li>增加物理内存能够让系统运行更加流畅，因为减少了换页的次数。（换页：<strong>在物理内存空间紧张时，操作系统会将目前访问次数不多或正在挂起的进程的内存空间暂时转移到外存中，以提升当前正在运行进程的速度。</strong>）</li>
+</ol>
+<h2 id="24-磁盘的物理和逻辑结构"><a class="markdownIt-Anchor" href="#24-磁盘的物理和逻辑结构"></a> 2.4 磁盘的物理和逻辑结构</h2>
+<h3 id="物理结构"><a class="markdownIt-Anchor" href="#物理结构"></a> 物理结构</h3>
+<p>硬盘：控制代码的静态存储仓库，内含<strong>系统引导代码</strong>和用户存储的各类代码和数据等。同时硬盘也是恶意代码争夺控制权的中心</p>
+<p><strong>外部结构</strong>：接口（电源接口+数据接口）、硬盘控制电路、固定面板</p>
+<ul>
+<li>接口：PATA并行接口、SATA串行接口，并行接口传输速度比串行慢</li>
+<li>固定面板：保证盘片和机构的稳定运行，包括产品基本信息，如版号、生产日期等<br />
+<strong>内部结构</strong>：盘片、磁头、盘片主轴、控制电机、磁头控制器、数据转换器。</li>
+</ul>
+<h3 id="逻辑结构"><a class="markdownIt-Anchor" href="#逻辑结构"></a> 逻辑结构</h3>
+<p><strong>寻址方式</strong>：</p>
+<ul>
+<li><strong>CHS寻址</strong>：柱面、磁头、扇区。<img src="https://img-blog.csdnimg.cn/3fe7d4c98db14f8e988bca22dd7dcdc5.png" alt="" />
+<ul>
+<li>磁头有256个，柱面（磁道）有1024环，扇区有63个，每扇区存储512字节数据，故可以寻址最多8064MB空间。</li>
+</ul>
+</li>
+<li>对于老式硬盘而言，每个磁道的扇区数量相等，这样位于外圈的磁道会产生空间浪费，相比内圈的磁道存储密度低得多。因此当前硬盘采用等密度结构，寻址方式采用<strong>线性逻辑块寻址</strong>：以扇区为单位进行<strong>线性寻址</strong>（有地址翻译器使两种寻址方式能够兼容）</li>
+</ul>
+<p>CHS寻址与线性寻址（LBA）的转换关系<br />
+LBA实际上就是给每一个扇区进行编号，使得通过编号能够唯一确定一个扇区的位置。转换时扇区为最小单位，其上为磁头，最高为柱面。相邻扇区的LBA之差为1，相同扇区、相邻磁头的LBA之差为63；相同扇区、相同磁头、相邻柱面的LBA之差为63*255。</p>
+<p><strong>硬盘的分区结构</strong></p>
+<ul>
+<li><font color=red>MBR分区</font>
+<ul>
+<li>主引导扇区：位于柱面0，磁头0，扇区1（第一个扇区），这个扇区中包含：
+<ul>
+<li>MBR引导程序：前446字节</li>
+<li>DPT（硬盘分区表）：之后64字节</li>
+<li>结束标志：最后两个字节“55AA”</li>
+</ul>
+</li>
+<li>基本分区</li>
+<li>扩展分区</li>
+</ul>
+</li>
+<li>GPT分区
+<ul>
+<li>描述各个分区的基本信息：分区开始位置、总的扇区数、分区类型等，每个分区信息占16字节</li>
+</ul>
+</li>
+</ul>
+<h2 id="25-fat32文件系统"><a class="markdownIt-Anchor" href="#25-fat32文件系统"></a> 2.5 FAT32文件系统</h2>
+<p>FAT32文件系统由三个部分组成：引导扇区、FAT、数据存储区（以簇为单位，每一簇含多个扇区，存储目录项和文件数据）</p>
+<h3 id="簇"><a class="markdownIt-Anchor" href="#簇"></a> 簇</h3>
+<p>将磁盘空间以一定数目（2的整数次方）的扇区为单位进行划分，这样的单位即为簇。是文件空间分配的最小单位。</p>
+<p><strong>簇既不能太大，也不能太小。如果太大，存储很小的文件时也需要一整个簇，浪费空间；如果太小，则容易产生磁盘碎片。</strong></p>
+<h3 id="fat表"><a class="markdownIt-Anchor" href="#fat表"></a> FAT表</h3>
+<p>文件分配表：在FAT文件系统中用于磁盘数据索引和定位而引进的一种单向链表式结构。</p>
+<p>FAT表存储所有簇的占用情况，若表项的值为0，则说明这个簇处于空闲状态。</p>
+<p>对于FAT32文件系统，32位共可表示4GB大小的簇号空间。</p>
+<h3 id="簇链"><a class="markdownIt-Anchor" href="#簇链"></a> 簇链</h3>
+<p>一个文件占用簇号形成的单向链表。</p>
+<p>在文件占用簇对应簇号的FAT项下填写下一个簇的簇号即可实现。若为最后一个簇，则填“0xFFFFFF0F”</p>
+<h3 id="文件的存储过程"><a class="markdownIt-Anchor" href="#文件的存储过程"></a> 文件的存储过程</h3>
+<ul>
+<li>定位足够的空闲簇</li>
+<li>创建文件目录（<strong>文件目录：记录系统中所有文件的名字及其存放地址的目录表，可以理解为需要另外记录下文件的首簇</strong>）</li>
+<li>FAT中构建簇链</li>
+<li>写入文件数据</li>
+</ul>
+<h3 id="被删除文件如何恢复"><a class="markdownIt-Anchor" href="#被删除文件如何恢复"></a> 被删除文件如何恢复</h3>
+<ul>
+<li>文件删除并非将簇中的文件内容全部销毁，而是将文件名首字节修改为E5后删除FAT表项与簇链，实际内容还在，但文件系统已无法索引。</li>
+<li>即使通过文件恢复程序将删除文件恢复，也不可能得到文件名的第一个字节。</li>
+<li>若要彻底删除文件，需要将原来文件占有的簇重新覆写，有时需要覆写几次才能够实现真正删除。</li>
+</ul>
+<h2 id="26-pe文件格式"><a class="markdownIt-Anchor" href="#26-pe文件格式"></a> 2.6 PE文件格式</h2>
+<p>参见第4章</p>
+<p>VA = Image Base + RVA</p>
+<h2 id="27-elf文件格式"><a class="markdownIt-Anchor" href="#27-elf文件格式"></a> 2.7 ELF文件格式</h2>
+<p>elf文件是Linux可执行文件，含可执行文件、动态链接库文件.so等。</p>
+<p>有段头部表用于将不同段映射到内存中的不同地址。</p>
+<p>代码段有：.init、.text、.rodata等，均为只读。其中.rodata存储在C代码中直接定义的数据，如printf(“Hello”)中的字符串&quot;Hello&quot;即存储在.rodata中，不可修改。<br />
+数据段有：.data、.bss等，其中.data存放已经初始化的全局变量和静态变量，.bss存放未初始化的。<br />
+此外还有如.symtab、.debug、.line等不加载到存储器的符号表和调试信息。</p>
+<hr />
+<p><strong>练习题</strong><br />
+<strong>1.</strong> 某程序内存中页目录索引为0x3f的值为0x74465000；则在_______到_______范围内的虚拟内存需要通过0x74465000指向的页表来查找其对应的物理地址；已知0x74465AB8地址处DWORD的值为0x83BF4000，那么物理地址为0x83BF4212对应的虚拟地址为_______（6分）</p>
+<p>分析：虚拟地址最高10位对应的是页目录的索引，故最高10位应为0x3f，对应的虚拟内存地址应该为<code>0x0FC00000~0x0FFFFFFF</code>共0x400000字节的空间（一个页4KB，即0x1000，这里是0x400（1024）页）。（0x74465AB8-0x74465000）/4=0x2AE，则其对应的应该是<code>0x0FC00000+0x2AE*0x1000~0x0FC00000+0x2AF*0x1000-1</code>的地址空间，即<code>0x0FEAE000~0x0FEAEFFF</code>这4KB空间，对应的应该是物理地址<code>0x83BF4000~0x83BF4FFF</code>，故物理地址为0x83BF4212在内存中的映射应该为0x0FEAE212。</p>
+<p><strong>2.</strong> 在一个FAT文件系统中，一个簇的大小为4KB。现在向该文件系统中存入若干个大小在4~16KB之间的文件，每个文件的大小在这个范围内呈均匀分布。当存入文件足够多时，求该FAT文件系统中被浪费的空间占被占用的所有簇的总空间的比例。（4分）</p>
+<p>分析：由于文件大小可能为4~16KB中的任何数，因此其大小在4~8KB的概率为1/3，8~12KB的概率为1/3，12~16KB的概率为1/3。即一个文件需要分配2、3、4个簇的概率均为1/3，对于每一个文件，其最后一个簇中被浪费的空间的期望值应该为簇大小的一半，即1KB，故分配2、3、4个簇时空间利用率的期望值分别为3/4，5/6，7/8。因此总的空间利用率期望值为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>×</mo><mo stretchy="false">(</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mo>+</mo><mfrac><mn>5</mn><mn>6</mn></mfrac><mo>+</mo><mfrac><mn>7</mn><mn>8</mn></mfrac><mo stretchy="false">)</mo><mo>=</mo><mfrac><mn>59</mn><mn>72</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{3}\times(\frac{3}{4}+\frac{5}{6}+\frac{7}{8})=\frac{59}{72}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span><span class="mord mtight">9</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，被浪费的空间占总占用空间的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>13</mn><mn>72</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{13}{72}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，超过1/6。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" rel="prev" title="软件安全——第1章">
+      <i class="fa fa-chevron-left"></i> 软件安全——第1章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" rel="next" title="软件安全——第3章">
+      软件安全——第3章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-2-%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-number">1.</span> <span class="nav-text"> Chapter 2 软件安全基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#21-%E7%B3%BB%E7%BB%9F%E5%BC%95%E5%AF%BC%E4%B8%8E%E6%8E%A7%E5%88%B6%E6%9D%83"><span class="nav-number">1.1.</span> <span class="nav-text"> 2.1 系统引导与控制权</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bios"><span class="nav-number">1.1.1.</span> <span class="nav-text"> BIOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#mbr"><span class="nav-number">1.1.2.</span> <span class="nav-text"> MBR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dbr"><span class="nav-number">1.1.3.</span> <span class="nav-text"> DBR</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%95%E5%AF%BC"><span class="nav-number">1.1.4.</span> <span class="nav-text"> 操作系统引导</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8%E5%8A%A0%E8%BD%BD"><span class="nav-number">1.1.5.</span> <span class="nav-text"> 系统内核加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#windows%E7%B3%BB%E7%BB%9F%E8%A3%85%E8%BD%BD"><span class="nav-number">1.1.6.</span> <span class="nav-text"> Windows系统装载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#font-colorred%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E8%8E%B7%E5%8F%96%E6%8E%A7%E5%88%B6%E6%9D%83%E7%9A%84%E6%96%B9%E5%BC%8Ffont"><span class="nav-number">1.1.7.</span> <span class="nav-text"> 恶意代码获取控制权的方式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#22-80x86%E5%A4%84%E7%90%86%E5%99%A8%E5%B7%A5%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.</span> <span class="nav-text"> 2.2 80x86处理器工作模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E5%9C%B0%E5%9D%80%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 实地址模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 保护模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F8086%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.2.3.</span> <span class="nav-text"> 虚拟8086模式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#23-windows%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84%E5%92%8C%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text"> 2.3 Windows内存结构和管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dos%E5%AE%9E%E6%A8%A1%E5%BC%8F%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.1.</span> <span class="nav-text"> DOS实模式内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#windows%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%B8%83%E5%B1%80"><span class="nav-number">1.3.2.</span> <span class="nav-text"> Windows虚拟地址空间布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#windows%E7%A8%8B%E5%BA%8F%E5%9C%A8%E5%86%85%E5%AD%98%E4%B8%AD%E7%9A%84%E6%98%A0%E5%83%8F"><span class="nav-number">1.3.3.</span> <span class="nav-text"> Windows程序在内存中的映像</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cpu%E7%89%B9%E6%9D%83%E7%BA%A7%E5%88%AB%E4%B8%8E%E5%86%85%E5%AD%98%E8%AE%BF%E9%97%AE"><span class="nav-number">1.3.4.</span> <span class="nav-text"> CPU特权级别与内存访问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E5%8C%BA%E5%86%85%E5%AD%98%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">1.3.5.</span> <span class="nav-text"> 用户区内存的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E6%A0%B8%E5%8C%BA%E5%86%85%E5%AD%98%E7%9A%84%E5%86%85%E5%AE%B9"><span class="nav-number">1.3.6.</span> <span class="nav-text"> 内核区内存的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#font-colorred%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80%E5%92%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E7%9A%84%E8%BD%AC%E6%8D%A2font"><span class="nav-number">1.3.7.</span> <span class="nav-text"> 虚拟地址和物理地址的转换</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#font-colorred%E6%80%9D%E8%80%83%E9%A2%98font"><span class="nav-number">1.3.8.</span> <span class="nav-text"> 思考题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#24-%E7%A3%81%E7%9B%98%E7%9A%84%E7%89%A9%E7%90%86%E5%92%8C%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.</span> <span class="nav-text"> 2.4 磁盘的物理和逻辑结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.1.</span> <span class="nav-text"> 物理结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84"><span class="nav-number">1.4.2.</span> <span class="nav-text"> 逻辑结构</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#25-fat32%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.5.</span> <span class="nav-text"> 2.5 FAT32文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B0%87"><span class="nav-number">1.5.1.</span> <span class="nav-text"> 簇</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#fat%E8%A1%A8"><span class="nav-number">1.5.2.</span> <span class="nav-text"> FAT表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B0%87%E9%93%BE"><span class="nav-number">1.5.3.</span> <span class="nav-text"> 簇链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B"><span class="nav-number">1.5.4.</span> <span class="nav-text"> 文件的存储过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A2%AB%E5%88%A0%E9%99%A4%E6%96%87%E4%BB%B6%E5%A6%82%E4%BD%95%E6%81%A2%E5%A4%8D"><span class="nav-number">1.5.5.</span> <span class="nav-text"> 被删除文件如何恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#26-pe%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.6.</span> <span class="nav-text"> 2.6 PE文件格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#27-elf%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.7.</span> <span class="nav-text"> 2.7 ELF文件格式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">16:47</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

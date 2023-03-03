@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 12 构建安全的软件  12.1 软件开发生命周期  分析阶段：软件需求分析。通过研讨或调查研究，对用户的需求进行收集，最后把它用标准的软件工程开发语言(需求规格说明书)表达出来。即建立软件的逻辑模型、编写需求规格说明书文档。 设计阶段：概要设计和详细设计两个阶段。将软件分解成一个个模块并将模块内部的结构设计出来。  结构化分析方法、数据流程图和数据字典等方法设计建 立相应的软件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件安全——第12章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC12%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Chapter 12 构建安全的软件  12.1 软件开发生命周期  分析阶段：软件需求分析。通过研讨或调查研究，对用户的需求进行收集，最后把它用标准的软件工程开发语言(需求规格说明书)表达出来。即建立软件的逻辑模型、编写需求规格说明书文档。 设计阶段：概要设计和详细设计两个阶段。将软件分解成一个个模块并将模块内部的结构设计出来。  结构化分析方法、数据流程图和数据字典等方法设计建 立相应的软件">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-03T01:45:23.000Z">
+<meta property="article:modified_time" content="2023-03-03T01:47:34.133Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC12%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>软件安全——第12章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC12%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件安全——第12章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:45:23 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:45:23+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="chapter-12-构建安全的软件"><a class="markdownIt-Anchor" href="#chapter-12-构建安全的软件"></a> Chapter 12 构建安全的软件</h1>
+<h2 id="121-软件开发生命周期"><a class="markdownIt-Anchor" href="#121-软件开发生命周期"></a> 12.1 软件开发生命周期</h2>
+<ol>
+<li>分析阶段：软件需求分析。通过研讨或调查研究，对用户的需求进行收集，最后把它用标准的软件工程开发语言(需求规格说明书)表达出来。即<strong>建立软件的逻辑模型、编写需求规格说明书文档</strong>。</li>
+<li>设计阶段：概要设计和详细设计两个阶段。将软件分解成一个个模块并将模块内部的结构设计出来。
+<ul>
+<li>结构化分析方法、数据流程图和数据字典等方法设计建 立相应的软件系统的体系结构</li>
+<li>模块设计，给出软件的模块结构，将整个系统分解成若干个子 系统或模块</li>
+<li>设计模块的程序流程、算法和数据结构，设计数据库</li>
+<li>编写软件概要设计和详细设计说明书，数据库或数据结构设计说明书</li>
+</ul>
+</li>
+<li>编码阶段：把软件设计转换成计算机可以接受的程序
+<ul>
+<li>基于软件产品的开发质量的要求，充分了解软件开发语言、工具的特性和编程风格</li>
+<li>编码并提供源程序清单</li>
+</ul>
+</li>
+<li>测试阶段：
+<ul>
+<li>白盒测试：依据的是程序内部的的逻辑结构来发现软件的编程错误、结构错误和数据错误，以较少的用例覆盖尽可能多的内部程序逻辑结果</li>
+<li>黑盒测试：依据的是软件的功能或软件行为描述，发现软件的接口、功能和结构错误，以较少的用例覆盖模块输出和输入接口</li>
+</ul>
+</li>
+<li>维护阶段：根据软件运行的情况，对软件进行适当修改，成本较高</li>
+</ol>
+<h2 id="122-软件设计阶段威胁建模"><a class="markdownIt-Anchor" href="#122-软件设计阶段威胁建模"></a> 12.2 软件设计阶段威胁建模</h2>
+<ul>
+<li>在项目组中成立一个小组专门研究安全问题</li>
+<li>分解系统需求，按照需求规格说明书和设计文档中的内容，站在安全角度，分析系统在安全方面的需求</li>
+<li>确定系统可能面临哪些威胁</li>
+<li><strong>画出威胁树，对软件可能收到的威胁进行表达。</strong><br />
+威胁树一般画3层：
+<ul>
+<li>第一层写受到的攻击种类</li>
+<li>第二层写被攻击的原因</li>
+<li>第三层写具体攻击的处理方式</li>
+</ul>
+</li>
+<li>选择应付威胁或者缓和威胁的方法：告知用户、排查与修复问题等</li>
+<li>确定最终技术：将最终选用的技术，直接在威胁树中描述或者用图表画出来</li>
+</ul>
+<h2 id="123-安全代码的编写"><a class="markdownIt-Anchor" href="#123-安全代码的编写"></a> 12.3 安全代码的编写</h2>
+<p>在编写代码的过程中考虑安全问题。如内存安全、线程安全、处理异常等</p>
+<h2 id="124-软件安全性测试"><a class="markdownIt-Anchor" href="#124-软件安全性测试"></a> 12.4 软件安全性测试</h2>
+<ul>
+<li>确保软件不会去完成没有预先设计的功能</li>
+<li>确保软件能够完成预先设计的功能</li>
+</ul>
+<p>进行安全测试，需要精湛的系统分析技术和反攻击技术。其特点是：</p>
+<ul>
+<li>非常灵活，测试用例没有太多的预见性</li>
+<li>没有固定的步骤可以遵循</li>
+<li>工作量大，并且不能保证完全地加以解决</li>
+</ul>
+<h2 id="125-漏洞响应和产品的维护"><a class="markdownIt-Anchor" href="#125-漏洞响应和产品的维护"></a> 12.5 漏洞响应和产品的维护</h2>
+<p>在发现漏洞时，要确保能够迅速确认、响应、修复漏洞，在发现漏洞后的第一时间采取措施</p>
+<p>漏洞相应常规阶段：</p>
+<ul>
+<li>发现漏洞通知厂商</li>
+<li>确认漏洞和风险评估</li>
+<li>修复漏洞</li>
+<li>发布补丁及安全简报对外公布安全补丁</li>
+</ul>
+<hr />
+<p><strong>练习题</strong>：<br />
+<strong>1.</strong> 某公司收到安全人员的报告，发现有一种恶意代码利用该公司编写的一款软件（需要网络连接）进行网络蠕虫传播，试画出威胁树进行分析。</p>
+<p><strong>解题技巧：</strong> 威胁树不同层级常用术语汇总<br />
+第一层：受到的攻击种类</p>
+<ul>
+<li><font color=red>网络相关：SQL注入攻击、跨站脚本攻击、木马攻击、蠕虫攻击、DDoS攻击等</font></li>
+<li><font color=red>非网络相关：缓冲区溢出等二进制漏洞攻击，病毒攻击等</font></li>
+</ul>
+<p>第二层：受到攻击的原因</p>
+<ul>
+<li><font color=red>存在零日漏洞（万能句）、安全测试覆盖面不足、软件设计缺陷、内部人员不当操作（如被社工）、工程师缺乏安全意识、没有及时安装补丁等</font></li>
+</ul>
+<p>第三层：解决方案</p>
+<ul>
+<li><font color=red>及时上报安全漏洞并做出应对措施、重新进行安全测试、重新审视软件设计方案，必要时需要停服解决设计缺陷、安装最新补丁，更新软件、进行流量捕获与分析，完善服务器相关代码等</font></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC11%E7%AB%A0/" rel="prev" title="软件安全——第11章">
+      <i class="fa fa-chevron-left"></i> 软件安全——第11章
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-12-%E6%9E%84%E5%BB%BA%E5%AE%89%E5%85%A8%E7%9A%84%E8%BD%AF%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text"> Chapter 12 构建安全的软件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#121-%E8%BD%AF%E4%BB%B6%E5%BC%80%E5%8F%91%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.1.</span> <span class="nav-text"> 12.1 软件开发生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#122-%E8%BD%AF%E4%BB%B6%E8%AE%BE%E8%AE%A1%E9%98%B6%E6%AE%B5%E5%A8%81%E8%83%81%E5%BB%BA%E6%A8%A1"><span class="nav-number">1.2.</span> <span class="nav-text"> 12.2 软件设计阶段威胁建模</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#123-%E5%AE%89%E5%85%A8%E4%BB%A3%E7%A0%81%E7%9A%84%E7%BC%96%E5%86%99"><span class="nav-number">1.3.</span> <span class="nav-text"> 12.3 安全代码的编写</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#124-%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E6%80%A7%E6%B5%8B%E8%AF%95"><span class="nav-number">1.4.</span> <span class="nav-text"> 12.4 软件安全性测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#125-%E6%BC%8F%E6%B4%9E%E5%93%8D%E5%BA%94%E5%92%8C%E4%BA%A7%E5%93%81%E7%9A%84%E7%BB%B4%E6%8A%A4"><span class="nav-number">1.5.</span> <span class="nav-text"> 12.5 漏洞响应和产品的维护</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">130</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.1m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">16:47</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
