@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Chapter 7 存储管理  7.1 存储管理概述  7.1.1 多级存储体系 理想的存储系统：  容量足够大 速度足够快 信息永久保存 廉价  计算机中实际的存储体系往往由高速缓存、主存和辅存3种不同存储设备构成。  寄存器位于CPU内部，不同架构的CPU有不同数量的寄存器，寄存器的存取速度最快。 内存可以存放程序和数据，容量比寄存器大很多，RAM掉电会丢失数据，ROM可长期保存数据。 高速">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统原理——第7章">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Chapter 7 存储管理  7.1 存储管理概述  7.1.1 多级存储体系 理想的存储系统：  容量足够大 速度足够快 信息永久保存 廉价  计算机中实际的存储体系往往由高速缓存、主存和辅存3种不同存储设备构成。  寄存器位于CPU内部，不同架构的CPU有不同数量的寄存器，寄存器的存取速度最快。 内存可以存放程序和数据，容量比寄存器大很多，RAM掉电会丢失数据，ROM可长期保存数据。 高速">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/57fb31ee58fd46f78df07fdc3e490a1a.png">
+<meta property="article:published_time" content="2023-03-03T01:12:35.000Z">
+<meta property="article:modified_time" content="2023-03-03T01:16:17.996Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/57fb31ee58fd46f78df07fdc3e490a1a.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>操作系统原理——第7章 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统原理——第7章
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:12:35 / Modified: 09:16:17" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:35+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>10 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="chapter-7-存储管理"><a class="markdownIt-Anchor" href="#chapter-7-存储管理"></a> Chapter 7 存储管理</h1>
+<h2 id="71-存储管理概述"><a class="markdownIt-Anchor" href="#71-存储管理概述"></a> 7.1 存储管理概述</h2>
+<h3 id="711-多级存储体系"><a class="markdownIt-Anchor" href="#711-多级存储体系"></a> 7.1.1 多级存储体系</h3>
+<p>理想的存储系统：</p>
+<ul>
+<li>容量足够大</li>
+<li>速度足够快</li>
+<li>信息永久保存</li>
+<li>廉价</li>
+</ul>
+<p>计算机中实际的存储体系往往由高速缓存、主存和辅存3种不同存储设备构成。</p>
+<ul>
+<li>寄存器位于CPU内部，不同架构的CPU有不同数量的寄存器，寄存器的存取速度最快。</li>
+<li>内存可以存放程序和数据，容量比寄存器大很多，RAM掉电会丢失数据，ROM可长期保存数据。</li>
+<li>高速缓存位于CPU与内存之间，速度比内存更快，容量较小，仅复制内存极少量的数据。</li>
+<li>辅存以硬盘为主，用于长期保存指令和数据，可联机和脱机存放数据，容量较大，还可以为内存提供交换空间。</li>
+</ul>
+<p>在三级存储体系中，最上层为高速缓存，虽然价格贵容量小，但速度快；往下是内存，价格和容量适中，但是内容易丢失；最下面是辅存，容量最大价格最便宜但速度最慢。</p>
+<p>有关于内存模块换入换出的问题：如果一次换入换出前后内存模块地址不变，那么有利于模块中的程序运行，程序设计简单，但是容易造成地址冲突；如果前后地址可以不一样，那么可以使内存使用更加灵活，缺点是需要进行地址重定位。</p>
+<h3 id="712-存储管理的功能"><a class="markdownIt-Anchor" href="#712-存储管理的功能"></a> 7.1.2 存储管理的功能</h3>
+<p>存储管理系统主要包含<font color=red>地址映射、虚拟存储、内存分配、存储共享和保护</font>这4个部分。</p>
+<h4 id="地址映射"><a class="markdownIt-Anchor" href="#地址映射"></a> 地址映射</h4>
+<p>内存管理系统需要将虚拟地址转换为内存物理地址，即将程序中的地址（虚拟地址、逻辑地址）转换为真实的内存地址（实地址、物理地址），其方式有<font color=red>固定地址映射、静态地址映射和动态地址映射</font>3种。</p>
+<h4 id="虚拟存储"><a class="markdownIt-Anchor" href="#虚拟存储"></a> 虚拟存储</h4>
+<p>为了解决内存不足的问题，内存管理系统借助辅存在逻辑上扩充内存，使用户觉得内存足够大。将程序代码从内存迁出到辅存中称为迁出，从辅存迁入到内存中称为迁入。</p>
+<p><font color=red>程序局部性原理：包含时间局部性和空间局部性，一段代码在刚刚访问后很有可能被再一次访问，这段代码的邻近空间也很可能在短时间内被访问。</font>因此将程序的一小部分装入内存中通常也可以让其运行一段时间。</p>
+<p>实现虚拟存储的前提：</p>
+<ul>
+<li>适当容量的内存</li>
+<li>足够大的辅存</li>
+<li>地址变换机构</li>
+</ul>
+<h4 id="内存分配"><a class="markdownIt-Anchor" href="#内存分配"></a> 内存分配</h4>
+<p>为每一道程序分配足够的内存空间，同时应该尽量减少无法利用的内存零头或者碎片出现，提高系统内存空间的利用率。</p>
+<p>内存分配需要解决：</p>
+<ul>
+<li>放置策略，即程序应该分配到什么地方</li>
+<li>调入策略，即如何将要运行的程序调入内存</li>
+<li>淘汰策略，即迁出哪些代码以腾出内存空间</li>
+</ul>
+<h4 id="存储共享与保护"><a class="markdownIt-Anchor" href="#存储共享与保护"></a> 存储共享与保护</h4>
+<p>内存中一些用户或系统程序段可以进行不同进程共享，以提高内存的利用率，防止访问越界和越权。</p>
+<p>具体的保护方式：</p>
+<ul>
+<li>设置界址寄存器，规定一个段的上界和下界，程序每一次访问内存均进行检查。</li>
+<li>基址寄存器和限长寄存器，适用于连续分配的物理内存。</li>
+<li>存储键保护，适用于不连续分配的内存，也可以用于共享中的权限。</li>
+</ul>
+<h2 id="72-地址映射"><a class="markdownIt-Anchor" href="#72-地址映射"></a> 7.2 地址映射</h2>
+<h3 id="721-地址映射的概念"><a class="markdownIt-Anchor" href="#721-地址映射的概念"></a> 7.2.1 地址映射的概念</h3>
+<p>程序员写在程序中的地址被称为逻辑地址，产生的前提是内存是理想的存储空间，是该进程独占的。逻辑地址一般使用相对地址计数，参考的起始地址是程序第一条指令或数据。地址映射又称为地址重定位、地址转换，是将程序中的逻辑地址变成真实内存中的物理地址的过程。</p>
+<h3 id="722-地址映射的方法"><a class="markdownIt-Anchor" href="#722-地址映射的方法"></a> 7.2.2 地址映射的方法</h3>
+<h4 id="固定地址映射"><a class="markdownIt-Anchor" href="#固定地址映射"></a> 固定地址映射</h4>
+<p><font color=red>在编程或编译时确定虚拟地址和物理地址的映射关系</font>，程序员直接在源代码中指定目标数据的物理地址或指令跳转的目标地址的物理地址。采用固定地址映射编译的可执行程序在运行前必须放在指定的内存区域中。</p>
+<p>缺点：程序加载时必须放在指定内存区域，容易导致运行失败，容易产生地址冲突，不能适应多道程序编程环境。</p>
+<h4 id="静态地址映射"><a class="markdownIt-Anchor" href="#静态地址映射"></a> 静态地址映射</h4>
+<p><font color=red>程序装入内存时由操作系统完成逻辑地址到物理地址的映射</font>，程序装入内存时整体装入，占用一片连续的内存空间。</p>
+<p>静态地址映射公式：MA=BA+VA，其中MA为程序在内存中的物理地址，VA为程序的逻辑地址，BA为程序在内存中的装入基址。</p>
+<ul>
+<li>程序运行前确定全部逻辑地址的映射关系。</li>
+<li>程序装入后不能再移动，如果必须移动，需要在再次运行之前将其放回原来位置。</li>
+<li>程序在内存中占用连续的内存空间。</li>
+</ul>
+<h4 id="动态地址映射"><a class="markdownIt-Anchor" href="#动态地址映射"></a> 动态地址映射</h4>
+<p><font color=red>程序执行过程中将逻辑地址转换为物理地址</font>，当程序运行到一条访问内存的指令时，临时将逻辑地址转化为物理地址。</p>
+<p>动态地址映射的计算公式与静态地址映射相同。</p>
+<p>动态地址映射需要借助重定位寄存器，其值由进程调度程序根据进程当前实际分配到的主存空间的起始地址决定。切换进程的同时需要切换基址寄存器BAR的值。</p>
+<p>动态地址映射的实现思路：<font color=red>程序按照段进行编译，执行时不同的段被分配到不同的地址</font>，虚拟地址的格式应该为段地址+段内偏移，每一段维护一个段寄存器用于段重定位、段式存储管理、段的切换。</p>
+<p>特点：</p>
+<ul>
+<li>程序占用的内存空间可以动态变化</li>
+<li>程序不要求占用连续的内存空间</li>
+<li>便于多个进程共享代码</li>
+</ul>
+<p>缺点：需要硬件支持（MMU内存管理单元）、设计软件复杂。</p>
+<h2 id="73-分区存储管理系统"><a class="markdownIt-Anchor" href="#73-分区存储管理系统"></a> 7.3 分区存储管理系统</h2>
+<h3 id="731-分区存储的概念"><a class="markdownIt-Anchor" href="#731-分区存储的概念"></a> 7.3.1 分区存储的概念</h3>
+<p>分区管理将内存划分为若干大小不等的区域，除了操作系统占用一个区域之外其他分区由多道程序环境下的各个并发进程共享。</p>
+<h3 id="732-单一分区管理"><a class="markdownIt-Anchor" href="#732-单一分区管理"></a> 7.3.2 单一分区管理</h3>
+<p>单一分区管理方式<font color=red>将整个内存空间分为用户区和系统区，系统区存放操作系统，用户区不分区</font>，全部归一个用户作业占用。</p>
+<p>单一分区管理需要一个栅栏寄存器记录两个区之间的界限，这种管理方式下任何一个时刻主存中只能由一道程序，各个作业的程序只能够按照次序逐一加载进内存运行。</p>
+<ul>
+<li>单一分区管理仅适用于单用户的情况。</li>
+<li>单一分区管理系统地址转换多采用静态地址映射</li>
+<li>单一分区管理系统也可以采用动态地址映射</li>
+</ul>
+<p>优点：模式简单，不需要硬件支持，适合于单用户单任务OS<br />
+缺点：浪费内存，内存利用率低</p>
+<h3 id="733-固定分区管理"><a class="markdownIt-Anchor" href="#733-固定分区管理"></a> 7.3.3 固定分区管理</h3>
+<p>固定分区<font color=red>将用户区划分为若干大小不等的分区，供不同子程序使用</font>。<font color=red>固定分区在系统初始化时就已经被分割完成，一旦初始化完成每一个区域的大小和位置就被固定下来</font>。每一个分区在任何一个时刻只能装入一道程序执行。</p>
+<p>支持将多个作业装入内存运行，支持并发运行。系统需要维护一个<font color=red>分区表</font>，记录每一个分区的区号、大小、起始位置、占用标志。</p>
+<ul>
+<li>在程序装入前，内存已经被分区不再改变</li>
+<li>每个分区大小不同，适用于不同大小的程序</li>
+<li>系统需要维护分区表</li>
+</ul>
+<p>缺点：浪费内存，大程序可能无法运行（当程序比最大分区大时），作业的内存无法被动态扩充，各个分区的作业需要共享程序和数据很难实现，可以并发运行的程序数量收到分区数量的限制。</p>
+<p>在应用时应该尽量让程序大小与数量与分区划分保持一致</p>
+<p>示例：IBM OS/360最多有15个分区15个程序</p>
+<h3 id="734-动态内存管理"><a class="markdownIt-Anchor" href="#734-动态内存管理"></a> 7.3.4 动态内存管理</h3>
+<p>动态分区管理<font color=red>在程序装入时创建分区，使得分区的大小和程序大小相等</font>。动态分区的大小、位置和数量都是动态的。</p>
+<p>动态分区管理有利于减少内存的浪费，有利于多道程序设计，可以实现多个作业对内存的共享，进一步提高的内存的利用率，但容易产生过小的内存碎片无法利用。</p>
+<h3 id="735-内存碎片"><a class="markdownIt-Anchor" href="#735-内存碎片"></a> 7.3.5 内存碎片</h3>
+<p>内存碎片是指内存被反复分割之后剩下的一些小的空闲区，这些小的空闲区由于太小以至于无法被其他任何程序使用，因此成为内存碎片。过多的内存碎片会减少有效内存空间，降低内存使用率。</p>
+<p><font color=red>内存碎片分为外部碎片和内部碎片</font>。</p>
+<ul>
+<li>分区内部出现的碎片称为内部碎片。固定分区法容易产生内部碎片。</li>
+<li>所有分区之外新增的碎片称为外部碎片，一般碎片问题指的是外部碎片问题。</li>
+</ul>
+<p><font color=red>解决碎片问题的方法</font>：</p>
+<ul>
+<li>内存拼接技术，即移动内存内容，让所有空闲区空间移动到一起，最后合并为一整块。该技术不能应用于使用固定地址映射和静态地址映射的系统中。拼接时需要关闭系统进行离线拼接，会大大降低系统效率。</li>
+<li>设置分割门槛技术，即设置门限值，当一次分配剩余的大小小于门限值时，不分割该空闲区而是直接全部分配给用户。这种方式容易产生内部碎片。</li>
+<li>分段装入技术，将程序分为几个部分装入不同的分区，以便充分利用碎片。</li>
+</ul>
+<h3 id="736-分区回收管理"><a class="markdownIt-Anchor" href="#736-分区回收管理"></a> 7.3.6 分区回收管理</h3>
+<p>分区回收将已经结束程序的分区进行回收，将其适当处理后放入空闲区表中，以便再一次进行分配。如果没有任何空闲区与该分区相邻，则直接登记后插入到空闲区表中；如果有空闲区与该分区相邻，则首先进行合并后再进行登记。</p>
+<h3 id="737-分区分配与放置策略"><a class="markdownIt-Anchor" href="#737-分区分配与放置策略"></a> 7.3.7 分区分配与放置策略</h3>
+<p>分区分配指选择一个合适的空闲区并从中分割出需要的大小分配给程序。选择空闲区一般参考空闲区表，通过遍历空闲区表选择一个大小不低于程序要求的空闲区进行分割。根据空闲区表不同排序规则将放置策略分为<font color=red>首次适应算法、最佳适应算法、最坏适应算法</font>。</p>
+<h4 id="首次适应算法"><a class="markdownIt-Anchor" href="#首次适应算法"></a> 首次适应算法</h4>
+<p>在空闲区表中<font color=red>选择第一个大小不低于程序要求的空闲区</font>，分割出需要的大小给用户。首次适应算法一般优先使用主存低地址区域的空闲区，尽量保留高地址区域的大空闲区。在较大程序运行时可以从高地址区域获得大空闲区。同时该算法会在低地址区域留下很多内存碎片。</p>
+<p>该算法中<font color=red>空闲区表的排序顺序是地址大小</font>。</p>
+<h4 id="最佳适应算法"><a class="markdownIt-Anchor" href="#最佳适应算法"></a> 最佳适应算法</h4>
+<p>最佳适应算法<font color=red>将空闲区的大小进行递增排序，选择第一个大小不低于最低程序要求的空闲区</font>分割出程序要求的大小给用户。剩下的部分留在空闲区表中。该算法能够保证较大程序能找到合适大小的空闲区，但也会留下很多微小的内存碎片。</p>
+<h4 id="最坏适应算法"><a class="markdownIt-Anchor" href="#最坏适应算法"></a> 最坏适应算法</h4>
+<p>最坏适应算法<font color=red>按照空闲区大小进行递减排序，从排好序的空闲区中选择第一个不小于程序要求的分区</font>，该算法尽量选择最大的空闲区分割给用户，确保被分割之后的空闲区还是很大，该算法可能无法保证大的程序能够分配到合适大小的空闲区。</p>
+<h2 id="75-页式存储管理系统"><a class="markdownIt-Anchor" href="#75-页式存储管理系统"></a> 7.5 页式存储管理系统</h2>
+<p>通过物理内存进行内存的直接管理有很多缺点：</p>
+<ul>
+<li>源程序全部使用物理内存运行容易导致内存访问冲突</li>
+<li>程序必须全部装入内存才能运行，内存小时容易产生冲突</li>
+<li>程序占用连续的内存地址，容易产生内存碎片</li>
+<li>多程序同时运行容易产生干扰</li>
+</ul>
+<p>因此引入虚拟内存进行内存管理。<br />
+虚拟内存是面向用户的存储空间，是线性的存储空间、封闭的存储空间，容量4GB（32位系统），是程序员编程时使用的地址，其与物理地址分离，进程之间的地址不会产生冲突。</p>
+<h3 id="751-页式管理的概念"><a class="markdownIt-Anchor" href="#751-页式管理的概念"></a> 7.5.1 页式管理的概念</h3>
+<p>页式存储管理将程序分拆为多个模块以装入不同的内存区域。页式存储管理将进程空间和内存空间都划分为等大的小片，进程的小片称为<font color=red>页</font>，内存的小片称为<font color=red>页框</font>。页框与页的大小一致，一个进程由多个页构成。内存被划分为多个页框，页框之间没有空隙。</p>
+<p>根据程序的局部性原则，进程以页为单位装入内存，进程被装入内存时<font color=red>只需要将进程的部分页面装入内存即可运行</font>，进程在内存中的多个页框不必相邻。需要新的页时按需从硬盘中调入新的页，而将内存中已经存放的且不再需要运行的页面及时删除，以腾出内存空间。因此进程将页装入内存的原则是<font color=red>局部装入，不断更新</font>。</p>
+<h3 id="752-页面调入策略"><a class="markdownIt-Anchor" href="#752-页面调入策略"></a> 7.5.2 页面调入策略</h3>
+<h4 id="预调策略"><a class="markdownIt-Anchor" href="#预调策略"></a> 预调策略</h4>
+<p>页面在需要前已经被调入内存，进程映像存放于外存之中，当调入其中一页时往往会将后续的连续多页一起调入。</p>
+<h4 id="请求调页策略"><a class="markdownIt-Anchor" href="#请求调页策略"></a> 请求调页策略</h4>
+<p>进程在运行时发现需要访问的页面不在内存时，临时提出调页请求由内核将所需的页面调入内存。</p>
+<h3 id="753-页式虚拟地址"><a class="markdownIt-Anchor" href="#753-页式虚拟地址"></a> 7.5.3 页式虚拟地址</h3>
+<p>进程空间的页式虚拟地址是一维线性地址，从0开始线性增加，若<font color=red>页式虚拟地址的宽度为m位，页大小为2<sup>n</sup>字节，那么虚拟地址的低n位为页内偏移地址，高m-n位为页号</font>。</p>
+<h3 id="754-页面映射表"><a class="markdownIt-Anchor" href="#754-页面映射表"></a> 7.5.4 页面映射表</h3>
+<p>系统建立页面映射表，记录进程的页和内存的页框之间的对应关系，页表用于记录每一个页面在内存中所占用页框的页框号以及其他使用特性（如信息保护、权限等）。</p>
+<p>每一条记录需要描述页号、页框号和其他属性。</p>
+<p>操作系统为每一个进程建立一个页表，页表长度和首地址存放在该进程的PCB中，当前运行进程的页表必须驻留在内存，页表长度和首地址由特殊的寄存器记录。</p>
+<h3 id="755-页式地址映射过程"><a class="markdownIt-Anchor" href="#755-页式地址映射过程"></a> 7.5.5 页式地址映射过程</h3>
+<p>页式地址映射就是将页式虚拟地址转化为物理内存地址的过程。</p>
+<p><font color=red>物理地址MA=页框号P’×页大小+页内偏移地址W</font></p>
+<h3 id="756-空闲页框管理"><a class="markdownIt-Anchor" href="#756-空闲页框管理"></a> 7.5.6 空闲页框管理</h3>
+<h3 id="757-快表"><a class="markdownIt-Anchor" href="#757-快表"></a> 7.5.7 快表</h3>
+<p>页表的实现方式将影响系统的效率，页表可以放在内存中，也可以放在cache中实现。</p>
+<p>实践中将页表中最近常用的部分条目（页表的一个子集，一般为16条）复制到快表中，进行地址映射时首先访问快表，如果在快表中找到数据则称为<font color=red>命中</font>。如果没有找到则访问慢表，并将慢表中的结果更新到快表中。页表的更新策略影响页表的命中率。</p>
+<h3 id="758-页面共享"><a class="markdownIt-Anchor" href="#758-页面共享"></a> 7.5.8 页面共享</h3>
+<p>页式存储管理共享内存的思想：将<font color=red>共享代码的页框映射到相关不同进程的页表中</font>，从而实现页面共享。共享页面在内存中只存储一份，可以有效节省内存。</p>
+<h3 id="759-缺页中断"><a class="markdownIt-Anchor" href="#759-缺页中断"></a> 7.5.9 缺页中断</h3>
+<h4 id="页表的扩充"><a class="markdownIt-Anchor" href="#页表的扩充"></a> 页表的扩充</h4>
+<p>实际上的页表除了页号和页框号之外还有其他的域：</p>
+<ul>
+<li>访问位：记录当前页面在一定时间内是否被访问过</li>
+<li>修改位：记录当前页面在一点时间内是否被修改过（脏位）</li>
+<li>中断位：记录当前页面是否已经装入内存</li>
+</ul>
+<h4 id="缺页中断"><a class="markdownIt-Anchor" href="#缺页中断"></a> 缺页中断</h4>
+<p>当进程需要新的页面，而该页面没有被加载到内存时，就会产生缺页异常。缺页中断指地址映射过程中，当<font color=red>所要访问的目的页不在内存中时系统产生的异常</font>。</p>
+<p>缺页中断处理程序在遇到缺页中断时<font color=red>将所缺的页从页表指出的辅存地址调入到内存某个页框中，并更新页表中该页对应的页框号以及修改中断位</font>。</p>
+<p>定义<font color=red>缺页率=缺页次数/访问页面总次数</font>，<font color=red>命中率=1-缺页率</font>。</p>
+<p>缺页中断和普通中断的异同点：</p>
+<ul>
+<li>处理过程均为保护现场、中断处理、恢复现场。</li>
+<li>普通中断在指令执行结束后响应，缺页中断在指令执行过程中发生；一条指令可能造成多次缺页中断。</li>
+</ul>
+<h3 id="7510-多级页表"><a class="markdownIt-Anchor" href="#7510-多级页表"></a> 7.5.10 多级页表</h3>
+<p>在多个进程并发的时候，多个页表将占据大量的内存，且页表必须连续存放，有时可能难以找到一块足够大的连续内存空间存放页表。因此引出多级页表的设计思路。</p>
+<p>二级页表的设计思路是将页表本身划分为若干个页面，每一个页面都是一个小的页表，小的页表可以离散保存在内存中。为了对小页表进行索引和查找，需要另外设置一个称为页目录的表存放每一个小页表所在的页框。<font color=red>页目录又称为外层页表或一级页表，小页表称为内层页表或二级页表</font>。</p>
+<p>页目录本身就是一个特殊的页表，不过每一个表项记录的是二级页表的序号与所在页框的关系。</p>
+<p>使用二级页表的好处就是不必将所有页表都保存在内存中。</p>
+<h3 id="7511-页面淘汰算法"><a class="markdownIt-Anchor" href="#7511-页面淘汰算法"></a> 7.5.11 页面淘汰算法</h3>
+<p>当缺页中断程序将所缺的页从辅存地址调入内存时，如果当前内存恰好没有空闲页框，就需要将内存中已有的页面淘汰一页。</p>
+<p>选择淘汰哪一页的算法称为页面淘汰算法。</p>
+<p>定义<font color=red>页面抖动为页面频繁在内存和辅存之间交换的现象</font>。页面抖动会导致系统效率降低。好的淘汰策略应该保证较少的抖动和较高的命中率。</p>
+<h4 id="最佳淘汰算法opt算法"><a class="markdownIt-Anchor" href="#最佳淘汰算法opt算法"></a> 最佳淘汰算法（OPT算法）</h4>
+<p><font color=red>淘汰以后不再需要的或最远的将来将要需要的页面</font>。采用这种算法可以保证最低的缺页率，但难以判断到底哪一页是最远的将来将会使用的页面，因此只能多用于理论分析。</p>
+<h4 id="先进先出淘汰算法fifo算法"><a class="markdownIt-Anchor" href="#先进先出淘汰算法fifo算法"></a> 先进先出淘汰算法（FIFO算法）</h4>
+<p><font color=red>该算法淘汰内存中已经停留时间最长的页面</font>。</p>
+<p>实现起来比较简单，只需要将各个页面按照装入顺序挂接在FIFO队列的末尾即可（实际上也可以使用每一页添加一个装入时间标志来判断，但是这样的话每一次淘汰都需要遍历所有的页，效率太低）</p>
+<p>优点：实现简单，进程按照顺序访问页面地址空间时页面抖动较少，缺页率较低<br />
+缺点：对于一些特定的访问序列，分配页框越多，缺页率越高</p>
+<h4 id="最久未使用淘汰算法lru算法"><a class="markdownIt-Anchor" href="#最久未使用淘汰算法lru算法"></a> 最久未使用淘汰算法（LRU算法）</h4>
+<p><font color=red>淘汰内存中最长时间未被使用的页面</font>。</p>
+<p>近似实现算法：利用页表访问位，页被访问时由硬件置1。页表访问位周期性被软件清零，当访问位为1时不可淘汰，访问位为0时表示可以淘汰。</p>
+<p>缺点：软件周期性清零的周期难以确定，如果太小则有很多页访问位都为0，如果太大则有很多页访问位都为1，都无法确定到底淘汰哪一页。</p>
+<h4 id="最不经常使用淘汰算法lfu算法"><a class="markdownIt-Anchor" href="#最不经常使用淘汰算法lfu算法"></a> 最不经常使用淘汰算法（LFU算法）</h4>
+<p><font color=red>淘汰当前时间为止访问次数最少的页面</font>。</p>
+<p>对每一页设置一个访问计数器，每当页面被访问时，访问计数器+1。发生缺页中断时查找计数器最小的页淘汰并将所有页的计数器清零。</p>
+<p>影响缺页次数的因素：</p>
+<ul>
+<li>页面越小，越容易缺页。</li>
+<li>分配给进程的页框数量越少，越容易缺页。</li>
+</ul>
+<p>因此程序局部性越好越不容易缺页，跳转越多越容易缺页。</p>
+<p>页面的常见大小为1KB、2KB、4KB<br />
+如果页面过大，则会浪费内存<br />
+如果页面过小，则会导致页表长度增加，浪费内存，且换页次数多，影响系统效率</p>
+<p>页式存储系统的不足：</p>
+<ul>
+<li>页面划分没有逻辑含义</li>
+<li>页面的共享不灵活</li>
+<li>页内碎片</li>
+</ul>
+<h2 id="76-段式存储管理系统"><a class="markdownIt-Anchor" href="#76-段式存储管理系统"></a> 7.6 段式存储管理系统</h2>
+<h3 id="761-段式管理的概念"><a class="markdownIt-Anchor" href="#761-段式管理的概念"></a> 7.6.1 段式管理的概念</h3>
+<p>段式存储管理系统允许程序员将进程按照逻辑意义划分为多个段，每一段有段名，长度不定。一个进程由多个段构成，一般一个进程都有代码段、数据段、堆栈段。</p>
+<p><font color=red>每个段的段内都从0开始编址，并占用一段连续的地址空间。每一个段的长度取决于段自身的内容，所以各个段的大小可以不等。</font></p>
+<h3 id="762-段式地址和段表"><a class="markdownIt-Anchor" href="#762-段式地址和段表"></a> 7.6.2 段式地址和段表</h3>
+<p>段式存储管理系统中的<font color=red>虚拟地址VA包含段号S和段内偏移地址W两个部分</font>。进程以段为单位装入内存，每一段分配连续的内存，段和段之间不要求相邻。</p>
+<p>进程的段在进行地址映射时，必须知道每一段内存中存放的位置，<font color=red>段表用于支持地址映射</font>的数据结构，类似于页式系统的页表。</p>
+<p>段表中记录每一段在内存中的映射的位置和相关的存取属性。段表的典型类型包含<font color=red>段号S、基址B、段长L</font>、可读R、可写W、可执行X、访问位、修改位、中断位等属性。</p>
+<h3 id="763-段式地址映射"><a class="markdownIt-Anchor" href="#763-段式地址映射"></a> 7.6.3 段式地址映射</h3>
+<p>进程执行一条指令时</p>
+<ul>
+<li>首先获取指令中的虚拟地址的段号S和段内偏移地址W，</li>
+<li>其次以段号S为索引，查找段表，找到对应表项中基址字段和段长字段，分别获得该段在内存中的起始地址B和段长L。</li>
+<li>利用段长L和偏移地址W进行合法性检查：如果W&lt;0或W&gt;L说明访问越界。</li>
+<li>计算物理地址，物理地址=基址B+段内偏移地址W。</li>
+</ul>
+<p>段的共享</p>
+<ul>
+<li>共享段在内存中只保存一份。</li>
+<li>共享段被进程映射到自己的内存空间（需要写入该进程的段表）。</li>
+<li>需要共享的模块都可以设置为单独的段。</li>
+</ul>
+<p>段式系统的缺点：段需要连续存储空间，最大尺寸受到内存大小的限制，在辅存中管理可变尺寸的段比较困难。</p>
+<p><font color=red>段式系统和页式系统的异同点</font>：</p>
+<ul>
+<li>页式系统是一维地址空间，段式系统是二维地址空间（段是一个维度，段内是一个维度）</li>
+<li>段长可变而一页的大小固定</li>
+<li>段的划分有意义，而页的划分无意义</li>
+<li>相对而言段更容易共享</li>
+<li>段对于用户可见，而页对于用户不可见</li>
+<li>段偏移存在溢出问题，而页偏移不存在</li>
+</ul>
+<h2 id="77-段页式存储管理系统"><a class="markdownIt-Anchor" href="#77-段页式存储管理系统"></a> 7.7 段页式存储管理系统</h2>
+<h3 id="771-段页式存储的概念"><a class="markdownIt-Anchor" href="#771-段页式存储的概念"></a> 7.7.1 段页式存储的概念</h3>
+<p>段页式系统的基本原理是段式存储和页式存储的组合，<font color=red>首先将用户程序分为若干个段，每一个段赋予一个段名，然后将每个段分为若干页</font>。</p>
+<h3 id="772-段页式地址和地址映射"><a class="markdownIt-Anchor" href="#772-段页式地址和地址映射"></a> 7.7.2 段页式地址和地址映射</h3>
+<p>段页式存储管理系统中，进程中各个段依然具有二维地址空间：段号和段内偏移。段内偏移被分解为页号和页内偏移地址。因此<font color=red>段页式地址由3部分组成：段号、页号和页内偏移地址</font>。</p>
+<p>段页式地址的映射机构：</p>
+<ul>
+<li>内存按照页进行划分，按照页进行装入</li>
+<li>同时采用段表和页表进行地址映射
+<ul>
+<li>系统为每一个进程创建一个段表，为每一个段创建一个页表</li>
+<li>段表给出每一段的长度和起始地址</li>
+<li>页表给出每一页对应的页框</li>
+</ul>
+</li>
+</ul>
+<h2 id="78-ia-32-cpu内存管理机制"><a class="markdownIt-Anchor" href="#78-ia-32-cpu内存管理机制"></a> 7.8 IA-32 CPU内存管理机制</h2>
+<h3 id="781-实模式和保护模式"><a class="markdownIt-Anchor" href="#781-实模式和保护模式"></a> 7.8.1 实模式和保护模式</h3>
+<h4 id="实模式"><a class="markdownIt-Anchor" href="#实模式"></a> 实模式</h4>
+<p>计算机在加电前的一段短时间内处于实模式。</p>
+<p>实模式内存空间为20位，即1MB物理地址空间，分段机制为段地址16位+偏移地址16位，<font color=red>物理地址=段地址左移4位+偏移地址</font>。</p>
+<h4 id="保护模式"><a class="markdownIt-Anchor" href="#保护模式"></a> 保护模式</h4>
+<p>保护模式下依然为段地址16位+偏移地址16位的形式，但物理地址计算方式不同，书中原话：操作系统会通过一定的方法从这个“段地址”里面辗转多次获得真正的“段地址”，再和偏移地址相加获得物理地址。</p>
+<p>保护模式优化的分段管理机制，支持分页管理机制，共可寻址4GB空间。CPU支持多任务，支持特权级机制，可以使用扩展寄存器和一些新增的寄存器。</p>
+<p><font color=red>可以使用的5个控制寄存器：CR0~CR4</font>。</p>
+<ul>
+<li>CR0含有控制CPU操作模式的控制位和表示系统状态的标志位。第0位是PE位用于切换保护模式和实模式，第31位为PG位用于启动分页机制。</li>
+<li>CR1保留未用。</li>
+<li>CR2含有缺页中断的线性地址，又称页故障线性地址寄存器。缺页中断时CPU将引起缺页异常的线性地址保存在CR2中，由缺页中断处理程序对其进行处理。</li>
+<li>CR3含有页目录的物理内存基地址，又称页目录基地址寄存器PDBR，CR3仅有高20位用于标识地址，低12位用于其他用途。</li>
+<li>CR4包含虚拟8086模式扩展位、保护模式虚拟中断位、禁止RDTSC指令位等较为特殊的控制位。</li>
+</ul>
+<h3 id="782-段与段描述符"><a class="markdownIt-Anchor" href="#782-段与段描述符"></a> 7.8.2 段与段描述符</h3>
+<p>段是保护模式下一个重要的概念，指一段连续的内存。在保护模式下，对于任何一个内存单元的存取，都会被系统使用这个单元所在段的存取属性对该操作进行检验。</p>
+<p><font color=red>段的属性称为段描述符</font>，共8字节，描述有段的段基址、段限长和段属性（段类型、访问该段需要的最小特权级、是否在内存中等）。</p>
+<p><img src="https://img-blog.csdnimg.cn/57fb31ee58fd46f78df07fdc3e490a1a.png" alt="" /></p>
+<h4 id="段基地址域"><a class="markdownIt-Anchor" href="#段基地址域"></a> 段基地址域</h4>
+<p>第2、3、4、7字节，指明段在4GB的线性地址空间中所处的位置。其可以是0~4GB范围内任意地址。</p>
+<h4 id="段限长域"><a class="markdownIt-Anchor" href="#段限长域"></a> 段限长域</h4>
+<p>第0、1字节和第6字节低4位，实际上是由段描述符中两个分离的字段组合成一个20位的值。段限长实际上是最大的段内偏移值，其仅仅是一个数字，<font color=red>长度单位由段属性域中的颗粒度标识域G指定</font>。如果G=0，则该域中数字的单位是字节，此时段长最大为1MB；如果G=1，则数字的单位是页，此时段长最大可以为4GB。</p>
+<h4 id="段属性域"><a class="markdownIt-Anchor" href="#段属性域"></a> 段属性域</h4>
+<p><font color=red>描述符特权级别DPL</font>：描述符的特权级，范围从0到3。<br />
+<font color=red>描述符类型标志域S</font>：仅1位，描述段的类型是存储段还是非存储段。存储段指的是这个段存放的是可以由程序直接访问的代码或数据，因此存储段含代码段和数据段两种。存储段描述符也分为代码段描述符和数据段描述符两种（堆栈段属于数据段），S=0表示是系统描述符，描述一段特殊的内存。<br />
+<font color=red>描述符访问类型标志域TYPE</font>：4位，指定段或者门的类型，段的访问种类以及段的扩展方向。具体含义依赖于描述符类型域S。<br />
+<font color=red>段存在标志域P</font>：指出一个段是否在内存中，=1表示在内存中。</p>
+<h3 id="783-描述符表与段选择子"><a class="markdownIt-Anchor" href="#783-描述符表与段选择子"></a> 7.8.3 描述符表与段选择子</h3>
+<p>所有段在使用之前都需要建立描述符表，每一个段描述符占用8KB空间，所有的段描述符集中存放于内存某个区域中，一个接着一个构成描述符表。IA-32 CPU中有3种描述符表，只介绍前面两种：<font color=red>全局描述符表GDT和局部描述符表LDT</font>。</p>
+<h4 id="全局描述符表"><a class="markdownIt-Anchor" href="#全局描述符表"></a> 全局描述符表</h4>
+<p>GDT中包含所有进程可以共用的段的描述符。每个CPU只能有1个GDT，其包含的内存段往往是全局性的，是每一个进程都能够访问的段或者用于系统全局管理的段。</p>
+<p>GDTR：48位的寄存器，保存GDT的入口，即全局描述符表寄存器。高32位为GDT在内存中的起始地址，低16位在数值上等于GDT的大小-1。</p>
+<h4 id="段选择子"><a class="markdownIt-Anchor" href="#段选择子"></a> 段选择子</h4>
+<p>GDT中有多个段描述符，如果需要选择其中的一个并通过该段描述符选择对应的段，则需要知道该段描述符在GDT的位置。</p>
+<p><font color=red>段选择子是记录段描述符在描述符表中索引的数据结构</font>，共16位包含3个域。</p>
+<ul>
+<li>索引域，高13位，记录描述符在描述符表中的索引，索引值从0开始。</li>
+<li>TI域，中间1位，指明所在描述符表是GDT还是LDT。TI=1从LDT中选择，否则从GDT中选择。</li>
+<li>特权级域，低2位，描述对请求者最低特权级的限制。</li>
+</ul>
+<p><font color=red>保护模式中，段寄存器记录的是段描述符的索引，通过该索引找到段描述符，然后通过段描述符中的段基址域找到该段。</font></p>
+<h4 id="局部描述符表"><a class="markdownIt-Anchor" href="#局部描述符表"></a> 局部描述符表</h4>
+<p>LDT与特定任务相关，<font color=red>用于容纳仅属于该任务的段描述符</font>。每个进程/任务都有一个LDT，LDT本身也有对应的描述符称为LDT描述符，描述LDT的基地址，<font color=red>LDT描述符是全局性的，存放于GDT中</font>。因此如果需要找到LDT的基地址需要首先从GDT中找到LDT描述符。</p>
+<p>CPU中有一个局部描述符表寄存器LDTR，16位，存放LDT描述符对应的段选择子，通过该段选择子可以在GDT中找到LDT描述符，然后找到LDT。</p>
+<h2 id="79-linux内存管理"><a class="markdownIt-Anchor" href="#79-linux内存管理"></a> 7.9 Linux内存管理</h2>
+<h3 id="791-linux内存管理概述"><a class="markdownIt-Anchor" href="#791-linux内存管理概述"></a> 7.9.1 Linux内存管理概述</h3>
+<p>Linux使用三级页表机制，从最外层到最里层依次是<font color=red>页全局目录PGD、页中间目录PMD和页表PT</font>。</p>
+<p>线性地址从高到低被分为<font color=red>PGD索引域（10位）、PMD索引域（在32位系统中为0位，在64位系统中才使用）、PT索引域（10位）和页内偏移域（12位）</font>4个部分。当前进程的PGD基址存放于CR3寄存器中。</p>
+<h2 id="例题"><a class="markdownIt-Anchor" href="#例题"></a> 例题</h2>
+<p>本章的例题涉及计算的部分比较多。</p>
+<h3 id="1-分区分配策略问题"><a class="markdownIt-Anchor" href="#1-分区分配策略问题"></a> 1. 分区分配策略问题</h3>
+<p>某计算机内存大小为1MB，某时刻其内存使用情况如下：<br />
+00000H~1EFFFH（124KB）：正在使用<br />
+1F000H~1FFFFH（4KB）：空闲<br />
+20000H~27FFFH（32KB）：正在使用<br />
+28000H~2FFFFH（32KB）：空闲<br />
+30000H~32FFFH（12KB）：正在使用<br />
+33000H~34FFFH（8KB）：空闲<br />
+35000H~37FFFH（12KB）：正在使用<br />
+38000H~5FFFFH（160KB）：空闲<br />
+60000H~EFFFFH（576KB）：正在使用<br />
+F0000H~FFFFFH（64KB）：空闲</p>
+<p>画出3种分区分配策略（首次适应、最佳适应、最坏适应）对应于该内存环境的空闲区表，并处理下列内存分配请求：2KB、48KB、128KB、20KB。</p>
+<p>解：<br />
+首次适应算法按照地址排序——</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1F000H~1FFFFH</td>
+<td style="text-align:center">4KB</td>
+</tr>
+<tr>
+<td style="text-align:center">28000H~2FFFFH</td>
+<td style="text-align:center">32KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">38000H~5FFFFH</td>
+<td style="text-align:center">160KB</td>
+</tr>
+<tr>
+<td style="text-align:center">F0000H~FFFFFH</td>
+<td style="text-align:center">64KB</td>
+</tr>
+</tbody>
+</table>
+<p>首次适应算法顺序查找，使用第一个大小大于请求的内存块进行分配。</p>
+<p>2KB分配到1F000H~1F7FFH。<br />
+48KB分配到38000H~43FFFH。<br />
+128KB无法分配。<br />
+20KB分配到28000H~2CFFFH。</p>
+<p>分配后空闲区表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1F800H~1FFFFH</td>
+<td style="text-align:center">2KB</td>
+</tr>
+<tr>
+<td style="text-align:center">2D000H~2FFFFH</td>
+<td style="text-align:center">12KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">44000H~5FFFFH</td>
+<td style="text-align:center">112KB</td>
+</tr>
+<tr>
+<td style="text-align:center">F0000H~FFFFFH</td>
+<td style="text-align:center">64KB</td>
+</tr>
+</tbody>
+</table>
+<p>最佳适应算法按照空闲块从小到大排序：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1F000H~1FFFFH</td>
+<td style="text-align:center">4KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">28000H~2FFFFH</td>
+<td style="text-align:center">32KB</td>
+</tr>
+<tr>
+<td style="text-align:center">F0000H~FFFFFH</td>
+<td style="text-align:center">64KB</td>
+</tr>
+<tr>
+<td style="text-align:center">38000H~5FFFFH</td>
+<td style="text-align:center">160KB</td>
+</tr>
+</tbody>
+</table>
+<p>2KB分配到1F000H~1F7FFH。<br />
+48KB分配到F0000H~FBFFFH。<br />
+128KB分配到38000H~57FFFH。<br />
+20KB分配到28000H~2CFFFH。</p>
+<p>分配后空闲区表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1F800H~1FFFFH</td>
+<td style="text-align:center">2KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">2D000H~2FFFFH</td>
+<td style="text-align:center">12KB</td>
+</tr>
+<tr>
+<td style="text-align:center">FC000H~FFFFFH</td>
+<td style="text-align:center">16KB</td>
+</tr>
+<tr>
+<td style="text-align:center">58000H~5FFFFH</td>
+<td style="text-align:center">32KB</td>
+</tr>
+</tbody>
+</table>
+<p>最坏适应算法按照空闲区从大到小排序：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">38000H~5FFFFH</td>
+<td style="text-align:center">160KB</td>
+</tr>
+<tr>
+<td style="text-align:center">F0000H~FFFFFH</td>
+<td style="text-align:center">64KB</td>
+</tr>
+<tr>
+<td style="text-align:center">28000H~2FFFFH</td>
+<td style="text-align:center">32KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">1F000H~1FFFFH</td>
+<td style="text-align:center">4KB</td>
+</tr>
+</tbody>
+</table>
+<p>2KB分配到38000H~387FFH。<br />
+48KB分配到38800H~447FFH。<br />
+128KB无法分配。<br />
+20KB分配到44800H~497FFH。</p>
+<p>分配后空闲区表：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">地址</th>
+<th style="text-align:center">大小</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">49800H~5FFFFH</td>
+<td style="text-align:center">90KB</td>
+</tr>
+<tr>
+<td style="text-align:center">F0000H~FFFFFH</td>
+<td style="text-align:center">64KB</td>
+</tr>
+<tr>
+<td style="text-align:center">28000H~2FFFFH</td>
+<td style="text-align:center">32KB</td>
+</tr>
+<tr>
+<td style="text-align:center">33000H~34FFFH</td>
+<td style="text-align:center">8KB</td>
+</tr>
+<tr>
+<td style="text-align:center">1F000H~1FFFFH</td>
+<td style="text-align:center">4KB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-页面淘汰算法"><a class="markdownIt-Anchor" href="#2-页面淘汰算法"></a> 2. 页面淘汰算法</h3>
+<p>某计算机的快表可以保存4页内容，接下来计算机的页访问序列为：1、3、2、5、4、5、3、3、2、1、4、2、3、2，求出4种页面淘汰算法的快表命中率。（一开始快表均为空）</p>
+<p>最优淘汰算法：</p>
+<ul>
+<li>1 3 2 5 4 5 3 3 2 1 4 2 3 2</li>
+<li>× × × × × √ √ √ √ x √ √ √ √</li>
+<li>1 1 1 1 4 4 4 4 4 4 4 4 4 4</li>
+<li>0 3 3 3 3 3 3 3 3 3 3 3 3 3</li>
+<li>0 0 2 2 2 2 2 2 2 2 2 2 2 2</li>
+<li>0 0 0 5 5 5 5 5 5 1 1 1 1 1</li>
+</ul>
+<p>命中率为8/14。</p>
+<p>先进先出淘汰算法：</p>
+<ul>
+<li>1 3 2 5 4 5 3 3 2 1 4 2 3 2</li>
+<li>× × × × × √ √ √ √ x √ √ x x</li>
+<li>1 1 1 1 4 4 4 4 4 4 4 4 4 4</li>
+<li>0 3 3 3 3 3 3 3 3 1 1 1 1 1</li>
+<li>0 0 2 2 2 2 2 2 2 2 2 2 3 3</li>
+<li>0 0 0 5 5 5 5 5 5 5 5 5 5 2</li>
+</ul>
+<p>命中率为6/14。</p>
+<p>最久未使用淘汰算法：</p>
+<ul>
+<li>1 3 2 5 4 5 3 3 2 1 4 2 3 2</li>
+<li>× × × × × √ √ √ √ x x √ √ √</li>
+<li>1 1 1 1 4 4 4 4 4 1 1 1 1 1</li>
+<li>0 3 3 3 3 3 3 3 3 3 3 3 3 3</li>
+<li>0 0 2 2 2 2 2 2 2 2 2 2 2 2</li>
+<li>0 0 0 5 5 5 5 5 5 5 4 4 4 4</li>
+</ul>
+<p>命中率为7/14。</p>
+<p>最不经常使用淘汰算法</p>
+<ul>
+<li>1 3 2 5 4 5 3 3 2 1 4 2 3 2</li>
+<li>× × × × × √ √ √ √ x x x √ √</li>
+<li>1 1 1 1 4 4 4 4 4 1 1 1 1 1</li>
+<li>0 3 3 3 3 3 3 3 3 3 3 3 3 3</li>
+<li>0 0 2 2 2 2 2 2 2 2 4 2 2 2</li>
+<li>0 0 0 5 5 5 5 5 5 5 5 5 5 5</li>
+</ul>
+<p>命中率为6/14。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" rel="prev" title="操作系统原理——第6章">
+      <i class="fa fa-chevron-left"></i> 操作系统原理——第6章
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/" rel="next" title="操作系统原理——第8章">
+      操作系统原理——第8章 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#chapter-7-%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text"> Chapter 7 存储管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#71-%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text"> 7.1 存储管理概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#711-%E5%A4%9A%E7%BA%A7%E5%AD%98%E5%82%A8%E4%BD%93%E7%B3%BB"><span class="nav-number">1.1.1.</span> <span class="nav-text"> 7.1.1 多级存储体系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#712-%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E7%9A%84%E5%8A%9F%E8%83%BD"><span class="nav-number">1.1.2.</span> <span class="nav-text"> 7.1.2 存储管理的功能</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.1.2.1.</span> <span class="nav-text"> 地址映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8"><span class="nav-number">1.1.2.2.</span> <span class="nav-text"> 虚拟存储</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-number">1.1.2.3.</span> <span class="nav-text"> 内存分配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%85%B1%E4%BA%AB%E4%B8%8E%E4%BF%9D%E6%8A%A4"><span class="nav-number">1.1.2.4.</span> <span class="nav-text"> 存储共享与保护</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#72-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.2.</span> <span class="nav-text"> 7.2 地址映射</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#721-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 7.2.1 地址映射的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#722-%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 7.2.2 地址映射的方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BA%E5%AE%9A%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.2.2.1.</span> <span class="nav-text"> 固定地址映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.2.2.2.</span> <span class="nav-text"> 静态地址映射</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.2.2.3.</span> <span class="nav-text"> 动态地址映射</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#73-%E5%88%86%E5%8C%BA%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.3.</span> <span class="nav-text"> 7.3 分区存储管理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#731-%E5%88%86%E5%8C%BA%E5%AD%98%E5%82%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.3.1.</span> <span class="nav-text"> 7.3.1 分区存储的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#732-%E5%8D%95%E4%B8%80%E5%88%86%E5%8C%BA%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.2.</span> <span class="nav-text"> 7.3.2 单一分区管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#733-%E5%9B%BA%E5%AE%9A%E5%88%86%E5%8C%BA%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.3.</span> <span class="nav-text"> 7.3.3 固定分区管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#734-%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.4.</span> <span class="nav-text"> 7.3.4 动态内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#735-%E5%86%85%E5%AD%98%E7%A2%8E%E7%89%87"><span class="nav-number">1.3.5.</span> <span class="nav-text"> 7.3.5 内存碎片</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#736-%E5%88%86%E5%8C%BA%E5%9B%9E%E6%94%B6%E7%AE%A1%E7%90%86"><span class="nav-number">1.3.6.</span> <span class="nav-text"> 7.3.6 分区回收管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#737-%E5%88%86%E5%8C%BA%E5%88%86%E9%85%8D%E4%B8%8E%E6%94%BE%E7%BD%AE%E7%AD%96%E7%95%A5"><span class="nav-number">1.3.7.</span> <span class="nav-text"> 7.3.7 分区分配与放置策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A6%96%E6%AC%A1%E9%80%82%E5%BA%94%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.7.1.</span> <span class="nav-text"> 首次适应算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E9%80%82%E5%BA%94%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.7.2.</span> <span class="nav-text"> 最佳适应算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E5%9D%8F%E9%80%82%E5%BA%94%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.7.3.</span> <span class="nav-text"> 最坏适应算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#75-%E9%A1%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.4.</span> <span class="nav-text"> 7.5 页式存储管理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#751-%E9%A1%B5%E5%BC%8F%E7%AE%A1%E7%90%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.4.1.</span> <span class="nav-text"> 7.5.1 页式管理的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#752-%E9%A1%B5%E9%9D%A2%E8%B0%83%E5%85%A5%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.2.</span> <span class="nav-text"> 7.5.2 页面调入策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%84%E8%B0%83%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.2.1.</span> <span class="nav-text"> 预调策略</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E8%B0%83%E9%A1%B5%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.2.2.</span> <span class="nav-text"> 请求调页策略</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#753-%E9%A1%B5%E5%BC%8F%E8%99%9A%E6%8B%9F%E5%9C%B0%E5%9D%80"><span class="nav-number">1.4.3.</span> <span class="nav-text"> 7.5.3 页式虚拟地址</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#754-%E9%A1%B5%E9%9D%A2%E6%98%A0%E5%B0%84%E8%A1%A8"><span class="nav-number">1.4.4.</span> <span class="nav-text"> 7.5.4 页面映射表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#755-%E9%A1%B5%E5%BC%8F%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84%E8%BF%87%E7%A8%8B"><span class="nav-number">1.4.5.</span> <span class="nav-text"> 7.5.5 页式地址映射过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#756-%E7%A9%BA%E9%97%B2%E9%A1%B5%E6%A1%86%E7%AE%A1%E7%90%86"><span class="nav-number">1.4.6.</span> <span class="nav-text"> 7.5.6 空闲页框管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#757-%E5%BF%AB%E8%A1%A8"><span class="nav-number">1.4.7.</span> <span class="nav-text"> 7.5.7 快表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#758-%E9%A1%B5%E9%9D%A2%E5%85%B1%E4%BA%AB"><span class="nav-number">1.4.8.</span> <span class="nav-text"> 7.5.8 页面共享</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#759-%E7%BC%BA%E9%A1%B5%E4%B8%AD%E6%96%AD"><span class="nav-number">1.4.9.</span> <span class="nav-text"> 7.5.9 缺页中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A1%B5%E8%A1%A8%E7%9A%84%E6%89%A9%E5%85%85"><span class="nav-number">1.4.9.1.</span> <span class="nav-text"> 页表的扩充</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BC%BA%E9%A1%B5%E4%B8%AD%E6%96%AD"><span class="nav-number">1.4.9.2.</span> <span class="nav-text"> 缺页中断</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7510-%E5%A4%9A%E7%BA%A7%E9%A1%B5%E8%A1%A8"><span class="nav-number">1.4.10.</span> <span class="nav-text"> 7.5.10 多级页表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7511-%E9%A1%B5%E9%9D%A2%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.11.</span> <span class="nav-text"> 7.5.11 页面淘汰算法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%BD%B3%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95opt%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.11.1.</span> <span class="nav-text"> 最佳淘汰算法（OPT算法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%88%E8%BF%9B%E5%85%88%E5%87%BA%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95fifo%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.11.2.</span> <span class="nav-text"> 先进先出淘汰算法（FIFO算法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%B9%85%E6%9C%AA%E4%BD%BF%E7%94%A8%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95lru%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.11.3.</span> <span class="nav-text"> 最久未使用淘汰算法（LRU算法）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%80%E4%B8%8D%E7%BB%8F%E5%B8%B8%E4%BD%BF%E7%94%A8%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95lfu%E7%AE%97%E6%B3%95"><span class="nav-number">1.4.11.4.</span> <span class="nav-text"> 最不经常使用淘汰算法（LFU算法）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#76-%E6%AE%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.5.</span> <span class="nav-text"> 7.6 段式存储管理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#761-%E6%AE%B5%E5%BC%8F%E7%AE%A1%E7%90%86%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.5.1.</span> <span class="nav-text"> 7.6.1 段式管理的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#762-%E6%AE%B5%E5%BC%8F%E5%9C%B0%E5%9D%80%E5%92%8C%E6%AE%B5%E8%A1%A8"><span class="nav-number">1.5.2.</span> <span class="nav-text"> 7.6.2 段式地址和段表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#763-%E6%AE%B5%E5%BC%8F%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.5.3.</span> <span class="nav-text"> 7.6.3 段式地址映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#77-%E6%AE%B5%E9%A1%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.6.</span> <span class="nav-text"> 7.7 段页式存储管理系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#771-%E6%AE%B5%E9%A1%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="nav-number">1.6.1.</span> <span class="nav-text"> 7.7.1 段页式存储的概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#772-%E6%AE%B5%E9%A1%B5%E5%BC%8F%E5%9C%B0%E5%9D%80%E5%92%8C%E5%9C%B0%E5%9D%80%E6%98%A0%E5%B0%84"><span class="nav-number">1.6.2.</span> <span class="nav-text"> 7.7.2 段页式地址和地址映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#78-ia-32-cpu%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%9C%BA%E5%88%B6"><span class="nav-number">1.7.</span> <span class="nav-text"> 7.8 IA-32 CPU内存管理机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#781-%E5%AE%9E%E6%A8%A1%E5%BC%8F%E5%92%8C%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.1.</span> <span class="nav-text"> 7.8.1 实模式和保护模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.1.1.</span> <span class="nav-text"> 实模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%9D%E6%8A%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.1.2.</span> <span class="nav-text"> 保护模式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#782-%E6%AE%B5%E4%B8%8E%E6%AE%B5%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">1.7.2.</span> <span class="nav-text"> 7.8.2 段与段描述符</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AE%B5%E5%9F%BA%E5%9C%B0%E5%9D%80%E5%9F%9F"><span class="nav-number">1.7.2.1.</span> <span class="nav-text"> 段基地址域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AE%B5%E9%99%90%E9%95%BF%E5%9F%9F"><span class="nav-number">1.7.2.2.</span> <span class="nav-text"> 段限长域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AE%B5%E5%B1%9E%E6%80%A7%E5%9F%9F"><span class="nav-number">1.7.2.3.</span> <span class="nav-text"> 段属性域</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#783-%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8%E4%B8%8E%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="nav-number">1.7.3.</span> <span class="nav-text"> 7.8.3 描述符表与段选择子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="nav-number">1.7.3.1.</span> <span class="nav-text"> 全局描述符表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AE%B5%E9%80%89%E6%8B%A9%E5%AD%90"><span class="nav-number">1.7.3.2.</span> <span class="nav-text"> 段选择子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E6%8F%8F%E8%BF%B0%E7%AC%A6%E8%A1%A8"><span class="nav-number">1.7.3.3.</span> <span class="nav-text"> 局部描述符表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#79-linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.8.</span> <span class="nav-text"> 7.9 Linux内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#791-linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E6%A6%82%E8%BF%B0"><span class="nav-number">1.8.1.</span> <span class="nav-text"> 7.9.1 Linux内存管理概述</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">1.9.</span> <span class="nav-text"> 例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%86%E5%8C%BA%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5%E9%97%AE%E9%A2%98"><span class="nav-number">1.9.1.</span> <span class="nav-text"> 1. 分区分配策略问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%A1%B5%E9%9D%A2%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95"><span class="nav-number">1.9.2.</span> <span class="nav-text"> 2. 页面淘汰算法</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">987k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">14:58</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="第7章习题详解  1. Cache是三级存储体系中速度最快（√），容量最大（×，最小）的一类  2. 固定地址映射由程序员或编译器完成地址映射，容易产生地址冲突，运行失败。（√）  3. 存储保护功能是指防止访问越界和防止访问越权。（√）  4. 静态地址映射和动态地址映射计算物理地址时都是用虚拟地址加上基址。（√，计算物理地址的公式：MA&#x3D;BA+VA）  5. 虚拟内存管理的目标之一是使得大的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统原理——第7章习题">
+<meta property="og:url" content="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="第7章习题详解  1. Cache是三级存储体系中速度最快（√），容量最大（×，最小）的一类  2. 固定地址映射由程序员或编译器完成地址映射，容易产生地址冲突，运行失败。（√）  3. 存储保护功能是指防止访问越界和防止访问越权。（√）  4. 静态地址映射和动态地址映射计算物理地址时都是用虚拟地址加上基址。（√，计算物理地址的公式：MA&#x3D;BA+VA）  5. 虚拟内存管理的目标之一是使得大的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-03-03T01:13:02.000Z">
+<meta property="article:modified_time" content="2023-03-03T01:16:18.080Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>操作系统原理——第7章习题 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统原理——第7章习题
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:13:02 / Modified: 09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:13:02+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>1 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="第7章习题详解"><a class="markdownIt-Anchor" href="#第7章习题详解"></a> 第7章习题详解</h1>
+<h2 id="1"><a class="markdownIt-Anchor" href="#1"></a> 1.</h2>
+<p>Cache是三级存储体系中速度最快（√），容量最大（×，最小）的一类</p>
+<h2 id="2"><a class="markdownIt-Anchor" href="#2"></a> 2.</h2>
+<p>固定地址映射由程序员或编译器完成地址映射，容易产生地址冲突，运行失败。（√）</p>
+<h2 id="3"><a class="markdownIt-Anchor" href="#3"></a> 3.</h2>
+<p>存储保护功能是指防止访问越界和防止访问越权。（√）</p>
+<h2 id="4"><a class="markdownIt-Anchor" href="#4"></a> 4.</h2>
+<p>静态地址映射和动态地址映射计算物理地址时都是用虚拟地址加上基址。（√，计算物理地址的公式：MA=BA+VA）</p>
+<h2 id="5"><a class="markdownIt-Anchor" href="#5"></a> 5.</h2>
+<p>虚拟内存管理的目标之一是使得大的程序能在较小的内存中运行。（√，使大的程序能够在较小的内存中运行的机制为虚拟存储，即借助辅存扩大逻辑上的内存空间）</p>
+<h2 id="6"><a class="markdownIt-Anchor" href="#6"></a> 6.</h2>
+<p>采用固定分区的系统在程序装入前，内存已被分区，且每个分区大小都相同（×，每一个分区的大小不一定相同），不再改变。</p>
+<h2 id="7"><a class="markdownIt-Anchor" href="#7"></a> 7.</h2>
+<p>动态分区容易产生碎片。（√，动态分区容易产生外部碎片）</p>
+<h2 id="8"><a class="markdownIt-Anchor" href="#8"></a> 8.</h2>
+<p>内存碎片是指内存损坏而导致不能使用的区域。（×，内存碎片是指内存被反复分割之后剩下的一些小的空闲区，它们难以被操作系统利用）</p>
+<h2 id="9"><a class="markdownIt-Anchor" href="#9"></a> 9.</h2>
+<p>在页式地址映射过程中，快表的作用是尽量减少内存访问次数。（√，快表存放于cache中，访问速度比内存块，将内存的部分内容保存到快表中可以减少内存访问次数，提高系统效率）</p>
+<h2 id="10"><a class="markdownIt-Anchor" href="#10"></a> 10.</h2>
+<p>缺页中断处理程序的作用就是把相应页面的数据从写入到硬盘中。（×，缺页中断处理程序的作用是将相应页面的数据从辅存写入到内存中）</p>
+<h2 id="11"><a class="markdownIt-Anchor" href="#11"></a> 11.</h2>
+<p>最佳算法（OPT算法）淘汰以后不再需要或最远的将来才会用到的页面，是实际应用中性能最好的淘汰算法。（×，实际应用中由于无法预测表中哪一页不再需要或在最远的将来才会需要，因此无法应用于实际）</p>
+<h2 id="12"><a class="markdownIt-Anchor" href="#12"></a> 12.</h2>
+<p>采用内存覆盖技术存储系统，调入一个模块时可以临时将其随意放在一个足够大的覆盖区上。（×，不能将其随意放在一个足够大的覆盖区。覆盖技术的目的是实现小内存运行大程序，基本思路是将程序分为多个模块，需要哪一个模块就将其装入到内存中，不需要则放到辅存中，因此在内存紧张的情况下，可能无法找到一个足够大的覆盖区，所以需要提前设计好如何装入。）</p>
+<h2 id="13"><a class="markdownIt-Anchor" href="#13"></a> 13.</h2>
+<p>使用内存交换技术可以增加进程并发数。（√，内存交换技术让等待的进程迁出内存，可以增加进程的并发数，实现在小内存运行多个程序的目的）</p>
+<h2 id="14"><a class="markdownIt-Anchor" href="#14"></a> 14.</h2>
+<p>提高程序的局部性可以有效降低系统的缺页率。（√，提高程序的局部性可以让程序集中地访问邻近几页的内容，可以直接通过cache进行访问，降低系统的缺页率）</p>
+<h2 id="15"><a class="markdownIt-Anchor" href="#15"></a> 15.</h2>
+<p>段页式系统的地址映射过程既需要段表，也需要页表，而且段表和页表都需要多个。（×，一个进程只需要一个段表，每一个段表需要配备一个页表，因此一个进程一般有多个页表）</p>
+<h2 id="16"><a class="markdownIt-Anchor" href="#16"></a> 16.</h2>
+<p>控制寄存器CR0的PG位作用是控制实模式和保护模式的选择。（×，PG位是用于控制是否将内存进行分页，在位0的PE位才是实模式和保护模式的选择）</p>
+<h2 id="17"><a class="markdownIt-Anchor" href="#17"></a> 17.</h2>
+<p>保护模式下，CS，DS存储的是相应段的基址。（×，保护模式中，段寄存器记录的是段描述符的索引，通过该索引找到段描述符，然后通过段描述符中的段基址域找到该段。）</p>
+<h2 id="18"><a class="markdownIt-Anchor" href="#18"></a> 18.</h2>
+<p>描述符表（Descriptor Table）以8字节为单位存储段的描述符。（√，段描述符一个8字节）</p>
+<h2 id="19"><a class="markdownIt-Anchor" href="#19"></a> 19.</h2>
+<p>选择子作用是选择描述符表中某个描述符。（√，段选择子是记录段描述符在描述符表中索引的数据结构）</p>
+<h2 id="20"><a class="markdownIt-Anchor" href="#20"></a> 20.</h2>
+<p>二级页表机制中，页表和页目录大小都是4K。（√）</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4-6%E7%AB%A0%E4%B9%A0%E9%A2%98/" rel="prev" title="操作系统原理——第4~6章习题">
+      <i class="fa fa-chevron-left"></i> 操作系统原理——第4~6章习题
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98%E8%AF%A6%E8%A7%A3"><span class="nav-number">1.</span> <span class="nav-text"> 第7章习题详解</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1"><span class="nav-number">1.1.</span> <span class="nav-text"> 1.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2"><span class="nav-number">1.2.</span> <span class="nav-text"> 2.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3"><span class="nav-number">1.3.</span> <span class="nav-text"> 3.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4"><span class="nav-number">1.4.</span> <span class="nav-text"> 4.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5"><span class="nav-number">1.5.</span> <span class="nav-text"> 5.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6"><span class="nav-number">1.6.</span> <span class="nav-text"> 6.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7"><span class="nav-number">1.7.</span> <span class="nav-text"> 7.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8"><span class="nav-number">1.8.</span> <span class="nav-text"> 8.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9"><span class="nav-number">1.9.</span> <span class="nav-text"> 9.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10"><span class="nav-number">1.10.</span> <span class="nav-text"> 10.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#11"><span class="nav-number">1.11.</span> <span class="nav-text"> 11.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#12"><span class="nav-number">1.12.</span> <span class="nav-text"> 12.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#13"><span class="nav-number">1.13.</span> <span class="nav-text"> 13.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#14"><span class="nav-number">1.14.</span> <span class="nav-text"> 14.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#15"><span class="nav-number">1.15.</span> <span class="nav-text"> 15.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#16"><span class="nav-number">1.16.</span> <span class="nav-text"> 16.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#17"><span class="nav-number">1.17.</span> <span class="nav-text"> 17.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#18"><span class="nav-number">1.18.</span> <span class="nav-text"> 18.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#19"><span class="nav-number">1.19.</span> <span class="nav-text"> 19.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#20"><span class="nav-number">1.20.</span> <span class="nav-text"> 20.</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">112</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">987k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">14:58</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
