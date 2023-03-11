@@ -150,6 +150,258 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第5章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:44:36 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:36+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-5-windows-pe病毒"><a class="markdownIt-Anchor" href="#chapter-5-windows-pe病毒"></a> Chapter 5 Windows PE病毒</h1>
+<h2 id="51-基本概念"><a class="markdownIt-Anchor" href="#51-基本概念"></a> 5.1 基本概念</h2>
+<p>PE病毒：以Windows PE程序为载体，能寄生于PE文件，或Windows系统的病毒程序。<br />
+感染：在尽量不影响目标程序（系统）正常功能的前提下，使其具有病毒自己的功能（感染模块、触发模块、破坏模块等）。</p>
+<h2 id="52-分类"><a class="markdownIt-Anchor" href="#52-分类"></a> 5.2 分类</h2>
+<p>按照感染目标的类型分类：</p>
+<ul>
+<li>文件感染：将代码寄生在PE文件中。（传统感染型和捆绑释放型感染）
+<ul>
+<li>传统感染型：在PE文件中添加病毒代码段与数据段，修改节表等控制结构使程序能够首先执行病毒代码。主体是目标程序。<strong>优点：被感染后的程序主体依然是目标程序，不影响目标程序图标，隐蔽性稍好。缺点：对病毒代码的编写要求较高，通常是汇编语言编写，难以成功感染自校验程序。</strong></li>
+<li>捆绑释放型：将目标程序和病毒程序捆在一起，将目标程序作为数据存储在病毒体内。主体是病毒程序。编写较容易，可使用高级语言编写。</li>
+</ul>
+</li>
+<li>系统感染：将代码或程序寄生在Windows操作系统，不针对特定的PE文件。感染途径有：
+<ul>
+<li>即时通信软件</li>
+<li>U盘和光盘</li>
+<li>电子邮件</li>
+<li>网络共享等</li>
+</ul>
+</li>
+</ul>
+<h2 id="53-传统文件感染"><a class="markdownIt-Anchor" href="#53-传统文件感染"></a> 5.3 传统文件感染</h2>
+<h3 id="使用技术"><a class="markdownIt-Anchor" href="#使用技术"></a> 使用技术</h3>
+<ul>
+<li>重定位：病毒代码目标寄生位置不固定</li>
+<li>API函数自获取：在没有引入函数表的情况下获取需要使用的API函数内存地址</li>
+<li>目标程序遍历搜索：全盘查找，或者部分盘符查找以感染其他文件</li>
+<li>感染模块：病毒代码插入位置选择与写入、病毒执行完毕后将控制权移交给正常的程序执行流程</li>
+</ul>
+<p><strong>重定位</strong></p>
+<ul>
+<li>在编译时，有些基于Image Base的指令会将地址固定写死在指令之中，如push 0x401215，这时修改Image Base会使得这条指令的意义丢失，因此需要重定位。在病毒代码编译后而没有植入时，其起始地址很可能不是我们想要病毒代码在HOST文件中的起始地址，需要进行移动。</li>
+<li>其本质是<strong>修正实际地址与预期地址的差异</strong></li>
+<li>解决方案：
+<ul>
+<li>逐一硬编码（较为繁琐）</li>
+<li><font color=red>病毒代码运行过程中自我重定位</font>
+<ul>
+<li><code>call</code>指令可以将下一条要执行的指令的地址压入栈，配合pop即可得到下一条指令的地址，以此病毒就可以知道自己的地址是什么。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>API函数自获取</strong></p>
+<ul>
+<li>找到DLL文件的引入函数节，在其中进行遍历查找即可。</li>
+<li>kernel32.dll中的关键API函数：GetProcAddress和LoadLibraryA</li>
+<li>需要首先获得kernel32.dll文件的基地址，可以硬编码但是很难兼容，主要通过<strong>kernel32模块中的相应结构和特征定位</strong></li>
+<li><font color=blue>获取kernel32.dll中的地址的方法：</font>
+<ul>
+<li>程序入口代码执行时，<strong>栈顶</strong>存储的地址<br />
+系统打开一个可执行文件时，它会调用Kernel32.dll中的<strong>CreateProcess</strong>函数，CreateProcess函数在完成应用程序装载后，会先将返回地址压入到堆栈顶端。当该应用程序结束后，会将返回地址弹出放到EIP中，继续执行。这个返回地址显然位于kernel32.dll之中。在此基础上按照内存对齐（一般为0x10000）的值向前遍历直至检测到kernel32.dll的文件头 <strong>（搜索较费时且容易产生异常情况）</strong></li>
+<li>SEH链末端处理函数<br />
+SEH：Structured Exception Handler，异常处理模块，以链表形式存在。在链中查找<strong>prev成员等于0xFFFFFFFF（表示已经遍历到链表尾）<strong>的</strong>EXCEPTION_REGISTER结构</strong>，该结构中handler值指向<strong>系统异常处理例程，它总是位于KERNEL32模块中</strong>。根据这一特性，然后进行向前搜索就可以查找KERNEL32.DLL在内存中的基地址。</li>
+<li>PEB相关数据结构指向各模块地址<br />
+<strong>TEB</strong>：Thread Environment Block，线程环境块，该结构体包含进程中运行线程的各种信息，进程中的每个线程都对应一个TEB结构体。<br />
+<strong>PEB</strong>：Process Environment Block，进程环境块，存放进程信息，每个进程都有自己的PEB信息。位于用户地址空间。
+<ul>
+<li>fs:[0]指向TEB结构，TEB结构中偏移0x30位置保存的是PEB的地址，因此可以从fs:[30h]获得PEB地址。</li>
+<li>然后通过PEB[0x0c]获得PEB_LDR_DATA数据结构地址（即下面的VOID *DllList指针）</li>
+</ul>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">		<span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">PEB</span> &#123;</span> <span class="comment">// Size: 0x1D8</span></span><br><span class="line"><span class="comment">/*000*/</span> UCHAR InheritedAddressSpace;</span><br><span class="line"><span class="comment">/*001*/</span> UCHAR ReadImageFileExecOptions;</span><br><span class="line"><span class="comment">/*002*/</span> UCHAR BeingDebugged;</span><br><span class="line"><span class="comment">/*003*/</span> UCHAR SpareBool; <span class="comment">// Allocation size</span></span><br><span class="line"><span class="comment">/*004*/</span> HANDLE Mutant;</span><br><span class="line"><span class="comment">/*008*/</span> HINSTANCE ImageBaseAddress; <span class="comment">// Instance</span></span><br><span class="line"><span class="comment">/*00C*/</span> VOID *DllList;</span><br><span class="line"><span class="comment">/*010*/</span> PPROCESS_PARAMETERS *ProcessParameters;</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后通过从PEB_LDR_DATA[0x1c]获取InInitializationOrderModuleList.Flink地址</li>
+</ul>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">PEB_LDR_DATA</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">　ULONG Length; <span class="comment">// +0x00</span></span><br><span class="line">　BOOLEAN Initialized; <span class="comment">// +0x04</span></span><br><span class="line">　PVOID SsHandle; <span class="comment">// +0x08</span></span><br><span class="line">　LIST_ENTRY InLoadOrderModuleList; <span class="comment">// +0x0c</span></span><br><span class="line">　LIST_ENTRY InMemoryOrderModuleList; <span class="comment">// +0x14</span></span><br><span class="line">　LIST_ENTRY InInitializationOrderModuleList;<span class="comment">// +0x1c</span></span><br><span class="line">&#125; PEB_LDR_DATA,*PPEB_LDR_DATA; <span class="comment">// +0x24</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>最后在Flink[0x08]中得到KERNEL32.DLL模块的基地址。</li>
+</ul>
+</li>
+<li>栈区特定高端地址的数据
+<ul>
+<li>这种方法只适用于Windows NT操作系统，但这种方法的代码量最小，只有25B。</li>
+<li>每个执行的线程都有它自己的TEB(线程环境块)，该块中存储线程的栈顶的地址，从该地址向下偏移0X1C处的地址肯定位于Kernel32.dll中。则可以通过该地址向低地址以64KB为单位来查找Kernel32.dll的基地址。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><font color=red>获取指定函数内存地址的方法</font>
+<ul>
+<li>通过Address of Names数组查找函数名，记录索引值</li>
+<li>在Address of Name Ordinals编号数组中找到这个索引值对应的编号</li>
+<li>在Address of Functions数组中以编号为索引即可找到指定函数的内存地址</li>
+</ul>
+</li>
+</ul>
+<p><strong>目标程序遍历搜索</strong></p>
+<ul>
+<li>通常以PE文件的格式（EXE、SCR、DLL等）作为感染目标</li>
+<li>对目标进行搜索通常使用FindFirstFile和FindNextFile两个API函数</li>
+<li>可进行递归或非递归遍历</li>
+</ul>
+<p><strong>文件感染</strong></p>
+<ul>
+<li>感染的关键在于：
+<ul>
+<li>病毒代码能够运行
+<ul>
+<li>选择位置放入病毒代码并将控制权交由病毒代码</li>
+</ul>
+</li>
+<li>原有的正常功能不能被破坏
+<ul>
+<li>记录原始的程序控制点位置，当病毒代码执行完毕后交回控制权</li>
+<li>设置感染标记，避免重复感染</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><strong>代码插入位置选择</strong>
+<ul>
+<li><strong>添加新节</strong>：在新节中专门存放病毒代码，需要检查节表空间是否足够
+<ul>
+<li>判断该文件是否是可执行文件（检查MZ和PE标识）</li>
+<li>判断该文件是否已经被感染（避免重复感染）</li>
+<li>获取数据目录的个数，经过计算得到节表的起始地址</li>
+<li>得到最后一个节表的偏移，并在其后写入新节的属性等控制信息</li>
+<li>在病毒节中写入病毒代码和数据</li>
+<li>修正文件头信息（节的数量等）</li>
+</ul>
+</li>
+<li>碎片式感染：将病毒代码分散插入到节之间的填充部分</li>
+<li>插入式感染：将病毒代码插入到HOST代码节的中间或前后（可能会导致程序无法运行）</li>
+<li>伴随式感染：备份HOST程序并用自己的程序替换HOST程序，自己的代码执行完之后再去执行HOST备份程序</li>
+</ul>
+</li>
+</ul>
+<h2 id="54-捆绑式感染"><a class="markdownIt-Anchor" href="#54-捆绑式感染"></a> 5.4 捆绑式感染</h2>
+<p>HOST作为数据存放在病毒程序中，执行病毒程序时还原并执行HOST文件。熊猫烧香即属于此类病毒。</p>
+<p>优点：编写简单、效率高。可感染自校验程序。<br />
+缺点：被感染后的程序主体是病毒程序，易被发现（程序叠加＋释放执行），程序图标问题。（需要处理好资源节，熊猫烧香就没有处理好导致暴露）</p>
+<h2 id="55-系统感染"><a class="markdownIt-Anchor" href="#55-系统感染"></a> 5.5 系统感染</h2>
+<p>此类病毒通常作为单独个体，不感染系统中的其他文件。</p>
+<p>需要通过自启动获得控制权</p>
+<ul>
+<li>于计算机启动时启动：BIOS-MBR-DBR-系统内部</li>
+<li>于系统内部启动：修改注册表键值、于系统中特定位置启动、以配置文件形式启动、修改特定文件以启动</li>
+<li>利用系统自动播放机制（Autorun.inf）
+<ul>
+<li>inf文件是Winodws操作系统下用来描述设备或文件等数据信息的文件。autorun.inf是一个文本形式的配置文件，我们可以用文本编辑软件进行编辑，它只能位于驱动器的根目录下。这个文件包含了<strong>需要自动运行的命令</strong>，如改变的驱动器图标、运行的程序文件、可选快捷菜单等内容。<a target="_blank" rel="noopener" href="https://blog.csdn.net/shufac/article/details/52071945?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165396614616781483783731%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=165396614616781483783731&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2">相关资料</a></li>
+</ul>
+</li>
+<li>在其他可执行文件中嵌入少量病毒代码</li>
+<li>替换DLL文件</li>
+</ul>
+<p>传播方式：可移动磁盘存储与网络传播</p>
+<h2 id="56-实验内容"><a class="markdownIt-Anchor" href="#56-实验内容"></a> 5.6 实验内容</h2>
+<h3 id="链接命令设定代码节可写"><a class="markdownIt-Anchor" href="#链接命令设定代码节可写"></a> 链接命令——设定代码节可写：</h3>
+<p><code>link /subsystem:windows /section:.text,rwe mype1.obj</code><br />
+其中的/section:.text,rwe表示.text节可读可写可执行。</p>
+<h3 id="手动修改入口点使两个弹窗变成一个弹窗"><a class="markdownIt-Anchor" href="#手动修改入口点使两个弹窗变成一个弹窗"></a> 手动修改入口点，使两个弹窗变成一个弹窗：</h3>
+<p>将Address of Entry Point进行修改，跳过弹出第一个弹窗的指令（在实验中应为+0x16）</p>
+<h3 id="代码重定位写法"><a class="markdownIt-Anchor" href="#代码重定位写法"></a> 代码重定位写法</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">call delta ;这条语句执行之后，堆栈顶端为delta在内存中的真正地址</span><br><span class="line">delta:</span><br><span class="line">pop ebp ;这条语句将delta在内存中的真正地址存放在ebp寄存器中</span><br><span class="line">sub ebp,offset delta</span><br></pre></td></tr></table></figure>
+<p>或</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">call @F</span><br><span class="line">@@:</span><br><span class="line">pop ebp</span><br><span class="line">sub ebp,offset @B</span><br></pre></td></tr></table></figure>
+<p>（这里的@F指的是前面最近的一个@@标号，@B指后面最近的一个@@标号）</p>
+<h3 id="kernel32dll基地址获取代码理解"><a class="markdownIt-Anchor" href="#kernel32dll基地址获取代码理解"></a> kernel32.dll基地址获取代码理解</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mov eax,[esp]  ;from stack</span><br><span class="line">xor edx,edx</span><br><span class="line">getK32Base:</span><br><span class="line">dec eax</span><br><span class="line">mov dx,word ptr[eax+IMAGE_DOS_HEADER.e_lfanew]  ;3ch</span><br><span class="line">test dx,0f000h  ;check f0</span><br><span class="line">jnz getK32Base</span><br><span class="line">cmp eax,dword ptr[eax+edx+IMAGE_NT_HEADERS.OptionalHeader.ImageBase]</span><br><span class="line">	;double check ImageBase value with eax</span><br><span class="line">jnz getK32Base</span><br><span class="line">mov [ebp+k32Base],eax ;save ImageBase into k32Base</span><br></pre></td></tr></table></figure>
+<p>这里第一条语句为从栈中获取kernel32.dll中的地址保存到eax中。<br />
+之后将dx保存为PE文件中new EXE Header的偏移位置（0x3C），检查dx的值是否小于0x1000。<br />
+如果小于，再检查Image Base的值是否等于eax（如果eax指向dll文件头，那么Image Base的值应该等于eax）。若等于，则查找完毕，eax即为kernel32.dll的起始地址。<br />
+注意上面代码对eax是逐次减1比较，由于内存对齐机制，这里可以直接按照对齐去查找，能够减少很多循环的次数。</p>
+<h3 id="kernel32dll中函数内存地址的获取"><a class="markdownIt-Anchor" href="#kernel32dll中函数内存地址的获取"></a> kernel32.dll中函数内存地址的获取</h3>
+<p>API’s Address  =  ( API’s Ordinal  *  4  )  +  AddressOfFunctions’ VA +  Kernel32 imagebase</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3261,138 +3513,6 @@ if(A) then (if(B) then C else D) else E</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">编译原理——第1章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 09:31:43 / Modified: 09:44:02" itemprop="dateCreated datePublished" datetime="2023-03-03T09:31:43+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-1-引论"><a class="markdownIt-Anchor" href="#chapter-1-引论"></a> Chapter 1 引论</h1>
-<h2 id="11-翻译程序和编译程序"><a class="markdownIt-Anchor" href="#11-翻译程序和编译程序"></a> 1.1 翻译程序和编译程序</h2>
-<p><strong>翻译程序</strong>（Translator）：把某一种语言（源语言程序）等价转换为另一种语言程序（目标语言程序）的程序。<br />
-<strong>编译程序</strong>（Complier）：如果源语言为高级语言，而目标语言为编译语言或机器语言之类的低级语言，则称这样的翻译程序为编译程序。<br />
-<strong>解释程序</strong>（Interpreter）：将源语言写的源程序作为输入，但不产生目标程序，而是边解释边执行源程序。</p>
-<p>采用编译方式在计算机上执行用高级语言编写的程序，需要分阶段进行，一般分为两大阶段：<font color=red>编译阶段和运行阶段</font>。编译阶段首先将源程序通过编译程序编译为机器语言目标程序。运行阶段中将目标程序载入到运行系统中，输入初始数据得到结果。</p>
-<h2 id="12-编译过程和编译程序的基本结构"><a class="markdownIt-Anchor" href="#12-编译过程和编译程序的基本结构"></a> 1.2 编译过程和编译程序的基本结构</h2>
-<h3 id="font-colorred1-词法分析font"><a class="markdownIt-Anchor" href="#font-colorred1-词法分析font"></a> <font color=red>1. 词法分析</font></h3>
-<p>词法分析的任务是对构成源程序的字符串从左到右进行扫描和分解，根据语言的词法规则，识别出一个个具有独立意义的单词（也称单词符号，简称单词）。<br />
-依据原则：构词原则<br />
-描述工具：有限自动机</p>
-<h3 id="font-colorred2-语法分析font"><a class="markdownIt-Anchor" href="#font-colorred2-语法分析font"></a> <font color=red>2. 语法分析</font></h3>
-<p>语法分析的任务是在词法分析的基础上根据语法规则将单词符号串分解为各类语法单位（如表达式、说明、语句等）并进行语法检查。<br />
-依据原则：语法原则<br />
-描述工具：上下文无关文法</p>
-<h3 id="font-colorred3-语义分析和中间代码生成font"><a class="markdownIt-Anchor" href="#font-colorred3-语义分析和中间代码生成font"></a> <font color=red>3. 语义分析和中间代码生成</font></h3>
-<p>任务是对各类语法单位按照语言的语义进行初步翻译，分析其含义，并使用另一种语言形式来描述这种语义。<br />
-依据原则：语义原则<br />
-描述工具：属性文法</p>
-<h3 id="font-colorred4-代码优化font"><a class="markdownIt-Anchor" href="#font-colorred4-代码优化font"></a> <font color=red>4. 代码优化</font></h3>
-<p>对前面一个阶段产生的中间代码进行加工变换，以期在最后阶段产生更高效的目标代码<br />
-依据原则：程序的等价变换原则</p>
-<h3 id="font-colorred5-目标代码生成font"><a class="markdownIt-Anchor" href="#font-colorred5-目标代码生成font"></a> <font color=red>5. 目标代码生成</font></h3>
-<p>将中间代码变换为特定机器上的目标代码，其依赖于硬件系统结构和机器指令的含义。<br />
-目标代码三种形式：</p>
-<ul>
-<li>汇编指令代码：需要汇编</li>
-<li>绝对指令代码：可以直接运行</li>
-<li>可重定位指令代码：需要进行链接才能运行</li>
-</ul>
-<p>上述5个程序分别称为词法分析程序、语法分析程序、中间代码生成程序、代码优化程序和目标代码生成程序。<font color=red>上述顺序只是逻辑关系，并不代表实际上的时间关系。</font></p>
-<h3 id="错误处理"><a class="markdownIt-Anchor" href="#错误处理"></a> 错误处理</h3>
-<p>在编译过程中如果出现错误，程序需要发现源程序中的错误并将有关信息报告给用户。错误包含语法错误和语义错误。</p>
-<h3 id="编译前端与后端"><a class="markdownIt-Anchor" href="#编译前端与后端"></a> 编译前端与后端</h3>
-<p>编译前端：与源语言有关，如词法分析、语法分析、语义分析与中间代码产生，与机器无关的优化<br />
-编译后端：与目标机器有关，与目标机器有关的优化与目标代码产生<br />
-带来的好处是：程序逻辑结构清晰，优化更加充分，更有利于移植。</p>
-<h2 id="13-编译程序的生成方法"><a class="markdownIt-Anchor" href="#13-编译程序的生成方法"></a> 1.3 编译程序的生成方法</h2>
-<p>生成一个编译程序一般需要考虑以下几个方面：</p>
-<ul>
-<li>对源语言和目标语言认真分析</li>
-<li>设计编译算法</li>
-<li>选择语言编制程序</li>
-<li>调试编译程序</li>
-<li>提交相关文档材料</li>
-</ul>
-<p>编译语言以汇编语言和机器语言为工具，好处是可以针对具体的机器，充分发挥计算机的系统功能，其生成的程序效率较高；缺点是程序难读、难写、易出错、难维护、生产的效率低下。相反以高级语言编写的程序易读、易理解、生产的效率高</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3462,7 +3582,7 @@ if(A) then (if(B) then C else D) else E</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">132</span>
+          <span class="site-state-item-count">133</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -3514,13 +3634,13 @@ if(A) then (if(B) then C else D) else E</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.1m</span>
+    <span title="Symbols count total">1.2m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">17:17</span>
+    <span title="Reading time total">17:31</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
