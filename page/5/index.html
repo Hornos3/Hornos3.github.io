@@ -150,6 +150,577 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机组成原理——第1章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:02:00 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:00+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="11-解释下列名词"><a class="markdownIt-Anchor" href="#11-解释下列名词"></a> 1.1 解释下列名词</h3>
+<ul>
+<li>摩尔定律：指在计算机发展时期中，当价格不变时，集成电路上可以容纳的晶体管数量大约在18~24个月翻一番，性能也将提升一倍。其表现在：
+<ul>
+<li>单个芯片集成度提高之后，其成本变化不大，因此总体成本明显下降。</li>
+<li>高集成度的芯片中，电路之间的距离更近，其连线更短，工作速度可以更高。</li>
+<li>增加了芯片内部的连线，从而减少了外部连线，可靠性得以提高。</li>
+<li>计算机体积越来越小，减少了电能的消耗，适应性更好。</li>
+</ul>
+</li>
+<li>汇编器：将汇编语言翻译成机器语言目标程序的汇编程序，称为汇编器。</li>
+<li>编译器：将高级语言翻译为汇编语言的程序，称为编译器。</li>
+<li>解释器：将源程序中的语句按照顺序逐条翻译为机器语言目标程序并执行，且不生成目标程序的程序称为解释器。</li>
+<li>链接器：将汇编器产生的多个可重定向目标程序整合为一个可执行的二进制程序的链接程序，称为链接器。</li>
+<li>时钟周期：计算机最基本、最小的时间单位，在一个时钟周期之内，CPU仅完成一个最基本的动作。</li>
+<li>机器字长：CPU一次处理的数据位数，一般等于计算机内部寄存器、运算器、数据总线的位宽。</li>
+<li>主存容量：主存能够存储的最大信息量，一般用M（存储单元数）×N（每一个存储单元存储的二进制位数）表示。</li>
+<li>CPI：Clock Cycles Per Instruction，CPU执行一条指令所需要的平均时钟周期数量。</li>
+<li>IPC：CPI的倒数，一个时钟周期平均执行的指令数量。</li>
+<li>MIPS：Million Instructions Per Second，每秒执行的指令数量（以百万计数）</li>
+<li>MFLOPS：Million Floating-Point Operations Per Second，每秒执行的浮点数运算数量（以百万计数）</li>
+<li>CPU时间：指某段程序执行的总时间（按照秒计算），等于程序执行需要的时钟周期数量乘以时钟周期长。（注意与程序的运行时间不同，程序运行时不止有CPU在工作，还有IO设备等，因此程序的运行时间大于等于CPU时间）</li>
+</ul>
+<h3 id="12-选择题"><a class="markdownIt-Anchor" href="#12-选择题"></a> 1.2 选择题</h3>
+<ol>
+<li>D</li>
+<li>C</li>
+<li>C</li>
+<li>A</li>
+<li>D</li>
+<li>D</li>
+<li>C<br />
+<font color=red>错误的计算方法：根据CPI和计算机主频可以计算出每种指令的执行速度：MIPS<sub>A</sub>=600，MIPS<sub>B</sub>=400，MIPS<sub>C</sub>=300，MIPS<sub>D</sub>=240，然后计算加权平均：MIPS=600×0.5+400×0.2+300×0.1+240×0.2=458</font><br />
+<font color=00F000>正确的计算方法：首先应该对CPI求加权平均为3，然后计算MIPS=400</font><br />
+错误原因：MIPS=f/CPI，第一种方法相当于先除再加权，与第二种方法先加权再除的结果不同。第一种方法相当于是将一秒钟分为0.5、0.2、0.1、0.2四份，每一份执行一种指令，但是很显然这样执行的结果是四种指令的比例必然是不正确的。</li>
+<li>D<br />
+注意：这里是CPU速度提高50%，CPU时间是原来的1/150%=2/3，即60秒。</li>
+<li>D<br />
+执行时间=指令数量×CPI×时钟周期，优化后的执行时间是原来时间的1.2×70%=84%，即16.8秒。</li>
+<li>C<br />
+二者的MIPS分别为750和1200，因此比值为750/1200=0.625。但是题目问的是时间的比值，因此取倒数为1.6。</li>
+</ol>
+<h3 id="13"><a class="markdownIt-Anchor" href="#13"></a> 1.3</h3>
+<p>冯诺依曼计算机的基本思想是：存储程序和程序控制的思想，存储程序将解题的步骤编制为程序，然后将程序和运行程序所需要的数据以二进制的形式存放到存储器中，方便执行。程序控制指计算机中的控制器逐条取出存储器中的指令并按顺序执行，控制各个功能部件进行相应的操作，完成数据的加工处理。<br />
+部件包含：运算器、控制器、存储器、输入设备和输出设备五大部件。</p>
+<h3 id="14"><a class="markdownIt-Anchor" href="#14"></a> 1.4</h3>
+<p>从功能上可以分为：逻辑门层次、微代码层次、指令集架构层次、操作系统层次、汇编语言层次、高级语言层次。</p>
+<ul>
+<li>逻辑门层次是最为底层的计算机系统，由逻辑门、触发器等逻辑电路构成。</li>
+<li>微代码层为实际的机器层，该层的用户使用微代码编写程序，写的程序由硬件直接执行。</li>
+<li>指令集架构层次可以通过机器语言编写程序实现对计算机硬件的控制，也称为传统机器层或ISA层，是计算机硬件和软件之间的界面和纽带。</li>
+<li>操作系统层用于对计算机的硬件和软件资源进行统一管理和调度，提高计算机的使用效率并方便用户使用计算机。</li>
+<li>汇编语言层为用户提供助记符表示的汇编语言编程，与机器结构直接相关。</li>
+<li>高级语言层是面向用户的抽象层次，用户使用与机器无关的高级语言编程，编程过程中不需要知道机器的技术细节，大大降低了用户学习和使用计算机的难度。</li>
+</ul>
+<h3 id="15"><a class="markdownIt-Anchor" href="#15"></a> 1.5</h3>
+<p>CPI<sub>1</sub>=2×0.4+3×0.2+4×0.15+5×0.25=3.25<br />
+CPI<sub>2</sub>=2.65<br />
+MIPS<sub>1</sub>=184.6<br />
+MIPS<sub>2</sub>=301.9</p>
+<h3 id="16"><a class="markdownIt-Anchor" href="#16"></a> 1.6</h3>
+<ol>
+<li>优化前程序的CPI为1.6，优化后为1.75</li>
+<li>优化前程序的MIPS为312.5，优化后为285.7</li>
+<li>这次优化效果欠佳，最好应该减少CPI大的指令。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第6章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:45 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="第6章-中央处理器"><a class="markdownIt-Anchor" href="#第6章-中央处理器"></a> 第6章 中央处理器</h1>
+<h2 id="61-概述"><a class="markdownIt-Anchor" href="#61-概述"></a> 6.1 概述</h2>
+<p>CPU的基本组成：运算器、控制器<br />
+CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等</p>
+<p>主要寄存器：</p>
+<ul>
+<li>PC：程序计数器，即EIP(x86/x86-64)/PC(ARM/MIPS)</li>
+<li>IR：指令寄存器，保存当前正在执行的指令</li>
+<li>AR：地址寄存器，用于保存CPU访问主存的单元地址</li>
+<li>DR：数据寄存器，用于保存从主存读入或将写入主存的数据</li>
+<li>AC：累加寄存器</li>
+<li>PSW：程序状态字，保存由某些指令建立的条件标志</li>
+</ul>
+<h2 id="62-指令周期"><a class="markdownIt-Anchor" href="#62-指令周期"></a> 6.2 指令周期</h2>
+<p>指令执行时，首先以PC为地址访问主存取指令，同时更新PC的值作为后续指令的地址。若为分支指令且满足分支条件，则重新修改PC值作为分支目标地址，否则经历<font color=red>取操作数、执行指令、存操作数</font>的基本过程。</p>
+<ul>
+<li>时钟周期=节拍脉冲=震荡周期，可以完成一次微操作</li>
+<li>机器周期=CPU周期，从主存读出一条指令的最短时间，可以完成一次复杂操作</li>
+<li>指令周期，从主存取一条指令并执行指令的时间，由若干机器周期构成，机器周期包含若干时钟周期。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png" alt="" /></p>
+<p>时间控制的方式：</p>
+<ul>
+<li>定长指令周期：早期三级时序系统，机器周期数固定，节拍数固定，按照机器周期同步，mips单周期。</li>
+<li>变长指令周期：现代时序系统，机器周期数可变，节拍数可变，按照时钟周期同步，mips多周期。</li>
+</ul>
+<p>将一条指令从取出到执行完成所需要的时间称为指令周期，指令周期可分为：</p>
+<ul>
+<li>取指周期：以PC的内容为地址从主存中取出指令，并计算后续指令的地址。对于变长指令需要经过指令译码得到指令的实际字节长度之后才能计算并修改PC的值。</li>
+<li>译码/取操作数周期：对指令寄存器中的指令字进行指令译码，识别指令类型。根据指令地址码生成操作数有效地址，然后访问相应寄存器或主存单元。若为间接寻址则还需要加入间址周期（访存周期）得到操作数的地址。该周期内不能并行读取操作数，因此可能会经历多次取操作数周期。</li>
+<li>执行周期：向运算器等部件发送操作控制命令，对已经取出的操作数进行加工处理，并将处理状态送入PSW中。不同指令的执行周期不同。</li>
+<li>写回周期：将运算结果写回到目的寄存器或存储器中，将运算结果写回存储器较慢。</li>
+</ul>
+<h2 id="63-数据通路及指令操作流程"><a class="markdownIt-Anchor" href="#63-数据通路及指令操作流程"></a> 6.3 数据通路及指令操作流程</h2>
+<p>数据通路——执行部件之间传输信息的路径。</p>
+<ul>
+<li>通路的建立由控制信号控制，受到时钟驱动。</li>
+<li>不同指令，同一指令在执行的不同阶段的数据通路不同。</li>
+<li>数据通路可以分为共享通路和专用通路。</li>
+</ul>
+<h3 id="631-数据通路模型与定时"><a class="markdownIt-Anchor" href="#631-数据通路模型与定时"></a> 6.3.1 数据通路模型与定时</h3>
+<p>时钟信号上升沿时刻到寄存器输出稳定时刻之间有一段时延，称为<font color=red>寄存器延迟（clk_to_q）</font>。数据处理单元处理寄存器内容有一定时延，将所有输出信号稳定的延迟，也即所需稳定时间最长的输出信号的稳定时间，称为<font color=red>关键路径延迟（max）</font>。将计算结果保存到寄存器之后还需要稳定一段时间才能够接受下一个上升沿，称为<font color=red>寄存器建立时间（setup）</font>。时钟上升沿到来之前的数据输入需要保持一定时间的稳定，称为<font color=red>寄存器保持时间（hold）</font>。故<font color=red>数据通路的最小时钟周期必须大于T<sub>clk_to_q</sub>+T<sub>max</sub>+T<sub>setup</sub></font>，其中T<sub>max</sub>占主导。</p>
+<p><img src="https://img-blog.csdnimg.cn/de0f98f42136464585ebed5fce96d6d5.png" alt="" /></p>
+<p>保持时间违例：两个寄存器在一个上升沿同时更新新值，其中一个寄存器经过寄存器延迟和最短路径延迟（T<sub>min</sub>）到达另一个寄存器输入端，为了不让该信号修改寄存器的值，应该满足<font color=red>寄存器保持时间T<sub>hold</sub>&lt;寄存器延迟T<sub>clk_to_q</sub>+组合逻辑最短路径延迟T<sub>min</sub></font>。</p>
+<h3 id="632-单总线结构的数据通路"><a class="markdownIt-Anchor" href="#632-单总线结构的数据通路"></a> 6.3.2 单总线结构的数据通路</h3>
+<p>数据通路的分类：</p>
+<ul>
+<li>共享通路（总线型）：主要部件都连接在公共总线上，各个部件之间通过总线进行数据传输。其结构简单，实现容易，但并发性较差，需要分时使用总线，效率较低。</li>
+<li>专用通路：并发度高，性能好，但设计复杂，成本高。可以看做多总线结构。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/3f0cfe89124c43659c4411dc548d251a.png" alt="" /></p>
+<p>CPU的运算器、控制器、寄存器堆等核心部件均由一条内部的公共总线连接起来，构成单总线结构的数据通路。这条内部公共总线称为CPU的内总线。将连接CPU、内存及输入输出设备等部件构成计算机系统的总线称为系统总线或外总线。</p>
+<p>考虑执行指令add r0, r1，首先需要从寄存器堆中取出两个寄存器的值并输入到ALU的两个输入端，ALU的两个输入端连接有两个锁存器，可以分别保存两个寄存器的值，取出两个寄存器的值需要使用两个时钟周期，两次取值操作分别占用总线一个周期。之后ALU计算得到结果，通过总线输入到寄存器堆中，共需要3个周期和2个锁存器。</p>
+<p>如果能够添加一条总线直接连接ALU的一个输入和寄存器堆，则只需要两个时钟周期即可执行上述指令。第一步将一个寄存器的值保存到ALU一端的锁存器，第二步第二条总线将第二个寄存器的值输入到ALU另一端，ALU进行计算并通过第一条总线输出到寄存器堆中。共需2个时钟周期和1个锁存器。</p>
+<h4 id="指令执行示例"><a class="markdownIt-Anchor" href="#指令执行示例"></a> 指令执行示例</h4>
+<p><strong>LOAD R0, 6#</strong><br />
+功能：将主存地址为6的内容写入R0寄存器</p>
+<ul>
+<li>取指令数据通路：
+<ul>
+<li>T1：PC保存到AR和X中，准备访问AR处地址的指令内容</li>
+<li>T2：X+1保存到Z中，程序计数器+1，准备将Z写到PC，Z即为下一条指令地址</li>
+<li>T3：Z保存到PC，从主存取出指令内容保存到DR</li>
+<li>T4：将DR保存到IR，至此取指完成，指令内容已经被保存到IR。</li>
+</ul>
+</li>
+<li>译码周期：略</li>
+<li>执行周期，完成指令要求的任务，即首先取内存地址为6的数据，再保存到寄存器R0
+<ul>
+<li>T1：将IR中的地址操作数部分（值为6）保存到AR，X保存PC的值</li>
+<li>T2：主存读取</li>
+<li>T3：主存将读取的数据保存到DR</li>
+<li>T4：将DR的内容保存到寄存器R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>MOVE R1, 10</strong></p>
+<ul>
+<li>执行周期：
+<ul>
+<li>T1：将指令中的地址操作数部分（值为10）保存到R1</li>
+</ul>
+</li>
+</ul>
+<p><strong>ADD R0, R1</strong></p>
+<ul>
+<li>执行周期
+<ul>
+<li>T1：将寄存器R0保存到X</li>
+<li>T2：R1的值输出到总线，ALU接收X和总线的数据，计算结果并保存到Z</li>
+<li>T3：将Z的值写入到R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>STORE R0, (R2)</strong></p>
+<ul>
+<li>执行周期，将R0的值保存到地址为R2的内存空间
+<ul>
+<li>T1：将R2的值保存到AR</li>
+<li>T2：将R0的值保存到DR</li>
+<li>T3：将DR的值写入到内存地址为AR的空间</li>
+</ul>
+</li>
+</ul>
+<p><strong>JMP 1000</strong></p>
+<ul>
+<li>执行周期
+<ul>
+<li>T1：将IR中的地址操作数（1000）保存到PC</li>
+</ul>
+</li>
+</ul>
+<h2 id="65-硬布线控制器"><a class="markdownIt-Anchor" href="#65-硬布线控制器"></a> 6.5 硬布线控制器</h2>
+<p>硬布线控制器可以看成产生固定时序控制信号的逻辑电路。<br />
+输入信号：指令译码，时钟信号，反馈信号<br />
+输出信号：功能部件控制信号序列<br />
+设计目标：最少元件，最快速度<br />
+理论基础：布尔代数<br />
+组成器件：门电路、触发器</p>
+<ul>
+<li>定长指令周期：使用2个机器周期，8个时钟周期，由于一些指令并不需要所有8个时钟周期，因此速度较慢（会浪费时间），但设计简单</li>
+<li>变长指令周期：时钟周期数量可变，速度快，但设计较复杂</li>
+</ul>
+<p>硬布线控制器模型：包含指令寄存器和指令译码器，时序发生器、硬布线控制器组合逻辑单元等几个部分，其中硬布线控制器组合逻辑单元用于产生指令执行所需要的所有控制信号序列，是控制器的核心。<br />
+输入来自：</p>
+<ul>
+<li>指令译码器的输出</li>
+<li>执行部件以及IO总线的反馈信号</li>
+<li>时序发生器的状态周期电位信号和节拍电位信号</li>
+</ul>
+<p>输出信号：微操作控制信号序列，可以看做所有输入信号的逻辑函数，每个控制信号都是由不同的指令译码信号、状态周期信号、节拍定位信号、状态反馈信号构成的逻辑与操作的和。（积之和范式）</p>
+<p>固定指令周期硬布线控制器设计过程</p>
+<ul>
+<li>设计三级时序产生器：所有指令固定机器周期数，节拍数</li>
+<li>列出所有机器指令的指令周期流程图，明确每个节拍的控制信号</li>
+<li>找出产生同一个微操作控制信号的条件</li>
+<li>写出各个微操作控制信号的布尔表达式</li>
+<li>化简各个表达式</li>
+<li>利用组合逻辑电路实现</li>
+</ul>
+<p>可变周期硬布线控制器设计步骤</p>
+<ul>
+<li>列出所有机器指令的指令周期流程图，明确每一个节拍的控制信号</li>
+<li>绘制指令执行状态转换图</li>
+<li>根据状态转换图构建状态集真值表，实现有限状态机组合逻辑</li>
+<li>实现控制器组合逻辑电路</li>
+</ul>
+<h2 id="66-微程序控制器"><a class="markdownIt-Anchor" href="#66-微程序控制器"></a> 6.6 微程序控制器</h2>
+<h3 id="661-微程序控制器的基本概念"><a class="markdownIt-Anchor" href="#661-微程序控制器的基本概念"></a> 6.6.1 微程序控制器的基本概念</h3>
+<p>硬布线为同步逻辑，设计复杂，速度快，贵，且难以修改。一条指令有多个时钟周期，一个时钟周期对应一个状态，一个状态对应一组并发信号。<br />
+微程序为存储逻辑，设计简单，速度慢，偏移，容易修改。将并发信号实现保存为微指令，一条指令对应于多条微指令，状态等同于存储器地址。</p>
+<p>微地址寄存器μAR为控制存储器提供微指令地址，初始化为0，控制存储器0号单元应该为取指令微程序的第一条微指令。</p>
+<h3 id="662-微程序控制器组成原理"><a class="markdownIt-Anchor" href="#662-微程序控制器组成原理"></a> 6.6.2 微程序控制器组成原理</h3>
+<p>利用软件方法设计硬件的技术，将完成指令所需的控制信号按照格式编写为微指令，并存放到<font color=red>控制存储器（控存ROM）</font>，一条机器指令对应于一段微程序，微程序中有多条微指令。<br />
+将存储技术与程序设计相结合，可以回避复杂的同步时序逻辑设计。</p>
+<p>单总线CPU的微指令构造：</p>
+<ul>
+<li>操作控制字段：用于存储操作控制信号，每一位对应一个控制信号，也称微命令，可以同时给出多个操作信号。</li>
+<li>顺序控制字段：用于控制微程序的执行顺序，判别逻辑为0，下一条微指令地址从<font color=red>下址字段</font>获取，否则按照约定规则生成。一个微程序的最后一条微指令的判别字段非零，代表地址跳转。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/b777065d983a410c8cc1d0af5fcd6870.png" alt="" /></p>
+<h3 id="663-微程序控制器设计"><a class="markdownIt-Anchor" href="#663-微程序控制器设计"></a> 6.6.3 微程序控制器设计</h3>
+<p>微指令包含操作控制字段和顺序控制字段，一条微指令对应于一个时钟周期，微指令操作控制字段的信号在该时钟周期之内有效。指令需要多少时钟周期就包含多少微指令。操作控制字段的每一位都代表一个控制结构的开启与否。在一个时钟周期内，需要开启的控制字段在操作控制字段中的对应位会被设置为1。</p>
+<p>上面的顺序控制字段中P<sub>1</sub>表示下址字段是否有效，在取指周期的最后一个时钟周期，下址字段就无效，因为下一条微命令的地址不确定。其他的微程序的最后一个微命令的下址字段基本都为0。</p>
+<p>微指令设计原则：</p>
+<ul>
+<li>有利于缩短微指令字长度</li>
+<li>有利于减少控存容量</li>
+<li>有利于提高微程序执行速度</li>
+<li>有利于对微程序进行修改</li>
+<li>有利于提高微程序设计的灵活性</li>
+</ul>
+<p>微指令的直接表示法简单直观，便于输出控制，但微指令长度太长，控存容量大。优化方法：</p>
+<ul>
+<li>修改直接表示为编码表示，压缩互斥性的微指令，如4个互斥性的微指令可以不用4个二进制位表示，而是用2个二进制位替换。</li>
+<li>去掉下址字段，采用μPC=μPC+1的方式生成微指令地址。
+<ul>
+<li>微指令地址的形成方法有两种，一种是通过下址字段，另一种就是计数器法。前者微指令长，但控存容量大，后者微指令短，但需要加法器。</li>
+</ul>
+</li>
+<li>修改水平型微指令为垂直型微指令，牺牲了并行性。
+<ul>
+<li>水平型微指令：在一个微指令周期内能够同时给出多个微命令的微指令。并行操作能力强，效率高，灵活性强，字较长，微程序短，控存容量大，性能好。</li>
+<li>垂直型微指令：采用完全编码方法，将全部微命令编码化。字长短，微程序长，控存容量小，性能差，与指令相似，易于掌握，已经基本被淘汰。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第5章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:40 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:40+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="51-指令系统概述"><a class="markdownIt-Anchor" href="#51-指令系统概述"></a> 5.1 指令系统概述</h2>
+<p>指令是用户使用计算机与计算机本身运行的基本功能单位。指令是计算机能够直接识别、执行的操作命令，是冯诺依曼结构计算机程序控制原理实现的载体。</p>
+<p>指令系统是一台计算机中所有机器指令的集合。</p>
+<h2 id="52-指令格式"><a class="markdownIt-Anchor" href="#52-指令格式"></a> 5.2 指令格式</h2>
+<h3 id="521-指令字长度"><a class="markdownIt-Anchor" href="#521-指令字长度"></a> 5.2.1 指令字长度</h3>
+<ul>
+<li><mark>指令字长</mark>：指令中包含的二进制位数</li>
+<li>计算机根据指令字长是否固定可以分为<mark>定长和变长指令系统</mark>
+<ul>
+<li>定长指令系统的指令长度固定，结构简单，有利于CPU取指令、译码和指令顺序寻址，但平均指令长度较长，冗余状态较多，不容易扩展。</li>
+<li>变长指令系统的指令长度可变，结构灵活，冗余状态较少，平均指令长度较短，但取指令和译码有很多不便。</li>
+</ul>
+</li>
+</ul>
+<h2 id="522-指令地址码"><a class="markdownIt-Anchor" href="#522-指令地址码"></a> 5.2.2 指令地址码</h2>
+<p>根据指令中地址码字段的个数可将指令分为：</p>
+<ul>
+<li>三地址指令——A<sub>3</sub>←(A<sub>1</sub>)OP(A<sub>2</sub>)</li>
+<li>双地址指令——A<sub>1</sub>←(A<sub>1</sub>)OP(A<sub>2</sub>)</li>
+<li>单地址指令——A<sub>1</sub>←OP(A<sub>1</sub>)，AC←(AC)OP(A<sub>1</sub>)</li>
+<li>零地址指令</li>
+</ul>
+<p>按照指令中操作数的物理位置分类可以分为：</p>
+<ul>
+<li>存储器-存储器型</li>
+<li>寄存器-寄存器型</li>
+<li>寄存器-存储器型</li>
+</ul>
+<p>根据指令的功能可以分为：</p>
+<ul>
+<li>传送指令</li>
+<li>定点算数运算指令</li>
+<li>位运算指令</li>
+<li>控制转移指令</li>
+</ul>
+<p>指令格式：操作码字段+寻址方式+地址码字段<br />
+操作码字段的位数与支持的最大指令数有关，对于定长操作码而言，最大指令数m与操作码字段长n满足n≥log<sub>2</sub>m。对于变长操作码，可以向不用的地址码字段进行扩展。寻址方式字段的位数与支持的寻址方式种类有关。地址码字段的作用及影响与位数和寻址方式有关。</p>
+<h2 id="53-寻址方式"><a class="markdownIt-Anchor" href="#53-寻址方式"></a> 5.3 寻址方式</h2>
+<p>指令的寻址方式只有顺序寻址和跳跃寻址两种。</p>
+<h3 id="531-指令寻址方式"><a class="markdownIt-Anchor" href="#531-指令寻址方式"></a> 5.3.1 指令寻址方式</h3>
+<h4 id="顺序寻址方式"><a class="markdownIt-Anchor" href="#顺序寻址方式"></a> 顺序寻址方式</h4>
+<p>程序的指令序列在主存顺序存放，执行时从第一条指令开始逐条取出并执行，这种程序的顺序执行过程被称为顺序寻址方式。<br />
+CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每一次执行一条指令PC加1并指出下一条指令的地址，直到程序结束。</p>
+<h4 id="跳跃寻址方式"><a class="markdownIt-Anchor" href="#跳跃寻址方式"></a> 跳跃寻址方式</h4>
+<p>程序出现分支或转移时会改变程序的执行顺序，此时下条指令的地址不一定通过PC+1获得。</p>
+<h3 id="532-操作数寻址方式"><a class="markdownIt-Anchor" href="#532-操作数寻址方式"></a> 5.3.2 操作数寻址方式</h3>
+<ul>
+<li>立即数寻址：地址码字段就是操作数本身。如MOV RAX, 200H中的200H。取指操作将数据和指令一并读入CPU内部的寄存器，指令执行速度快，便于程序设计，但数据大小受到字段的位数限制。</li>
+<li>寄存器寻址：操作数在CPU内部寄存器中。如MOV RAX, RBX。操作数在寄存器中，指令执行速度快，但能访问的数据大小一般与计算机字长有关，地址字段的位数与计算机通用寄存器数量相关。</li>
+<li>直接寻址：操作数在主存储器中，地址码字段给出操作数在内存中的地址。如MOV RAX, [4000H]。提供了访问主存的操作，获得数据需要访问主存，因此指令的执行速度较慢，地址字段的位数决定了访存的空间大小。</li>
+<li>间接寻址：地址码字段给出操作数主存地址的地址。即需要进行两次寻址，相当于二重指针。解决了直接寻址方式下字段的位数限制访存范围大小的问题，但需要访问主存两次，指令执行速度慢。</li>
+<li>寄存器间接寻址：地址码字段给出寄存器编号。如MOV RAX, [RBX]，需要首先访问寄存器获取寄存器的值，然后根据该值到主存中访存。其解决了直接寻址方式下地址字段的位数限制访存范围大小的问题，且获得数据只需要访问一次主存。</li>
+<li>相对寻址：将程序计数器PC中的内容加上指令中的形式地址，形成操作数的有效地址。如JMP指令。该寻址方式可节省指令中的地址位数，便于程序在内存中成块移动，注意PC的改变对计算有效地址的影响，有效地址值应该为当前指令的地址+偏移量+<mark>当前指令的长度</mark>。</li>
+<li>基址寻址：指定基址寄存器，与本指令地址无关。如MOV RAX, [RBP+10H]。使用基址寄存器可以访问更大的主存空间，对某一程序而言，<mark>基址值设定后不变</mark>，故要访问不同数据需要修改偏移量的值。</li>
+<li>变址寻址：指定一个变址寄存器，与本指令地址无关。因此首先需要根据寄存器编号找到寄存器，再将寄存器值与偏移相加获得有效地址，之后访存。如MOV RAX, [RSI+10H]。</li>
+</ul>
+<h2 id="55-指令格式设计"><a class="markdownIt-Anchor" href="#55-指令格式设计"></a> 5.5 指令格式设计</h2>
+<ul>
+<li>根据指令数量的要求及是否支持操作码扩展，确定操作码字段的位数</li>
+<li>根据对操作数的要求确定地址码字段的个数</li>
+<li>根据寻址方式的要求，为每个地址码字段确定寻址方式字段位数</li>
+<li>确定采用定长指令还是变长指令</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2296,1142 +2867,6 @@ c. I<sub>1</sub>，这样AS-PATH更短。</li>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第4章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:48:47 / Modified: 23:48:57" itemprop="dateCreated datePublished" datetime="2023-03-02T23:48:47+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>3.5k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>3 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
-<h3 id="41"><a class="markdownIt-Anchor" href="#41"></a> 4.1</h3>
-<ol>
-<li>网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。</li>
-<li>数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。</li>
-<li>路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。</li>
-<li>转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转发到哪一个端口。</li>
-<li>因特网的网络层提供单一的服务，称为尽力而为服务。传送的分组既不能保证以它们发送的顺序被接收，也不能保证它们最终交付；既不能保证端到端时延，也不能保证有最小的带宽。</li>
-</ol>
-<h3 id="42"><a class="markdownIt-Anchor" href="#42"></a> 4.2</h3>
-<ol start="6">
-<li>输入端口、输出端口、交换端口由硬件实现，其数据表处理功能比软件快很多；路由选择处理器由软件实现，维护路由表以及其他的路由信息，并计算转发表。数据平面使用硬件实现，控制平面使用软件实现。</li>
-<li>在高速路由器的输入端口存储转发表的副本可以大大减少路由器进行路由选择的时间，无需每一次都计算一次路径。转发决策能在每个输入端口本地做出，无须基于每个分组调用集中式路由选择处理器，因此避免了集中式处理的瓶颈。</li>
-<li>基于目的地转发意味着路由器仅会根据数据报的目的IP地址来决定转发端口，通用转发除了数据报的最终目的地之外还有其他的影响因素，如转发决策可以基于数据报的TCP/UDP源端口号和目的端口号进行转发。</li>
-<li>使用最长前缀匹配原则来确定应该转发到哪一个端口。</li>
-<li>经过内存交换：在输入端口与输出端口之间的交换是在CPU的直接控制之下完成的，一个分组到达一个输入端口时，该端口会通过中断方式向路由选择处理器发出信号，该分组从输入端口处被复制到处理器内存中，理由选择处理器提取目的地址，在转发表中查找到适当的转发端口，并将该分组复制到输出端口的缓存中。<br />
-经过总线交换：输入端口经过一条共享总线将分组直接传送到输出端口，不需要路由选择处理器的干预。让输入端口为分组预先计划一个交换机内部标签，指示本地输出端口，使分组在总线上传送和传输到输出端口。该分组能够由所有输出端口收到，但只有与该标签匹配的端口才能保存该分组。<br />
-经互联网络交换：使用一个更为复杂的互联网络，如纵横式交换机结构，每条垂直的总线在交叉点与每条水平的总线交叉，交叉点通过交换结构控制器能够在任何时候开启和闭合。当分组到达端口A需要转发到Y时，交换机控制器闭合A和Y总线交叉部分的交叉点，然后即可转发。只有互联网络交换可以并行交换多个分组。</li>
-<li>如果数据报到达的速率大于数据报处理的速率，当输入端口的数据报缓存满时，后面到达的数据报就可能会丢失。加快路由器处理器的处理速率即可消除排队。</li>
-<li>如果数据报被大量送入输入端口，速率大于转发速率时，会导致输出端口排队，到达一定程度后出现丢失。无法防止这种丢失。</li>
-<li>HOL阻塞，即线头阻塞，即在一个输入端口的缓存中，后面的分组由于前面的分组等待转移到输出端口而产生等待时延的现象，又称线路前部阻塞。出现于输入端口。</li>
-<li>FIFO</li>
-<li>不同的数据报中的数据的重要程度不同，对时延的要求也不同，因此需要为分组设置优先权。</li>
-<li>RR指循环排队原则，WFQ指加权公平排队原则，二者的基本差异是RR将所有类通信都一视同仁地看待，而WFQ则将通信分为多个不同优先权的分组，优先权表现在一个循环周期内某一类分组处理的时间比例。当WFQ中所有类具有相同的服务权重时，与RR相同。</li>
-</ol>
-<h3 id="43"><a class="markdownIt-Anchor" href="#43"></a> 4.3</h3>
-<ol start="17">
-<li>IP数据报首部中含有上层协议字段，可用于标识上层协议。</li>
-<li>TTL（time to live），每一次转发都会减1，当该值被减为0时即丢弃。</li>
-<li>不用，IP数据报只检验其头部信息。</li>
-<li>当数据报中数据部分的长度大于MTU，即链路的最大传送单元时，需要对数据报进行分割，较小的数据报在最终目的主机装配。</li>
-<li>路由器有IP地址，有多个IP地址，数量等于其有效接口数量。</li>
-<li>11011111  00000001  00000011  00011011</li>
-<li>略</li>
-<li>8个接口，3个</li>
-<li>IP数据报头部20字节，TCP报文段头部20字节，一个数据报中头部信息占40字节，还有40字节为数据，因此开销为50%，即发送的内容只有1-50%是有效数据，应用数据所占百分比为50%</li>
-<li>通过路由器的DHCP服务器为5台PC分配IP地址，该无线路由器使用NAT，因为ISP只给了它一个IP地址，它必须自己构建一个局域网。</li>
-<li>路由聚合指使用单个网络前缀通告多个网络的能力，其使用一个具有公共前缀的地址来汇聚许多的子网。</li>
-<li>能够自动配置主机的IP地址。</li>
-<li>专用网络地址指在各个子网中可以重复使用的网络IP地址。具有专用网络地址的数据报不会出现在大型公共因特网中，否则数据报将无法确定到底应该发送到哪一台主机。</li>
-<li>有，如源IP和目的IP。</li>
-<li>是，因为IPv6载荷包裹在IPv4数据报中。</li>
-</ol>
-<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
-<ol>
-<li>a. 路由器A的转发表：其中1项的目的地址为H3，转发端口为3。<br />
-b. 无法实现，因为路由器转发仅根据目的地址转发，而不根据数据来源转发。</li>
-<li>a. 不能，因为交换结构是共享总线时，一次只能转发一个分组。<br />
-b. 不能，因为交换结构是内存交换时，一次也只能转发一个分组。<br />
-c. 不能，因为两个分组转发到相同的输出端口，交换结构为纵横式时，允许不同端口同时转发不同分组，但一个端口在一个时刻不能同时转发多个分组。</li>
-<li>内存和总线交换结构：每一次只能转发一个分组，因此最大时延为(n-1)D。纵横式：不同端口的输出可以交互进行，因此最大时延为0。</li>
-<li>在第一个时隙，第一个输入端口的X分组到达X输出端口，另外剩余两个端口的最前两个Y分组选择一个到达Y输出端口，之后的分组还需要两个时隙完成传输，故最少需要3个时隙。最大也是3个时隙。</li>
-<li>a.<br />
-目的地址为192.0.0.0/10时输出到0端口，前缀11100000 00<br />
-目的地址为192.64.0.0/16时输出到1端口，前缀11100000 01000000<br />
-目的地址为192.0.0.0/7且不属于端口0、1的地址范围时输出到2端口，前缀1110000<br />
-其余输出到3端口<br />
-b. 第一个地址根据最长前缀匹配原则匹配到其他，输出到3端口<br />
-第二个地址可匹配端口2，且不匹配端口0、1，输出到2端口<br />
-第三个地址匹配到其他，输出到3端口</li>
-<li>首先看前缀长的。<br />
-接口1前缀010，匹配64~95，地址数量为32。<br />
-接口2前缀011，匹配96~127，地址数量为32。<br />
-接口0前缀00，匹配0~63，地址数量为64。<br />
-接口2前缀10，匹配128~191，地址数量为64。<br />
-接口2可匹配96~191，地址数量为96。<br />
-接口3前缀11，匹配192~255，地址数量为64。</li>
-<li>首先看前缀长的。<br />
-接口2前缀111，匹配224~255，地址数量为32。<br />
-接口1前缀10，匹配128~191，地址数量为64。<br />
-接口0前缀1，匹配192~223，地址数量为32。<br />
-接口3匹配0~127，地址数量为128。</li>
-<li>首先分配需求大的子网，子网2分配一个25地址，即223.1.17.0/25，子网1分配一个26地址，即223.1.17.128/26，子网3分配剩余地址，即223.1.17.192/26。</li>
-<li>略</li>
-<li></li>
-</ol>
-<p>244.0.0.0/10 → 端口0<br />
-224.64.0.0/16 → 端口1<br />
-224.0.0.0/7 → 端口2<br />
-0.0.0.0/0 → 端口3</p>
-<ol start="11">
-<li>128.119.40.(64\80\96\112)/28</li>
-<li>子网1：214.97.254.0/24<br />
-子网2：214.97.255.0/25 - 214.97.255.0/29<br />
-子网3：214.97.255.128/25<br />
-子网4：214.97.255.0/31<br />
-子网5：214.97.255.2/31<br />
-子网6：214.97.255.4/30</li>
-<li>略</li>
-<li>将会产生4个分片，表示均为422，偏移分别为0、85、170、255，前3个分片的MF为1，数据量700字节，最后一个为0，数据量300字节。</li>
-<li>5MB=5×10<sup>6</sup>字节，首部字段的长度为40字节（含IP首部和TCP首部），故每个数据报最大数据量为1460字节，需要将5MB分为3425个数据报。</li>
-<li>a. 192.168.1.1~192.168.1.3<br />
-b. 源IP地址：192.168.1.1，端口3345；转换IP地址：24.34.112.235，端口4000。其余5个类似。</li>
-<li>a. 通过标识号识别，由于每一台主机的标识号都是连号的，可以将所有的分组编号提取出来，检测其中连号或单号的数量，可以大致检测出主机的数量，通过这样的方式检测出的主机数量不会大于实际的主机数量，因为不同主机在不同的时间段可能会使用同一个编号。<br />
-b. 不能。这样就无法通过标识号的规律对数据报进行源关联。</li>
-<li>不可能设计这种技术。TCP首先需要创建一个连接，一方通过NAT地址转换可以找到另一方NAT的网关，但不能定位到NAT内部子网的另一方。</li>
-<li>略</li>
-<li>略</li>
-<li>略</li>
-<li>略</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第4,5章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:47:13 / Modified: 23:48:42" itemprop="dateCreated datePublished" datetime="2023-03-02T23:47:13+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>9.6k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>9 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-4-网络层数据平面"><a class="markdownIt-Anchor" href="#chapter-4-网络层数据平面"></a> Chapter 4 网络层——数据平面</h1>
-<h2 id="41-网络层概述"><a class="markdownIt-Anchor" href="#41-网络层概述"></a> 4.1 网络层概述</h2>
-<p><font color=red>网络层的任务：完成主机到主机之间的通信</font></p>
-<p>网络层是五层架构中的第三层，为运输层（进程之间的通信）提供支持。</p>
-<p>为实现从源主机到目标主机成功的移动数据分组，整个路径上每一台分组交换机上均需要实现网络层，才能实现通信。</p>
-<p>网络层功能：</p>
-<ul>
-<li>在全局范围内对主机通信进行选路，结果反映为分组交换机上的转发表（理解为每一台设备尝试获取整个网络的拓扑结构，控制层面）</li>
-<li>分组交换机上的网络层根据转发表以及分组头部信息，将分组向合适的链路进行转发（数据层面）</li>
-<li>对于面向连接的网络层服务，提供连接建立的功能</li>
-</ul>
-<p>分组交换机分类：</p>
-<ul>
-<li>根据链路层首部信息进行转发的——链路层结点交换机</li>
-<li>根据网络层首部信息进行转发的——路由器</li>
-</ul>
-<p><font color=red>注意：链路层结点交换机和路由器的区别的理解：链路层在网络层之下，通过以太网（Ethernet）协议工作，链路层结点交换机根据MAC地址找到主机，而路由器通过IP地址找到主机。在一个内网之中，可能存在有多个交换机，交换机在内网主机之间的通信效率高于路由器（主机与路由器直接相连也可以实现交换机的功能，但效率不如交换机）。</font>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_32045201/article/details/78305586?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166865182216800184174368%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=166865182216800184174368&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-78305586-null-null.142%5Ev63%5Econtrol,201%5Ev3%5Econtrol_1,213%5Ev2%5Et3_esquery_v1&amp;utm_term=%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%92%8C%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E5%8C%BA%E5%88%AB&amp;spm=1018.2226.3001.4187">路由器与交换机的区别与联系_WhataNerd的博客-CSDN博客_交换机和路由器的区别</a></p>
-<p>网络层可能提供的服务：</p>
-<ul>
-<li>确保交付：确保分组最终到达目的地（与以太网协议不同，以太网协议为尽力传输）</li>
-<li>具有时延上界的确保交付：在时延上限以内交付</li>
-<li>有序分组交付：以发送顺序到达</li>
-<li>确保最小带宽：以低于特定比特率速率传输时分组不会丢失而且在时延内可达</li>
-<li>确保最大时延抖动：连续分组间隔时间不超过特定值</li>
-<li>安全性服务：机密性、完整性和源鉴别（如TLS）</li>
-</ul>
-<p>网络层提供的服务可以分为：（下面两种只能提供一种，而运输层可通知提供两种）</p>
-<ul>
-<li>面向有连接的服务：虚电路，需要事先握手</li>
-<li>面向无连接的服务：数据报，不需事先握手</li>
-</ul>
-<p><font color=red>网络层与运输层中相应服务的区别</font>：</p>
-<ul>
-<li>网络层是向运输层提供主机到主机的服务，而运输层是向应用层提供进程到进程的服务。</li>
-<li>网络层仅提供上述两种服务中的一种，不同时提供两种，而运输层则同时提供两种。</li>
-<li>运输层的服务在网络边缘的端系统中实现，而网络层的服务则在整个网络中实现，含路由器。</li>
-</ul>
-<h4 id="虚电路网络"><a class="markdownIt-Anchor" href="#虚电路网络"></a> 虚电路网络</h4>
-<p>虚电路的目标是使首发双方之间的路径表现得如同电话线路一般。<br />
-工作机制：</p>
-<ul>
-<li>数据开始流动之前，呼叫建立，流动结束后要断开</li>
-<li>每一个分组携带虚电路的标识（而不是目的主机的地址）</li>
-<li>路径上的每一个路由器必须为进行中的连接维持连接状态信息</li>
-<li>链路，路由器资源可以分配给虚电路，为了达到类似线路交换的性能</li>
-</ul>
-<p>虚电路的组成：</p>
-<ul>
-<li>从源到目的主机的路径，含有一系列链路和路由器</li>
-<li>VC号，沿着该路径的每段链路的一个号码
-<ul>
-<li>一条虚电路在每条链路上具有不同的VC号</li>
-<li>每台中间路由器必须用一个新的VC号替代每个传输分组的VC号</li>
-</ul>
-</li>
-<li>沿着该路径的每台路由器中的转发表
-<ul>
-<li>创建一条新的虚电路，转发表增加一个新表项</li>
-<li>终止一条虚电路，表中相应项被删除</li>
-</ul>
-</li>
-</ul>
-<h4 id="数据报网络"><a class="markdownIt-Anchor" href="#数据报网络"></a> 数据报网络</h4>
-<p>数据报网络在网络层没有连接建立过程。路由器在端到端的连接中不维护连接状态信息（在网络层不存在“连接”的概念）。传输报文时使用目的主机地址信息，同一对主机之间的报文可能会走不同的路径。</p>
-<p>虚电路网络与数据报网络的对比：虚电路网络将重点放在网络，数据报网络将重点放在终端。数据报网络互联不同类型的网络更加容易，启用新服务的速度更快更简单。</p>
-<h2 id="42-路由器工作原理"><a class="markdownIt-Anchor" href="#42-路由器工作原理"></a> 4.2 路由器工作原理</h2>
-<p>路由器关键组成：</p>
-<ul>
-<li>运行路由算法/协议（如RIP选路算法）</li>
-<li>从入口到出口的转发</li>
-</ul>
-<p><font color=red>路由器的分散式交换：</font></p>
-<ul>
-<li>按照给定的目标地址，使用输入端口内存中存储的路由表，查找输出端口</li>
-<li>路由器需要以“线路速度”完成输入输出端口的处理</li>
-<li>如果数据报到达的速度超过了输入输出端口将数据报转交给交换结构的速度，则会产生排队现象。
-<ul>
-<li>基于目标的转发：仅基于目标IP地址的转发，以<font color=red>最长前缀匹配方法</font>确定向何处转发。</li>
-<li>通用转发：基于任意首部字段值转发</li>
-</ul>
-</li>
-</ul>
-<h3 id="输入端口"><a class="markdownIt-Anchor" href="#输入端口"></a> 输入端口</h3>
-<p>输入端口排队：</p>
-<ul>
-<li>输入端口处理速率超过交换结构速率时产生</li>
-<li>当输入缓冲区溢出时可能会导致排队丢包和时延</li>
-<li><font color=red>线头阻塞</font>：在输入队列中排队的分组必须等待通过交换结构发送，因为它被位于线头的另一个分组阻塞了。</li>
-</ul>
-<p>交换结构工作原理：</p>
-<ul>
-<li>经总线交换：输入端口通过一根共享总线直接传送到输出端口，缺点是<font color=red>总线的带宽是交换速度的瓶颈</font>。一次处理一个分组。</li>
-<li>经内联网络：将长度变化的IP分组分片为固定尺寸的信元，通过交换结构对信元进行转发。克服了总线带宽的限制。</li>
-<li>经内存交换：在输入端口和输出端口之间的交换是在CPU的直接控制下完成的。分组被拷贝到系统内存中，CPU提出报头中的目标地址，查找路由表中的输出接口，将数据包拷贝到输出接口。其转发速度受限于内存的带宽（吞吐量&lt;带宽/2），一次转发一个分组。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/2cd2649418ff4561b35808c705a039e2.png" alt="" /></p>
-<h3 id="输出端口"><a class="markdownIt-Anchor" href="#输出端口"></a> 输出端口</h3>
-<p>输出端口需要缓存管理和调度原则。当交换结构将分组交付给输出端口的速率超过输出链路速率时进行缓存管理，在数据报队列中选择数据报进行传输时需要调度原则。</p>
-<p>输出端口排队：</p>
-<ul>
-<li>当通过交换结构到达的分组速率超过输出链路速率时产生。</li>
-<li>需要对分组进行缓存，超过缓存缓冲区大小会造成排队和丢包。</li>
-</ul>
-<h3 id="拥塞问题的解决方法"><a class="markdownIt-Anchor" href="#拥塞问题的解决方法"></a> 拥塞问题的解决方法</h3>
-<p>缓冲区设置问题：</p>
-<ul>
-<li>经过试验认为对于有N条TCP连接经过的链路而言，缓冲区大小应为：$$B=\frac{\operatorname{RTT}\times R}{\sqrt{N}}$$其中R为带宽，RTT为往返时间。</li>
-</ul>
-<p>输出端口分组调度策略：</p>
-<ul>
-<li>先来先服务策略（First Come First Serve，FIFO的队列策略）
-<ul>
-<li>当缓冲区满时，有几种丢弃方法：
-<ul>
-<li>尾部丢弃</li>
-<li>按照优先级丢弃</li>
-<li>随机丢弃</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>优先级排队策略
-<ul>
-<li>针对高优先级和低优先级的数据报创建多个不同队列</li>
-</ul>
-</li>
-<li>循环调度策略
-<ul>
-<li>循环扫描不同类的队列，轮流发送数据包</li>
-</ul>
-</li>
-<li>加权公平队列策略
-<ul>
-<li>每一个类赋予对应的权重，在一个周期之内可以获得一定数量的服务，既可以保证高优先级队列获得最大优先权，又可以防止低优先级队列等待时间过长。</li>
-</ul>
-</li>
-</ul>
-<p>分组丢弃策略</p>
-<ul>
-<li>被动策略
-<ul>
-<li>丢弃尾部</li>
-<li>随机丢弃已排队分组</li>
-</ul>
-</li>
-<li>主动策略
-<ul>
-<li>随时计算平均队列长度，并设置一个最小和最大阈值。</li>
-<li>当队列长度小于最小阈值时，无条件允许分组入队列。</li>
-<li>当队列长度大于最大阈值时，无条件禁止分组入队列。</li>
-<li>当队列长度在两个阈值之间时，按照概率标记或丢弃分组。</li>
-</ul>
-</li>
-</ul>
-<h2 id="43-网际协议"><a class="markdownIt-Anchor" href="#43-网际协议"></a> 4.3 网际协议</h2>
-<p><font color=red><strong>IPv4协议数据报格式：</strong></font><br />
-<img src="https://img-blog.csdnimg.cn/4d9498e0c9024f3a908ffc12db15464f.jpeg#pic_center" alt="" /></p>
-<h3 id="ip分片和重组"><a class="markdownIt-Anchor" href="#ip分片和重组"></a> IP分片和重组</h3>
-<p>MTU：最大传送单元，一个网络层数据包的最大长度（包含网络层协议头）</p>
-<p>受限于MTU，大的数据包在一些链路中会被拆分为多个数据包。<font color=red>网络中的交换机都有可能会拆分数据包，但只有目标主机会对数据包进行重组，具有较大MTU的链路即使接收到小数据包也不会进行重组。</font> 重组后由于数据包头部数量增加，因此总的传输的字节数量会增加。</p>
-<p><font color=red><strong>IP地址</strong></font></p>
-<ul>
-<li>结构：网络号（子网号）+主机号，在同一个网络下的主机和路由器的IP地址中的网络号必须相同，同一网络下的主机可以直接通信。</li>
-<li>接口：连接主机、路由器之间的物理链路，一般路由器有多个接口，主机也有可能有多个接口，IP地址只和接口有关而与主机、路由器没有太多关联。</li>
-<li>传统形式下的IP地址分类：
-<ul>
-<li>A类：0.0.0.0~127.255.255.255，网络号7位，主机号24位</li>
-<li>B类：128.0.0.0~191.255.255.255，网络号14位，主机号16位</li>
-<li>C类：192.0.0.0~223.255.255.255，网络号21位，主机号8位</li>
-<li>D类：224.0.0.0~239.255.255.255，组播地址</li>
-<li>E类：240.0.0.0~255.255.255.255，保留</li>
-</ul>
-</li>
-<li>路由器的IP地址：为完成分组转发功能，路由器至少拥有两个IP地址，接入不同的子网之中，用于不同子网之间的通信。</li>
-<li>子网划分方法：在主机号中借用一部分位数作为子网号</li>
-<li>子网掩码：对内用于指示网络号和子网号的位置，对外可以隐藏子网的存在。获得方法：通过在网络号的子网号相应的位置全部置为1，主机号相应的位置全部置为0，即可得到子网掩码。</li>
-<li>在同一个局域网上的主机或路由器的IP地址中的网络号必须是一样的，图中的网络号就是IP地址中的net-id。路由器总是具有两个或两个以上的IP地址，路由器的每一个接口都有一个不同网络号的IP地址。</li>
-</ul>
-<h3 id="ipv4编址"><a class="markdownIt-Anchor" href="#ipv4编址"></a> IPv4编址</h3>
-<p>网络地址=IP地址 逻辑与 子网掩码。<br />
-采用子网掩码之后，路由器的寻址过程将演变为一个两级寻址过程：</p>
-<ul>
-<li>检查分组目的IP地址中的网络号，若网络号不是本网络，则从路由表中找出相应的的转发节点地址将其转发出去。</li>
-<li>检查子网号：当网络号是本网络时，路由器将检查子网号，向相应的子网转发此分组。</li>
-</ul>
-<p>IP地址扩展：构造超网，从网络号中借用一部分位数作为主机号。</p>
-<h4 id="cidr"><a class="markdownIt-Anchor" href="#cidr"></a> CIDR</h4>
-<p>无类别域间路由选择。应用于地址空间的利用率低，地址空间面临耗尽时。</p>
-<p>编址格式：IP地址::={网络前缀，主机号}<br />
-斜线记法：192.168.0.1/24<br />
-简写记法：10.0.0.0/10可以简写为10/10</p>
-<p>最长前缀匹配：</p>
-<ul>
-<li>使用CIDR时，路由表中的每一个项目由“网络前缀”和“下一条地址”组成，在查找路由表时可能会得到不止一个匹配结果。</li>
-<li>应当从匹配结果中选择具有最长网络前缀的路由：最长前缀匹配。</li>
-<li>网络前缀越长，其地址块就越小，因而路由就越具体。</li>
-<li>最长前缀匹配又被称为最长匹配或最佳匹配。</li>
-</ul>
-<p>主机获得IP地址的方法：手工配置，或使用DHCP协议动态获取。</p>
-<h4 id="dhcp动态主机配置协议"><a class="markdownIt-Anchor" href="#dhcp动态主机配置协议"></a> DHCP：动态主机配置协议</h4>
-<p>允许主机在加入网络时动态地从网络服务器中获取其网络地址。</p>
-<ul>
-<li>能够在使用过程中更新地址</li>
-<li>允许地址重用</li>
-<li>支持移动用户</li>
-</ul>
-<p>主要流程</p>
-<ul>
-<li>主机广播DHCP发现报文。</li>
-<li>DHCP服务器使用“DHCP提供”报文进行应答（广播方式，由于现在主机还没有获取IP地址，因此只能广播）。</li>
-<li>主机使用DHCP请求报文请求IP地址。</li>
-<li>DHCP服务器使用DHCP ACK报文响应。</li>
-</ul>
-<p>DHCP除了可以获取IP地址，还可以获取网关地址、DNS地址、子网掩码。其<font color=red>工作在应用层</font>，是引导程序协议的一种，属于局域网的网络协议，使用UDP协议工作。<br />
-DHCP有3个端口，67和68作为正常的DHCP服务端口，分别是服务器和客户端的服务端口，546号端口用于DHCPv6客户端，这是为了特别开启DHCP failover服务。</p>
-<h3 id="网络地址转换nat"><a class="markdownIt-Anchor" href="#网络地址转换nat"></a> 网络地址转换（NAT）</h3>
-<p>其目的是让本地网络只使用一个IP地址就可以和外部网络相连，且不需要从ISP获取大批的IP地址，所有的设备可以使用同一个IP地址，可以在不通知外部网络的情况下改变内网主机的IP地址，即使改变了ISP也无需改变内网主机的IP地址，且内网主机对于外网主机是不可见的，不可寻址的。</p>
-<p>实现方法：</p>
-<ul>
-<li>发送数据报：将每个外出报文的源IP地址和端口号替换为NAT的IP地址以及新的端口号，远程客户机或服务器将以NAT IP地址以及新的端口号作为目的地址进行响应。</li>
-<li>网关存储每一个地址转换对，在接收数据报时根据NAT转换表将每一个进入报文的NAT IP地址和端口号替换为相应的源IP地址以及端口号。</li>
-</ul>
-<p>三种地址转换方式：</p>
-<ul>
-<li>静态NAT：一个本地地址对应于一个全球地址</li>
-<li>动态NAT：一个全球地址对应于多个本地地址</li>
-<li>端口NAT：一个本地地址的端口对应到一个全球地址的端口</li>
-</ul>
-<p>争议：</p>
-<ul>
-<li>端口号是用于进程编址而不是用于主机编址的</li>
-<li>路由器仅应当处理高达第三层的分组</li>
-<li>NAT协议违反了端到端原则，即主机彼此应当相互直接对话，结点不应该介入。</li>
-<li>应该使用IPv6来解决IP地址的短缺问题</li>
-</ul>
-<h4 id="icmp因特网控制报文协议"><a class="markdownIt-Anchor" href="#icmp因特网控制报文协议"></a> ICMP：因特网控制报文协议</h4>
-<p>用于主机、路由器、网关之间交换网络层信息，其传递的信息包括：</p>
-<ul>
-<li>错误报告，如主机、网络、端口、协议不可达等</li>
-<li>回声请求/回答，如ping</li>
-</ul>
-<p>从体系结构上看其位于IP层之上，被封装在IP分组中。报文种类有两种：ICMP差错报告报文和询问报文。</p>
-<h2 id="52-路由选择算法"><a class="markdownIt-Anchor" href="#52-路由选择算法"></a> 5.2 路由选择算法</h2>
-<p><font color=red>默认路由器</font>：一台主机直接连接到的路由器<br />
-<font color=red>源路由器</font>：源主机的默认路由器<br />
-<font color=red>目的路由器</font>：目的主机的默认路由器</p>
-<p>选路算法的目的：</p>
-<ul>
-<li>给定一组路由器以及连接路由器的链路，从中找到一条从源路由器到目标路由器的“好的”路径，这条路径通常需要拥有最低的成本。</li>
-</ul>
-<p>选路算法分类：</p>
-<ul>
-<li>根据信息是全局性还是分散性的进行分类
-<ul>
-<li>全局选路算法
-<ul>
-<li>所有路由器都知道整个网络的拓扑图以及链路的费用信息</li>
-<li>链路状态算法</li>
-</ul>
-</li>
-<li>分散式选路算法
-<ul>
-<li>每一个路由器仅有与其相连的链路的费用信息</li>
-<li>通过迭代计算过程与相邻结点交换信息</li>
-<li>距离向量算法</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>根据信息是静态还是动态进行分类
-<ul>
-<li>静态选路算法
-<ul>
-<li>随着时间的流逝，路由的变化很慢</li>
-</ul>
-</li>
-<li>动态选路算法
-<ul>
-<li>路由信息可以很快地发生变化</li>
-<li>需要对路由信息进行周期性的更新</li>
-<li>可以相应拓扑或链路费用的变化</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>根据是否对负载敏感进行分类
-<ul>
-<li>负载敏感算法
-<ul>
-<li>链路费用会动态地变化以反映出链路的当前状况</li>
-</ul>
-</li>
-<li>负载迟钝算法
-<ul>
-<li>链路费用不明显地反映链路的当前状况</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="dijkstra算法"><a class="markdownIt-Anchor" href="#dijkstra算法"></a> Dijkstra算法</h3>
-<p>条件：</p>
-<ul>
-<li>所有结点都知道网络拓扑和链路费用
-<ul>
-<li>通过链路状态广播获得信息</li>
-<li>所有结点具有该网络的同一个完整的视图</li>
-</ul>
-</li>
-<li>计算从某结点到网络中所有其他结点的最低费用
-<ul>
-<li>为该结点提供转发表</li>
-</ul>
-</li>
-<li>迭代：经过算法的K次迭代之后，可以知道到K个目的节点的最低费用路径。</li>
-<li>通过跟踪前一跳结点可以构造最短路径树。</li>
-</ul>
-<p>复杂性：</p>
-<ul>
-<li>对于第一次迭代，需要搜索所有的n个结点以确定出结点w，w具有最低费用</li>
-<li>在所有迭代中需要搜索的结点总数为n(n+1)/2，所以链路状态算法在最差情况下的复杂性为O(n<sup>2</sup>)</li>
-<li>该算法的一种更复杂的实现（堆）可以降到O(nlogn)</li>
-</ul>
-<p>缺点：当路径的价值在不断变化时，每一次都需要重新进行计算，耗费资源。<br />
-解决方案：</p>
-<ul>
-<li>强制链路费用不依赖于所承载的流量，但这无法解决高拥塞的问题</li>
-<li>确保并非所有的路由器同时运行LS算法（链路状态路由选择算法），这样因特网上的路由器能够自同步，随机化路由器发送链路通告的时间。</li>
-</ul>
-<h2 id="53-ospf协议"><a class="markdownIt-Anchor" href="#53-ospf协议"></a> 5.3 OSPF协议</h2>
-<p>OSPF协议是公开发表的，用于因特网中自治系统内部的路由选择。<br />
-最短路径优先是因为使用了Dijkstra提出的最短路径算法SPF。这是一个分布式的链路状态协议。</p>
-<p>链路状态在路由器之间交流使用的方法：洪泛法，其向本自治系统中所有路由器发送信息，<font color=red>发送的信息就是与本路由器相邻的所有路由器的链路状态</font>。只有当链路状态发生变化时，路由器采用洪泛法向所有路由器发送此信息。</p>
-<p>由于各个路由器之间频繁交换链路状态信息，所有的路由器最终都能够建立一个<font color=red>链路状态数据库</font>。这个数据库实际上描述了全网的拓扑结构图，在全网范围是一致的。OSPF的链路状态数据能够较快地进行更新，使得各个路由器能够及时更新其路由表。<font color=red>OSPF的更新过程收敛快就是其重要优点</font>。</p>
-<h4 id="ospf协议特点"><a class="markdownIt-Anchor" href="#ospf协议特点"></a> OSPF协议特点：</h4>
-<ul>
-<li>不强制如何设置链路权值的策略，但是提供对给定链路权值集合确定最低费用路径的机制。</li>
-<li>即使链路状态未发生变化，每30分钟广播一次链路状态。</li>
-<li>链路状态以OSPF通告形式封装于OSPF报文中，由IP分组承载，协议号89。</li>
-<li>OSPF路由器之间的交换都是经过鉴别的，以确认OSPF通告的真实性以防止伪造和篡改。</li>
-<li>OSPF通告具有序列号，可防止重放攻击。</li>
-<li>OSPF中支持多条具有相同费用的路径。</li>
-<li>OSPF支持多播选路和层次路由。</li>
-</ul>
-<h3 id="ospf距离向量选路算法"><a class="markdownIt-Anchor" href="#ospf距离向量选路算法"></a> OSPF距离向量选路算法</h3>
-<p>特点：迭代、分布、自我终止、异步<br />
-思想：</p>
-<ul>
-<li>d<sub>x</sub>(y)=min<sub>v</sub>{c(x, v)+d<sub>v</sub>(y)}</li>
-<li>每一个路由器中都有一张路由表，包含3个内容：目的网络号、经过的邻居路由器、距离</li>
-<li>路由器定期向其邻居路由器传送路由表的拷贝</li>
-</ul>
-<p>路由表更新算法：将每条边的权值都定义为1</p>
-<ul>
-<li>路由器X得到相邻路由器Y的路由表，从而得知：Y到网络Z的最短距离为N</li>
-<li>如果路由器X没有到网络Z的路由条目，则添加一条经由路由器Y到网络Z距离为N+1的路由条目</li>
-<li>如果路由器X已经有到网络Z的路由条目，其距离为M，如果M&gt;N+1，则更新该条目为经由路由器Y到网络Z距离为N+1，否则不更新。</li>
-<li>特点：
-<ul>
-<li>好消息传播快，每一次发现距离更新的路径，都能够很快通知到邻居：
-<ul>
-<li>在t0时刻，y检测到链路费用变化，更新自己的距离向量，同时将这个变化通知给它的邻居</li>
-<li>在t1时刻，z收到来自y的更新报文并更新了自己的距离向量表，计算出到x的新的最低费用，并向邻居发送它的新距离向量</li>
-<li>在t2时刻，y收到来自z的更新并更新其距离向量表，Y的最低费用不变，因此y不发送任何报文给z。</li>
-</ul>
-</li>
-<li>坏消息传播慢，如果一条链路的权值增大，每一次更新只能让链路最短距离增加1，这会导致路由选择环路（P252）。解决方案：毒性逆转，即如果z通过y选路到达目的地x，则z通告y其到x的距离为无穷大，这样在比较时不会产生上述情况，但仍然没有解决不可记数问题。涉及3个或更多结点的环路将无法使用毒性逆转技术检测到。</li>
-</ul>
-</li>
-</ul>
-<h3 id="链路状态路由选择算法ls-距离向量路由选择算法dv"><a class="markdownIt-Anchor" href="#链路状态路由选择算法ls-距离向量路由选择算法dv"></a> 链路状态路由选择算法LS &amp; 距离向量路由选择算法DV</h3>
-<ul>
-<li>从报文的复杂性来看：
-<ul>
-<li>LS：对于n个结点和E条链路，需要发送O(nE)个报文</li>
-<li>DV：只对直连的邻居发送报文</li>
-</ul>
-</li>
-<li>从收敛速度来看：
-<ul>
-<li>算法收敛时间依赖于许多因素，因此可变</li>
-<li>LS：是一个要求O(nE)个报文的O(n<sup>2</sup>)算法，可能会存在震荡</li>
-<li>DV：收敛时间不确定。可能会遇到环路选路和无穷记数问题</li>
-</ul>
-</li>
-<li>从健壮性来看：
-<ul>
-<li>LS：结点能够向其连接的链路广播不正确费用，每一个结点只计算自己的转发表</li>
-<li>DV：一个结点可以向任意或所有目的结点通告其不正确的最低费用路径，每一个结点的计算都会传递给它的邻居</li>
-</ul>
-</li>
-</ul>
-<h2 id="rip协议"><a class="markdownIt-Anchor" href="#rip协议"></a> RIP协议</h2>
-<ul>
-<li>相邻两点间链路上的费用定义为1，即只考虑源到目标经过多少个路由器，或多少“跳”</li>
-<li>一条路径的最大费用限制为15</li>
-<li>选路更新信息每30s在邻居之间以RIP响应报文的形式进行交换</li>
-<li>路由器经过180s没有收到来自某个邻居的RIP通告，则认为该邻居已经离线，修改选路表，向其他邻居广播</li>
-<li><font color=red>RIP是一个运行在UDP上的应用层协议</font>（端口520）</li>
-</ul>
-<h2 id="层次路由"><a class="markdownIt-Anchor" href="#层次路由"></a> 层次路由</h2>
-<p>当因特网规模过大时，路由器无法存储每一台主机的选路信息，路由表更新的报文广播太多占用带宽。另外路由器也需要有一个子网管理的功能，每个网络管理员可能希望能够按照自己的愿望进行管理其网络。</p>
-<p>解决方法：</p>
-<ul>
-<li>将路由器聚合到一个区域，形成一个自治系统（AS）</li>
-<li>在相同AS内的路由器可以全部运行同样的选路算法：自治系统内部选路协议，最常用的是内部网关协议IGP，包含RIP和OSPF</li>
-<li>在不同AS内的路由器可以运行不同的自治系统内部选路协议</li>
-<li>转发表是由AS内部选路算法与AS间选路算法共同决定的，AS内部选路算法为内部目的地址设置转发表信息，AS内部选路算法与AS外部选路算法共同为外部目的地址设置转发表信息</li>
-</ul>
-<p>自治系统间路由器的任务：<br />
-需要知道自己所在AS通过某个相邻的AS能够到达哪些AS，并将这些可达性信息向自身AS中的所有路由器传播。</p>
-<p>当从源到目标在AS粒度下只有一条路可选时，源知道其哪一个接口在到AS边缘路由器的最低费用路径上，因此将接口与目标作为一对放入转发表。如果不止一条路可选，那么源必须确定通过哪一个网关路由器转发报文，其策略是<font color=red>将报文发送到最近的路由器</font>，即热土豆选路原则</p>
-<h3 id="因特网中的as内层次路由层次ospf"><a class="markdownIt-Anchor" href="#因特网中的as内层次路由层次ospf"></a> 因特网中的AS内层次路由：层次OSPF</h3>
-<ul>
-<li>为了使得OSPF能够用于规模更大的网络，OSPF将一个自治系统再划分为若干个更小的范围，称为区域</li>
-<li>每一个区域都有一个32bit的区域标识符</li>
-<li>区域不能太大，一个区域内最好不要有200个以上路由器</li>
-<li>划分区域的好处就是将利用洪泛法交换链路状态信息的范围局限于每一个区域而不是整个自治系统，这就减少了整个网络上的通信量。</li>
-<li>在一个区域内部的路由器只知道本区域的完整网络拓扑，而不知道其他区域内的网络拓扑的情况。</li>
-<li>OSPF使用层次结构的区域划分。在上层的区域叫做主干区域。主干区域的标识符规定为0.0.0.0，主干区域的作用是用于连通其他在下层的区域。</li>
-</ul>
-<h3 id="因特网上的as间路由bgp4"><a class="markdownIt-Anchor" href="#因特网上的as间路由bgp4"></a> 因特网上的AS间路由：BGP4</h3>
-<ul>
-<li>在自治系统之间寻找最佳路由的代价很大，不现实，因此需要考虑有关策略。</li>
-<li>BGP为每一个AS提供一种手段，来处理
-<ul>
-<li>从相邻AS获取子网可达性信息</li>
-<li>向该AS内部所有路由器传播这些可达性信息</li>
-<li>基于该可达性信息和AS策略，决定达到子网的好路由</li>
-<li>注意BGP只是寻找一个较好的路由，而不一定是最好的路由</li>
-</ul>
-</li>
-</ul>
-<p>每一个自治系统的管理员要选择至少一个路由器作为该自治系统的BGP发言人，一般两个发言人都是通过一个共享网络连接在一起的，而BGP发言人往往是BGP边界路由器，但也可以不是。</p>
-<p>一个BGP发言人与其他自治系统中的BGP发言人交换路由信息，首先需要建立TCP连接，然后在此连接基础上交换BGP报文以建立BGP会话，利用BGP会话交换路由信息</p>
-<p>使用TCP连接能够提供可靠服务，也简化了路由选择协议。</p>
-<p>使用TCP连接交换路由信息的两个发言人彼此成为对方的邻站或对等站。</p>
-<ul>
-<li>BGP路由通告
-<ul>
-<li>一个AS可以集合多个前缀为一个，并使用BGP向其他AS通告单一前缀，则当前AS承诺它将沿着朝向该前缀的路径，转发指向该前缀的任何数据报。</li>
-</ul>
-</li>
-<li>选路算法
-<ul>
-<li>在不同AS的网关路由器之间使用eBGP，一个AS向另一个AS发送一个自其自身可达的前缀列表。</li>
-<li>而另一个AS的网关路由器使用iBGP对话向该AS中的其他路由器发布这些前缀。</li>
-<li>这个AS内的其他网关路由器使用eBGP会话将学习到的前缀信息发布到与其直接相连的其他AS的网关路由器中。</li>
-<li>当一个路由器得知一个新的前缀，它为该前缀在其转发表中创建一个表项。</li>
-</ul>
-</li>
-<li>路径和BGP路由
-<ul>
-<li>当路由器通告一个前缀时，它随着前缀包含一些BGP属性，前缀+属性=路由。</li>
-<li>两个重要属性：
-<ul>
-<li>AS_PATH：该属性包含了前缀的通告已经通过的那些AS</li>
-<li>NEXT_HOP：指明到下一跳AS的具体的路由器（从当前AS到下一跳AS之间可能有多条链路）</li>
-</ul>
-</li>
-<li>当一台网关路由器接收到一个路由器通告时，它使用输入策略决定是否接收或过滤该路由。</li>
-</ul>
-</li>
-<li>BGP路由选择
-<ul>
-<li>一台路由器可能知道到一条前缀的多条路由路，路由器必须在可能的路由之中选择一条。消除规则：
-<ul>
-<li>本地偏好值：策略决定，具有最高本地偏好值的路由将被选择</li>
-<li>最短AS-PATH：在余下的路由之中，具有最短AS-PATH的路由将被选择</li>
-<li>从余下的路由中，选择具有最靠近NEXT-HOP路由器的路由：热土豆路由。</li>
-<li>如果依然剩下多条路由，该路由器使用BGP标识来选择路由</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>步骤：</p>
-<ul>
-<li>路由器知晓前缀的存在性：通过BGP通告得知</li>
-<li>确定此前缀的转发端口：使用BGP路由选择确定最佳域间路由，使用IGP路由选择确定最佳域内路由，确定最佳路由的转发端口</li>
-<li>将（前缀，端口）表项放入转发表中</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/b0c5406d99d74ce6acff9f1951647399.png" alt="" /></p>
-<h2 id="ip组播"><a class="markdownIt-Anchor" href="#ip组播"></a> IP组播</h2>
-<p>组播：将数据分发给网络中处于同一个组的多台主机上的应用进程。</p>
-<h2 id="55-sdn"><a class="markdownIt-Anchor" href="#55-sdn"></a> 5.5 SDN</h2>
-<p>传统网络的问题：</p>
-<ul>
-<li>各个设备厂家网络层实现的方式各不相同，架构封闭，导致接口模糊封闭，功能单元界面不清晰。封闭架构导致设备制造商对新技术的驱动力不强，协议更新慢。</li>
-</ul>
-<p>路由器实现的控制平面：每一个路由器都具备独立的路由功能和数据转发功能，路由算法组件分布在不同的路由器上，彼此交互，计算生成转发表，构成分布式的控制平面。</p>
-<p>实现目标：</p>
-<ul>
-<li>确定性路由：从固定源到固定目标要求经过固定的路由</li>
-<li>负载均衡路由：从源到目标的多条路径上实现负载均衡</li>
-</ul>
-<p>解决方案：分层<br />
-路由控制功能从本地路由器分离，汇聚到远程控制器，与路由器中的本地控制代理进行交互，来计算转发表。</p>
-<p>SDN架构包含数据平面与控制平面，数据平面负责处理和转发数据包，根据转发状态和数据报头决定转发决策，而控制平面负责计算路由器的转发状态，确定数据报应该如何转发和转发到哪里，对路由、流量工程和防火墙状态管理控制，实现分布路由协议、手工配置或集中计算。不同的平面需要分别进行抽象，以满足SDN需求。</p>
-<p><img src="https://img-blog.csdnimg.cn/7ad8eca1f6f44aeaac7b88047fc8723a.png" alt="" /></p>
-<h3 id="openflow流表"><a class="markdownIt-Anchor" href="#openflow流表"></a> OpenFlow流表</h3>
-<p>由多个流条目组成，流条目包括：</p>
-<ul>
-<li>
-<p>头域：用于匹配规则确定输入报文是否与本条目匹配</p>
-</li>
-<li>
-<p>计数器：用于与本流相关的跟踪统计</p>
-</li>
-<li>
-<p>动作：描述交换机针对匹配报文采取的动作</p>
-</li>
-<li>
-<p>OpenFlow交换机由OpenFlow协议、安全通道、报文匹配、流表与动作等构成。</p>
-</li>
-<li>
-<p>报文匹配功能基于流表对输入报文进行匹配，将其引导至动作箱。</p>
-</li>
-<li>
-<p>动作包括三种可选动作</p>
-<ul>
-<li>转发报文输出，可能先修改头域字段</li>
-<li>丢弃报文</li>
-<li>通过报文输入消息将报文转发至控制器</li>
-</ul>
-</li>
-<li>
-<p>控制器和交换机之间的报文通过安全通道传输</p>
-</li>
-<li>
-<p>当控制器有报文需要通过交换机输出时采用PACKET_OUT消息</p>
-</li>
-<li>
-<p>控制器直接指定输出端口</p>
-</li>
-<li>
-<p>控制器通过报文匹配逻辑决定转发策略</p>
-</li>
-</ul>
-<p>SDN控制平面：包括SDN控制器和SDN网络控制应用程序。</p>
-<ul>
-<li>控制平面基于网络的抽象，简化了网络编程控制</li>
-<li>SDN控制平面包括两个层面的抽象：
-<ul>
-<li>流抽象-交换机API，通过OpenFlow协议与数据平面交互</li>
-<li>映射抽象-网络API，控制器与网络控制应用程序之间交互</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第3章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:46:40 / Modified: 23:47:10" itemprop="dateCreated datePublished" datetime="2023-03-02T23:46:40+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>11k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>10 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
-<h3 id="31~33"><a class="markdownIt-Anchor" href="#31~33"></a> 3.1~3.3</h3>
-<ol>
-<li>略</li>
-<li>略</li>
-<li>对于主机B发送到主机A的报文段，源端口号为y，目的端口号为x。</li>
-<li>UDP的速度快，有些应用如实时视频可能不需要数据完全可靠，不希望受到拥塞控制。</li>
-<li>因为语音和图像要求数据可靠准确，而UDP不能保证。标准答案：大多数防火墙被配置为阻止UDP通信，因此使用TCP处理视频和语音通信可以让通信通过防火墙。</li>
-<li>可能，需要在应用层设置另外的校验程序，UDP本身是不提供可靠数据传输的。</li>
-<li>是。注意<font color=red>UDP数据包中是没有IP地址的</font>，主机C是通过应用中的套接字来确定，在套接字接口处，有操作系统向进程提供IP地址，以确定各个报文段的源。</li>
-<li>不同的套接字。对于每一个持久连接，Web服务器都会创建一个单独的“连接套接字”，每一个连接套接字都由一个四元组表示：源IP地址、源端口号、目的IP地址、目的端口号。当主机C接收IP数据报时，检查报文中的这4个字段，以确定将这个数据报上传到哪一个套接字。用于连接两台主机的套接字中都以80作为目的端口。注意<font color=red>当传输层将TCP报文段的有效负载传递给应用程序进程时，不会指定源IP地址，因为这是由套接字标识符隐式指定的，这与UDP不同。可以理解为，TCP会将从不同源发送的报文段分到不同的套接字，因此不需要另外指定源IP。</font></li>
-</ol>
-<h3 id="34"><a class="markdownIt-Anchor" href="#34"></a> 3.4</h3>
-<ol start="9">
-<li>标识一个ACK是对应于哪一个报文段的。<font color=red>接收方的确认报文如果在链路中发生了错误，发送方就只能重新发送一次这个报文，但是接收方不知道这个报文是一个新的报文还是上一个报文的重传，因此需要标识。</font></li>
-<li>如果报文丢失，就需要重传报文，设置定时器的目的是防止丢包导致无限等待，在定时器到达一定的时间之后认定为丢包，即直接重传。如果收到了ACK，则重启该定时器。</li>
-<li>是，在往返时延固定的情况下，定时器只要检测到在往返时延之内没有接收到希望的ACK报文即可重传报文。</li>
-<li><a target="_blank" rel="noopener" href="https://media.pearsoncmg.com/aw/ecs_kurose_compnetwork_7/cw/content/interactiveanimations/go-back-n-protocol/index.html">小程序</a><br />
-a. 毁掉第一个分组之后，会发送4个序号相同的ACK报文，并开启定时器，在一段时间之后发送方重新发送5个报文。这里解释一下，由于第一个报文被毁，因此接收方只能够发送上一次成功接收的序号的ACK，发送方能够收到4个相同序号的ACK，其需要等待一段时间确认第5个ACK是否正在发送，如果能够成功收到第5个报文，则说明发送方发送数据报到接收方时出现了失序，序号最小的数据报反而是最后被接收的；如果计时器结束，就全部进行重传。<br />
-b. 此时窗口会移动，因为发送方接收到了序号更大的ACK，这说明前面的数据报都已经被成功接收，即使第一个ACK丢失也不影响窗口右移。<br />
-c. 无法发送第6个分组，因为窗口大小只有5。</li>
-<li><a target="_blank" rel="noopener" href="https://media.pearsoncmg.com/aw/ecs_kurose_compnetwork_7/cw/content/interactiveanimations/selective-repeat-protocol/index.html">小程序</a><br />
-选择重传的不同之处在于，其ACK报文与GBN的ACK报文表达的含义不同了，选择重传的ACK报文只能表示该序号的数据报正常接收，而GBN的ACK报文表示该序号及小于该序号的所有数据报均已经被正常接收。因此选择重传只会重传没有收到ACK的序号的数据报，并在窗口的第一个数据报收到时调整窗口的位置，使得窗口的第一个序号永远处于没有被确认的状态。</li>
-</ol>
-<h3 id="35"><a class="markdownIt-Anchor" href="#35"></a> 3.5</h3>
-<ol start="14">
-<li>a. 错误，TCP协议中接收方需要发送确认数据报，与随数据捎带确认没有关系。<br />
-b. 错误，rwnd全称为receive window，即接收窗口，其值等于接收缓存-（接收到的字节数-主机应用进程从缓存读出的字节数），因此该值是一直在动态变化的。<br />
-c. 正确。<br />
-d. 错误，报文段的序号是按照字节编址的，下一个报文段的序号应该等于该报文段的序号+该报文段的长度。<br />
-e. 正确。<br />
-f. 错误。TimeoutInterval = EstimatedRTT + 4 × DevRTT = (1-α) × EstimatedRTT + α × SampleRTT + 4 × ((1-β) × DevRTT + β × |SampleRTT - EstimatedRTT|)，无法推导出该题结论。<br />
-g. 错误，TCP通信双方的序号是各自决定的，因此确认号与序号没有直接的关系。</li>
-<li>20字节；90</li>
-<li>3个报文段：<br />
-Seq=43, Ack=80<br />
-Seq=80, Ack=44<br />
-Seq=44, Ack=81</li>
-</ol>
-<h3 id="37"><a class="markdownIt-Anchor" href="#37"></a> 3.7</h3>
-<ol start="17">
-<li>R/2，TCP可以通过调度使得链路中多个连接的吞吐量基本公平。</li>
-<li>错误，应该被设置为门限值的一半。</li>
-<li>略</li>
-</ol>
-<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
-<ol>
-<li>e. 可能相同。<br />
-f. 同一台主机不可能相同。</li>
-<li>主机A连接：源端口80，目的端口26145；主机C连接：源端口80，目的端口7532</li>
-<li>11010001，接收方将带有反码的4个8比特求和，结果为全1则验证完成。1比特的差错可以出来，但2比特的错误可能不能检测出来。</li>
-<li>a. 00111110<br />
-b. 10111111<br />
-c. 将最低位的0改成1，1改成0。</li>
-<li>不能绝对确信。</li>
-<li>在发送方发送分组1时，接收方接收完成并发送一个ACK，但ACK损坏，发送方收到损坏的ACK之后重传分组1，但接收方要的不是分组1，因此会返回NAK，发送方误以为分组1传输错误就会继续重传，由此陷入死锁状态。</li>
-<li>不理解题意。</li>
-<li>与rdt2.2的FSM相同</li>
-<li>略</li>
-<li><img src="https://img-blog.csdnimg.cn/e493f4c3298f450eac99777b8cc6b5cc.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBAc3VwZXJtYXgyMDIw,size_20,color_FFFFFF,t_70,g_se,x_16" alt="" /><br />
-需要将计时器设置为最大往返时延与处理时间之和，每一次发送新的数据分组时重启计时器。</li>
-<li>不能正常工作。如果在收到重复的数据包或数据包损坏的情况下不发送数据包，那么发送方就永远无法收到来自接收方的任何确认信息，就会一直等待下去，进入死锁的状态。注意rdt 3.0之前的所有版本都是没有计时器的。</li>
-<li>仅有一个比特差错时，能够正常运行。如果定时器过早超时，那么对于序号为n的分组将会重传n次。流程：发送1分组，在ACK1被接收前计时器超时，重传1次1分组，然后接收到1ACK，发送2分组，在ACK2被接收前计时器超时，重传1次2分组，然后接收到来自第1次重传1分组的ACK1回应，第2次重传2分组，然后收到ACK2，发送3分组，超时第一次重传3分组，接收到两次2分组重传的回应ACK2，再重传2次3分组……可以发现1分组重传了1次，2分组重传了2次，……n分组将会重传n次。</li>
-<li>如果能够重排报文顺序，首先发送老1分组，回应的老ACK1迟迟未到，重传1次老1分组，收到ACK1，然后发送0分组，接收方接收到0分组之后发送1个0分组ACK，此时链路中有1个ACK0和1个ACK1，且ACK1是先进入链路的，但如果ACK0首先被收到，那么会发送新1分组，如果此时接收到ACK1分组，注意这个分组确认的是老1分组，那么发送方就会误以为新1分组已经被收到，会继续发送新0分组，如果新1分组没能被收到，那么接收方就会产生错误，迟迟无法收到新1分组。</li>
-<li>不会，因为如果只使用NAK，当发送方发送数据的频率较低时，如果编号为x的数据包没能成功接收，那么接收方只有在接收到编号为x+1的数据包时才能察觉到编号为x的数据包接收错误，才能发送NAK，这会降低效率。如果发送方要发送大量的数据，且该端到端连接很少丢包，则只使用NAK协议会比使用ACK的协议更好，因为少发送了很多的确认数据包。</li>
-<li>RTT=30ms，传输时延为0.012ms，如果不考虑ACK分组的传输时延与接收方的处理时间，那么一个分组从开始发送到接收到确认信息一共需要30.012ms，其中忙的时间为0.012ms，要使得忙的时间超过90%，那么需要在前面分组还没有被确认的情况下发送新的分组，设一共需要发送x个分组才能使忙的时间超过90%，则有0.012x/30.012&gt;90%，解得x=2251，这即是窗口的最小值</li>
-<li>能增加信道利用率，因为发送方能够持续不断地接收到ACK，从而发送分组的时间间隔就会短很多，但出现差错时很难检测到，且发送方的ACK会占用带宽资源。</li>
-<li>略</li>
-<li>报文格式与SR协议相同。</li>
-<li>略</li>
-<li>略</li>
-<li>略</li>
-<li>a. k-4~k+3都有可能。极端情况：所有分组全部被正常接收，但所有ACK全部丢失，此时接收方分组第一个序号为k，但发送方分组第一个序号为k-4；另所有分组全部传回ACK，则发送方分组第四个序号为k+3，此时发送方与接收方窗口位置相同。<br />
-b. k-4~k-1都有可能。发送方发送k-5，接收方收到并且返回ACK(k-5)。发送方收到之前就超时，重发k-5。 发送方收到ACK(k-5)， 发送k-4, k-3, k-2, k-1。接收方收到重发k-5，返回ACK(k-5)。收到k-4, k-3, k-2, k-1，返回ACK(k-4)，ACK(k-3)，ACK(k-2)，ACK(k-1)</li>
-<li>对于GBN协议，窗口的最大值为k-1；对于SR协议，窗口的最大值为k/2。需要保证当接收方全部接收到且ACK全部丢失时，接收方能够识别出发送方重传的任何一个分组是老分组而不是新分组。</li>
-<li>a. 正确。当出现超时重传时，可能会收到落在窗口前面的ACK。<br />
-b. 正确。同样是超时重传，另外窗口的第一个ACK丢失也可能导致收到落在窗口前面的ACK。<br />
-c. 正确<br />
-d. 正确</li>
-<li>因为UDP协议是即时传输，应用程序将数据传递给UDP之后UDP协议就会尽快进行传输，而TCP可能还会对这些数据进行缓存、分片等操作，从而降低了应用程序的控制能力。因为TCP有拥塞控制，而UDP没有，应用程序使用UDP可以完全自行调节发送速度等。</li>
-<li>a. 在序号不重复利用的情况下，TCP报文的序号最大值为2<sup>32</sup>-1，那么L的最大值应该为2<sup>32</sup>。<br />
-b. 需要使用8012999个分组来封装这么多数据，加上首部分组的长度，一共需要传输2<sup>32</sup>+8012999×64字节的数据，需要大约237s的时间。</li>
-<li>a. 第一个报文段是由主机A发送，序号为127，含80字节数据，因此第二个报文段的序号为207。源端口号302，目的端口号80。<br />
-b. 第一个报文段的确认中确认号为207，源端口号80，目的端口号302。<br />
-c. 如果第二个报文段首先到达，则确认号为127。因为第二个报文段的序号不对。<br />
-d. 如果第一个确认丢失，丢失的确认报文段中确认号为207。第二个确认（确认号为247）在第一个超时间间隔之后到达，在此之前发送方重传第一个报文段，然后收到了确认号为247的第二个确认报文段，于是不再重传，接收方收到重传的第一个报文段之后再一次返回确认号为247的确认报文段。</li>
-<li>本题中主机B读出数据的速率小于发送方发送的速率，因此主机B在发回来的确认报文段中会填入剩余缓存数量，表示剩余能够接受的窗口大小，当返回的窗口大小为0时，A将逐渐减缓发送数据，直到窗口为0时暂停发送。最终的传输速率不会超过50Mbps。</li>
-<li>略</li>
-<li>a. 当数据输入到套接字的速度过快时，容易导致丢包，进而产生很多重复的数据包占用带宽资源，降低总吞吐量。如果路由器缓存容量增加，则会增加缓存中报文的等待时延，当等待时延过大使得发送方超时是又会进行重传，进一步增加了链路中重复报文的数量，可能会导致吞吐量进一步减少。<br />
-b. 有助于，因为这样将不会有多余的重复报文占用带宽和缓存。</li>
-<li>公式回顾：$$\operatorname{EstimatedRTT}=\operatorname{EstimatedRTT}×(1-\alpha)+\operatorname{SampleRTT}\times\alpha\<br />
-\operatorname{DevRTT}=\operatorname{DevRTT}\times(1-\beta)+|\operatorname{DevRTT}-\operatorname{EstimatedRTT}|\times\beta\<br />
-\operatorname{TimeoutInterval}=\operatorname{EstimatedRTT}+4\times\operatorname{DevRTT}$$<br />
-记忆技巧：EstimatedRTT相当于通过前几个RTT加权计算出来的RTT预估值，DevRTT相当于RTT的波动情况，TimeoutInterval相当于此链路中大多数情况下不会超过的RTT值。计算略。</li>
-<li>a. <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mo><mi mathvariant="normal">EstimatedRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub><mo>=</mo><msubsup><mo>∑</mo><mrow><mi>j</mi><mo>=</mo><mn>0</mn></mrow><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msubsup><msub><mo><mi mathvariant="normal">SampleRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub><mo>×</mo><mn>0.</mn><msup><mn>9</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>+</mo><mn>0.1</mn><mo>×</mo><msub><mo><mi mathvariant="normal">SampleRTT</mi><mo>⁡</mo></mo><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\operatorname{EstimatedRTT}_i=\sum_{j=0}^{i-1}\operatorname{SampleRTT}_i\times0.9^{i+1}+0.1\times\operatorname{SampleRTT}_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">E</span><span class="mord mathrm">s</span><span class="mord mathrm">t</span><span class="mord mathrm">i</span><span class="mord mathrm">m</span><span class="mord mathrm">a</span><span class="mord mathrm">t</span><span class="mord mathrm">e</span><span class="mord mathrm">d</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.400382em;vertical-align:-0.43581800000000004em;"></span><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.964564em;"><span style="top:-2.40029em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mrel mtight">=</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.43581800000000004em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">S</span><span class="mord mathrm">a</span><span class="mord mathrm">m</span><span class="mord mathrm">p</span><span class="mord mathrm">l</span><span class="mord mathrm">e</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.21752399999999997em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord">0</span><span class="mord">.</span><span class="mord"><span class="mord">9</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.93858em;vertical-align:-0.24414em;"></span><span class="mop"><span class="mop"><span class="mord mathrm">S</span><span class="mord mathrm">a</span><span class="mord mathrm">m</span><span class="mord mathrm">p</span><span class="mord mathrm">l</span><span class="mord mathrm">e</span><span class="mord mathrm">R</span><span class="mord mathrm">T</span><span class="mord mathrm">T</span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.21752399999999997em;"><span style="top:-2.4558600000000004em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24414em;"><span></span></span></span></span></span></span></span></span></span><br />
-b. 略<br />
-c. 当n趋于无穷时，可以发现越近的RTT对EstimatedRTT的影响最大。</li>
-<li>如果ACK超时，那么重传之后收到的ACK可能不是对应于重传的分组而是一开始发送的分组，这样计算得到的RTT就小于正确的RTT。</li>
-<li>LastByteRcvd≤SendBase-1。SendBase是最早未被确认的字节序号，LastByteRcvd是被接收方接收的最大字节序号。如果链路中没有正在传输的分组，则是等于号，否则为小于号。</li>
-<li>y≤LastByteRcvd。假设TCP接收方丢弃失序的报文段的场合：在生成ACK的时间，y等于LastByteRcvd，当ACK报文传回发送方的时候，可能有新的报文到达接收方。</li>
-<li>这样会导致重传更加频繁，如两个数据包反序就会导致重传，容易占用大量带宽。</li>
-<li>主机A向主机B发送5个报文段且第2个丢失。<br />
-a. 对于GBN，A发送的第一批5个报文段收到4个，发送了4个编号为1的ACK。然后A发送4个报文段，收到4个ACK。一共有8个ACK。对于SR，A发送的第一批5个收到4个，发送了4个不同编号的ACK，然后A发送1个报文段即可，收到1个ACK，一共有5个ACK。TCP协议在发送方接收到3个重传ACK之后就即刻重发，只重发了1个报文段，一共有5个ACK。（<font color=red>注意TCP有缓存机制</font>）<br />
-b. TCP，因为TCP在检测到3个重复ACK之后就立即重传。</li>
-<li>当出现丢包事件时，发送方发送的速率，每个RTT是必须大约等于cwnd报文段。首先发送方发送的速率不能大于cwnd，这是固定的限制条件。发送速率总是大约为cwnd/RTT。</li>
-<li>对于图3-46b，即在有限缓存情况下，发送方仅当在确定了一个分组丢失之后才重传，如果<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>i</mi><mi>n</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{in}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.010556em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>增加超过了R/2，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>不能增加超过R/3。如果发送速率超过了R/2，则多余的分组一定会丢失，因此增加了链路中重传的报文数量，故接收速率不仅不能增加，还可能会下降。对于图3-46c，即发送方也许会提前发生超时并重传在队列中已经被推迟但还未丢失的分组。这种情况下初始数据分组和重传分组都可能到达接收方，此时可用的吞吐量更加有限。如果一个分组平均重传次数是固定的，那么<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>i</mi><mi>n</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{in}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.010556em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>增加可能会导致<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>增加，但实际情况下发送速率增加必然会增加重传次数，因此最终<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>λ</mi><mrow><mi>o</mi><mi>u</mi><mi>t</mi></mrow><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msubsup></mrow><annotation encoding="application/x-tex">\lambda_{out}&#x27;</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.998892em;vertical-align:-0.247em;"></span><span class="mord"><span class="mord mathnormal">λ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.751892em;"><span style="top:-2.4530000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight">u</span><span class="mord mathnormal mtight">t</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">′</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.247em;"><span></span></span></span></span></span></span></span></span></span>不会增加。</li>
-<li>a. TCP慢启动运行时的时间间隔为1~6、23~26。<br />
-b. TCP拥塞避免运行时的时间间隔为6~16、17~22。<br />
-c. 在第16个传输轮回之后，拥塞窗口长度cwnd没有变为1，因此是由于发现了3个冗余ACK而导致的。<br />
-d. 是根据检测出超时而导致的。<br />
-e. ssthresh的值设置为32。<br />
-f. 在第18个传输轮回里，ssthresh的值设置为上一个传输轮回的cwnd的一半，即为21。<br />
-g. 在第24个传输轮回中，ssthresh的值被设置为上一个传输轮回的cwnd的一半，即14。<br />
-h. 第70个报文段是在第7个传输轮回中被发送。<br />
-i. 拥塞的窗口长度为ssthresh+3（因为收到了3个冗余ACK，这是快速恢复的内容，不考），ssthresh的值为4，即变为拥塞长度的一半。cwnd=7。<br />
-j. 如果使用TCP tahoe，则在第16个轮回后cwnd会变为1。在第19个传输轮回，ssthresh的值为21，拥塞窗口的长度为4。<br />
-k. 从第17个传输轮回到第22个，分别传输了：1、2、4、8、16、21个分组，一共52个。</li>
-<li>TCP的AIMD算法的收敛特性。假设TCP不采用乘性减，而是采用按某一个常量减少窗口。所得的AIAD算法将不能收敛于一个平等共享算法。如果是按照某一个常量减少窗口，则不能够收敛到45°线。假设某个时刻两个连接的传输速率为(r<sub>1</sub>, r<sub>2</sub>)，在没有丢包的情况下，这个点将沿着东北方向（45°）线移动，直到穿过135°的带宽阈值线。如果此时两个连接在一个传输轮回都发生了丢包，那么这个点将沿着225°线沿着西南方向后退，没有向中线移动。如果只有其中一个传输轮回发生了丢包，那么这个点或者向正西移动，或者向正南移动。即使这个点距离传输轮回更近，也没有收敛的意思。考虑到在传输速率过大时，传输速率较大的连接更容易发生丢包，因此这里这个点向中线移动的概率更大，但不能收敛到中线。</li>
-<li>如果发生了超时，不减少窗口大小，那么发送方会发送很多的重复数据包，而发生超时时链路可能已经非常拥塞，因此这会恶化情况。因此减少窗口大小可以在一定程度上缓解链路的拥塞情况。</li>
-<li>本题出现的情况是，链路的传输速率小于应用程序向套接字输入数据的速度，当发送缓存满时，就无法向套接字输入数据了。考虑到链路中不会有任何分组丢失和计时器超时，因此此问题无法通过拥塞控制来解决。实际上当发送缓存满时，进程传输数据的速率自动就降下来了，因为此时发送缓存将这个进程的任务进行了阻塞。</li>
-<li>a. 6RTT<br />
-b. 平均吞吐量为(6+7+8+9+10+11)/6=8.5MSS。</li>
-<li>a. 连接速率从W/2RTT变化到W/RTT，在该周期的结束只丢失了一个分组。这个过程中一共传输了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>2</mn></mfrac><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mn>2</mn></mfrac><mo>=</mo><mfrac><mrow><mn>3</mn><msup><mi>W</mi><mn>2</mn></msup></mrow><mn>8</mn></mfrac><mo>+</mo><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>4</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{\frac{3W}{2}(\frac{W}{2}+1)}{2}=\frac{3W^2}{8}+\frac{3W}{4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.506265em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.161265em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.5508em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.36292em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.01792em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913142857142857em;"><span style="top:-2.931em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，丢包率=这个值的倒数。<br />
-b. 一条连接的丢包率为L，要证明平均速率的值，即证一个RTT之内平均传输了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1.22</mn><msqrt><mi>L</mi></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{1.22}{\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>个数据包。考虑a中出现的理想情况，当W足够大时，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>≈</mo><mfrac><mn>8</mn><mrow><mn>3</mn><msup><mi>W</mi><mn>2</mn></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">L\approx\frac{8}{3W^2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7463142857142857em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，注意W的单位是分组数。可以求出<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>W</mi><mo>=</mo><msqrt><mfrac><mn>8</mn><mrow><mn>3</mn><mi>L</mi></mrow></mfrac></msqrt></mrow><annotation encoding="application/x-tex">W=\sqrt{\frac{8}{3L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">W</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.84em;vertical-align:-0.604946em;"></span><span class="mord sqrt"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.235054em;"><span class="svg-align" style="top:-3.8em;"><span class="pstrut" style="height:3.8em;"></span><span class="mord" style="padding-left:1em;"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight">L</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span><span style="top:-3.195054em;"><span class="pstrut" style="height:3.8em;"></span><span class="hide-tail" style="min-width:1.02em;height:1.8800000000000001em;"><svg width='400em' height='1.8800000000000001em' viewBox='0 0 400000 1944' preserveAspectRatio='xMinYMin slice'><path d='M983 90
-l0 -0
-c4,-6.7,10,-10,18,-10 H400000v40
-H1013.1s-83.4,268,-264.1,840c-180.7,572,-277,876.3,-289,913c-4.7,4.7,-12.7,7,-24,7
-s-12,0,-12,0c-1.3,-3.3,-3.7,-11.7,-7,-25c-35.3,-125.3,-106.7,-373.3,-214,-744
-c-10,12,-21,25,-33,39s-32,39,-32,39c-6,-5.3,-15,-14,-27,-26s25,-30,25,-30
-c26.7,-32.7,52,-63,76,-91s52,-60,52,-60s208,722,208,722
-c56,-175.3,126.3,-397.3,211,-666c84.7,-268.7,153.8,-488.2,207.5,-658.5
-c53.7,-170.3,84.5,-266.8,92.5,-289.5z
-M1001 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.604946em;"><span></span></span></span></span></span></span></span></span>。平均速率应该为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>2</mn></mfrac><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><mrow><mn>2</mn><mo stretchy="false">(</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>+</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></mfrac><mo>=</mo><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mrow><mn>4</mn><mi mathvariant="normal">RTT</mi><mo>⁡</mo></mrow></mfrac><mo>≈</mo><mfrac><mn>1.22</mn><msqrt><mi>L</mi></msqrt></mfrac></mrow><annotation encoding="application/x-tex">\frac{\frac{3W}{2}(\frac{W}{2}+1)}{2(\frac{W}{2}+1)}=\frac{3W}{4\operatorname{RTT}}\approx\frac{1.22}{\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.82253em;vertical-align:-0.661265em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.161265em;"><span style="top:-2.579535em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.5508em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mopen mtight">(</span><span class="mord mtight"><span class="mopen nulldelimiter sizing reset-size3 size6"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8720928571428572em;"><span style="top:-2.656em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.2255000000000003em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line mtight" style="border-bottom-width:0.049em;"></span></span><span style="top:-3.384em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.344em;"><span></span></span></span></span></span><span class="mclose nulldelimiter sizing reset-size3 size6"></span></span><span class="mbin mtight">+</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.661265em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">R</span><span class="mord mathrm mtight">T</span><span class="mord mathrm mtight">T</span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.383108em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>3</mn><mi>W</mi></mrow><mn>4</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{3W}{4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>是一个周期平均传输的分组数量。</li>
-<li>a. 这条TCP连接取得最大窗口长度时，该链路处于满负荷状态。一个RTT是150ms，因此10Mbps=x×1500×8/RTT，求得x=125。<br />
-b. 这条连接的平均窗口长度为：(125+125/2)/2=94个报文段，平均吞吐量为94×1500×8/0.15=7.52Mbps。<br />
-c. 从丢包恢复之后，再一次到达最大窗口一共经历了x-x/2个RTT，即63个RTT，即9.45s。</li>
-<li>发送方和接收方之间的链路速率与双向传播时延之积，实际上就等于链路在一个时刻正在传输的最大的分组数量（将链路速率的单位设置为分组数量而不是比特数量）。在前一题中，在出现丢包的时候，cwnd减半，容易发现减半之后链路并没有满负荷工作。现在链路出现了缓存，当发送方的发送速率小于链路的带宽时，缓存可以同时发送分组使得链路保持饱和状态。这个缓存不能太短，否则会过早返回冗余ACK导致发送端暂缓传输（也就是该链路不忙于发送数据），所以必须足够大，大到一个RTT传输的数据量，这样，缓存区满时，再发送包会立刻引发重传。需要注意这里缓存的工作方式。如果发送方在一个RTT之内发送的数据大于一个RTT内能够传输的数据量，那么链路缓存将会缓存发送方最后发送的几个数据包，并使得在这个RTT时间内，发送方除去这几个数据包之外其他的数据包的数据量正好等于这个RTT内链路能够发送的最大数据量。在下一个RTT传输数据时，首先将缓存中的数据发送出去，然后发送发送方的前面一部分数据，再将这个RTT无法发送的数据包进行缓存。正因如此，当缓存满时，在一个RTT之内就会出现丢包的情况，发送方检测到冗余的ACK，将发送窗口减为一半，此时就需要将缓存中的数据包进行发送，逐渐减少缓存中的数据包数量以确保链路处于饱和状态。</li>
-<li>a. 125000<br />
-b. 7.5Gbps<br />
-c. 156.25min，可以使用乘型增的方式增加。</li>
-<li>由45题可知，使用RTT为单位度量的T与W有函数关系，即T=W/2，平均吞吐量=3W/4RTT，因此平均吞吐量可以用T表示。</li>
-<li>a. 拥塞链路的带宽为每秒30个报文段，在时刻0，C1的数据速率为200个报文段/s，而C2为100，远远超过链路带宽，因此会减半，直到二者的拥塞窗口都为1时，数据速率等于链路速率。<br />
-b. 不会。</li>
-<li>a. 时刻1，C1=15，C2=10，产生拥塞。时刻2，C1=7，C2=5，产生拥塞。时刻3，C1=3，C2=2，产生拥塞。时刻4，C1=1，C2=1，不产生拥塞。时刻5，C1=2，C2=2，产生拥塞。之后偶数时刻等于时刻4的情况，奇数时刻等于时刻5的情况。在2200ms之后情况等于时刻4的情况，拥塞窗口为1。（2100ms~2200ms时产生拥塞）<br />
-b. 会。<br />
-c. 是。<br />
-d. 不能。可以让两个连接交替拥塞，这样可以提高利用率。</li>
-<li>这个乘型增的机制是当一个RTT内没有丢包事件发生时，窗口数量将乘以1+a。对于连续的几个RTT，记第一个RTT的编号为0，窗口长度为W/2，设最后一个RTT（编号为n）的窗口长度<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup><mo>=</mo><mi>W</mi></mrow><annotation encoding="application/x-tex">\frac{W}{2}\times (1+a)^n=W</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">W</span></span></span></span>，W为链路最大传输速率（单位为分组数/RTT）。然后丢包，窗口变为一半。因此易得<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mi>n</mi></msup><mo>=</mo><mn>2</mn></mrow><annotation encoding="application/x-tex">(1+a)^n=2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">a</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">2</span></span></span></span>，这些RTT一共发送了<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mfrac><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mi>a</mi><msup><mo stretchy="false">)</mo><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>−</mo><mn>1</mn></mrow><mi>a</mi></mfrac><mo>=</mo><mfrac><mi>W</mi><mn>2</mn></mfrac><mo>×</mo><mfrac><mrow><mn>2</mn><mi>a</mi><mo>+</mo><mn>1</mn></mrow><mi>a</mi></mfrac></mrow><annotation encoding="application/x-tex">\frac{W}{2}\times\frac{(1+a)^{n+1}-1}{a}=\frac{W}{2}\times\frac{2a+1}{a}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.4539199999999999em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.10892em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.485em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">a</span><span class="mclose mtight"><span class="mclose mtight">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8913142857142857em;"><span style="top:-2.931em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">a</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>个分组，丢包率为其倒数：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>=</mo><mfrac><mrow><mn>2</mn><mi>a</mi></mrow><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>+</mo><mn>2</mn><mi>a</mi><mo stretchy="false">)</mo><mi>W</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">L=\frac{2a}{(1+2a)W}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.365108em;vertical-align:-0.52em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span><span class="mclose mtight">)</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">W</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mathnormal mtight">a</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.52em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。在这个体系中，TCP连接将其拥塞窗口长度从W/2增加到W的周期时间不变。</li>
-<li>使用公式，一条连接的平均吞吐量=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mn>1.22</mn><mi>M</mi><mi>S</mi><mi>S</mi></mrow><mrow><mi>R</mi><mi>T</mi><mi>T</mi><msqrt><mi>L</mi></msqrt></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{1.22MSS}{RTT\sqrt{L}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.410331em;vertical-align:-0.538em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.537397em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.00773em;">R</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">T</span><span class="mord sqrt mtight"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9322900000000001em;"><span class="svg-align" style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mtight" style="padding-left:0.833em;"><span class="mord mathnormal mtight">L</span></span></span><span style="top:-2.89229em;"><span class="pstrut" style="height:3em;"></span><span class="hide-tail mtight" style="min-width:0.853em;height:1.08em;"><svg width='400em' height='1.08em' viewBox='0 0 400000 1080' preserveAspectRatio='xMinYMin slice'><path d='M95,702
-c-2.7,0,-7.17,-2.7,-13.5,-8c-5.8,-5.3,-9.5,-10,-9.5,-14
-c0,-2,0.3,-3.3,1,-4c1.3,-2.7,23.83,-20.7,67.5,-54
-c44.2,-33.3,65.8,-50.3,66.5,-51c1.3,-1.3,3,-2,5,-2c4.7,0,8.7,3.3,12,10
-s173,378,173,378c0.7,0,35.3,-71,104,-213c68.7,-142,137.5,-285,206.5,-429
-c69,-144,104.5,-217.7,106.5,-221
-l0 -0
-c5.3,-9.3,12,-14,20,-14
-H400000v40H845.2724
-s-225.272,467,-225.272,467s-235,486,-235,486c-2.7,4.7,-9,7,-19,7
-c-6,0,-10,-1,-12,-3s-194,-422,-194,-422s-65,47,-65,47z
-M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.10770999999999997em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">.</span><span class="mord mtight">2</span><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right:0.10903em;">M</span><span class="mord mathnormal mtight" style="margin-right:0.05764em;">S</span><span class="mord mathnormal mtight" style="margin-right:0.05764em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.538em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，取MSS=1500，RTT=100ms，求得L的值为2×10<sup>-12</sup>。</li>
-<li>优点：可以略过慢启动和一部分拥塞避免的过程，可以让传输速率提升地更快。缺点：二者对于新的链路环境可能需要多次调整。建议可以增加链路缓存，让链路的使用情况变化地平缓一些。</li>
-<li>a. 服务器将向Y发送响应，这个响应可能无法被收到。<br />
-b. 可以确认。SYNACK将初始序号发送给了Y，其他人无法知道正确的初始序号。</li>
-<li>a. S/R&lt;RTT&lt;3S/R</li>
-</ol>
-<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
-|:-😐:-😐:-😐:-😐:-😐<br />
-|0|发送SYN|0|0|<br />
-|1RTT|接收SYNACK|0|0|<br />
-|1RTT+1S/R|发送分组1完毕|1|0|<br />
-|2RTT+1S/R|接收ACK1|2|2|<br />
-|2RTT+2S/R|发送分组2完毕|2|1|<br />
-|2RTT+3S/R|发送分组3完毕|2|0|<br />
-|3RTT+2S/R|接收ACK2|3|2|<br />
-|3RTT+3S/R|发送分组4完毕，接收ACK3|4|3|<br />
-|3RTT+4S/R|发送分组5完毕|4|2|</p>
-<p>在此之后，分组6和7将分别在3RTT+5R/S和3RTT+6R/S被发送，而考虑到4RTT+3R/S&lt;3RTT+6R/S，因此ACK4先于分组7发送被接收，因此分组7发送完毕后窗口依然不为0，同理4RTT+4R/S&lt;3RTT+7R/S（分组8发送完成的时间），因此ACK5先于分组8发送被接收，由此之后的所有时刻窗口都不会为0，于是就一直发送。最终需要时间为4RTT+14R/S。</p>
-<p>b. RTT&gt;3S/R</p>
-<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
-|:-😐:-😐:-😐:-😐:-😐<br />
-|0|发送SYN|0|0|<br />
-|1RTT|接收SYNACK|0|0|<br />
-|1RTT+1S/R|发送分组1完毕|1|0|<br />
-|2RTT+1S/R|接收ACK1|2|2|<br />
-|2RTT+2S/R|发送分组2完毕|2|1|<br />
-|2RTT+3S/R|发送分组3完毕|2|0|<br />
-|3RTT+2S/R|接收ACK2|3|2|<br />
-|3RTT+3S/R|发送分组4完毕，接收ACK3|4|3|<br />
-|3RTT+4S/R|发送分组5完毕|4|2|<br />
-|3RTT+5S/R|发送分组6完毕|4|1|<br />
-|3RTT+6S/R|发送分组7完毕|4|0|<br />
-|4RTT+3S/R|接收ACK4|5|2|<br />
-|4RTT+4S/R|发送分组8完毕，接收ACK5|6|3|<br />
-|4RTT+5S/R|发送分组9完毕，接收ACK6|7|4|<br />
-|4RTT+6S/R|发送分组10完毕，接收ACK7|8|5|</p>
-<p>在此之后，发送到第15个分组之前窗口数量都不会变成0了，因此总时间为5RTT+11R/S。</p>
-<p>c. RTT&lt;S/R</p>
-<p>|时刻|事件|窗口大小|剩余窗口大小|<br />
-|:-😐:-😐:-😐:-😐:-😐<br />
-|0|发送SYN|0|0|<br />
-|1RTT|接收SYNACK|0|0|<br />
-|1RTT+1S/R|发送分组1完毕|1|0|<br />
-|2RTT+1S/R|接收ACK1|2|2|<br />
-|2RTT+2S/R|发送分组2完毕|2|1|<br />
-|3RTT+2S/R|接收ACK2|3|2|<br />
-|2RTT+3S/R|发送分组3完毕|3|2|<br />
-|3RTT+3S/R|接收ACK3|4|3|<br />
-|2RTT+4S/R|发送分组4完毕|4|3|</p>
-<p>考虑到发送一个分组的传输时延大于RTT，因此分组5发送完毕之前分组4就已经确认，剩余窗口大小等于窗口大小-1，而窗口大小不断增加，因此后面所有分组都将连续发送。共需要3RTT+15S/R。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3501,14 +2936,14 @@ b. 可以确认。SYNACK将初始序号发送给了Y，其他人无法知道正�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">133</span>
+          <span class="site-state-item-count">136</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -3559,7 +2994,7 @@ b. 可以确认。SYNACK将初始序号发送给了Y，其他人无法知道正�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">17:36</span>
+    <span title="Reading time total">18:15</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
