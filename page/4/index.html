@@ -150,6 +150,329 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第6章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:12:31 / Modified: 09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:31+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-6-进程调度"><a class="markdownIt-Anchor" href="#chapter-6-进程调度"></a> Chapter 6 进程调度</h1>
+<h2 id="61-调度概念"><a class="markdownIt-Anchor" href="#61-调度概念"></a> 6.1 调度概念</h2>
+<h3 id="611-调度的定义"><a class="markdownIt-Anchor" href="#611-调度的定义"></a> 6.1.1 调度的定义</h3>
+<p>调度广义上是指在一个队列中，按照某种策略从中选择一个最合适的个体。</p>
+<h3 id="612-调度的分类"><a class="markdownIt-Anchor" href="#612-调度的分类"></a> 6.1.2 调度的分类</h3>
+<p>按照调度层次和原因可分为长程调度、中程调度、短程调度和I/O调度。</p>
+<ul>
+<li>长程调度是从多个作业构成的后备作业队列中，根据调度算法选取一个合适的作业调入内存。当一个作业结束退出系统时，需要执行长程调度从磁盘上选择一个后备作业投入执行。</li>
+<li>中程调度主要是短期调节系统的负荷，对象为进程，将进程在内存和磁盘交换空间之间进行交换。这样做可能因为内存资源紧张需要挂起一些进程，另外是为系统减少并发性而降低系统开销。</li>
+<li>短程调度即进程调度，决定哪一个进程将被执行、哪些进程将处于就绪状态。即进程在运行、就绪、阻塞这3个状态之间的转换调度由短程调度完成。其目的是让整个队列被调度的延迟最小，优化系统效率。</li>
+<li>I/O调度为当I/O设备可用时调度相应的等待队列中的进程使用该设备。属于设备管理模块的功能，确定一个合适的顺序来执行来自进程的I/O请求。可以改善系统整体性能。</li>
+</ul>
+<h2 id="62-调度的原则"><a class="markdownIt-Anchor" href="#62-调度的原则"></a> 6.2 调度的原则</h2>
+<h3 id="621-调度的宏观原则"><a class="markdownIt-Anchor" href="#621-调度的宏观原则"></a> 6.2.1 调度的宏观原则</h3>
+<p>用户期望的调度原则应该包括：</p>
+<ul>
+<li>响应速度尽可能快</li>
+<li>进程处理时间尽可能短</li>
+<li>系统吞吐量尽可能大</li>
+<li>资源利用率尽可能高</li>
+<li>对所有进程公平</li>
+<li>避免饥饿</li>
+<li>避免死锁</li>
+</ul>
+<p>但上面几条原则本身就存在矛盾，操作系统一般采取折中的方式采纳其中的部分原则。</p>
+<h3 id="622-调度的时间性能测度"><a class="markdownIt-Anchor" href="#622-调度的时间性能测度"></a> 6.2.2 调度的时间性能测度</h3>
+<p><font color=red>周转时间和平均周转时间</font>：周转时间指作业从提交到计算机开始到给出结果花费的时间，包括在后备队列中等待的时间、对应进程在内存就绪队列中等待时间、对应进程在CPU上真正运行的时间、对应进程等待I/O操作完成的阻塞时间等。<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">t</span></span></span></span>表示周转时间，则$$t=t_c-t_s$$其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">t_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示作业的提交时刻，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">t_c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">c</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示作业的完成时刻，也可以计算为$$t=t_w+t_r$$其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>w</mi></msub></mrow><annotation encoding="application/x-tex">t_w</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示作业等待时间，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">t_r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示作业运行时间。<font color=red>周转时间越短越好</font>。</p>
+<p>平均周转时间指一批作业周转时间的平均值。</p>
+<p><font color=red>带权周转时间和平均带权周转时间</font>：考虑作业大小对周转时间的影响，带权周转时间指作业周转时间和执行时间的比值：$$w=\frac{t}{t_r}$$其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi></mrow><annotation encoding="application/x-tex">t</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.61508em;vertical-align:0em;"></span><span class="mord mathnormal">t</span></span></span></span>为进程周转时间，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>t</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">t_r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76508em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">t</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为进程执行时间。</p>
+<p>带权周转时间的意义是表明作业在系统中的相对停留时间，消除因为作业大小不同而导致的绝对周转时间缺少比较价值的问题。</p>
+<p>平均带权周转时间指一组作业中带权周转时间的平均值。</p>
+<h2 id="63-进程调度过程"><a class="markdownIt-Anchor" href="#63-进程调度过程"></a> 6.3 进程调度过程</h2>
+<h3 id="631-进程调度的功能"><a class="markdownIt-Anchor" href="#631-进程调度的功能"></a> 6.3.1 进程调度的功能</h3>
+<ul>
+<li>记录和管理全部进程的工作状态</li>
+<li>按照调度策略选择合适的进程</li>
+<li>进行进程上下文切换</li>
+</ul>
+<h3 id="632-进程调度的时机"><a class="markdownIt-Anchor" href="#632-进程调度的时机"></a> 6.3.2 进程调度的时机</h3>
+<p>主要的调度时机有：</p>
+<ul>
+<li>时钟中断</li>
+<li>I/O中断</li>
+<li>异常</li>
+<li>进程结束</li>
+<li>系统调用</li>
+<li>主动调度</li>
+</ul>
+<h2 id="63-进程调度的方式"><a class="markdownIt-Anchor" href="#63-进程调度的方式"></a> 6.3 进程调度的方式</h2>
+<p>进程调度的方式可以分为非抢占方式和抢占方式。区别为当有优先级更高的进程到来时，进程调度程序是否会将当前进程立即切出而切入新进程。抢占方式将首先执行高优先级进程，将低优先级进程暂时挂起；非抢占方式将低优先级进程执行完再去执行高优先级进程。</p>
+<h2 id="64-作业调度算法"><a class="markdownIt-Anchor" href="#64-作业调度算法"></a> 6.4 作业调度算法</h2>
+<h3 id="641-先来先服务调度算法"><a class="markdownIt-Anchor" href="#641-先来先服务调度算法"></a> 6.4.1 先来先服务调度算法</h3>
+<p>FCFS调度算法容易理解，容易实现，但是效率不高。该算法只考虑了作业的等待时间而没有考虑作业的执行时间，因此算法<font color=red>不利于晚到但是短的作业</font>。</p>
+<h3 id="642-短作业优先调度算法"><a class="markdownIt-Anchor" href="#642-短作业优先调度算法"></a> 6.4.2 短作业优先调度算法</h3>
+<p>SJF算法参考运行时间从后备作业中选择运行时间最短的作业优先投入运行。易于实现，但<font color=red>不利于早到却很长的作业</font>。</p>
+<h3 id="643-响应比高者优先调度算法"><a class="markdownIt-Anchor" href="#643-响应比高者优先调度算法"></a> 6.4.3 响应比高者优先调度算法</h3>
+<p>RRHF算法考虑作业的响应比。<font color=red>响应比=响应时间/运行时间=1+等待时间/运行时间</font>。该调度算法有利于短作业，对于等待时间相同的作业，短作业的响应比高于长作业。该算法有利于等待已久的作业，等待时间越长越容易被调度。</p>
+<h2 id="65-进程调度算法"><a class="markdownIt-Anchor" href="#65-进程调度算法"></a> 6.5 进程调度算法</h2>
+<h3 id="651-优先数高者优先调度算法"><a class="markdownIt-Anchor" href="#651-优先数高者优先调度算法"></a> 6.5.1 优先数高者优先调度算法</h3>
+<p>HPF调度算法根据进程的优先数将CPU分配给优先数最高的进程。优先数是一个人为定义的参数，包括<font color=red>静态优先数和动态优先数</font>。静态优先数在进程创建时确定，动态优先数在进程运行期间根据环境动态指定。</p>
+<p>静态优先数的确定需要考虑以下因素：</p>
+<ul>
+<li>进程需要资源的多少，一般进程申请的资源越多，优先数越低，但如果涉及的I/O设备与人机交互有关则可以获得较高的优先数以提升用户体验。</li>
+<li>进程运行时间长短，一般较大的进程运行时间较长，可以分配较低的优先数。</li>
+<li>进程的类型，偏I/O的进程可以比偏CPU的进程获得更高的优先数，前台进程可以比后台进程获得更高的优先数，普通用户进程可以比核心进程获得更高的优先数等。</li>
+</ul>
+<p>动态优先数的确定需要考虑以下因素：</p>
+<ul>
+<li>当使用CPU超过一定时长时，可以考虑降低其优先数。</li>
+<li>当进程等待时间超过一定时长时，可以考虑提高其优先数。</li>
+<li>当进行I/O操作时，可以提高其优先数。</li>
+</ul>
+<p>在Linux系统中，普通用户的进程可以将进程数设置为0~19，内核进程可以设置进程数为-20~19。</p>
+<p>缺点：当低优先级进程占用高优先级进程资源时反而需要高优先级进程等待低优先级进程完成，这被称为优先级反转。解决方案有：临时设置高优先级、继承高优先级、临时使用中断禁止。</p>
+<h3 id="652-时间片轮转调度算法"><a class="markdownIt-Anchor" href="#652-时间片轮转调度算法"></a> 6.5.2 时间片轮转调度算法</h3>
+<p>时间片轮转调度算法将所有就绪进程排成一个队列，新来进程加到队列末尾，进程以时间片q为单位轮流使用CPU，刚使用完CPU的进程排到队列末尾，队列在逻辑上是环形的。</p>
+<p>该算法需要合理选择时间片q的大小，时间片太短则会导致进程切换频繁，增加系统开销，时间片太长则可能会退化为FCFS算法。</p>
+<h3 id="653-多重时间片轮转调度算法"><a class="markdownIt-Anchor" href="#653-多重时间片轮转调度算法"></a> 6.5.3 多重时间片轮转调度算法</h3>
+<p>这是对时间片轮转调度算法的一种改进，设置多个就绪队列，每一个队列对应一个优先级，每个就绪队列使用的时间片大小不同，高优先级的时间片短而低优先级的时间片长。通常优先级每提高一级时间片缩短一半。这样可以提高系统吞吐量，缩短平均周转时间。</p>
+<h2 id="66-linux进程调度"><a class="markdownIt-Anchor" href="#66-linux进程调度"></a> 6.6 Linux进程调度</h2>
+<h3 id="661-linux调度机制"><a class="markdownIt-Anchor" href="#661-linux调度机制"></a> 6.6.1 Linux调度机制</h3>
+<p>Linux进程调度的基本特点：</p>
+<ul>
+<li>基于优先级调度，优先级由静态优先级和动态优先级构成</li>
+<li>支持普通进程和实时进程</li>
+<li>实时进程优先于普通进程</li>
+<li>普通进程公平使用CPU时间</li>
+</ul>
+<p>Linux进程控制块task_struct中的priority成员指的是进程的静态优先级，counter成员指的是动态优先级，还有一个nice值，可以通过修改nice值修改进程的静态优先级。nice值的设置范围为-20~19。静态优先级表示该进程被允许连续运行的最长时间，实时进程使用静态优先级调度。counter指的是该进程在当前时间片结束后还能够连续运行多少个时间片，其值越大优先级越高。在新一轮调度开始时，counter=priority，时钟中断服务程序执行后其值自减1，当所有进程的counter都减到0时开始新一轮的调度。</p>
+<p>rt_priority成员表示实时进程特有的优先级，policy表示进程的调度策略，用于区分实时进程和普通进程，可选SCHED_OTHER、SCHED_FIFO、SCHED_RR三种。</p>
+<p>Linux的调度函数为schedule函数，其在可运行队列中选择一个具有最高优先数的进程并将CPU切换给它。</p>
+<h2 id="例题"><a class="markdownIt-Anchor" href="#例题"></a> 例题</h2>
+<p>本章的例题大多与计算有关，即计算调度时间。</p>
+<p>例-1：下面是各个任务的到达时间和任务长度，试写出3种作业调度算法下这些任务的开始时间，以及各自的周转时间、平均周转时间、带权周转时间和平均带权周转时间。</p>
+<p>对于FCFS算法：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">任务</th>
+<th style="text-align:center">到达时间</th>
+<th style="text-align:center">持续时间</th>
+<th style="text-align:center">开始时间</th>
+<th style="text-align:center">周转时间</th>
+<th style="text-align:center">带权周转时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">30</td>
+<td style="text-align:center">60</td>
+<td style="text-align:center">80</td>
+<td style="text-align:center">2.33</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">60</td>
+<td style="text-align:center">1.5</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">60</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">4</td>
+</tr>
+</tbody>
+</table>
+<p>该算法的平均周转时间为50，平均带权周转时间为2.21。</p>
+<p>对于SJF算法：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">任务</th>
+<th style="text-align:center">到达时间</th>
+<th style="text-align:center">持续时间</th>
+<th style="text-align:center">开始时间</th>
+<th style="text-align:center">周转时间</th>
+<th style="text-align:center">带权周转时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">30</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">1.33</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">50</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">2.25</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">60</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">4</td>
+</tr>
+</tbody>
+</table>
+<p>该算法的平均周转时间为47.5，平均带权周转时间为2.15。</p>
+<p>对于RRHF算法：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">任务</th>
+<th style="text-align:center">到达时间</th>
+<th style="text-align:center">持续时间</th>
+<th style="text-align:center">开始时间</th>
+<th style="text-align:center">周转时间</th>
+<th style="text-align:center">带权周转时间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">30</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">1.33</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">20</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">50</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">2.25</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">60</td>
+<td style="text-align:center">10</td>
+<td style="text-align:center">90</td>
+<td style="text-align:center">40</td>
+<td style="text-align:center">4</td>
+</tr>
+</tbody>
+</table>
+<p>该算法的平均周转时间为47.5，平均带权周转时间为2.15。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1935,291 +2258,6 @@ PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机组成原理——第2章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:02:03 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:03+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>3.5k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>3 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="21"><a class="markdownIt-Anchor" href="#21"></a> 2.1</h3>
-<ul>
-<li>真值：使用加号或减号表示数据符号的数据书写格式被称为真值。<font color=red>注意真值指的不是数据的值，而是数据的一种书写格式。一个数据必须要有一个书写格式才能展示出来。</font></li>
-<li>机器码：在计算机中采用0或1表示数据的正负，由符号和数值一起编码表示的二进制数称为机器数或机器码。</li>
-<li>原码：符号化的数值，正数符号位为0，负数为1，其余为与真值表示相同。</li>
-<li>反码：又称1的补码，符号位与原码相同，真值为正数时，反码与原码相同；真值为负数时，反码数值与真值数值位相反。</li>
-<li>补码：当真值为正数时，补码等于真值；当真值为负数时，真值加上模数即为补码，或者是反码加1。</li>
-<li>移码：只用于定点整数的表示，通常用于表示浮点数阶码。编码方式是直接将真值x加上一个常数偏移量。移码可以直接比较大小。</li>
-<li>模：模数，数值计量系统的计量范围。</li>
-<li>定点数：约定计算机中所有数据的小数点位置固定。将小数点的位置固定在数据的最高数位之前的数据称为定点小数，将小数点固定在最低数位之后的数据称为定点整数。</li>
-<li>浮点数：浮点数中的小数位不固定。</li>
-<li>溢出：当数据超过计算机能够表示的数据范围时产生了溢出。</li>
-<li>精度溢出：数轴上所有不在数值刻度上面的纯小数都超过了定点小数所能够表示的精度，无法表示，此时定点小数发生精度溢出。</li>
-<li>浮点数规格化：使得浮点数的尾数真值最高有效位为1，即尾数的绝对值应该大于0.1<sub>2</sub>。</li>
-<li>隐藏位：在规格化浮点数中由于尾数的最高有效位一定为1，因此这一位可以不用保存到数据中，这就是被隐藏的一位，即隐藏位。</li>
-<li>码距：在编码系统中，两个编码一一对应的所有二进制位中不同的二进制位数，又称海明距离。</li>
-<li>校验码：具有发现错误或纠正错误能力的数据编码，用于提升数据在时间和空间两个维度上的可靠性传输的机制。</li>
-<li>多重奇偶校验：对数据中的某一位数据位都有多个奇偶校验码对其进行校验的校验方式。</li>
-<li>海明码：一种既能检错又能纠错的校验码。</li>
-<li>CRC码：循环冗余校验码。</li>
-</ul>
-<h3 id="22"><a class="markdownIt-Anchor" href="#22"></a> 2.2</h3>
-<ol>
-<li>B<br />
-3个1和5个0能够表示的最小整数为10000011，值为131-256=-125。</li>
-<li>A</li>
-<li>B<br />
-65530是无符号数，这里进行无符号扩展后真值依然为65530，因此为0000FFFAH</li>
-<li>C</li>
-<li>A<br />
-IEEE754标注规定32位浮点数含1位符号位、8位阶码和23位尾数位。-8.25=-1000.01<sub>2</sub>=-1.00001×2<sup>11</sup>（二进制），因此符号位为1，阶码为3+127=130=10000010，尾数为00001000 00000000 0000000。因此存储的值为：11000001 00000100 00000000 00000000，即C1040000H。</li>
-<li>A<br />
-C6400000即为1100 0110 0100 0000 0000 0000 0000 0000，符号位1，阶码为10001100=140，阶数为13，尾数为0.1，加上1变成1.1<sub>2</sub>。因此值为-1.5×2<sup>13</sup>。</li>
-<li>D<br />
-按照IEEE754标准，float型能够表示最大整数时，阶码对应的阶数为254-127=127，尾数为1.111…，易知尾数+2<sup>-23</sup>=2，因此尾数的值为2-2<sup>23</sup>。最终的值为2<sup>127</sup>×(2-2<sup>23</sup>)=2<sup>128</sup>-2<sup>104</sup>。</li>
-<li>A<br />
-按照IEEE754标准，最小的规格化正数阶码对应的阶数为1-127=-126，尾数全0，最终的值为2<sup>-126</sup>。</li>
-<li>A<br />
-CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码为01100001=97，二者均为负数，且前者绝对值更大，因此前者小于后者。</li>
-<li>B<br />
-将浮点数类型转换为int类型之后小数部分会丢失，但i本来就没有小数部分，因此A正确，B错误。C由于f的表示范围在float之内，因此转为double之后再转回到float没有影响，C正确。D错误，d比f大得多，会导致f+d时f丢失。</li>
-<li>C</li>
-</ol>
-<h3 id="23"><a class="markdownIt-Anchor" href="#23"></a> 2.3</h3>
-<ul>
-<li>
-<ol>
-<li>因为二进制的数据使用硬件表示较为方便，其容易与简单的物理状态对应，算数逻辑运算电路更容易实现。</li>
-</ol>
-</li>
-<li>
-<ol start="2">
-<li>首先最为明显的一点代价就是校验码的位数大大增加。单纯的奇偶校验只需要1位校验码，而交叉奇偶校验需要行数+列数个校验位。其次就是校验过程较普通的奇偶校验复杂，需要提取每一行每一列的数据进行校验。</li>
-</ol>
-</li>
-<li>
-<ol start="3">
-<li>补码计算加减法较原码和反码更方便。</li>
-</ol>
-</li>
-<li>
-<ol start="4">
-<li>表示范围由阶码位数决定，精度由尾数位数决定。</li>
-</ol>
-</li>
-<li>
-<ol start="8">
-<li>浮点数的正负只需要看最高位符号位即可。</li>
-</ol>
-</li>
-<li>
-<ol start="9">
-<li>浮点数有两个0指的是浮点数的尾数采用原码表示，因此存在正0和负0两种0。在比较上需要另外进行判断，增加了硬件和软件设计的复杂性。</li>
-</ol>
-</li>
-<li>
-<ol start="10">
-<li>选择一个合适的信息多项式，需要满足多项式最高次数r（也是校验位数）与原始数据信息之和k小于2<sup>r</sup>-1，将原来的数据左移r位之后进行模2除法运算，将余数填入最终数据的最低r位作为校验位。在校验时依然进行模2除法，如果余数为0认为没有错误，否则发现错误。CRC可以纠正一位错误。</li>
-</ol>
-</li>
-</ul>
-<h3 id="24"><a class="markdownIt-Anchor" href="#24"></a> 2.4</h3>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">真值</th>
-<th style="text-align:center">原码</th>
-<th style="text-align:center">反码</th>
-<th style="text-align:center">补码</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0.000…</td>
-<td style="text-align:center">0.000…</td>
-<td style="text-align:center">0.000…</td>
-</tr>
-<tr>
-<td style="text-align:center">-0</td>
-<td style="text-align:center">1.000…</td>
-<td style="text-align:center">1.111…</td>
-<td style="text-align:center">0.000…</td>
-</tr>
-<tr>
-<td style="text-align:center">0.10101</td>
-<td style="text-align:center">0.10101</td>
-<td style="text-align:center">0.10101</td>
-<td style="text-align:center">0.10101</td>
-</tr>
-<tr>
-<td style="text-align:center">-0.10101</td>
-<td style="text-align:center">1.10101</td>
-<td style="text-align:center">1.01010</td>
-<td style="text-align:center">1.01011</td>
-</tr>
-<tr>
-<td style="text-align:center">0.11111</td>
-<td style="text-align:center">0.11111</td>
-<td style="text-align:center">0.11111</td>
-<td style="text-align:center">0.11111</td>
-</tr>
-<tr>
-<td style="text-align:center">-0.11111</td>
-<td style="text-align:center">1.11111</td>
-<td style="text-align:center">1.00000</td>
-<td style="text-align:center">1.00001</td>
-</tr>
-<tr>
-<td style="text-align:center">-0.10000</td>
-<td style="text-align:center">1.10000</td>
-<td style="text-align:center">1.01111</td>
-<td style="text-align:center">1.10000</td>
-</tr>
-<tr>
-<td style="text-align:center">0.10000</td>
-<td style="text-align:center">0.10000</td>
-<td style="text-align:center">0.10000</td>
-<td style="text-align:center">0.10000</td>
-</tr>
-</tbody>
-</table>
-<h3 id="25"><a class="markdownIt-Anchor" href="#25"></a> 2.5</h3>
-<ul>
-<li>0.10010的真值为0.10010</li>
-<li>1.00000的真值为-1.00000（减2，反码无法表示这个数）</li>
-<li>1.10010的真值为-0.01110</li>
-<li>0.10001的真值为0.10001</li>
-<li>1.11111的真值为-0.00001</li>
-<li>1.00001的真值为-0.11111</li>
-</ul>
-<h3 id="26"><a class="markdownIt-Anchor" href="#26"></a> 2.6</h3>
-<p>略</p>
-<h3 id="27"><a class="markdownIt-Anchor" href="#27"></a> 2.7</h3>
-<p>16位无符号数：0-65535<br />
-16位原码定点小数：1位作为符号位，数据范围为-32767/32768-32767/32768<br />
-16位补码定点小数：数据范围为-1-32767/32768<br />
-16位补码定点整数：数据范围为-32768-32767</p>
-<h3 id="28"><a class="markdownIt-Anchor" href="#28"></a> 2.8</h3>
-<p>补码的模为2<sup>最高位的进位位权值</sup>=256</p>
-<h3 id="29"><a class="markdownIt-Anchor" href="#29"></a> 2.9</h3>
-<p>-6.625=-110.101，符号位1，阶码127+2=10000001<sub>2</sub>，尾数10101000…，结果：11000000 11010100 0…=C0D40000<sub>16</sub></p>
-<p>3.1415927需要首先计算尾数。尾数省略最高的1后为10010010 00011111 1011010，后面一位为1，因此进位为1011011。</p>
-<p>64000=11111010 00000000</p>
-<h3 id="210"><a class="markdownIt-Anchor" href="#210"></a> 2.10</h3>
-<p>单精度浮点数43940000H=0100 0011 1001 0100 0…，符号位0，阶码10000111=135，阶数8，位数0010100…，结果为1.00101×2<sup>8</sup>=100101000=296。</p>
-<h3 id="211"><a class="markdownIt-Anchor" href="#211"></a> 2.11</h3>
-<p>单精度浮点数能够表示的最大数为2<sup>128</sup>-2<sup>104</sup>，能够表示的最小数是上面数字的相反数。最小正数为非规格化浮点数，尾数为00…01，阶码为0，阶数为<font color=red>-126（不是-127！）</font>。表示的数为2<sup>-126</sup>×2<sup>-23</sup>=2<sup>-149</sup>。</p>
-<h3 id="212"><a class="markdownIt-Anchor" href="#212"></a> 2.12</h3>
-<ol>
-<li>可能</li>
-<li>不可能</li>
-</ol>
-<h3 id="213"><a class="markdownIt-Anchor" href="#213"></a> 2.13</h3>
-<p>3位阶码，移码为4。（尾数中没有隐藏位的设定，尾数和阶码均为补码）<br />
-最大正数为2<sup>3</sup>×(1-2<sup>6</sup>)<br />
-最小正数为2<sup>-4</sup>×2<sup>-6</sup><br />
-最大负数为-2<sup>-4</sup>×2<sup>-6</sup><br />
-最小负数为2<sup>-3</sup></p>
-<h3 id="214"><a class="markdownIt-Anchor" href="#214"></a> 2.14</h3>
-<p>57=111001，57/128=0.0111001，阶码为-2=1110，尾数为01.11001，最高的0为符号位，结果为1110 0111001000，第二个数略。</p>
-<h3 id="215"><a class="markdownIt-Anchor" href="#215"></a> 2.15</h3>
-<p>01011011的奇校验码为0，偶校验码为1。将收到的信息中的所有位统计1的个数或进行异或运算，奇校验异或结果为1则没有错误，偶校验异或结果为0则没有错误。</p>
-<h3 id="216"><a class="markdownIt-Anchor" href="#216"></a> 2.16</h3>
-<p>略</p>
-<h3 id="217"><a class="markdownIt-Anchor" href="#217"></a> 2.17</h3>
-<p>01101110计算海明校验码：<br />
-海明校验码前面几位的第1、2、4、8位为校验码位，其余为数据位。<br />
-因此结果必然为：??0?110?1110。<br />
-第1位校验码校验第3、5、7、9、11位数据位，值为1。<br />
-第2位校验码校验第3、6、7、10、11位数据位，值为1。<br />
-第3位校验码校验第5、6、7、12位数据位，值为0<br />
-第4位校验码校验第9、10、11、12位数据位，值为1。<br />
-结果为110011011110。</p>
-<p>如果第8位数据位出错，那么第3和第4个指错字值为1出错，定位到海明码中的第12位，即第8位数据位出错，将对应位取反即可。</p>
-<h3 id="218"><a class="markdownIt-Anchor" href="#218"></a> 2.18</h3>
-<p>数据为1001，生成多项式1101。<br />
-对数据左移3位为1001000，除以1101的余数为011，故校验值为011。<br />
-若接收到的数据信息为1101，则使用1101011除以011余数不为0，错误。纠错方法：对余数补零继续除获得余数，直到余数为1未知，除的次数即为错误的比特位的位置（左起第几位）。</p>
-<p>原理：总校验码的第i位出错时，相除得到的余数补零再除得到的余数等于总校验码的第i+1位出错时相除得到的余数值。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2289,7 +2327,7 @@ CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">136</span>
+          <span class="site-state-item-count">137</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2347,7 +2385,7 @@ CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:15</span>
+    <span title="Reading time total">18:21</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
