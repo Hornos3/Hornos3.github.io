@@ -150,6 +150,212 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第6章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:52:41 / Modified: 23:53:17" itemprop="dateCreated datePublished" datetime="2023-03-02T23:52:41+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
+<h3 id="61~62"><a class="markdownIt-Anchor" href="#61~62"></a> 6.1~6.2</h3>
+<ol>
+<li>具体的交通工具</li>
+<li>如果链路层能够实现TCP协议能够实现的所有可靠性，那么TCP可靠传输服务才是多余的。这些可靠性包括内容可靠、拥塞控制、流量控制等。</li>
+<li>链路层能够提供的可能服务包括：</li>
+</ol>
+<ul>
+<li>成帧，在每一个网络层数据报经链路传送之前，几乎所有的链路层协议都要将其使用链路层帧封装起来。</li>
+<li>链路接入，媒体访问控制（MAC）协议规定了帧在链路上传输的规则。</li>
+<li>可靠交付，当链路层协议提供可靠交付服务时，能够保证无差错地经过链路层移动每一个网络层数据报。</li>
+<li>差错检测和纠正，通过让发送节点在帧中包括差错检测比特，让接收节点进行差错检查。</li>
+</ul>
+<h3 id="63"><a class="markdownIt-Anchor" href="#63"></a> 6.3</h3>
+<ol start="4">
+<li>d(prop)&lt;L/R，意味着传播时延小于传输时延。当传播距离很大时，一方将自己的分组发送完毕之后才会收到对方发送过来的分组，此时不会出现碰撞。当传播距离较小时，一方的分组还未完全发送完毕就已经检测到了对方分组的数据，此时就发生了碰撞。</li>
+<li>广播信道4种希望的特性：</li>
+</ol>
+<ul>
+<li>仅有一个节点发送时，该结点能够独占所有的带宽。</li>
+<li>多个节点发送时，能够平均分配带宽且充分利用带宽。</li>
+<li>协议是分散的，任何一个节点的故障不会影响到整个系统的运作。</li>
+<li>协议是简单的，实现成本低。<br />
+时隙ALOHA能够实现第1、3、4种特性，但无法满足第2种。当有多个节点发送时，会产生碰撞。<br />
+令牌传递能够实现第1、2种特性，无法满足第3、4种。当一个节点产生故障时，传递令牌的链路就会断裂，整个系统将会失效。另外每一种令牌传输协议都需要解决一些棘手的问题（P301原话）</li>
+</ul>
+<ol start="6">
+<li>第5次碰撞后，节点应该在0~31中选择一个数字延时，因此选择4的概率为1/32。选择4时，网卡将会等待4×512bit时间，在10Mbps以太网中的时延为2048/10<sup>7</sup>=2.048×10<sup>-4</sup>s。</li>
+<li>略</li>
+<li>当局域网周长很大时，令牌传递一个周期可能需要很长时间，当整个局域网中只有一台主机需要广播时，其不能一直广播，必须等待若干个周期的时间才能完成其广播，降低了效率。</li>
+</ol>
+<h3 id="64"><a class="markdownIt-Anchor" href="#64"></a> 6.4</h3>
+<ol start="9">
+<li>MAC地址是48bit值，空间大小为2<sup>48</sup>。IPv4为2<sup>30</sup>，IPv6为2<sup>128</sup>。</li>
+<li>不会处理这些帧（丢弃）。也不会将这些帧传递给C的网络层。如果A使用广播，则会处理，也会传递给网络层。</li>
+<li>因为ARP的功能是查询给定IP地址主机的MAC地址，此时发起请求的主机还不知道该IP地址对应的MAC地址是什么，因此只能通过广播的方式让ARP请求在整个网络中传播，期望目标IP地址主机能够给出回应。ARP响应报文已经知道了源、目的主机的IP地址以及MAC地址，因此不需要另外使用广播帧增加链路的负担，而是使用普通的链路层帧直接发送即可。</li>
+<li>不可能，两张ARP表对应的是两个子网中主机的MAC地址。</li>
+<li>没有什么不同，新的以太网和已经安装的以太网设备基础保持完全兼容。</li>
+<li>5个</li>
+<li>这取决于交换机一共有多少个端口。802.1Q标准中在标准以太网帧中加入了4字节的VLAN标签，理论上这个标签的空间为2<sup>32</sup>，但一台交换机不可能有这么多端口，因此取决于这个交换机的端口数量。</li>
+<li>略</li>
+</ol>
+<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
+<ol>
+<li>偶校验方法，对于16个比特的检验，4×4校验使用的检验位最少。<br />
+1110 1<br />
+0110 0<br />
+1001 0<br />
+1101 1<br />
+1100 0</li>
+<li>对于单比特差错，二维奇偶校验的行校验码和列校验码必然各有一位出错，根据出错的行和列可以定位错误位，取反即可纠正。如将上一题修改为：<br />
+1110 1<br />
+0110 0<br />
+10<mark>1</mark>1 0<br />
+1101 1<br />
+1100 0<br />
+此时容易发现第3行的行校验码错误，第3行的列校验码错误。<br />
+某些双比特差错能够监测但不能纠正。如：<br />
+1110 1<br />
+0<mark>1</mark>10 0<br />
+1001 0<br />
+11<mark>0</mark>1 1<br />
+1100 0<br />
+这里的第2、4行的校验码出错，第2、3列的校验码出错。但是，有两种错误都可能会导致这种校验错误：第2行第2列和第4行第3列的2位出错，第2行第4列和第4行第3列2位出错。</li>
+<li>这个字符串对应的比特数据为：<br />
+0100 1110 0110 0101<br />
+0111 0100 0111 0111<br />
+0110 1111 0111 0010<br />
+0110 1011 0110 1001<br />
+0110 1110 0110 0111<br />
+以16比特分组求和，结果为0000 1100 0010 0000，取反得到1111 0011 1101 1111</li>
+<li>a. 和为0001 1001 0001 1110，取反为1110 0110 1110 0001<br />
+b. 和为0110 0100 0101 1111，取反为1001 1011 1010 0000<br />
+c. 和为0000 0101 0000 0000，取反为1111 1010 1111 1111</li>
+<li>余数为100，R=100=4</li>
+<li>略</li>
+<li>a. 因为任何单比特差错都会导致校验码除以生成多项式的余数改变。设第 i 位反转，0&lt;=i&lt;=d+r-1，则接收到的数据 K = D*2<sup>r</sup> XOR R + 2<sup>i</sup>，如果用 G 除 K，那么余数一定不为 0<br />
+b. 能。这里的G可以被11（二进制）整除，但是，任何奇数个比特错误（不论是否连续）所造成的偏差必然不可被11（二进制）整除。</li>
+<li>a. 求导得<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>+</mo><mi>N</mi><mo stretchy="false">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>2</mn></mrow></msup><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">N(1-p)^{N-1}+N(N-1)p(1-p)^{N-2}=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0913309999999998em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0913309999999998em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>，计算得到<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">)</mo><mo>−</mo><mo stretchy="false">(</mo><mi>N</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi>p</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">(1-p)-(N-1)p=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>=</mo><mfrac><mn>1</mn><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">p=\frac{1}{N}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">p</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。<br />
+b. 使用该p值，效率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>N</mi><mi>N</mi></mfrac><mo stretchy="false">(</mo><mfrac><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow><mi>N</mi></mfrac><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">\frac{N}{N}(\frac{N-1}{N})^{N-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.217331em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>，当N趋近于无穷时，其值趋近于1/e。</li>
+<li>同样的流程。</li>
+<li>a. 在一个时隙，结点A成功占用信道的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>P</mi><mi>B</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P_A(1-P_B)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，总体效率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>P</mi><mi>B</mi></msub><mo stretchy="false">)</mo><mo>+</mo><msub><mi>P</mi><mi>B</mi></msub><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>P</mi><mi>A</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">P_A(1-P_B)+P_B(1-P_A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span><br />
+b. 如果<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>A</mi></msub><mo>=</mo><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub></mrow><annotation encoding="application/x-tex">p_A=2p_B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">2</span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，则发生碰撞后，在后面的一个时隙A重传成功的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>A</mi></msub><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">p_A(1-p_B)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，B重传成功的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>B</mi></msub><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><msub><mi>p</mi><mi>A</mi></msub><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">p_B(1-p_A)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span>，二者并不是两倍关系。要使得二者为两倍关系，则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>A</mi></msub><mo>−</mo><msub><mi>p</mi><mi>A</mi></msub><msub><mi>p</mi><mi>B</mi></msub><mo>=</mo><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub><mo>−</mo><mn>2</mn><msub><mi>p</mi><mi>A</mi></msub><msub><mi>p</mi><mi>B</mi></msub></mrow><annotation encoding="application/x-tex">p_A-p_Ap_B=2p_B-2p_Ap_B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">2</span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">2</span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>A</mi></msub><mo>+</mo><msub><mi>p</mi><mi>A</mi></msub><msub><mi>p</mi><mi>B</mi></msub><mo>=</mo><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub></mrow><annotation encoding="application/x-tex">p_A+p_Ap_B=2p_B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.7777700000000001em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">2</span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mi>A</mi></msub><mo>=</mo><mfrac><mrow><mn>2</mn><msub><mi>p</mi><mi>B</mi></msub></mrow><mrow><mn>1</mn><mo>+</mo><msub><mi>p</mi><mi>B</mi></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">p_A=\frac{2p_B}{1+p_B}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">A</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.378324em;vertical-align:-0.481108em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.897216em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mbin mtight">+</span><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3567071428571427em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.14329285714285717em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.446108em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight"><span class="mord mathnormal mtight">p</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3567071428571427em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.14329285714285717em;"><span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.481108em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span><br />
+c. 节点A的平均吞吐量为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2p(1-p)^{N-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0913309999999998em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>，其他节点：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mn>2</mn><mi>p</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">p(1-2p)(1-p)^{N-2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">2</span><span class="mord mathnormal">p</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0913309999999998em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span></li>
+<li>a. 一个节点没能在一个时隙传输数据的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">1-p(1-p)^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span>，故节点A在时隙5首次成功的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><msup><mo stretchy="false">)</mo><mn>4</mn></msup></mrow><annotation encoding="application/x-tex">p(1-p)^3(1-p(1-p)^3)^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span>。<br />
+b. 某个节点在时隙4成功的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup></mrow><annotation encoding="application/x-tex">1-p(1-p)^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span>。<br />
+c. 在时隙3中出现首个成功的概率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><msup><mo stretchy="false">)</mo><mn>2</mn></msup></mrow><annotation encoding="application/x-tex">4p(1-p)^3(1-p(1-p)^3)^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">4</span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span>。<br />
+d. 效率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4</mn><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mn>3</mn></msup><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">4(1-p(1-p)^3)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">4</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mopen">(</span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.064108em;vertical-align:-0.25em;"></span><span class="mord mathnormal">p</span><span class="mclose"><span class="mclose">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></li>
+<li>略</li>
+<li>一个结点的传输时间为Q/R，一个轮询周期的时间为N(Q/R+t<sub>poll</sub>)，在这段时间内可传输NQ比特数据，故吞吐量为Q/(Q/R+t<sub>poll</sub>)</li>
+<li>a. 从A到F依次为：192.168.1.1、192.168.1.3、192.168.2.1、192.168.2.4、192.168.3.1、192.168.3.3<br />
+b. 从A：00-00-00-00-00-00、左路由器左接口：11-11-11-11-11-11、B：22-22-22-22-22-22、左路由器右接口：33-33-33-33-33-33、C：44-44-44-44-44-44、右路由器左接口：55-55-55-55-55-55、D：66-66-66-66-66-66、右路由器右接口：77-77-77-77-77-77、E：88-88-88-88-88-88、F：99-99-99-99-99-99。<br />
+c. 主机E发送数据报，其以太网帧中目的MAC地址为右路由器的右接口MAC，即77-77-77-77-77-77，IP报头的目的IP地址为192.168.1.3。交换机注意到MAC地址为路由器的MAC，将其转发到路由器，第一步完成。右路由器接收到这个帧之后传递到其网络层，查询完成之后将其从左边接口发送出去，MAC地址修改为左路由器的右接口，即44-44-44-44-44-44。然后左边路由器接收到帧，将MAC修改为B的MAC即33-33-33-33-33-33，转发到B。<br />
+d. 首先发送ARP报文广播获取192.168.3.2的MAC地址，然后发送。</li>
+<li>a. 不用，因为二者在同一个子网。源IP为E的IP，目的IP为F的IP，源MAC为E的MAC，目的MAC为F的MAC。<br />
+b. 不用，二者不在同一个子网。源IP为E的IP，目的IP为B的IP，源MAC为E的MAC，目的MAC为R1右端口的MAC。<br />
+c. 广播查询B的MAC，会收到，不会转发，B不会发送一个ARP请求查询A的MAC，因为A发出的帧中已经包含了A的MAC地址。S1会在转发表中记录B的地址并向A转发。</li>
+<li>a. 同15.a<br />
+b. 会，因为此时E不知道B和它是不是在一个子网中。目的MAC地址为广播MAC。<br />
+c. 会向子网3发送报文，其他同15.c</li>
+<li>10Mbps等待51200比特时间需要5.12ms，0.512ms。</li>
+<li>A将会在512+64=576比特时刻完成帧的传输，在A传输结束之前B开始传输一帧，因此在B开始传输时，A的传输信号还没有到达B，也即B传输开始的时刻在0~324比特时间之内。最坏情况下，B的信号将在324+325=649比特时间到达A，而A此时已经完成了传输，因此A能够完成传输。</li>
+<li>两者在245比特时间时同时检测到碰撞，因此会等待K×512比特时间，其中K取0或1。如果两者选取的K相同，那么重传依然会碰撞。如果选择的K不同，不妨设A选择的是0，B选择的是1，二者在检测到碰撞后发送48比特时间的干扰数据，在293比特时间同时停止发送数据，然后在293+245=538比特时间A和B停止检测到信号，然后A开始传输数据，需要96比特时间，即在634比特时间完成传输。同时B等待到293+512=805比特时间。而A的重传数据在538+245=783比特时间时被B检测到，一直到634+245=879比特时间才结束接收信号，B也在这个比特时间开始传输其数据。</li>
+<li>a. 一帧需要k个时隙才能传输完成。设Y为连续X个空闲时隙，直到出现一个工作时隙，Y=X+1。则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo stretchy="false">(</mo><mi>Y</mi><mo stretchy="false">)</mo><mo>=</mo><mfrac><mn>1</mn><msub><mi>P</mi><mrow><mi>w</mi><mi>o</mi><mi>r</mi><mi>k</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></msub></mfrac><mo>=</mo><mfrac><mn>1</mn><mrow><mi>N</mi><mi>p</mi><mo stretchy="false">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><msup><mo stretchy="false">)</mo><mrow><mi>N</mi><mo>−</mo><mn>1</mn></mrow></msup></mrow></mfrac></mrow><annotation encoding="application/x-tex">E(Y)=\frac{1}{P_{working}}=\frac{1}{Np(1-p)^{N-1}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.3931879999999999em;vertical-align:-0.5480799999999999em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3448em;"><span style="top:-2.3487714285714287em;margin-left:-0.13889em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.02691em;">w</span><span class="mord mathnormal mtight">o</span><span class="mord mathnormal mtight" style="margin-right:0.02778em;">r</span><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span><span class="mord mathnormal mtight" style="margin-right:0.03588em;">g</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.29011428571428566em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.5480799999999999em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.3719729999999999em;vertical-align:-0.5268649999999999em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.648135em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight">p</span><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight">p</span><span class="mclose mtight"><span class="mclose mtight">)</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.7740928571428571em;"><span style="top:-2.786em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.5268649999999999em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，故<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo stretchy="false">(</mo><mi>X</mi><mo stretchy="false">)</mo><mo>=</mo><mi>E</mi><mo stretchy="false">(</mo><mi>Y</mi><mo stretchy="false">)</mo><mo>−</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">E(X)=E(Y)-1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。故效率=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mi>x</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{k+x}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">x</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>可求出。<br />
+b. 求导计算得到p=1/N时得到最大值。<br />
+c. N趋于无穷时，效率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>k</mi><mrow><mi>k</mi><mo>+</mo><mi>e</mi><mo>−</mo><mn>1</mn></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{k}{k+e-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.283439em;vertical-align:-0.403331em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8801079999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">+</span><span class="mord mathnormal mtight">e</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.403331em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span><br />
+d. 帧长度变大时，发送一个帧需要的时隙增加，有其他节点等待发送数据的可能性越大，空闲时隙的数量就越少。</li>
+<li>略，易得。</li>
+<li>略</li>
+<li>1100Mbps。转发设备是交换机，因此无碰撞。</li>
+<li>使用集线器代替则下面的3个100Mbps光纤只能以100Mbps的总带宽服务下面的主机，故一共500Mbps。</li>
+<li>100Mbps。</li>
+<li>第一步完成后，交换机学习到B的MAC地址以及接口。然后将这个帧发送到其他所有接口，因为此时交换机还不知道E在哪。第二步完成后，交换机学习到E的MAC地址以及接口。然后将这个帧发送给B。第三步完成后，交换机学习到A的MAC地址以及接口，然后将这个帧发送给B。第四步完成后，交换机没有学习。</li>
+<li>略</li>
+<li>EE发送的帧到达交换机时，交换机将帧转发到路由器，然后路由器修改目的MAC地址将其发送到交换机，然后交换机将该帧通过CS的VLAN发送出去。</li>
+<li>略</li>
+<li>略</li>
+<li>以太网、DHCP、ARP、DNS、TCP、HTTP。</li>
+<li>略</li>
+<li>略</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3686,298 +3892,6 @@ M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第1章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:26:53 / Modified: 23:28:18" itemprop="dateCreated datePublished" datetime="2023-03-02T23:26:53+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>5.8k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>5 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-1-计算机网络和因特网"><a class="markdownIt-Anchor" href="#chapter-1-计算机网络和因特网"></a> Chapter 1 计算机网络和因特网</h1>
-<h2 id="11-什么是因特网"><a class="markdownIt-Anchor" href="#11-什么是因特网"></a> 1.1 什么是因特网</h2>
-<h3 id="111-具体构成描述"><a class="markdownIt-Anchor" href="#111-具体构成描述"></a> 1.1.1 具体构成描述</h3>
-<p>因特网由连接在其上的数十亿计的互联计算机设备组成。</p>
-<ul>
-<li>主机是端系统，运行网络应用程序。</li>
-<li>通信链路将这些端系统连接起来，包括光纤、无线电等，它的带宽表现传输速率。</li>
-<li>分组交换机用于转发数据分组，包括链路层交换机和路由器。</li>
-</ul>
-<p>端系统通过因特网服务提供商ISP接入Internet，不同的ISP之间也可以相互连接构成更大的网络。在因特网上运行的网络应用程序属于软件，其上定义有各种协议用于控制报文的发送和接收。这些协议由因特网工程部（IETF）制定，其标准文档称为请求评论（RFC）</p>
-<h3 id="112-服务描述"><a class="markdownIt-Anchor" href="#112-服务描述"></a> 1.1.2 服务描述</h3>
-<ul>
-<li>因特网为应用程序提供服务的基础设施。</li>
-<li>因特网为应用程序提供编程接口，应用程序连接到因特网上的通道（套接字接口），且因特网能够提供不同级别的服务选项，对应不同的服务方式和服务质量。</li>
-</ul>
-<h3 id="113-什么是协议"><a class="markdownIt-Anchor" href="#113-什么是协议"></a> 1.1.3 什么是协议</h3>
-<p>一个协议定义了在两个或者多个通信实体之间交换的报文格式和次序，以及报文发送和/或接收一条报文或其他时间所采取的动作。</p>
-<h2 id="12-网络边缘"><a class="markdownIt-Anchor" href="#12-网络边缘"></a> 1.2 网络边缘</h2>
-<ul>
-<li>网络边缘包括：主机（客户端和服务器，可以运行应用程序）、数据中心的服务器</li>
-<li>网络核心包括：路由器、网络的网络</li>
-<li>接入网和物理媒体：通信链路</li>
-</ul>
-<p>网络应用的通信模型有：</p>
-<ul>
-<li>客户/服务器模型（C/S模式）</li>
-<li>对等模型（P2P模式），所有主机同时承担服务器和客户机的双重身份</li>
-</ul>
-<p>连接端系统和边缘路由器的方法：</p>
-<ul>
-<li>通过住宅接入网（Modem拨号/ADSL拨号/HFC/FTTH/卫星）</li>
-<li>通过机构接入网（以太网/Wifi）</li>
-<li>通过移动接入网（3G/LTE/5G）</li>
-</ul>
-<h3 id="121-接入网"><a class="markdownIt-Anchor" href="#121-接入网"></a> 1.2.1 接入网</h3>
-<p>接入网是指将端系统连接到边缘路由器的网络。其作用是：将网络边缘与网络核心连接起来，通常是将端系统连接到边缘路由器上。边缘路由器指端系统到任何其他远程端系统的路径上的第一台路由器。</p>
-<h4 id="modem-拨号"><a class="markdownIt-Anchor" href="#modem-拨号"></a> Modem 拨号</h4>
-<ul>
-<li>通过本地电话回路点对点连接ISP的拨号池（通常为路由器）</li>
-<li>其速度最高可达56kbps</li>
-<li>无法实现在上网的同时打电话</li>
-</ul>
-<h4 id="dsl-数字用户线"><a class="markdownIt-Anchor" href="#dsl-数字用户线"></a> DSL: 数字用户线</h4>
-<ul>
-<li>下行/上行速率最高可达55Mbps/15Mbps（运营商可以以不同价格限制用户的上网速率）</li>
-<li>采用频分复用的方式：0kHz~4kHz传输语音，4kHz~50kHz为上行，50kHz~1Mhz为下行。</li>
-<li>带宽独享（一条线只能给一个用户用）</li>
-</ul>
-<h4 id="hfc-光纤同轴电缆混合网络"><a class="markdownIt-Anchor" href="#hfc-光纤同轴电缆混合网络"></a> HFC: 光纤同轴电缆混合网络</h4>
-<ul>
-<li>上行/下行速率最高可达40Mbps/30Mbps</li>
-<li>通过有线电视网络部署</li>
-<li>带宽共享（一条线可以给多个用户用，分频段使用）</li>
-</ul>
-<h4 id="局域网接入"><a class="markdownIt-Anchor" href="#局域网接入"></a> 局域网接入</h4>
-<ul>
-<li>公司或大学的局域网（LAN）将端系统连接到边缘路由器</li>
-<li>以太网：通过共享或专用的链路来连接端系统和路由器，速度各有差异，从10Mbps到10Gbps</li>
-</ul>
-<h4 id="无线接入"><a class="markdownIt-Anchor" href="#无线接入"></a> 无线接入</h4>
-<ul>
-<li>共享的无线接入网络连接端系统和路由器</li>
-<li>无限局域网：基于IEEE 802.11技术，最高1Gbps/s</li>
-<li>广域无线接入由电信运营商提供，基于IEEE 802.16</li>
-</ul>
-<h3 id="122-物理媒体"><a class="markdownIt-Anchor" href="#122-物理媒体"></a> 1.2.2 物理媒体</h3>
-<p>常用的物理媒体根据各自的构造和特征、使用的环境、优劣点可以分为几种。</p>
-<ul>
-<li>导引性媒体：沿着固体媒体被导引的媒体，电波随着固体媒体前行。如光缆（在玻璃光纤传播光脉冲，每一个脉冲一比特，传输速率高且误码率低，不受电磁干扰）、双绞铜线（3类线10Mbps，5类线100Mbps，6类线1Gbps）或同轴电缆（双向传输，可分为基带和宽带）。</li>
-<li>非导引型媒体：信号自由传播，如无线局域网（通过电磁频谱传播信号，没有物理线路，可双向传输，但受到传播环境影响较大）或数字卫星频道。地面微波可达45Mbps，无线局域网可达2/11/54Mbps，卫星网络可达45Mbps，有270ms的端到端延时</li>
-</ul>
-<h2 id="13-网络核心"><a class="markdownIt-Anchor" href="#13-网络核心"></a> 1.3 网络核心</h2>
-<p>数据传输的方式有电路交换和分组交换。</p>
-<h3 id="131-电路交换"><a class="markdownIt-Anchor" href="#131-电路交换"></a> 1.3.1 电路交换</h3>
-<p>电路交换网络是第一代计算机网络<br />
-数据交换过程：建立连接，交换数据，释放连接<br />
-特性：</p>
-<ul>
-<li>电路交换网络中一个电路对应一条连接，一个链路对应多条电路</li>
-<li>数据交换前需要建立一条从发端到收端的电路（预留资源）</li>
-<li>在数据交换的全部时间内用户始终占用端到端固定传输信道</li>
-<li>交换双方可以实时进行数据交换而不会产生延迟</li>
-</ul>
-<p>一条物理链路容纳多条连接的方法：</p>
-<ul>
-<li>时分复用（TDM）将时间分组，一组分为多个时间片，一个时间片内的所有频率都供一个用户使用，多个用户轮流使用。</li>
-<li>频分复用（FDM）将频率分组，同一时刻使用不同频率传输不同用户的数据</li>
-</ul>
-<p>电路交换的缺点：</p>
-<ul>
-<li>计算机之间数据交换具有突发性和间歇性特征，电路交换是按照用户占用线路的时间计费的，这可能会造成大量时间的浪费。</li>
-<li>不够灵活，只要双方通信建立的通路中出现任何一点故障就需要拨号重新建立连接，不利于紧急通信。</li>
-</ul>
-<h3 id="132-分组交换"><a class="markdownIt-Anchor" href="#132-分组交换"></a> 1.3.2 分组交换</h3>
-<p>分组交换网络是第二代计算机网络。<br />
-分组交换网络由</p>
-<ul>
-<li>路由器构建路由器网络</li>
-<li>数据被截断划分为分组</li>
-<li>由分组交换机转发分组</li>
-<li>使用链路最大传输速率传输（<font color=red>从宏观上而言，链路是共享的，从微观上看，分组传输时是独占链路的。这一点在理解全双工通信时很重要，即每一段链路上同时只能传输一个分组。</font>）</li>
-</ul>
-<p>分组交换需要解决的问题：</p>
-<ul>
-<li>为什么分组，如何分组</li>
-<li>分组交换机如何确定，是否固定不变</li>
-<li>分组如何按照既定路线前行</li>
-<li>分组转发模式的具体设计</li>
-<li>分组转换方式的效率</li>
-<li>可靠性是否能够保障</li>
-</ul>
-<h4 id="分组的优势"><a class="markdownIt-Anchor" href="#分组的优势"></a> 分组的优势</h4>
-<ul>
-<li>提高传输效率。假设一共有3段链路，将数据分为几个分组，可以让3段链路同时发送数据，但电路交换也能实现。</li>
-<li>提高传输质量。如果在传输过程中出现错误，分组交换只需要重传错误的分组即可，而电路交换需要重传整个报文。</li>
-<li>链路利用率高</li>
-</ul>
-<h4 id="如何分组"><a class="markdownIt-Anchor" href="#如何分组"></a> 如何分组</h4>
-<ul>
-<li>在发送端，先把较长的报文划分为较短的、固定长度的数据段</li>
-<li>将每一个数据段前面添加首部构成分组</li>
-<li>分组交换网络以分组作为数据传输单元，依次将各个分组发送到接收端</li>
-<li>接收端收到分组后去除首部还原报文</li>
-<li>最后接收端将数据重组恢复为原来的报文</li>
-</ul>
-<h4 id="分组传输的模式"><a class="markdownIt-Anchor" href="#分组传输的模式"></a> 分组传输的模式</h4>
-<p>存储转发传输：分组交换机将整个分组接收并存储，然后再发送。这是为了校验分组是否传输正确。</p>
-<h4 id="分组交换网络的特征"><a class="markdownIt-Anchor" href="#分组交换网络的特征"></a> 分组交换网络的特征</h4>
-<ul>
-<li>数据分为若干分组分别传送</li>
-<li>不必预先确定分组传输路径，而是由中间的各个交换机和路由器自行确定传输路径</li>
-<li>交换结点均为共享结点，选择路径</li>
-<li>存储/转发，提高容错率</li>
-<li>断续（动态）分配传输带宽，可以最大限度地利用网络带宽资源，不仅降低费用还提高效率</li>
-<li>网状拓扑结构可提高可靠性，一条线路产生故障时可以使用其他线路进行传输</li>
-<li>主干网络往往由一些高速链路构成，提升网络整体的传输速度</li>
-</ul>
-<h4 id="存储转发效率"><a class="markdownIt-Anchor" href="#存储转发效率"></a> 存储转发效率</h4>
-<p><font color=red>传输时延：L/R。L：分组长度（bit），R：连接设备链路的速率（bps）</font>。N条链路的传输时延为NL/R。注意：传输时延不能理解为一个bit在链路中传输消耗的时间所导致的时延。因为链路中的传输都是光速，造成时延是因为链路的速率有上限，即这条链路一段时间内只能发送多少个bit，这个bit在链路中占有一定的“长度”，可以理解为机器发送bit的速率。如一条链路的速率为10Mbps，即1秒可以传输10000000个bit，1秒光传输的距离为300000km，那么一个bit就占了300000*1000/10000000=30m。n条链路的意思是数据从起点到终点之间经过了多个交换机，这些交换机将链路分为多段，由于交换机需要接收存储一整个分组之后才转发，因此多条链路的传输时延等于每一条链路的传输时延之和。<br />
-<font color=red>排队时延</font>：存储需要缓存，当交换机一段时间内接收到的数据较多而无法全部及时转发时，就可能导致排队。<br />
-<font color=red>分组丢失（丢包）</font>：当缓存满时，交换机会采用某种算法选择一些数据包丢弃，这些包需要重传。</p>
-<h4 id="分组转发的路径"><a class="markdownIt-Anchor" href="#分组转发的路径"></a> 分组转发的路径</h4>
-<p>分组首部含有目的地址，路由器根据其转发表选择对应的链路进行转发。转发表通过路由选择协议形成，通过traceroute/tracert命令可以查看路由。</p>
-<h4 id="分组交换和电路交换的比较"><a class="markdownIt-Anchor" href="#分组交换和电路交换的比较"></a> 分组交换和电路交换的比较</h4>
-<p>分组交换网络的问题</p>
-<ul>
-<li>分组在各个结点存储转发时因为需要排队总会造成一定的时延，当通信量较大时时延可能会很大</li>
-<li>每个分组必须携带头部信息，带来额外开销</li>
-<li>整个分组交换网络的管理和控制较为复杂</li>
-</ul>
-<p>如果需要连续传输大量数据，且传输时间远大于呼叫建立时间，则使用数据通信之前预先分配传输带宽的电路交换。分组交换无需预先分配带宽，在传输突发数据时可以提高整个网络的信道利用率。</p>
-<h4 id="网络核心分类"><a class="markdownIt-Anchor" href="#网络核心分类"></a> 网络核心分类</h4>
-<p>电信网络：电路交换网络、分组交换网络<br />
-电路交换网络：FDM、TDM<br />
-分组交换网络：虚电路网络、数据报网络</p>
-<h3 id="133-网络的网络"><a class="markdownIt-Anchor" href="#133-网络的网络"></a> 1.3.3 网络的网络</h3>
-<p>端系统通过ISP（Internet Service Provider）连接到网络，ISP和ISP之间连接形成更大的网络。由此构建的因特网非常复杂，应该由经济和国家策略而不是性能来驱动。</p>
-<p>对于如此大的网络，可能的连接方式有下列几种：</p>
-<ul>
-<li>将每两个ISP之间都建立一个连接，这样连接的数量太大不经济。</li>
-<li>所有客户ISP连接到一个全球承载ISP，这样会导致全球承载ISP的压力较大，且需要在费用上达成一致，容易形成垄断。</li>
-<li>客户ISP连接到多个全球承载ISP中，全球承载ISP再相互进行连接。这样可能在两个全球承载ISP之间存在一个IXP（因特网交互点），但由于不是每一个国家都有全球承载ISP，因此这种方案也有问题。</li>
-<li>区域网络与承载ISP相联，每一个区域有一个ISP，即在客户ISP和全球承载ISP中间加上一层地区ISP，这种方式较为合理。</li>
-<li>在第四种方案的基础上添加上内容提供商自己的网络——内容提供商网络，如谷歌微软等。总的结构应该为：客户ISP——区域ISP——IXP——全球ISP/内容提供商网络总体4层结构，当然这个层级结构并不严格，客户ISP也可以直联全球ISP。</li>
-</ul>
-<h2 id="14-分组交换网中的时延-丢包与吞吐量"><a class="markdownIt-Anchor" href="#14-分组交换网中的时延-丢包与吞吐量"></a> 1.4 分组交换网中的时延、丢包与吞吐量</h2>
-<p>时延分为：</p>
-<ul>
-<li><font color=red>节点处理时延d<sub>proc</sub></font>：节点收到完整的分组后，需要对该分组进行校验以及确定输出链路，分组完成这些工作所需要的时间。一般为几ms或更短</li>
-<li><font color=red>排队时延</font>：排队时延取决于路由器的拥塞程度，当分组在输出链路中需要等待被发送时产生排队时延。</li>
-<li><font color=red>传输时延</font>：将分组比特流发送到链路中的时间，L/R。其在低速链路中非常重要</li>
-<li><font color=red>传播时延</font>：数据在链路中从起点到终点所需要的时间。d为物理链路的长度，s为媒体中的传播速度（约为2*10<sup>8</sup>m/s），传播时延=d/s。注意与传输时延的区别。约为几ms到几百ms。</li>
-</ul>
-<p>定义<font color=red>流量强度</font>：链路带宽R（bps），分组长度L（bits），平均分组到达速率a，则流量强度为La/R。这是一个以路由器为视角定义的量，当值近似于0时，表示平均排队时延很小，甚至为0，当值小于1时，时延较小，且随着时间推移变小，因为此时分组到来的速度小于路由器的处理速度。当值等于1时，时延不会变化，具体时延的值取决于当前队列的长度。当值大于1时，平均时延较大，且随着时间推移趋近于无穷。</p>
-<ul>
-<li>缓存中的队列容量有限，当分组到达时如果队列已满，则该分组会被丢弃。丢弃的分组可能会被重传，或者根本不重传。</li>
-<li><font color=red>通常到达队列的过程是随机的，La/R并不能全面地表征时延的统计量，当流量强度接近1时，当到达速率超过传输能力（由于分组到达速率的波动）时将产生时间间隔，在这些时段中将形成队列。</font><font color=blue>就比如当流量强度为1时，在一个时刻同时到达多个分组，在这些分组处理完之后，可能会有一段时间路由器中没有队列，此时路由器就会进入空闲状态，但由于流量强度为1，路由器只要有空闲时间，就必须让后面的分组等待更长的时间，这就是统计规律导致的问题。因此并不是说当流量强度为1时平均排队时延就不会增加，而是会缓慢增加。</font></li>
-</ul>
-<p>定义<font color=red>吞吐量</font>：这是现实生活中最关心的一个性能指标，与带宽要进行区分。分为瞬时吞吐量和平均吞吐量，类比瞬时速度和平均速度。吞吐量指发送方和接收方之间的数据传输速率（bits/time unit）。对于一个有多条链路的传输路径，其吞吐量等于吞吐量最小的那一条链路的吞吐量值（木桶原理），称这条链路为瓶颈链路。<font color=red>吞吐量和带宽一定要辨析清楚。带宽指的是一段链路最为理想的情况下单位时间能够传输的比特量，而吞吐量则是一个根据实际情况测出来的一个量，就像高速公路的限速是120（带宽），但在车辆比较多的情况下就不可能达到这个速度（吞吐量）</font>。互联网下，连接瓶颈通常不是在主干网络，而是与每一台机器直接相连或距离不大的分支网络或分支链路上。虽然主干网络上承载的流量大得多，但主干网络通常会被精心维护，所以一般不会出现主干网络成为瓶颈的情况。</p>
-<h2 id="15-协议层次和服务类型"><a class="markdownIt-Anchor" href="#15-协议层次和服务类型"></a> 1.5 协议层次和服务类型</h2>
-<p>现实中需要实现的需求往往多而繁杂，为了将这些需求规范化，定义了种种协议与分层结构。定义层次可以使得每一个层次实现一种服务，相邻的层次之间有依赖作用。分层是处理复杂系统的有效方法，可以以结构化的方式来讨论系统组件。每一层对其他层是透明的。但分层也可能会导致功能冗余和信息关联（某一层的功能需要其他层的信息）</p>
-<h3 id="151-分层的体系结构"><a class="markdownIt-Anchor" href="#151-分层的体系结构"></a> 1.5.1 分层的体系结构</h3>
-<p>目前通用的因特网的协议栈一共分为5层：</p>
-<ul>
-<li>应用层：支持网络应用，如FTP、HTTP等协议就是运行在应用层</li>
-<li>运输层：用于主机之间的数据传输，如TCP、UDP协议</li>
-<li>网络层：将数据报从源端传送到目的端，如IP协议和路由协议</li>
-<li>链路层：数据在网络相邻结点之间传输，如PPP协议和Ethernet协议</li>
-<li>物理层：在线路上传输比特流</li>
-</ul>
-<p>ISO/OSI参考模型：共有7层，在应用层和运输层之间增加了：</p>
-<ul>
-<li>表示层：允许应用程序解释数据的含义，如加密压缩等</li>
-<li>会话层：提供数据交换的同步、定界、建立检查点和恢复的能力</li>
-</ul>
-<p>由于这两层在应用层完全可以实现，因此现实中的因特网协议栈没有这两层。</p>
-<p><font color=red>实体</font>：任何可以发送和接收消息的硬件和软件进程，通常是一个特定的软件模块。<br />
-<font color=red>对等体</font>：不同机器上包含对应层的实体称为对等体，如两台机器上的应用层实体称为对等体，网络层实体为另一个对等体。<br />
-<font color=red>协议</font>：包含——语法，即数据与控制信息的结构或格式；语义：即需发现何种控制信息，完成何种动作以及做出何种应答；同步：即事件实现顺序的详细说明。<br />
-<font color=red>服务</font>：为保证上层对等体之间能够相互通信，下层向上层提供的功能。<br />
-<font color=red>服务原语</font>：网络相邻层之间进行交互时需要交换的一些必要命令。<br />
-<font color=red>服务访问点（SAP）</font>：同一系统中相邻两层的实体进行交互的地方。<br />
-<font color=red>协议数据单元（PDU）</font>对等层次上传送数据的单位。<br />
-<font color=red>服务数据单元（SDU）</font>层与层之间交换数据的单位。<br />
-<font color=red>网络体系结构（Network Architecture）</font>：层和协议的集合。<br />
-<font color=red>协议栈（Protocol Stack）</font>：一个特定的系统所使用的一组协议。</p>
-<p>数据传输过程就是一个加头部去头部的过程，首先在发送方依次加上第5、4、3、2层头部，然后发送到接收方在接收方处将这些头部依次去掉即可。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -4047,7 +3961,7 @@ M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">138</span>
+          <span class="site-state-item-count">139</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -4105,7 +4019,7 @@ M834 80h400000v40h-400000z'/></svg></span></span></span><span class="vlist-s">�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:27</span>
+    <span title="Reading time total">18:34</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
