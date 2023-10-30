@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="今天打了ACTF-2023，惊呼已经不认识seccomp了，在被一道盲打题折磨了一整天之后，实在是不想面向题目高强度学习了。但是seccomp这个东西必然是要系统性的重学一遍了，绝不能把知识面仅限于orw。 学习目标：了解seccomp的保护原理，掌握常用的seccomp绕过姿势，学会手写seccomp BPF指令等。  0x01. seccomp规则添加原理 说到seccomp，都知道它是用来限">
+<meta property="og:type" content="article">
+<meta property="og:title" content="seccomp学习 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2023/10/29/seccomp%E5%AD%A6%E4%B9%A0-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="今天打了ACTF-2023，惊呼已经不认识seccomp了，在被一道盲打题折磨了一整天之后，实在是不想面向题目高强度学习了。但是seccomp这个东西必然是要系统性的重学一遍了，绝不能把知识面仅限于orw。 学习目标：了解seccomp的保护原理，掌握常用的seccomp绕过姿势，学会手写seccomp BPF指令等。  0x01. seccomp规则添加原理 说到seccomp，都知道它是用来限">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-10-29T07:20:25.000Z">
+<meta property="article:modified_time" content="2023-10-30T03:18:17.210Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/10/29/seccomp%E5%AD%A6%E4%B9%A0-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>seccomp学习 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/10/29/seccomp%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          seccomp学习 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-10-29 15:20:25" itemprop="dateCreated datePublished" datetime="2023-10-29T15:20:25+08:00">2023-10-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-10-30 11:18:17" itemprop="dateModified" datetime="2023-10-30T11:18:17+08:00">2023-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/seccomp-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">seccomp 系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>17k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>16 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天打了ACTF-2023，惊呼已经不认识seccomp了，在被一道盲打题折磨了一整天之后，实在是不想面向题目高强度学习了。但是seccomp这个东西必然是要系统性的重学一遍了，绝不能把知识面仅限于orw。</p>
+<p>学习目标：了解seccomp的保护原理，掌握常用的seccomp绕过姿势，学会手写seccomp BPF指令等。</p>
+<h1 id="0x01-seccomp规则添加原理"><a class="markdownIt-Anchor" href="#0x01-seccomp规则添加原理"></a> 0x01. seccomp规则添加原理</h1>
+<p>说到seccomp，都知道它是用来限制进程的系统调用的，但是对于Linux系统而言，有这么多的进程，seccomp又是如何精准拦截定义了规则的进程中调用的非法的系统调用呢？</p>
+<p>这就又不得不进入一个令人不适的环节了——Linux源代码阅读。</p>
+<p>在目前使用的Linux系统中，有两个系统调用与seccomp有关，一个是<code>prctl</code>，另一个是<code>seccomp</code>，系统调用号分别为157和317，对应的内核函数为<code>sys_prctl</code>和<code>sys_seccomp</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">SYSCALL_DEFINE3(seccomp, <span class="type">unsigned</span> <span class="type">int</span>, op, <span class="type">unsigned</span> <span class="type">int</span>, flags,</span><br><span class="line">			 <span class="type">void</span> __user *, uargs)</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">return</span> do_seccomp(op, flags, uargs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">SYSCALL_DEFINE5(prctl, <span class="type">int</span>, option, <span class="type">unsigned</span> <span class="type">long</span>, arg2, <span class="type">unsigned</span> <span class="type">long</span>, arg3,</span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span>, arg4, <span class="type">unsigned</span> <span class="type">long</span>, arg5)</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">switch</span> (option) &#123;</span><br><span class="line">        ...</span><br><span class="line">        <span class="keyword">case</span> PR_GET_SECCOMP:</span><br><span class="line">            error = prctl_get_seccomp();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> PR_SET_SECCOMP:</span><br><span class="line">            error = prctl_set_seccomp(arg2, (<span class="type">char</span> __user *)arg3);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">long</span> <span class="title function_">prctl_set_seccomp</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> seccomp_mode, <span class="type">void</span> __user *filter)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> op;</span><br><span class="line">	<span class="type">void</span> __user *uargs;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">switch</span> (seccomp_mode) &#123;</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_MODE_STRICT:</span><br><span class="line">		op = SECCOMP_SET_MODE_STRICT;</span><br><span class="line">		<span class="comment">/*</span></span><br><span class="line"><span class="comment">		 * Setting strict mode through prctl always ignored filter,</span></span><br><span class="line"><span class="comment">		 * so make sure it is always NULL here to pass the internal</span></span><br><span class="line"><span class="comment">		 * check in do_seccomp().</span></span><br><span class="line"><span class="comment">		 */</span></span><br><span class="line">		uargs = <span class="literal">NULL</span>;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_MODE_FILTER:</span><br><span class="line">		op = SECCOMP_SET_MODE_FILTER;</span><br><span class="line">		uargs = filter;</span><br><span class="line">		<span class="keyword">break</span>;</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* prctl interface doesn&#x27;t have flags, so they are always zero. */</span></span><br><span class="line">	<span class="keyword">return</span> do_seccomp(op, <span class="number">0</span>, uargs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，如果将<code>prctl</code>系统调用的第一个参数设置为<code>PR_SET_SECCOMP</code>，最终调用的与<code>sys_seccomp</code>相同，都是<code>do_seccomp</code>。这也是设置<code>seccomp</code>规则的入口函数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Common entry point for both prctl and syscall. */</span></span><br><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">do_seccomp</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> op, <span class="type">unsigned</span> <span class="type">int</span> flags,</span></span><br><span class="line"><span class="params">		       <span class="type">void</span> __user *uargs)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">switch</span> (op) &#123;</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_SET_MODE_STRICT:</span><br><span class="line">		<span class="keyword">if</span> (flags != <span class="number">0</span> || uargs != <span class="literal">NULL</span>)</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line">		<span class="keyword">return</span> seccomp_set_mode_strict();</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_SET_MODE_FILTER:</span><br><span class="line">		<span class="keyword">return</span> seccomp_set_mode_filter(flags, uargs);</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_GET_ACTION_AVAIL:</span><br><span class="line">		<span class="keyword">if</span> (flags != <span class="number">0</span>)</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> seccomp_get_action_avail(uargs);</span><br><span class="line">	<span class="keyword">case</span> SECCOMP_GET_NOTIF_SIZES:</span><br><span class="line">		<span class="keyword">if</span> (flags != <span class="number">0</span>)</span><br><span class="line">			<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> seccomp_get_notif_sizes(uargs);</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面就是<code>do_seccomp</code>函数的定义。我们要重点关注的是前面两个switch分支，一个是<code>SECCOMP_SET_MODE_STRICT</code></p>
+<h1 id="a-默认规则"><a class="markdownIt-Anchor" href="#a-默认规则"></a> A. 默认规则</h1>
+<p>添加默认规则的逻辑在<code>seccomp_set_mode_strict</code>中实现：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">seccomp_set_mode_strict</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">long</span> seccomp_mode = SECCOMP_MODE_STRICT;</span><br><span class="line">	<span class="type">long</span> ret = -EINVAL;</span><br><span class="line"></span><br><span class="line">	spin_lock_irq(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!seccomp_may_assign_mode(seccomp_mode))</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> TIF_NOTSC</span></span><br><span class="line">	disable_TSC();</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	seccomp_assign_mode(current, seccomp_mode, <span class="number">0</span>);</span><br><span class="line">	ret = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">	spin_unlock_irq(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">bool</span> <span class="title function_">seccomp_may_assign_mode</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> seccomp_mode)</span></span><br><span class="line">&#123;</span><br><span class="line">	assert_spin_locked(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (current-&gt;seccomp.mode &amp;&amp; current-&gt;seccomp.mode != seccomp_mode)</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_STRICT 0</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_MODE_FILTER 1</span></span><br></pre></td></tr></table></figure>
+<p>函数中的<code>current</code>是一个<code>task_struct</code>实例，表示当前内核进程。在加锁之后，调用了一个<code>seccomp_may_assign_mode</code>函数用于判断。从这个判断函数可以发现，当我们使用BPF定义规则（此时mode为<code>SECCOMP_MODE_FILTER</code>）时，就不能再切换成严格模式了，否则该函数返回<code>false</code>，直接跳过了规则修改流程。</p>
+<p>随后进入主要的规则添加逻辑<code>seccomp_assign_mode</code>函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="keyword">inline</span> <span class="type">void</span> <span class="title function_">seccomp_assign_mode</span><span class="params">(<span class="keyword">struct</span> task_struct *task,</span></span><br><span class="line"><span class="params">				       <span class="type">unsigned</span> <span class="type">long</span> seccomp_mode,</span></span><br><span class="line"><span class="params">				       <span class="type">unsigned</span> <span class="type">long</span> flags)</span></span><br><span class="line">&#123;</span><br><span class="line">	assert_spin_locked(&amp;task-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	task-&gt;seccomp.mode = seccomp_mode;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Make sure SYSCALL_WORK_SECCOMP cannot be set before the mode (and</span></span><br><span class="line"><span class="comment">	 * filter) is set.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	smp_mb__before_atomic();</span><br><span class="line">	<span class="comment">/* Assume default seccomp processes want spec flaw mitigation. */</span></span><br><span class="line">	<span class="keyword">if</span> ((flags &amp; SECCOMP_FILTER_FLAG_SPEC_ALLOW) == <span class="number">0</span>)</span><br><span class="line">		arch_seccomp_spec_mitigate(task);</span><br><span class="line">	set_task_syscall_work(task, SECCOMP);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Valid flags for SECCOMP_SET_MODE_FILTER */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_TSYNC		(1UL &lt;&lt; 0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_LOG			(1UL &lt;&lt; 1)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_SPEC_ALLOW		(1UL &lt;&lt; 2)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_NEW_LISTENER	(1UL &lt;&lt; 3)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_TSYNC_ESRCH		(1UL &lt;&lt; 4)</span></span><br><span class="line"><span class="comment">/* Received notifications wait in killable state (only respond to fatal signals) */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV	(1UL &lt;&lt; 5)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> set_task_syscall_work(t, fl) \</span></span><br><span class="line"><span class="meta">	set_bit(SYSCALL_WORK_BIT_##fl, &amp;task_thread_info(t)-&gt;syscall_work)</span></span><br><span class="line">	</span><br><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">syscall_work_bit</span> &#123;</span></span><br><span class="line">	SYSCALL_WORK_BIT_SECCOMP,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_TRACEPOINT,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_TRACE,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_EMU,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_AUDIT,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_USER_DISPATCH,</span><br><span class="line">	SYSCALL_WORK_BIT_SYSCALL_EXIT_TRAP,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在这个函数之中，设置了当前进程的<code>mode</code>，随后出现了一个判断，判断成功时执行<code>arch_seccomp_spec_mitigate</code>函数。这个函数的内部逻辑比较复杂，先略过。最后调用<code>set_task_syscall_work</code>，这是一个宏定义，定义如上所示，就是设置一个位，表示这个线程已经开启了seccomp检查。</p>
+<h1 id="b-自定义规则"><a class="markdownIt-Anchor" href="#b-自定义规则"></a> B. 自定义规则</h1>
+<p>对于自定义规则而言，添加的过程要复杂许多。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">seccomp_set_mode_filter</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> flags,</span></span><br><span class="line"><span class="params">				    <span class="type">const</span> <span class="type">char</span> __user *filter)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">const</span> <span class="type">unsigned</span> <span class="type">long</span> seccomp_mode = SECCOMP_MODE_FILTER;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">seccomp_filter</span> *<span class="title">prepared</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line">	<span class="type">long</span> ret = -EINVAL;</span><br><span class="line">	<span class="type">int</span> listener = <span class="number">-1</span>;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">file</span> *<span class="title">listener_f</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Validate flags. */</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; ~SECCOMP_FILTER_FLAG_MASK)</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * In the successful case, NEW_LISTENER returns the new listener fd.</span></span><br><span class="line"><span class="comment">	 * But in the failure case, TSYNC returns the thread that died. If you</span></span><br><span class="line"><span class="comment">	 * combine these two flags, there&#x27;s no way to tell whether something</span></span><br><span class="line"><span class="comment">	 * succeeded or failed. So, let&#x27;s disallow this combination if the user</span></span><br><span class="line"><span class="comment">	 * has not explicitly requested no errors from TSYNC.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> ((flags &amp; SECCOMP_FILTER_FLAG_TSYNC) &amp;&amp;</span><br><span class="line">	    (flags &amp; SECCOMP_FILTER_FLAG_NEW_LISTENER) &amp;&amp;</span><br><span class="line">	    ((flags &amp; SECCOMP_FILTER_FLAG_TSYNC_ESRCH) == <span class="number">0</span>))</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * The SECCOMP_FILTER_FLAG_WAIT_KILLABLE_SENT flag doesn&#x27;t make sense</span></span><br><span class="line"><span class="comment">	 * without the SECCOMP_FILTER_FLAG_NEW_LISTENER flag.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> ((flags &amp; SECCOMP_FILTER_FLAG_WAIT_KILLABLE_RECV) &amp;&amp;</span><br><span class="line">	    ((flags &amp; SECCOMP_FILTER_FLAG_NEW_LISTENER) == <span class="number">0</span>))</span><br><span class="line">		<span class="keyword">return</span> -EINVAL;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Prepare the new filter before holding any locks. */</span></span><br><span class="line">	prepared = seccomp_prepare_user_filter(filter);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(prepared))</span><br><span class="line">		<span class="keyword">return</span> PTR_ERR(prepared);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SECCOMP_FILTER_FLAG_NEW_LISTENER) &#123;</span><br><span class="line">		listener = get_unused_fd_flags(O_CLOEXEC);</span><br><span class="line">		<span class="keyword">if</span> (listener &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			ret = listener;</span><br><span class="line">			<span class="keyword">goto</span> out_free;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		listener_f = init_listener(prepared);</span><br><span class="line">		<span class="keyword">if</span> (IS_ERR(listener_f)) &#123;</span><br><span class="line">			put_unused_fd(listener);</span><br><span class="line">			ret = PTR_ERR(listener_f);</span><br><span class="line">			<span class="keyword">goto</span> out_free;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Make sure we cannot change seccomp or nnp state via TSYNC</span></span><br><span class="line"><span class="comment">	 * while another thread is in the middle of calling exec.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SECCOMP_FILTER_FLAG_TSYNC &amp;&amp;</span><br><span class="line">	    mutex_lock_killable(&amp;current-&gt;signal-&gt;cred_guard_mutex))</span><br><span class="line">		<span class="keyword">goto</span> out_put_fd;</span><br><span class="line"></span><br><span class="line">	spin_lock_irq(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!seccomp_may_assign_mode(seccomp_mode))</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (has_duplicate_listener(prepared)) &#123;</span><br><span class="line">		ret = -EBUSY;</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ret = seccomp_attach_filter(flags, prepared);</span><br><span class="line">	<span class="keyword">if</span> (ret)</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	<span class="comment">/* Do not free the successfully attached filter. */</span></span><br><span class="line">	prepared = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">	seccomp_assign_mode(current, seccomp_mode, flags);</span><br><span class="line">out:</span><br><span class="line">	spin_unlock_irq(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SECCOMP_FILTER_FLAG_TSYNC)</span><br><span class="line">		mutex_unlock(&amp;current-&gt;signal-&gt;cred_guard_mutex);</span><br><span class="line">out_put_fd:</span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SECCOMP_FILTER_FLAG_NEW_LISTENER) &#123;</span><br><span class="line">		<span class="keyword">if</span> (ret) &#123;</span><br><span class="line">			listener_f-&gt;private_data = <span class="literal">NULL</span>;</span><br><span class="line">			fput(listener_f);</span><br><span class="line">			put_unused_fd(listener);</span><br><span class="line">			seccomp_notify_detach(prepared);</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			fd_install(listener, listener_f);</span><br><span class="line">			ret = listener;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">out_free:</span><br><span class="line">	seccomp_filter_free(prepared);</span><br><span class="line">	<span class="keyword">return</span> ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数中有很多的判断条件，当这些判断条件不满足时，会直接返回一个错误值。需要注意的是<code>flags &amp; ~SECCOMP_FILTER_FLAG_MASK = 0</code>，也就是<code>flags</code>除了最低6位其他位必须全为0。</p>
+<p>通过3个判断之后，调用了<code>seccomp_prepare_user_filter</code>函数初始化<code>struct seccomp_filter</code>结构体实例。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">seccomp_filter</span> &#123;</span></span><br><span class="line">	<span class="type">refcount_t</span> refs;</span><br><span class="line">	<span class="type">refcount_t</span> users;</span><br><span class="line">	<span class="type">bool</span> <span class="built_in">log</span>;</span><br><span class="line">	<span class="type">bool</span> wait_killable_recv;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">action_cache</span> <span class="title">cache</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">seccomp_filter</span> *<span class="title">prev</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">bpf_prog</span> *<span class="title">prog</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">notification</span> *<span class="title">notif</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">notify_lock</span>;</span></span><br><span class="line">	<span class="type">wait_queue_head_t</span> wqh;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">struct</span> seccomp_filter *</span><br><span class="line"><span class="title function_">seccomp_prepare_user_filter</span><span class="params">(<span class="type">const</span> <span class="type">char</span> __user *user_filter)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">fprog</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">seccomp_filter</span> *<span class="title">filter</span> =</span> ERR_PTR(-EFAULT);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_COMPAT</span></span><br><span class="line">	<span class="keyword">if</span> (in_compat_syscall()) &#123;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">compat_sock_fprog</span> <span class="title">fprog32</span>;</span></span><br><span class="line">		<span class="keyword">if</span> (copy_from_user(&amp;fprog32, user_filter, <span class="keyword">sizeof</span>(fprog32)))</span><br><span class="line">			<span class="keyword">goto</span> out;</span><br><span class="line">		fprog.len = fprog32.len;</span><br><span class="line">		fprog.filter = compat_ptr(fprog32.filter);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="comment">/* falls through to the if below. */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="keyword">if</span> (copy_from_user(&amp;fprog, user_filter, <span class="keyword">sizeof</span>(fprog)))</span><br><span class="line">		<span class="keyword">goto</span> out;</span><br><span class="line">	filter = seccomp_prepare_filter(&amp;fprog);</span><br><span class="line">out:</span><br><span class="line">	<span class="keyword">return</span> filter;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> &#123;</span>	<span class="comment">/* Required for SO_ATTACH_FILTER. */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">short</span>		len;	<span class="comment">/* Number of filter blocks */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> __<span class="title">user</span> *<span class="title">filter</span>;</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> &#123;</span>	<span class="comment">/* Filter block */</span></span><br><span class="line">	__u16	code;   <span class="comment">/* Actual filter code */</span></span><br><span class="line">	__u8	jt;	<span class="comment">/* Jump true */</span></span><br><span class="line">	__u8	jf;	<span class="comment">/* Jump false */</span></span><br><span class="line">	__u32	k;      <span class="comment">/* Generic multiuse field */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>从上面的结构体定义和函数定义可以看出，我们传入的用户态指针需要是<code>sock_fprog</code>结构体实例，Linux中定义了一个seccomp规则的最大长度为4096，即len必须位于(0,4096]，上面的<code>sock_filter</code>可以理解为seccomp沙箱的一条“指令”。在<code>seccomp_prepare_user_filter</code>中也有一些检查，通过返回值我们就可以知道是针对什么的检查，后面两个是<code>EACCES</code>和<code>ENOMEM</code>，一个是权限相关，一个是内存不够，一般都不会发生。随后就是将用户传递的过滤器中的内容保存到<code>seccomp_filter</code>实例中返回。</p>
+<p>初始化<code>seccomp_filter</code>完成后，我们先略过后面对一些flags的特殊处理，判断了一下是否能够加载规则，随后调用了<code>seccomp_attach_filter</code>，主要是处理已有的flags，随后将新的filter规则添加到头部的位置，使用<code>prev</code>属性连接成一个单链表，如下所示。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">long</span> <span class="title function_">seccomp_attach_filter</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> flags,</span></span><br><span class="line"><span class="params">				  <span class="keyword">struct</span> seccomp_filter *filter)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> total_insns;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">seccomp_filter</span> *<span class="title">walker</span>;</span></span><br><span class="line"></span><br><span class="line">	assert_spin_locked(&amp;current-&gt;sighand-&gt;siglock);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Validate resulting filter length. */</span></span><br><span class="line">	total_insns = filter-&gt;prog-&gt;len;</span><br><span class="line">	<span class="keyword">for</span> (walker = current-&gt;seccomp.filter; walker; walker = walker-&gt;prev)</span><br><span class="line">		total_insns += walker-&gt;prog-&gt;len + <span class="number">4</span>;  <span class="comment">/* 4 instr penalty */</span></span><br><span class="line">	<span class="keyword">if</span> (total_insns &gt; MAX_INSNS_PER_PATH)</span><br><span class="line">		<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line">	...</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If there is an existing filter, make it the prev and don&#x27;t drop its</span></span><br><span class="line"><span class="comment">	 * task reference.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	filter-&gt;prev = current-&gt;seccomp.filter;</span><br><span class="line">	seccomp_cache_prepare(filter);</span><br><span class="line">	current-&gt;seccomp.filter = filter;</span><br><span class="line">	<span class="type">atomic_inc</span>(&amp;current-&gt;seccomp.filter_count);</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Now that the new filter is in place, synchronize to all threads. */</span></span><br><span class="line">	<span class="keyword">if</span> (flags &amp; SECCOMP_FILTER_FLAG_TSYNC)</span><br><span class="line">		seccomp_sync_threads(flags);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上就是过滤器添加的大致流程。</p>
+<h1 id="0x02-seccomp沙箱指令格式"><a class="markdownIt-Anchor" href="#0x02-seccomp沙箱指令格式"></a> 0x02. seccomp沙箱“指令”格式</h1>
+<p>seccomp沙箱的每一条指令的长度都是8字节，分为4个字段——code、jt、jf、k。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> &#123;</span>	<span class="comment">/* Filter block */</span></span><br><span class="line">	__u16	code;   <span class="comment">/* Actual filter code */</span></span><br><span class="line">	__u8	jt;	<span class="comment">/* Jump true */</span></span><br><span class="line">	__u8	jf;	<span class="comment">/* Jump false */</span></span><br><span class="line">	__u32	k;      <span class="comment">/* Generic multiuse field */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在Linux中定义了一些方便编写seccomp code的宏定义（code含义定义在 <code>/include/uapi/linux/bpf_common.h</code> 中），这里引用<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-273495.htm#msg_header_h1_2">资料</a>中的注释便于理解：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> BPF_STMT</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_STMT(code, k) &#123; (unsigned short)(code), 0, 0, k &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> BPF_JUMP</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_JUMP(code, k, jt, jf) &#123; (unsigned short)(code), jt, jf, k &#125;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Instruction classes */</span>                    </span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_CLASS(code) ((code) &amp; 0x07)    <span class="comment">//指定操作的类别</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_LD        0x00               <span class="comment">//将值复制到累加器中</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_LDX        0x01               <span class="comment">//将值加载到索引寄存器中</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_ST        0x02               <span class="comment">//将累加器中的值存到暂存器</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_STX        0x03               <span class="comment">//将索引寄存器的值存储在暂存器中</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_ALU        0x04               <span class="comment">//用索引寄存器或常数作为操作数在累加器上执行算数或逻辑运算</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JMP        0x05               <span class="comment">//跳转</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_RET        0x06               <span class="comment">//返回</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_MISC        0x07           <span class="comment">// 其他类别</span></span></span><br><span class="line"> </span><br><span class="line"><span class="comment">/* ld/ldx fields */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_SIZE(code)  ((code) &amp; 0x18)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_W        0x00 <span class="comment">/* 32-bit */</span>       <span class="comment">//字</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_H        0x08 <span class="comment">/* 16-bit */</span>       <span class="comment">//半字</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_B        0x10 <span class="comment">/*  8-bit */</span>       <span class="comment">//字节</span></span></span><br><span class="line"><span class="comment">/* eBPF        BPF_DW        0x18    64-bit */</span>       <span class="comment">//双字</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_MODE(code)  ((code) &amp; 0xe0)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_IMM        0x00                  <span class="comment">//常数 </span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_ABS        0x20                  <span class="comment">//固定偏移量的数据包数据(绝对偏移)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_IND        0x40                  <span class="comment">//可变偏移量的数据包数据(相对偏移)</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_MEM        0x60                  <span class="comment">//暂存器中的一个字</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_LEN        0x80                  <span class="comment">//数据包长度</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_MSH        0xa0</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">/* alu/jmp fields */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_OP(code)    ((code) &amp; 0xf0)       <span class="comment">//当操作码类型为ALU时，指定具体运算符   </span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_ADD        0x00        </span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_SUB        0x10</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_MUL        0x20</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_DIV        0x30</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_OR        0x40</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_AND        0x50</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_LSH        0x60</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_RSH        0x70</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_NEG        0x80</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_MOD        0x90</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_XOR        0xa0</span></span><br><span class="line">                                               <span class="comment">//当操作码是jmp时指定跳转类型</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JA        0x00</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JEQ        0x10</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JGT        0x20</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JGE        0x30</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_JSET        0x40</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> BPF_SRC(code)   ((code) &amp; 0x08)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_K        0x00                    <span class="comment">//常数</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>        BPF_X        0x08                    <span class="comment">//索引寄存器</span></span></span><br></pre></td></tr></table></figure>
+<p>在笔者查资料的时候，发现这个BPF不仅能用来编写seccomp规则，它更像是一个较为成熟的汇编语言+胶水语言，并在2014年就拥有了自己的执行引擎eBPF。这又是一个完全的知识体系。</p>
+<p>网络上针对BPF大多是通过C等进行编译获得BPF代码，但对于seccomp而言，我们要做的是直接编写BPF code。但专用于seccomp的BPF除了通用的BPF语法之外，还有一些额外的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * All BPF programs must return a 32-bit value.</span></span><br><span class="line"><span class="comment"> * The bottom 16-bits are for optional return data.</span></span><br><span class="line"><span class="comment"> * The upper 16-bits are ordered from least permissive values to most,</span></span><br><span class="line"><span class="comment"> * as a signed value (so 0x8000000 is negative).</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * The ordering ensures that a min_t() over composed return values always</span></span><br><span class="line"><span class="comment"> * selects the least permissive choice.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_KILL_PROCESS 0x80000000U <span class="comment">/* kill the process */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_KILL_THREAD	 0x00000000U <span class="comment">/* kill the thread */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_KILL	 SECCOMP_RET_KILL_THREAD</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_TRAP	 0x00030000U <span class="comment">/* disallow and force a SIGSYS */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_ERRNO	 0x00050000U <span class="comment">/* returns an errno */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_USER_NOTIF	 0x7fc00000U <span class="comment">/* notifies userspace */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_TRACE	 0x7ff00000U <span class="comment">/* pass to a tracer or disallow */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_LOG		 0x7ffc0000U <span class="comment">/* allow after logging */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_ALLOW	 0x7fff0000U <span class="comment">/* allow */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Masks for the return value sections. */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_ACTION_FULL	0xffff0000U</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_ACTION	0x7fff0000U</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SECCOMP_RET_DATA	0x0000ffffU</span></span><br></pre></td></tr></table></figure>
+<p>上面定义了seccomp BPF的返回值，从注释可知，返回值的低16bit用于传递其他数据，高16bit用于传递返回值的优先级。当一个系统调用匹配了多个seccomp规则时，会优先使用优先级高的返回值，这里从<code>SECCOMP_RET_KILL_PROCESS</code>的优先级最高，<code>SECCOMP_RET_ALLOW</code>最低，如果一个系统调用匹配了两个规则，返回值分别为<code>SECCOMP_RET_KILL</code>和<code>SECCOMP_RET_ALLOW</code>，那么最终将会选择<code>SECCOMP_RET_KILL</code>作为返回值，即杀死触发这个系统调用的线程。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * struct seccomp_data - the format the BPF program executes over.</span></span><br><span class="line"><span class="comment"> * @nr: the system call number</span></span><br><span class="line"><span class="comment"> * @arch: indicates system call convention as an AUDIT_ARCH_* value</span></span><br><span class="line"><span class="comment"> *        as defined in &lt;linux/audit.h&gt;.</span></span><br><span class="line"><span class="comment"> * @instruction_pointer: at the time of the system call.</span></span><br><span class="line"><span class="comment"> * @args: up to 6 system call arguments always stored as 64-bit values</span></span><br><span class="line"><span class="comment"> *        regardless of the architecture.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">seccomp_data</span> &#123;</span></span><br><span class="line">	<span class="type">int</span> nr;</span><br><span class="line">	__u32 arch;</span><br><span class="line">	__u64 instruction_pointer;</span><br><span class="line">	__u64 args[<span class="number">6</span>];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面这段代码定义了一些编写seccomp BPF code可能会用到的东西，根据注释可知，我们可以在BPF code中获取该系统调用的：系统调用号、处理器架构、指令地址、6个参数的值。具体选择获取什么通过字段k来决定，k相当于<code>seccomp_data</code>结构体的偏移量，若指定<code>k=0</code>，则为获取<code>nr</code>，即系统调用号，若<code>k=4</code>，则为获取处理器架构等。</p>
+<p>我们以一个实例对seccomp BPF code进行理解，尝试通过机器码恢复code本身。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"> line  CODE  JT   JF      K</span><br><span class="line">=================================</span><br><span class="line"> 0000: 0x20 0x00 0x00 0x00000004  LD | ABS | Word, R0 = arch</span><br><span class="line"> 0001: 0x15 0x00 0x19 0xc000003e  JMP | JEQ after 0x19, R0 == AUDIT_ARCH_X86_64 ?</span><br><span class="line"> 0002: 0x20 0x00 0x00 0x00000000  LD | ABS | Word, R0 = nr</span><br><span class="line"> 0003: 0x35 0x00 0x01 0x40000000  JMP | JGE after 0x01, R0 &gt;= 0x40000000 ?</span><br><span class="line"> 0004: 0x15 0x00 0x16 0xffffffff  JMP | JEQ after 0x16, R0 == 0xFFFFFFFF ?</span><br><span class="line"> 0005: 0x15 0x15 0x00 0x00000000  JMP | JEQ after 0x15, R0 == 0 ?</span><br><span class="line"> 0006: 0x15 0x14 0x00 0x00000001  JMP | JEQ after 0x14, R0 == 1 ?</span><br><span class="line"> 0007: 0x15 0x13 0x00 0x00000002  JMP | JEQ after 0x13, R0 == 2 ?</span><br><span class="line"> ...</span><br><span class="line"> 0026: 0x06 0x00 0x00 0x7fff0000  return SECCOMP_RET_ALLOW</span><br><span class="line"> 0027: 0x06 0x00 0x00 0x00000000  return SECCOMP_RET_KILL</span><br></pre></td></tr></table></figure>
+<p>注意第二行的K字段，这里的K指的是<code>AUDIT_ARCH_X86_64</code>，定义于<code>/include/uapi/linux/audit.h</code>，其中为所有架构都定义了独特的标识符，而0xc000003e则是<code>AUDIT_ARCH_X86_64</code>的值。对于整个seccomp code而言，可能需要的外部数据也就只有<code>seccomp_data</code>了。</p>
+<p>下面，我们就来通过一些具体的程序示例巩固一下我们的学习成果，使用seccomp BPF code完成自定义的filter规则。</p>
+<h2 id="实例"><a class="markdownIt-Anchor" href="#实例"></a> 实例</h2>
+<h3 id="task-01"><a class="markdownIt-Anchor" href="#task-01"></a> Task 01</h3>
+<p>实现seccomp BPF filter，过滤x86-64之外所有架构的所有系统调用，过滤execve。</p>
+<p>实现代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/seccomp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/filter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/audit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> <span class="title">filter</span>[] =</span> &#123;</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, arch)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, AUDIT_ARCH_X86_64, <span class="number">0</span>, <span class="number">4</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, nr)),</span><br><span class="line">        BPF_STMT(BPF_ALU | BPF_K | BPF_SUB, <span class="number">59</span>),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">prog</span> =</span> &#123;</span><br><span class="line">        .len = (<span class="type">unsigned</span> <span class="type">short</span>)(<span class="keyword">sizeof</span>(filter) / <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sock_filter)),</span><br><span class="line">        .filter = filter,</span><br><span class="line">    &#125;;</span><br><span class="line">    prctl(PR_SET_NO_NEW_PRIVS, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &amp;prog);</span><br><span class="line">    system(<span class="string">&quot;echo HELLO&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述代码实现了对处理器架构与execve的检查，使用了一个<code>ALU</code>类型指令将系统调用号减去59，随后与0相比较。</p>
+<p>对于seccomp BPF code而言，使用一个寄存器实际上已经足够了，对于多个返回值，我们可以在BPF code的最后几行进行统一定义，在编写前面的代码时，由于跳转指令的数量不确定，有时可能需要预留跳转数，在code编写完成后再进行计算。而对于seccomp的多个检查，我们完全可以将code除了返回之外的所有代码分片看待，每一片都进行一个检查，不同分片之间互不影响，每个分片中只使用一个寄存器即可完成检查，因此总的seccomp BPF code也只需要一个寄存器即可实现，这就使得我们不需要了解所有的BPF指令即可完美编写seccomp BPF filter。</p>
+<p>在加载seccomp规则之前，代码中还执行了一次<code>prctl</code>。这里引用<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-273495.htm#msg_header_h1_2">参考资料</a>：</p>
+<blockquote>
+<p>PR_SET_NO_NEW_PRIVS()：是在Linux 3.5 之后引入的特性，当一个进程或者子进程设置了PR_SET_NO_NEW_PRIVS 属性,则其不能访问一些无法共享的操作，如setuid、chroot等。配置seccomp-BPF的程序必须拥有Capabilities 中 的CAP_SYS_ADMIN，或者程序已经定义了no_new_privs属性。 若不这样做 非 root 用户使用该程序时 seccomp保护将会失效，设置了 PR_SET_NO_NEW_PRIVS 位后能保证 seccomp 对所有用户都能起作用</p>
+</blockquote>
+<h3 id="task-02"><a class="markdownIt-Anchor" href="#task-02"></a> Task 02</h3>
+<p>实现seccomp BPF filter，过滤x86-64之外所有架构的所有系统调用，不允许第一个参数为3的read系统调用。</p>
+<p>实现代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/seccomp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/filter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/audit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> <span class="title">filter</span>[] =</span> &#123;</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, arch)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, AUDIT_ARCH_X86_64, <span class="number">0</span>, <span class="number">5</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, nr)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">2</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, args[<span class="number">0</span>])),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">3</span>, <span class="number">1</span>, <span class="number">0</span>),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">prog</span> =</span> &#123;</span><br><span class="line">        .len = (<span class="type">unsigned</span> <span class="type">short</span>)(<span class="keyword">sizeof</span>(filter) / <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sock_filter)),</span><br><span class="line">        .filter = filter,</span><br><span class="line">    &#125;;</span><br><span class="line">    prctl(PR_SET_NO_NEW_PRIVS, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &amp;prog);</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;/bin/ls&quot;</span>, <span class="number">0</span>);</span><br><span class="line">    <span class="type">char</span> buffer[<span class="number">8</span>];</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>, fd);</span><br><span class="line">    read(fd, buffer, <span class="number">8</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意<code>BPF_JUMP</code>宏定义的使用，后面的2个参数分别表示条件成立时跳过前面几条指令，条件不成立时跳过前面几条指令。在上面的代码中，首先判断处理器架构，如果不是x86_64则跳转到<code>KILL</code>，随后首先判断系统调用号是不是3，不是则跳转到<code>ALLOW</code>，是则继续执行，判断第一个参数是不是3，如果是则跳转到<code>KILL</code>。</p>
+<h1 id="0x03-总结"><a class="markdownIt-Anchor" href="#0x03-总结"></a> 0x03. 总结</h1>
+<p>本文简要分析了seccomp添加规则的流程，以及seccomp BPF的编写方法。</p>
+<p>在后面的文章中，我们将尝试尽可能分析CTF pwn题中所有与seccomp有关的绕过姿势，并通过具体的示例进行学习。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/10/27/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-3/" rel="prev" title="Rust逆向学习 (3)">
+      <i class="fa fa-chevron-left"></i> Rust逆向学习 (3)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-seccomp%E8%A7%84%E5%88%99%E6%B7%BB%E5%8A%A0%E5%8E%9F%E7%90%86"><span class="nav-number">1.</span> <span class="nav-text"> 0x01. seccomp规则添加原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#a-%E9%BB%98%E8%AE%A4%E8%A7%84%E5%88%99"><span class="nav-number">2.</span> <span class="nav-text"> A. 默认规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#b-%E8%87%AA%E5%AE%9A%E4%B9%89%E8%A7%84%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text"> B. 自定义规则</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-seccomp%E6%B2%99%E7%AE%B1%E6%8C%87%E4%BB%A4%E6%A0%BC%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text"> 0x02. seccomp沙箱“指令”格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">4.1.</span> <span class="nav-text"> 实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#task-01"><span class="nav-number">4.1.1.</span> <span class="nav-text"> Task 01</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#task-02"><span class="nav-number">4.1.2.</span> <span class="nav-text"> Task 02</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text"> 0x03. 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.2m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">18:50</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
