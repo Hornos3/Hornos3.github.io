@@ -28,7 +28,7 @@
 <meta property="og:description" content="今天打了ACTF-2023，惊呼已经不认识seccomp了，在被一道盲打题折磨了一整天之后，实在是不想面向题目高强度学习了。但是seccomp这个东西必然是要系统性的重学一遍了，绝不能把知识面仅限于orw。 学习目标：了解seccomp的保护原理，掌握常用的seccomp绕过姿势，学会手写seccomp BPF指令等。  0x01. seccomp规则添加原理 说到seccomp，都知道它是用来限">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-29T07:20:25.000Z">
-<meta property="article:modified_time" content="2023-10-30T03:23:47.382Z">
+<meta property="article:modified_time" content="2023-10-31T03:43:34.036Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-10-30 11:23:47" itemprop="dateModified" datetime="2023-10-30T11:23:47+08:00">2023-10-30</time>
+                <time title="Modified: 2023-10-31 11:43:34" itemprop="dateModified" datetime="2023-10-31T11:43:34+08:00">2023-10-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -280,7 +280,7 @@
 <h3 id="task-01"><a class="markdownIt-Anchor" href="#task-01"></a> Task 01</h3>
 <p>实现seccomp BPF filter，过滤x86-64之外所有架构的所有系统调用，过滤execve。</p>
 <p>实现代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/seccomp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/filter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/audit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> <span class="title">filter</span>[] =</span> &#123;</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, arch)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, AUDIT_ARCH_X86_64, <span class="number">0</span>, <span class="number">4</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, nr)),</span><br><span class="line">        BPF_STMT(BPF_ALU | BPF_K | BPF_SUB, <span class="number">59</span>),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">prog</span> =</span> &#123;</span><br><span class="line">        .len = (<span class="type">unsigned</span> <span class="type">short</span>)(<span class="keyword">sizeof</span>(filter) / <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sock_filter)),</span><br><span class="line">        .filter = filter,</span><br><span class="line">    &#125;;</span><br><span class="line">    prctl(PR_SET_NO_NEW_PRIVS, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &amp;prog);</span><br><span class="line">    system(<span class="string">&quot;echo HELLO&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/seccomp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/filter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/audit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> <span class="title">filter</span>[] =</span> &#123;</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, arch)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, AUDIT_ARCH_X86_64, <span class="number">0</span>, <span class="number">4</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, nr)),</span><br><span class="line">        BPF_STMT(BPF_ALU | BPF_K | BPF_SUB, <span class="number">59</span>),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">prog</span> =</span> &#123;</span><br><span class="line">        .len = (<span class="type">unsigned</span> <span class="type">short</span>)(<span class="keyword">sizeof</span>(filter) / <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sock_filter)),</span><br><span class="line">        .filter = filter,</span><br><span class="line">    &#125;;</span><br><span class="line">    prctl(PR_SET_NO_NEW_PRIVS, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &amp;prog);</span><br><span class="line">    system(<span class="string">&quot;echo HELLO&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上述代码实现了对处理器架构与execve的检查，使用了一个<code>ALU</code>类型指令将系统调用号减去59，随后与0相比较。</p>
 <p>对于seccomp BPF code而言，使用一个寄存器实际上已经足够了，对于多个返回值，我们可以在BPF code的最后几行进行统一定义，在编写前面的代码时，由于跳转指令的数量不确定，有时可能需要预留跳转数，在code编写完成后再进行计算。而对于seccomp的多个检查，我们完全可以将code除了返回之外的所有代码分片看待，每一片都进行一个检查，不同分片之间互不影响，每个分片中只使用一个寄存器即可完成检查，因此总的seccomp BPF code也只需要一个寄存器即可实现，这就使得我们不需要了解所有的BPF指令即可完美编写seccomp BPF filter。</p>
 <p>在加载seccomp规则之前，代码中还执行了一次<code>prctl</code>。这里引用<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-273495.htm#msg_header_h1_2">参考资料</a>：</p>
@@ -313,7 +313,10 @@
     <a href="/2023/10/27/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-3/" rel="prev" title="Rust逆向学习 (3)">
       <i class="fa fa-chevron-left"></i> Rust逆向学习 (3)
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2023/10/31/seccomp%E5%AD%A6%E4%B9%A0-2/" rel="next" title="seccomp学习 (2)">
+      seccomp学习 (2) <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -386,7 +389,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -438,13 +441,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.2m</span>
+    <span title="Symbols count total">1.3m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:50</span>
+    <span title="Reading time total">18:57</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

