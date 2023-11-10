@@ -28,7 +28,7 @@
 <meta property="og:description" content="在本文中，我们将跟随《Rust权威指南》的学习路线，继续进行Rust逆向的学习。 前两篇文章中，我们对猜数字这个程序进行了详细的逆向分析，学习了Rust元组、枚举类型、控制结构、函数调用规则等基础的Rust汇编语言层结构。本文将针对第3章——通用编程概念与第4章——认识所有权的部分内容，对书中提到的Rust特性进行逆向分析。一方面学习逆向，另一方面深入理解Rust语言本身。  Reverse fo">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-27T10:18:15.000Z">
-<meta property="article:modified_time" content="2023-10-29T07:07:13.722Z">
+<meta property="article:modified_time" content="2023-11-10T06:42:05.778Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-10-29 15:07:13" itemprop="dateModified" datetime="2023-10-29T15:07:13+08:00">2023-10-29</time>
+                <time title="Modified: 2023-11-10 14:42:05" itemprop="dateModified" datetime="2023-11-10T14:42:05+08:00">2023-11-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -294,7 +294,7 @@
 <ol>
 <li>变量隐藏在汇编层中的表现，隐藏后变量值不变</li>
 <li>数组变量在汇编层的数据结构，与C类似</li>
-<li>变量移动在汇编层与变量移动类似</li>
+<li>变量移动在汇编层与变量隐藏类似</li>
 <li>字符串切片相关操作在汇编层的实现</li>
 </ol>
 
@@ -391,7 +391,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -449,7 +449,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:57</span>
+    <span title="Reading time total">19:07</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

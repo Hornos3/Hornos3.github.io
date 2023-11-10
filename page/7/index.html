@@ -150,6 +150,154 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第2章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:45:36 / Modified: 23:46:04" itemprop="dateCreated datePublished" datetime="2023-03-02T23:45:36+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
+<h3 id="21"><a class="markdownIt-Anchor" href="#21"></a> 2.1</h3>
+<ol>
+<li>web应用：使用HTTP协议<br />
+文件传输应用：使用FTP协议<br />
+邮件应用：SMTP协议<br />
+P2P应用：BitTorrent协议<br />
+远程登录：telnet协议</li>
+<li>网络体系结构指的是网络5层结构，应用程序体系结构由应用程序研发者设计，规定了如何在各种端系统上组织该应用程序，含P2P体系结构和CS结构。</li>
+<li>对于两个进程的通信会话，先发起对话的是客户，另外一个是服务器。</li>
+<li>不同意，通信会话的两方一定一方是客户，一方是服务器，只是P2P应用下一台主机在不同的通信会话中可能是不同的角色，而CS模型中的服务器一般是固定的某些主机。</li>
+<li>IP地址+端口号可以唯一确定当前主机所在网络中的一个进程。</li>
+<li>UDP，UDP虽然不可靠但速度比TCP快。</li>
+<li>实时社交软件</li>
+<li>可靠数据传输：TCP协议保证<br />
+吞吐量要求：都不保证<br />
+定时：都不保证<br />
+安全性：都不保证</li>
+<li>应用层，UDP不能使用SSL。</li>
+</ol>
+<h3 id="22~24"><a class="markdownIt-Anchor" href="#22~24"></a> 2.2~2.4</h3>
+<ol start="10">
+<li>握手协议是指主要用来让客户端及服务器确认彼此的身份的一类网络协议。</li>
+<li>因为HTTP、SMTP和POP3都是要求数据完全正确没有错误的，而TCP可以保证数据正确，但UDP不行。</li>
+<li>当用户首次访问该网站时，该网站向用户发送一个独特的cookie，在用户下单时，cookie随着下单请求发送到用户，服务器由此确定发起这个请求的是哪一个用户，并记录这条购买记录。</li>
+<li>Web缓存器会保存最近请求的对象，当未来再一次请求该对象时可以直接调出来，减少对象的请求，以减少接收被请求对象的时延。只是减少其中某些对象的时延，对于缓存中没有的对象，还是需要进行常规的请求，不会减少其时延。</li>
+<li>略</li>
+<li>略</li>
+<li>略</li>
+<li>略</li>
+<li>邮件不考</li>
+<li>邮件不考</li>
+<li>略</li>
+</ol>
+<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
+<ol>
+<li>a. 错误，请求一些文本和3幅图像组成的Web页面，其本质还是Web图像，形式为HTTP报文，因此接收的是1个响应报文。注意<font color=red>无论是采用非持续连接还是持续连接，一个请求报文一定对应一个响应报文，不请求是不会有响应的，唯一的区别就是连接的建立和断开。对于本题而言，如果使用持续连接，那么在连接断开之前客户端还会发送3个请求给服务器请求那3幅图像。</font><br />
+b.  正确，因为两个地址的域名相同，因此服务器相同，可以通过一个连接发送数据。<br />
+c. 错误，在非持续连接中，一个TCP连接只能发送一个请求和一个响应。<br />
+d. 错误，Date指的是服务器产生并发送该响应报文的日期和时间。<br />
+e. 错误，HTTP请求可以有空报文体。</li>
+<li>略</li>
+<li>还需要DNS（应用层）、UDP（运输层）、TCP（运输层）。注意DNS服务使用UDP报文段封装。</li>
+<li>a. <a target="_blank" rel="noopener" href="http://gaia.cs.umass.edu">gaia.cs.umass.edu</a><br />
+b. 1.1<br />
+c. 持续连接<br />
+d. 在报文段中没有找到<br />
+e. Mozilla/5.0(Windows;U; Windows NT 5.1; en-US; rv:1.7.2)对于不同的浏览器，服务器可能会返回不同的内容。</li>
+<li>a. 能，因为请求码为200 OK，提供回答的时间为Tue, 07 Mar 2008 12:39:45 GMT（注意下面还有一个Last-Modified字段表示上一次修改的日期，不一样）<br />
+b. Sat 10 Dec 2005 18:27:46<br />
+c. 3874（Content-Length字段）<br />
+d. &lt;!doc，同意持续连接。</li>
+<li>略</li>
+<li>RTT<sub>1</sub>到RTT<sub>n</sub>的和加上2倍的RTT<sub>0</sub>，因为客户端与服务器连接还需要1个RTT。</li>
+<li>a. 在没有并行TCP连接的非持续HTTP中，8个对象需要建立8次连接，共16RTT。<br />
+b. 对于配置有5个并行连接的HTTP，8个对象需要建立8次连接，注意需要首先建立连接请求主要的页面，才能够并行请求对象，因此额外的时间为4RTT。<br />
+c. 对于持续HTTP，不需要建立另外的连接，额外的时间为8RTT。</li>
+<li>a. 平均接入时延=<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi mathvariant="normal">Δ</mi><mrow><mn>1</mn><mo>−</mo><mi mathvariant="normal">Δ</mi><mi>β</mi></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{\Delta}{1-\Delta\beta}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.3534389999999998em;vertical-align:-0.481108em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mbin mtight">−</span><span class="mord mtight">Δ</span><span class="mord mathnormal mtight" style="margin-right:0.05278em;">β</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">Δ</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.481108em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">Δ</mi></mrow><annotation encoding="application/x-tex">\Delta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">Δ</span></span></span></span>是跨越接入链路发送一个对象的平均时间，也即一个对象的传输时延=850Kb/15Mb/s=0.0567s，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05278em;">β</span></span></span></span>是对象对该接入链路的平均到达率，即16请求/s，故平均接入时延=0.61s，平均互联网时延为3s，故总响应时间为3.61s。<br />
+b. 缓存器的命中率为0.4，命中时只会有机构内网的传输时延，即0.0085s。平均响应时间为0.0085×0.4+3.61×0.6=1.8754s。</li>
+<li>10米的短链路可以忽略传播时延，150bps对于200比特长的控制分组的传输时延为1.33s，如果是非持续连接非并行连接，那么RTT=2.67s，一共需要11次连接和11次数据传输，一共需要传输33个控制分组和11个数据分组，总时间为7377s。如果是并行连接，使用N个并行连接，每个连接的带宽为150/Nbps，传输的数据相同，因此总时间依然为7377s。如果是持续连接，非并行连接，一共需要1次连接和11次数据传输，传输13个控制分组和11个数据分组，总时间为7351s。持续连接和非持续连接对时延的影响不大。</li>
+<li>a. 是，并行连接可以让Bob获得更多的带宽。<br />
+b. 是。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2270,154 +2418,6 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" class="post-title-link" itemprop="url">数字逻辑 Chapter 6——异步时序逻辑电路</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:12:35" itemprop="dateCreated datePublished" datetime="2023-02-28T23:12:35+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:31:49" itemprop="dateModified" datetime="2023-03-01T11:31:49+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>989</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="61-特点与分类"><a class="markdownIt-Anchor" href="#61-特点与分类"></a> 6.1 特点与分类</h1>
-<p>特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。<br />
-分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。</p>
-<h1 id="62-脉冲异步时序逻辑电路"><a class="markdownIt-Anchor" href="#62-脉冲异步时序逻辑电路"></a> 6.2 脉冲异步时序逻辑电路</h1>
-<h2 id="621-结构模型"><a class="markdownIt-Anchor" href="#621-结构模型"></a> 6.2.1 结构模型</h2>
-<p>对输入信号的要求：</p>
-<ul>
-<li>输入信号为脉冲信号</li>
-<li>输入脉冲的宽度必须保证触发器可靠翻转</li>
-<li>输入脉冲的间隔，必须保证前一个脉冲引起的电路响应完全结束后，后一个脉冲才能到来</li>
-<li><font color=red>不允许在两个或两个以上的输入端同时出现脉冲（必然有极短的时间差），因此在绘制真值表、状态表时需要注意，如果有多个信号输入，每一种情况只能有一个信号取值为1，其余全为0，减少了很多情况的讨论。也因此，异步时序的状态表有所不同，其次态的每一分栏均为其中一个变量取值为1，而不是三个变量的联合取值</font></li>
-</ul>
-<p>输出信号的形式：</p>
-<ul>
-<li>若电路结构为Mealy型，则输出为脉冲型</li>
-<li>若电路结构为Moore型，则输出为电平型</li>
-</ul>
-<p>两种电路相同点：</p>
-<ul>
-<li>状态的改变都依赖于外加脉冲</li>
-<li>存储元件均为触发器</li>
-</ul>
-<p>两种电路不同点：</p>
-<ul>
-<li>脉冲异步无外加的统一时钟脉冲</li>
-<li>输入变量x为脉冲信号，由输入脉冲直接引起电路状态改变</li>
-<li>由次态逻辑产生各触发器控制输入信号（Y1,Y2,…,Yr），而且还产生触发器的时钟控制信号（CLK1,CLK2,…,CLKr）</li>
-</ul>
-<h2 id="622-脉冲异步时序逻辑分析"><a class="markdownIt-Anchor" href="#622-脉冲异步时序逻辑分析"></a> 6.2.2 脉冲异步时序逻辑分析</h2>
-<p>分析方法：与同步时序大致相同，同样采用状态表、状态图、时间图作为工具<br />
-注意：</p>
-<ul>
-<li>当存储元件采用钟控触发器时，对触发器的时钟控制端应该作为激励函数处理（仅当时钟端有脉冲作用时，才会根据和触发器的输入确定状态转移方向，否则触发器状态不变）</li>
-<li>根据对输入的约束，分析时可以排除两个或两个以上输入端同时出现脉冲以及输入端无脉冲出现情况</li>
-</ul>
-<p>分析步骤：</p>
-<ul>
-<li>写出电路的输出函数和激励函数表达式</li>
-<li>列出电路次态真值表或次态方程组</li>
-<li>作出状态表和状态图</li>
-<li>用文字描述电路的逻辑功能（必要时画出时间图）</li>
-</ul>
-<p>注意：<br />
-在脉冲异步的次态真值表中，↓表示下跳，即仅当时钟端有↓出现时，相应触发器状态才能有所变化，否则状态不变</p>
-<h1 id="63-脉冲异步时序逻辑电路的设计"><a class="markdownIt-Anchor" href="#63-脉冲异步时序逻辑电路的设计"></a> 6.3 脉冲异步时序逻辑电路的设计</h1>
-<p>设计步骤与同步时序相同：</p>
-<ul>
-<li>形成原始状态图和原始状态表</li>
-<li>状态化简，求出最小状态表</li>
-<li>状态编码，得到二进制状态表</li>
-<li>选定触发器类型，并求出激励函数和输出函数最简表达式</li>
-<li>画出逻辑电路图</li>
-</ul>
-<p>下面是带有时钟信号的钟控触发器激励表<br />
-<img src="1.png" alt="" /><br />
-在设计时对于状态表中与时钟端有关的变量，需要标明上升沿或下降沿以明确接线，如下图。<br />
-<img src="2.png" alt="" /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2487,7 +2487,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2545,7 +2545,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:57</span>
+    <span title="Reading time total">19:07</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

