@@ -28,7 +28,7 @@
 <meta property="og:description" content="本文将对Rust中的通用集合类型——动态数组Vec进行学习，对应参考书中的第8章。  Reverse for Vec Vec是Rust中的动态数据结构，与C++中的vector功能类似。实际上Rust中的String就是一个特殊的Vec，这可以通过查看Rust的内核代码证实。  vec! 与 添加元素 vec!是一个宏，用于快速初始化数组元素。 12345pub fn main() &amp;#123;">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-11-10T12:24:50.000Z">
-<meta property="article:modified_time" content="2023-11-11T05:04:28.085Z">
+<meta property="article:modified_time" content="2023-11-11T05:30:27.029Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-11 13:04:28" itemprop="dateModified" datetime="2023-11-11T13:04:28+08:00">2023-11-11</time>
+                <time title="Modified: 2023-11-11 13:30:27" itemprop="dateModified" datetime="2023-11-11T13:30:27+08:00">2023-11-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -305,6 +305,7 @@
 <li><code>Vec</code>动态数组结构在内存中的结构。</li>
 <li><code>Vec</code>在最后添加、删除元素、遍历、访问值的相关方法分析。</li>
 <li>IDA中对一些含有特殊字符的Rust方法的转义方式与Javascript类似。</li>
+<li>枚举类型构成的数组中，每个枚举类型占用的内存大小相同，可能导致内存空间浪费。</li>
 </ol>
 
     </div>
