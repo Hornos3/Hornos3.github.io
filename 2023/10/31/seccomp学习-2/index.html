@@ -28,7 +28,7 @@
 <meta property="og:description" content="在本文中，我们来讨论一下近年来针对seccomp的绕过姿势。本文仅讨论x86-64平台。（来货了来货了）  0x01. execve 这个是最为简单的一类题型，不能直接获得shell，但是可以通过open、read、write三个系统调用将flag文件首先保存到内存之中再输出到控制台。 下面的代码是在内存中不存在&quot;.&#x2F;flag&quot;字符串的情况下绕过execve的orw shell">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-10-31T01:59:09.000Z">
-<meta property="article:modified_time" content="2023-11-03T07:43:26.512Z">
+<meta property="article:modified_time" content="2023-11-15T14:06:24.051Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 
@@ -185,7 +185,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-03 15:43:26" itemprop="dateModified" datetime="2023-11-03T15:43:26+08:00">2023-11-03</time>
+                <time title="Modified: 2023-11-15 22:06:24" itemprop="dateModified" datetime="2023-11-15T22:06:24+08:00">2023-11-15</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -258,7 +258,7 @@
 <h2 id="a-sys_pread64-nr17"><a class="markdownIt-Anchor" href="#a-sys_pread64-nr17"></a> A. sys_pread64 (nr=17)</h2>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pread</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span>* buf, <span class="type">size_t</span> count, <span class="type">loff_t</span> pos)</span>;</span><br></pre></td></tr></table></figure>
 <p>该函数与<code>read</code>函数类似，但参数有4个，第4个为开始读的偏移位置，且使用<code>sys_pread64</code>函数读取完成后，文件指针不会改变。</p>
-<h2 id="b-sys_write64-nr18-不可用"><a class="markdownIt-Anchor" href="#b-sys_write64-nr18-不可用"></a> B. sys_write64 (nr=18, 不可用)</h2>
+<h2 id="b-sys_pwrite64-nr18-不可用"><a class="markdownIt-Anchor" href="#b-sys_pwrite64-nr18-不可用"></a> B. sys_pwrite64 (nr=18, 不可用)</h2>
 <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pwrite</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span>* buf, <span class="type">size_t</span> count, <span class="type">loff_t</span> pos)</span>;</span><br></pre></td></tr></table></figure>
 <p><code>sys_write64</code>与<code>sys_read64</code>类似，函数写操作完成后，文件指针不会改变。但是对于写操作而言，标准输出不是普通的文件描述符，可以看做一个字符设备，指定<code>pos</code>时写操作会失败。已经经过试验测试得出，<code>sys_write64</code>不能将内存中的内容输出到控制台中。</p>
 <h2 id="c-sys_readv-nr19"><a class="markdownIt-Anchor" href="#c-sys_readv-nr19"></a> C. sys_readv (nr=19)</h2>
@@ -390,7 +390,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-execve"><span class="nav-number">1.</span> <span class="nav-text"> 0x01. execve</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-execve-read"><span class="nav-number">2.</span> <span class="nav-text"> 0x02. execve + read</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-execve-read-write"><span class="nav-number">3.</span> <span class="nav-text"> 0x03. execve + read + write</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-sys_pread64-nr17"><span class="nav-number">3.1.</span> <span class="nav-text"> A. sys_pread64 (nr&#x3D;17)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-sys_write64-nr18-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text"> B. sys_write64 (nr&#x3D;18, 不可用)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-sys_readv-nr19"><span class="nav-number">3.3.</span> <span class="nav-text"> C. sys_readv (nr&#x3D;19)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d-sys_writev-nr20"><span class="nav-number">3.4.</span> <span class="nav-text"> D. sys_writev (nr&#x3D;20)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#e-sys_preadv-nr295"><span class="nav-number">3.5.</span> <span class="nav-text"> E. sys_preadv (nr&#x3D;295)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f-sys_pwritev-nr296-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.6.</span> <span class="nav-text"> F. sys_pwritev (nr&#x3D;296, 不可用)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g-sys_preadv2-nr327"><span class="nav-number">3.7.</span> <span class="nav-text"> G. sys_preadv2 (nr&#x3D;327)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#h-sys_pwritev2-nr328-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.8.</span> <span class="nav-text"> H. sys_pwritev2 (nr&#x3D;328, 不可用)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-execve-open"><span class="nav-number">4.</span> <span class="nav-text"> 0x04. execve + open</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-openat-nr257"><span class="nav-number">4.1.</span> <span class="nav-text"> A. openat (nr&#x3D;257)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-openat2-nr437"><span class="nav-number">4.2.</span> <span class="nav-text"> B. openat2 (nr&#x3D;437)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-execve-open-openat-openat2"><span class="nav-number">5.</span> <span class="nav-text"> 0x05. execve + open + openat + openat2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x06-%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text"> 0x06. 其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-sendfile-nr40"><span class="nav-number">6.1.</span> <span class="nav-text"> A. sendfile (nr&#x3D;40)</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-execve"><span class="nav-number">1.</span> <span class="nav-text"> 0x01. execve</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-execve-read"><span class="nav-number">2.</span> <span class="nav-text"> 0x02. execve + read</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-execve-read-write"><span class="nav-number">3.</span> <span class="nav-text"> 0x03. execve + read + write</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-sys_pread64-nr17"><span class="nav-number">3.1.</span> <span class="nav-text"> A. sys_pread64 (nr&#x3D;17)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-sys_pwrite64-nr18-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text"> B. sys_pwrite64 (nr&#x3D;18, 不可用)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-sys_readv-nr19"><span class="nav-number">3.3.</span> <span class="nav-text"> C. sys_readv (nr&#x3D;19)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d-sys_writev-nr20"><span class="nav-number">3.4.</span> <span class="nav-text"> D. sys_writev (nr&#x3D;20)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#e-sys_preadv-nr295"><span class="nav-number">3.5.</span> <span class="nav-text"> E. sys_preadv (nr&#x3D;295)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f-sys_pwritev-nr296-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.6.</span> <span class="nav-text"> F. sys_pwritev (nr&#x3D;296, 不可用)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g-sys_preadv2-nr327"><span class="nav-number">3.7.</span> <span class="nav-text"> G. sys_preadv2 (nr&#x3D;327)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#h-sys_pwritev2-nr328-%E4%B8%8D%E5%8F%AF%E7%94%A8"><span class="nav-number">3.8.</span> <span class="nav-text"> H. sys_pwritev2 (nr&#x3D;328, 不可用)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-execve-open"><span class="nav-number">4.</span> <span class="nav-text"> 0x04. execve + open</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-openat-nr257"><span class="nav-number">4.1.</span> <span class="nav-text"> A. openat (nr&#x3D;257)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-openat2-nr437"><span class="nav-number">4.2.</span> <span class="nav-text"> B. openat2 (nr&#x3D;437)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-execve-open-openat-openat2"><span class="nav-number">5.</span> <span class="nav-text"> 0x05. execve + open + openat + openat2</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x06-%E5%85%B6%E4%BB%96"><span class="nav-number">6.</span> <span class="nav-text"> 0x06. 其他</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-sendfile-nr40"><span class="nav-number">6.1.</span> <span class="nav-text"> A. sendfile (nr&#x3D;40)</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -404,7 +404,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">143</span>
+          <span class="site-state-item-count">144</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -462,7 +462,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:16</span>
+    <span title="Reading time total">19:38</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
