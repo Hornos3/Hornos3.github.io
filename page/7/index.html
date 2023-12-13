@@ -150,6 +150,192 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第4章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:48:47 / Modified: 23:48:57" itemprop="dateCreated datePublished" datetime="2023-03-02T23:48:47+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
+<h3 id="41"><a class="markdownIt-Anchor" href="#41"></a> 4.1</h3>
+<ol>
+<li>网络层的分组名为数据报，路由器能够在网络层处理数据报，而链路层交换机只能在链路层处理链路层帧。</li>
+<li>数据平面的主要功能是转发和路由，控制平面的主要功能是连接建立。</li>
+<li>路由选择指的是路由器指定一条到目的主机的路由的过程，转发指的是路由器内部将输入端口的分组正确转移到指定的输出端口。</li>
+<li>转发表中保存了若干个&lt;目标，端口&gt;数据对，便于路由器根据这些数据确定需要将数据报转发到哪一个端口。</li>
+<li>因特网的网络层提供单一的服务，称为尽力而为服务。传送的分组既不能保证以它们发送的顺序被接收，也不能保证它们最终交付；既不能保证端到端时延，也不能保证有最小的带宽。</li>
+</ol>
+<h3 id="42"><a class="markdownIt-Anchor" href="#42"></a> 4.2</h3>
+<ol start="6">
+<li>输入端口、输出端口、交换端口由硬件实现，其数据表处理功能比软件快很多；路由选择处理器由软件实现，维护路由表以及其他的路由信息，并计算转发表。数据平面使用硬件实现，控制平面使用软件实现。</li>
+<li>在高速路由器的输入端口存储转发表的副本可以大大减少路由器进行路由选择的时间，无需每一次都计算一次路径。转发决策能在每个输入端口本地做出，无须基于每个分组调用集中式路由选择处理器，因此避免了集中式处理的瓶颈。</li>
+<li>基于目的地转发意味着路由器仅会根据数据报的目的IP地址来决定转发端口，通用转发除了数据报的最终目的地之外还有其他的影响因素，如转发决策可以基于数据报的TCP/UDP源端口号和目的端口号进行转发。</li>
+<li>使用最长前缀匹配原则来确定应该转发到哪一个端口。</li>
+<li>经过内存交换：在输入端口与输出端口之间的交换是在CPU的直接控制之下完成的，一个分组到达一个输入端口时，该端口会通过中断方式向路由选择处理器发出信号，该分组从输入端口处被复制到处理器内存中，理由选择处理器提取目的地址，在转发表中查找到适当的转发端口，并将该分组复制到输出端口的缓存中。<br />
+经过总线交换：输入端口经过一条共享总线将分组直接传送到输出端口，不需要路由选择处理器的干预。让输入端口为分组预先计划一个交换机内部标签，指示本地输出端口，使分组在总线上传送和传输到输出端口。该分组能够由所有输出端口收到，但只有与该标签匹配的端口才能保存该分组。<br />
+经互联网络交换：使用一个更为复杂的互联网络，如纵横式交换机结构，每条垂直的总线在交叉点与每条水平的总线交叉，交叉点通过交换结构控制器能够在任何时候开启和闭合。当分组到达端口A需要转发到Y时，交换机控制器闭合A和Y总线交叉部分的交叉点，然后即可转发。只有互联网络交换可以并行交换多个分组。</li>
+<li>如果数据报到达的速率大于数据报处理的速率，当输入端口的数据报缓存满时，后面到达的数据报就可能会丢失。加快路由器处理器的处理速率即可消除排队。</li>
+<li>如果数据报被大量送入输入端口，速率大于转发速率时，会导致输出端口排队，到达一定程度后出现丢失。无法防止这种丢失。</li>
+<li>HOL阻塞，即线头阻塞，即在一个输入端口的缓存中，后面的分组由于前面的分组等待转移到输出端口而产生等待时延的现象，又称线路前部阻塞。出现于输入端口。</li>
+<li>FIFO</li>
+<li>不同的数据报中的数据的重要程度不同，对时延的要求也不同，因此需要为分组设置优先权。</li>
+<li>RR指循环排队原则，WFQ指加权公平排队原则，二者的基本差异是RR将所有类通信都一视同仁地看待，而WFQ则将通信分为多个不同优先权的分组，优先权表现在一个循环周期内某一类分组处理的时间比例。当WFQ中所有类具有相同的服务权重时，与RR相同。</li>
+</ol>
+<h3 id="43"><a class="markdownIt-Anchor" href="#43"></a> 4.3</h3>
+<ol start="17">
+<li>IP数据报首部中含有上层协议字段，可用于标识上层协议。</li>
+<li>TTL（time to live），每一次转发都会减1，当该值被减为0时即丢弃。</li>
+<li>不用，IP数据报只检验其头部信息。</li>
+<li>当数据报中数据部分的长度大于MTU，即链路的最大传送单元时，需要对数据报进行分割，较小的数据报在最终目的主机装配。</li>
+<li>路由器有IP地址，有多个IP地址，数量等于其有效接口数量。</li>
+<li>11011111  00000001  00000011  00011011</li>
+<li>略</li>
+<li>8个接口，3个</li>
+<li>IP数据报头部20字节，TCP报文段头部20字节，一个数据报中头部信息占40字节，还有40字节为数据，因此开销为50%，即发送的内容只有1-50%是有效数据，应用数据所占百分比为50%</li>
+<li>通过路由器的DHCP服务器为5台PC分配IP地址，该无线路由器使用NAT，因为ISP只给了它一个IP地址，它必须自己构建一个局域网。</li>
+<li>路由聚合指使用单个网络前缀通告多个网络的能力，其使用一个具有公共前缀的地址来汇聚许多的子网。</li>
+<li>能够自动配置主机的IP地址。</li>
+<li>专用网络地址指在各个子网中可以重复使用的网络IP地址。具有专用网络地址的数据报不会出现在大型公共因特网中，否则数据报将无法确定到底应该发送到哪一台主机。</li>
+<li>有，如源IP和目的IP。</li>
+<li>是，因为IPv6载荷包裹在IPv4数据报中。</li>
+</ol>
+<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
+<ol>
+<li>a. 路由器A的转发表：其中1项的目的地址为H3，转发端口为3。<br />
+b. 无法实现，因为路由器转发仅根据目的地址转发，而不根据数据来源转发。</li>
+<li>a. 不能，因为交换结构是共享总线时，一次只能转发一个分组。<br />
+b. 不能，因为交换结构是内存交换时，一次也只能转发一个分组。<br />
+c. 不能，因为两个分组转发到相同的输出端口，交换结构为纵横式时，允许不同端口同时转发不同分组，但一个端口在一个时刻不能同时转发多个分组。</li>
+<li>内存和总线交换结构：每一次只能转发一个分组，因此最大时延为(n-1)D。纵横式：不同端口的输出可以交互进行，因此最大时延为0。</li>
+<li>在第一个时隙，第一个输入端口的X分组到达X输出端口，另外剩余两个端口的最前两个Y分组选择一个到达Y输出端口，之后的分组还需要两个时隙完成传输，故最少需要3个时隙。最大也是3个时隙。</li>
+<li>a.<br />
+目的地址为192.0.0.0/10时输出到0端口，前缀11100000 00<br />
+目的地址为192.64.0.0/16时输出到1端口，前缀11100000 01000000<br />
+目的地址为192.0.0.0/7且不属于端口0、1的地址范围时输出到2端口，前缀1110000<br />
+其余输出到3端口<br />
+b. 第一个地址根据最长前缀匹配原则匹配到其他，输出到3端口<br />
+第二个地址可匹配端口2，且不匹配端口0、1，输出到2端口<br />
+第三个地址匹配到其他，输出到3端口</li>
+<li>首先看前缀长的。<br />
+接口1前缀010，匹配64~95，地址数量为32。<br />
+接口2前缀011，匹配96~127，地址数量为32。<br />
+接口0前缀00，匹配0~63，地址数量为64。<br />
+接口2前缀10，匹配128~191，地址数量为64。<br />
+接口2可匹配96~191，地址数量为96。<br />
+接口3前缀11，匹配192~255，地址数量为64。</li>
+<li>首先看前缀长的。<br />
+接口2前缀111，匹配224~255，地址数量为32。<br />
+接口1前缀10，匹配128~191，地址数量为64。<br />
+接口0前缀1，匹配192~223，地址数量为32。<br />
+接口3匹配0~127，地址数量为128。</li>
+<li>首先分配需求大的子网，子网2分配一个25地址，即223.1.17.0/25，子网1分配一个26地址，即223.1.17.128/26，子网3分配剩余地址，即223.1.17.192/26。</li>
+<li>略</li>
+<li></li>
+</ol>
+<p>244.0.0.0/10 → 端口0<br />
+224.64.0.0/16 → 端口1<br />
+224.0.0.0/7 → 端口2<br />
+0.0.0.0/0 → 端口3</p>
+<ol start="11">
+<li>128.119.40.(64\80\96\112)/28</li>
+<li>子网1：214.97.254.0/24<br />
+子网2：214.97.255.0/25 - 214.97.255.0/29<br />
+子网3：214.97.255.128/25<br />
+子网4：214.97.255.0/31<br />
+子网5：214.97.255.2/31<br />
+子网6：214.97.255.4/30</li>
+<li>略</li>
+<li>将会产生4个分片，表示均为422，偏移分别为0、85、170、255，前3个分片的MF为1，数据量700字节，最后一个为0，数据量300字节。</li>
+<li>5MB=5×10<sup>6</sup>字节，首部字段的长度为40字节（含IP首部和TCP首部），故每个数据报最大数据量为1460字节，需要将5MB分为3425个数据报。</li>
+<li>a. 192.168.1.1~192.168.1.3<br />
+b. 源IP地址：192.168.1.1，端口3345；转换IP地址：24.34.112.235，端口4000。其余5个类似。</li>
+<li>a. 通过标识号识别，由于每一台主机的标识号都是连号的，可以将所有的分组编号提取出来，检测其中连号或单号的数量，可以大致检测出主机的数量，通过这样的方式检测出的主机数量不会大于实际的主机数量，因为不同主机在不同的时间段可能会使用同一个编号。<br />
+b. 不能。这样就无法通过标识号的规律对数据报进行源关联。</li>
+<li>不可能设计这种技术。TCP首先需要创建一个连接，一方通过NAT地址转换可以找到另一方NAT的网关，但不能定位到NAT内部子网的另一方。</li>
+<li>略</li>
+<li>略</li>
+<li>略</li>
+<li>略</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2793,308 +2979,6 @@ Step 5: getshell</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E8%80%83%E8%AF%95%E6%98%93%E9%94%99%E7%82%B9/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E8%80%83%E8%AF%95%E6%98%93%E9%94%99%E7%82%B9/" class="post-title-link" itemprop="url">数字逻辑 个人总结——考试易错点</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:16:30" itemprop="dateCreated datePublished" datetime="2023-02-28T23:16:30+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-01 11:31:50" itemprop="dateModified" datetime="2023-03-01T11:31:50+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>5.6k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>5 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ol>
-<li>卡诺图中m/M编号对应错误<br />
-在画卡诺图时，有时没有注意到行和列的变量顺序，可能会导致m/M的序号从0遍历到15时，在卡诺图中的路径不同。如对于输入ABCD，将AB作为列，CD作为行，此时卡诺图中16块对应的m编号应如下表所示：</li>
-</ol>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">CD\AB</th>
-<th style="text-align:center">00</th>
-<th style="text-align:center">01</th>
-<th style="text-align:center">11</th>
-<th style="text-align:center">10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">00</td>
-<td style="text-align:center">m<sub>0</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>0</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_0}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>4</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>4</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>12</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>12</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_{12}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">2</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>8</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>8</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_8}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">8</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-</tr>
-<tr>
-<td style="text-align:center">01</td>
-<td style="text-align:center">m<sub>1</sub></td>
-<td style="text-align:center">m<sub>5</sub></td>
-<td style="text-align:center">m<sub>13</sub></td>
-<td style="text-align:center">m<sub>9</sub></td>
-</tr>
-<tr>
-<td style="text-align:center">11</td>
-<td style="text-align:center">m<sub>3</sub></td>
-<td style="text-align:center">m<sub>7</sub></td>
-<td style="text-align:center">m<sub>15</sub></td>
-<td style="text-align:center">m<sub>11</sub></td>
-</tr>
-<tr>
-<td style="text-align:center">10</td>
-<td style="text-align:center">m<sub>2</sub></td>
-<td style="text-align:center">m<sub>6</sub></td>
-<td style="text-align:center">m<sub>14</sub></td>
-<td style="text-align:center">m<sub>10</sub></td>
-</tr>
-</tbody>
-</table>
-<p>为了避免因遍历次序不同导致的错误，使遍历时统一按照大体上逐行读取的顺序（如下表），画卡诺图时应将前面2个变量置于行，后面2个变量至于列，左上角的块中应该写的是AB\CD。（不过如果卡诺图出在选项里面就不一定是这个顺序了，所以还是要注意）</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">AB\CD</th>
-<th style="text-align:center">00</th>
-<th style="text-align:center">01</th>
-<th style="text-align:center">11</th>
-<th style="text-align:center">10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">00</td>
-<td style="text-align:center">m<sub>0</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>0</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_0}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>1</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>1</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>3</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>3</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_{3}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-<td style="text-align:center">m<sub>2</sub>(<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>M</mi><mn>2</mn></msub><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {M_2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.03333em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span>)</td>
-</tr>
-<tr>
-<td style="text-align:center">01</td>
-<td style="text-align:center">m<sub>4</sub></td>
-<td style="text-align:center">m<sub>5</sub></td>
-<td style="text-align:center">m<sub>7</sub></td>
-<td style="text-align:center">m<sub>6</sub></td>
-</tr>
-<tr>
-<td style="text-align:center">11</td>
-<td style="text-align:center">m<sub>12</sub></td>
-<td style="text-align:center">m<sub>13</sub></td>
-<td style="text-align:center">m<sub>15</sub></td>
-<td style="text-align:center">m<sub>14</sub></td>
-</tr>
-<tr>
-<td style="text-align:center">10</td>
-<td style="text-align:center">m<sub>8</sub></td>
-<td style="text-align:center">m<sub>9</sub></td>
-<td style="text-align:center">m<sub>11</sub></td>
-<td style="text-align:center">m<sub>10</sub></td>
-</tr>
-</tbody>
-</table>
-<ol start="2">
-<li>
-<p>8421码、2421码、余三码转2、8、10、16进制<br />
-三种码实际上均是10进制的表示形式，因此如果要转换为除10进制以外的形式，必须首先将其化为十进制数再进行进制转换，切忌转换后不化成十进制直接转换为其他进制。<br />
-如将余三码10001100转为2进制，1000还原为8421码是0101，1100还原为8421码是1001，2进制值不是01011001！十进制为59，故二进制应为111011。</p>
-</li>
-<li>
-<p>使用卡诺图化简函数表达式<br />
-有时化简表达式很容易出现变量冗余的情况。为避免这种问题产生，在卡诺图中应首先标出1部分中所有的仅含1个变量的蕴含项，标完后写入表达式。如果此时还有没包含的“1”块，则继续寻找所有仅含2个变量的蕴含项，如此进行下去。在验证检查时，可以尝试反向检查，即画出“0”块的表达式，取反看看原运算结果是否正确。</p>
-</li>
-<li>
-<p>各类触发器激励函数与约束方程<br />
-在考试前，针对各类触发器的激励函数与约束方程应该背熟，这是设计题的一个基础知识。虽然说通过推导也能推导出来，但耗费时间且不保证推导正确。<br />
-<font color=red>基本R-S触发器：</font><br />
-与非门构建的R-S触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mover accent="true"><mi>S</mi><mo>ˉ</mo></mover><mo>+</mo><mi>R</mi><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=\bar S+RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9034399999999999em;vertical-align:-0.08333em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal">Q</span></span></span></span>，约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo>+</mo><mi>S</mi><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">R+S=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>（RS不同看R）<br />
-或非门构建的R-S触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>S</mi><mo>+</mo><mover accent="true"><mi>R</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=S+\bar RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span>，约束方程：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mi>S</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">RS=0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span></span></span>（RS不同看S）<br />
-由于没有时钟信号的控制，其信号控制相当于是异步的<br />
-<font color=red>钟控触发器：</font><br />
-R-S触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>S</mi><mo>+</mo><mover accent="true"><mi>R</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=S+\bar RQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.00773em;">R</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span>（RS不同看S）<br />
-D触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>（只看D）<br />
-J-K触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>J</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>K</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=J\bar Q+\bar KQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.09618em;">J</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">K</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.19444em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span>（JK不同看J）<br />
-T触发器：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>Q</mi><mrow><mi>n</mi><mo>+</mo><mn>1</mn></mrow></msup><mo>=</mo><mi>T</mi><mover accent="true"><mi>Q</mi><mo>ˉ</mo></mover><mo>+</mo><mover accent="true"><mi>T</mi><mo>ˉ</mo></mover><mi>Q</mi></mrow><annotation encoding="application/x-tex">Q^{n+1}=T\bar Q+\bar TQ</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.008548em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">Q</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="mord accent"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">Q</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.19444em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.0145499999999998em;vertical-align:-0.19444em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">T</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mord mathnormal">Q</span></span></span></span>（只看T）<br />
-实际上上面的公式也有记忆的方法。<br />
-由于有时钟信号的控制，对于主从触发器，当且仅当时钟信号处于下降沿时才会触发触发器，读取输入并根据输入修改状态。<font color=red>但是阻塞D触发器是当且仅当时钟信号处于上升沿时才会触发触发器改变状态。</font>（分析与设计题中一般不会考虑空翻现象，因此在这两种题型中默认使用的都是主从触发器）</p>
-</li>
-<li>
-<p>只有反码在计算减法时需要对结果的最低位进行调整。例如计算3-2，假设反码共4位，那么-2的反码应该是1101。0011+1101=10000，结果显然不对，需要将溢出的1加到最低位变为0001。如果计算6-7，则应为0110+1000=1110，此时结果正确，因为没有溢出。这也是反码加减法的计算方法：如果有溢出则将溢出的1加到最低位，没有则直接得到结果。原码的加减法直接计算更为复杂。<strong>反码和补码能将减法转换为加法，但是原码不行。</strong></p>
-</li>
-<li>
-<p>同时有一个变量的正反形式的表达式不一定会存在险象，还是看卡诺图最为保险！<br />
-探究：如何仅通过卡诺图判断一个险象是“0”型还是“1”型险象、是什么变量产生险象?<br />
-回顾一下，“0”型险象是A+~A产生的，“1”型险象是A· ~A产生的，记忆很简单，A+ ~A本来应该是1，险象就说明有错误，那就是产生0嘛。注意：0险象仅产生于使用含与或表达式的函数表达式构建的电路中，1险象仅产生于使用含或与表达式的函数表达式构建的电路中。<strong>如果电路完全按照与或表达式构建，则只可能产生“0”险象；如果电路完全按照或与表达式构建，则只可能产生“1”险象。</strong><br />
-看个例子：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>F</mi><mo>=</mo><mi>A</mi><mover accent="true"><mi>B</mi><mo stretchy="true">‾</mo></mover><mi>C</mi><mo>+</mo><mi>B</mi><mi>C</mi><mi>D</mi></mrow><annotation encoding="application/x-tex">F=A\overline BC+BCD</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9666600000000001em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span><br />
-卡诺图如下：<br />
-<img src="1.png" alt="" /><br />
-显然这个例子中产生险象的是B，从图中何以见得？当ACD均为1时，相切处的两边正好就是B取0和1的值，均为1但会产生“0”险象。因此判断方法就是：<strong>看相切两边哪个变量的取值不一样，就是哪一个变量产生的险象。</strong><br />
-对于“1”险象，看书上例子：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mi>C</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(A+B)(\overline A+C)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.13333em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">)</span></span></span></span>：<br />
-<img src="2.png" alt="" /><br />
-相切处A变量不同，故A变量会产生“1”险象。<br />
-如果是混合的表达式：如<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>A</mi><mi>C</mi><mo>+</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mi>D</mi><mo stretchy="false">)</mo><mo>+</mo><mi>B</mi><mi>C</mi><mover accent="true"><mi>D</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">(A+B)(AC+\overline CD)+BC\overline D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.13333em;vertical-align:-0.25em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>这种，上面的方法虽然还能用，但容易错，因此建议使用传统方法，即配凑出原变量和反变量的和或积，反而更加方便。而且在要求设计电路的题目中并不会这样要求，要么是与或，要么是或与，由于设计题中需要画出卡诺图，因此通过上述方法无需进行配凑。出现混合表达式一般都是要求直接判断，画卡诺图反而费时间了。</p>
-</li>
-<li>
-<p>主从J-K触发器<strong>有输入限制条件：</strong> 课本第89页指出在时钟信号作用期间J和K禁止发生变化，否则可能会产生错误信号输出（脉冲信号干扰产生的“一次翻转现象”），具体详见课本。</p>
-</li>
-<li>
-<p>做含有触发器的题目时要注意时钟信号的输入有没有取反。所有的触发器在时钟信号为1时才会触发，因此如果直接将时钟信号输入触发器，则触发器应该是在时钟信号上升沿开始工作；而如果输入反变量，则应该是在下降沿开始工作。（分析题和设计题中一般不考虑一个时钟信号内有多个输入信号变化的情况，因此上升沿和下降沿一般被认为是输入信号作用的唯一时刻，所以要分清楚）</p>
-</li>
-<li>
-<p>存在触发器并不是同步时序逻辑电路的必要条件，也不是充分条件（同步时序逻辑电路中的触发器必须要有钟控触发器，不能全是基本触发器）！</p>
-</li>
-<li>
-<p>Moore型电路和Mealy型电路关于输出的区别在于：当时钟信号为无效时，Moore型电路由于输出不受输入的影响，可以保持当前状态的稳定输出；而Mealy型电路则可能会由于这段时间输入的变化而导致输出产生变化，不过这个时间段的触发器状态绝对不会改变。当时钟信号为有效时，Moore型电路的输入能够直接改变触发器的状态，在一个有效的时钟周期之内这种状态改变可能会多次产生（不考虑主从触发器），Mealy型电路也是如此。</p>
-</li>
-<li>
-<p>芯片编号与功能汇总：<br />
-74283：4位并行加法器<br />
-74138：3-8线译码器<br />
-7442：二-十进制译码器<br />
-7448：七段显示译码器（用于数码管显示数字）<br />
-74147：十进制-BCD码编码器<br />
-74148：优先编码器（8-3线）<br />
-74153：多路选择器MUX（双4路）<br />
-74152、74151：多路选择器（8路，74152无使能端）<br />
-74150：多路选择器（16路）<br />
-74193：4位二进制同步可逆计数器<br />
-74290：异步计数器（二-五-十进制加法计数器）<br />
-74194：集成4位双向移位寄存器</p>
-</li>
-<li>
-<p>画时间图时务必需要注意：<br />
-(1) 是否是边沿触发器（一般CLK输入以△注明，如果给出了触发器内部的电路图，发现是普通钟控触发器，就需要考虑空翻现象）<br />
-(2) 上升沿触发还是下降沿触发（如果输入有圆圈，即取反操作，则为下降沿触发，直接输入则为上升沿触发）<br />
-(3) 如果明确为主从触发器，对于JK主从触发器需要考虑是否存在一次空翻现象，因此需要将JK主从触发器的主和从触发器的状态均画出<br />
-(4) 垂直的虚线一定要画，但不要画的太重太粗以影响审题</p>
-</li>
-<li>
-<p>各种图表<br />
-在时序逻辑和组合逻辑电路的分析和设计中经常需要画图画表，各种表的名字很像，稍有不慎就会画成另外一种表，需要格外注意分清。<br />
-<strong>真值表</strong>：在组合逻辑电路中指列出所有输入情况与对应的输出的表格，包含表项有：所有输入与所有输出<br />
-<strong>原始状态表</strong>：同步时序逻辑电路设计中根据功能需要而列出的状态表，没有进行状态化简，所有状态均以字母表示。<br />
-<strong>最小化状态表</strong>：同步时序逻辑电路设计中由原始状态表化简得来的状态表，含实现特定功能电路所需的最少状态与转换关系。<br />
-<strong>状态表</strong>：在时序逻辑电路中指列出所有不同现态、不同输入与对应的输出的表格，包含表项有：所有触发器状态变量对应的现态（分析时由于电路已知，现态使用二进制码表示，设计时需要用字母表示）、所有输入情况x（设输入变量个数为n，在同步时序逻辑电路中，输入情况的种类数量应为2<sup>n</sup>，在异步时序逻辑电路中，输入情况的种类数应为n，因为异步时序不允许同时两个变量输入）、次态与输出（Moore型次态和输出分别列出，Mealy型次态和输出一起列出）<br />
-<strong>隐含表</strong>：同步时序逻辑电路设计中为化简原始状态表而画出的三角形表格，左边一列应该从第二个状态写到最后一个状态，下边一行应该从第一个状态写到倒数第二个状态。<br />
-<strong>次态真值表</strong>：在时序逻辑电路中指列出所有输入与现态对应的激励函数与次态的表格，包含表项有：输入与现态的所有组合形式、所有激励函数、次态。在异步时序逻辑电路中激励函数不止包含JK/RS/D/T，还包含时钟信号，↓表示下降沿信号，↑表示上升沿信号。<br />
-<strong>激励函数与输出函数真值表</strong>：在时序逻辑电路中指列出所有输入与现态对应的激励函数与输出的表格，包含表项有：输入与现态的所有组合形式、所有激励函数、所有输出函数。此表有时也会将次态与状态跳变（见于异步时序）列出，这样能够反映出该同步时序逻辑电路的所有状态的所有情况。<br />
-<strong>激励表</strong>：反映某种触发器从现态到次态转换与输入的关系，包含表项有：所有现态与次态的组合形式（共4种，0→0,0→1,1→0,1→1），对应的输入值（JK/RS/T/D），特定触发器的激励表固定不变。在异步时序逻辑电路中，激励表还应加上时钟端信号。<br />
-<strong>功能表</strong>：反映某种触发器所有输入对应的次态，包含表项有：所有输入的组合形式、对应的次态。与激励表不同的是，功能表反映当输入为多少时次态会变成什么，而激励表反映触发器从某种现态转换到某种次态时可能的输入有哪些。</p>
-</li>
-<li>
-<p>各种函数表达式<br />
-<strong>输出函数表达式</strong>：描述输出的函数表达式。自变量：现态、输入；因变量：输出<br />
-<strong>激励函数表达式（又称驱动函数表达式、驱动方程表达式）</strong>：描述存储电路输入与电路输入和状态之间的关系。自变量：输入、现态；因变量：存储电路输入（JK/RS/T/D）<br />
-<strong>次态函数表达式</strong>：描述次态与激励函数和现态的关系。自变量：现态、激励函数；因变量：次态<br />
-<strong>状态方程表达式（又称次态方程表达式）</strong>：描述次态与现态、输入之间的关系。自变量：现态、输入；因变量：次态（通常由次态函数表达式转化而来）</p>
-</li>
-<li>
-<p>阵列逻辑图<br />
-使用不同的PLD画阵列逻辑图需要注意固定的画点，可编程的画叉，不要画错了。PROM与阵列固定或阵列可变；PLA与阵列或阵列均可变；PAL、GAL与阵列可变或阵列固定</p>
-</li>
-<li>
-<p>常见的电路功能：<br />
-模n计数（多为普通二进制码，也做过用格雷码计数的）、序列检测器（标志：有很多指向一个状态的情况）、序列发生器、n位全加器、n位全减器、n位比较器、不同码的转换等。如果通过状态表一时间看不出来是什么功能，可以尝试在输入固定的情况下追踪状态，状态图如果过于复杂也可以先画在草稿纸上，排布一下状态的位置，以让图更美观。</p>
-</li>
-<li>
-<p>状态编码<br />
-3条状态编码的优先规则一定要理解。<br />
-第一条相同输入、相同次态→现态相邻（看状态表次态中某一列中是否有相等的）<br />
-第二条相同现态，相邻输入→次态相邻（看状态表中某一行所有相邻的两个次态<font color=red>[注意：状态表中次态大列中每一小列的顺序应该按照格雷码的顺序来写，即如果输入2位，则从左到右应依次为：00，01，11，10]</font>）<br />
-第三条任意输入，输出相同→现态相邻（看Moore状态表中输出列是否有相等的、看Mealy状态表中次态/输出的n小列中是否有输出完全相等的两行）</p>
-</li>
-<li>
-<p>乘法的电路设计<br />
-一般设计某两个数乘法都需要用到4位加法器。在加法器数量有限的情况下，如何使用最少的加法器完成功能？对于二进制乘法，可以将其转换为加法计算。如4位二进制数的乘法，输出最多8位。通过列竖式可以求出每一位的值，同时可以发现4位二进制数的乘法实际上就是4个二进制数的加法。假设两个4位二进制数为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>a</mi><mn>3</mn></msub><msub><mi>a</mi><mn>2</mn></msub><msub><mi>a</mi><mn>1</mn></msub><msub><mi>a</mi><mn>0</mn></msub><mo separator="true">,</mo><msub><mi>b</mi><mn>3</mn></msub><msub><mi>b</mi><mn>2</mn></msub><msub><mi>b</mi><mn>1</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">a_3a_2a_1a_0,b_3b_2b_1b_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，则最低位<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>c</mi><mn>0</mn></msub><mo>=</mo><msub><mi>a</mi><mn>0</mn></msub><msub><mi>b</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">c_0=a_0b_0</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">c</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">a</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>直接与即可输出无需占用加法器资源。在加的时候要注意进位的输出。</p>
-</li>
-<li>
-<p>数电实验<br />
-在数电实验码表控制器模块，状态对应输出有5个，分别解释意义：<br />
-DP-SEL：码表显示选择器，其为1时显示当前计时，为0显示最好纪录<br />
-SD-EN：寄存器使能端，当需要更新最好纪录时置为高电平<br />
-SD-SEL：选择输入，第一次记录纪录时为1<br />
-TM-EN：计数器使能端，计时时为1，停止时为0<br />
-TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3164,7 +3048,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-count">146</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -3222,7 +3106,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:44</span>
+    <span title="Reading time total">19:59</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
