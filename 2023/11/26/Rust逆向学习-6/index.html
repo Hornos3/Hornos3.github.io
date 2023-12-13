@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Reverse for String 上一篇文章简单分析了Vec变长数组的结构，今天来介绍String。实际上Rust的字符串类型对于我们并不陌生，在前面几篇文章的几乎任何一个示例中都可以找到它们。 我们曾经提到过，String类型在栈中占0x18大小，其中包括字符串的指针、字符串长度、字符串容量。看上去好像什么问题都没有，但如果你使用Python或C&#x2F;C开发过一些项目，你可能会遇到一些与字符串">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust逆向学习 (6)">
+<meta property="og:url" content="http://hornos3.github.com/2023/11/26/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-6/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Reverse for String 上一篇文章简单分析了Vec变长数组的结构，今天来介绍String。实际上Rust的字符串类型对于我们并不陌生，在前面几篇文章的几乎任何一个示例中都可以找到它们。 我们曾经提到过，String类型在栈中占0x18大小，其中包括字符串的指针、字符串长度、字符串容量。看上去好像什么问题都没有，但如果你使用Python或C&#x2F;C开发过一些项目，你可能会遇到一些与字符串">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-11-26T09:54:46.000Z">
+<meta property="article:modified_time" content="2023-11-26T15:16:09.358Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2023/11/26/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>Rust逆向学习 (6) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/11/26/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust逆向学习 (6)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-11-26 17:54:46 / Modified: 23:16:09" itemprop="dateCreated datePublished" datetime="2023-11-26T17:54:46+08:00">2023-11-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Rust%E9%80%86%E5%90%91%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Rust逆向系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="reverse-for-string"><a class="markdownIt-Anchor" href="#reverse-for-string"></a> Reverse for String</h1>
+<p>上一篇文章简单分析了Vec变长数组的结构，今天来介绍String。实际上Rust的字符串类型对于我们并不陌生，在前面几篇文章的几乎任何一个示例中都可以找到它们。</p>
+<p>我们曾经提到过，String类型在栈中占0x18大小，其中包括字符串的指针、字符串长度、字符串容量。看上去好像什么问题都没有，但如果你使用Python或C/C<ins>开发过一些项目，你可能会遇到一些与字符串编码有关的问题。在C</ins>中，由于需要考虑多种字符编码方式，字符被分为char、wchar_t、tchar等等，它们占用的字节数量还不相同，如果需要转换还需要使用特定的函数完成，对于一些需要进行编码转换的场景来说，稍有一个不注意，可能就是一串乱码怼在你的脸上，让人深恶痛绝。</p>
+<p>但对于Rust而言，它规定，只要是我Rust写的程序，程序里面的所有字符串全都用UTF-8编码。这样就从根本上杜绝了编码转换的问题。</p>
+<p>不过，这也产生了一些问题，其中影响最大的可能就是字符串不可索引了。由于使用UTF-8编码，对于不同的字符，其占用的字节数量可能不同，而Rust又不能将字符串单纯地看做单字节数组，因此Rust无法知道在一个既有中文又有英文又有其他语言的字符串中，第某个有效字符在字符串中的偏移地址到底是多少。对于一个Rust字符串，它的长度指的是占用的内存空间大小，因此对于1个中文字符组成的字符串，它的长度实际上是3。</p>
+<p>下面介绍一下Rust中String的常用操作。</p>
+<h2 id="push_str-与"><a class="markdownIt-Anchor" href="#push_str-与"></a> <code>push_str</code> 与 <code>+</code></h2>
+<p>在Rust中，<code>push_str</code>方法与运算符<code>+</code>都能够将一个字符串拼接到另一个字符串的后面。让我们看一下二者在汇编上有什么区别。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;CoLin&quot;</span>);</span><br><span class="line">    s += <span class="string">&quot;666&quot;</span>;</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">example::main:</span><br><span class="line">    sub     rsp, <span class="number">152</span></span><br><span class="line">    lea     rsi, [rip + .L__unnamed_7]</span><br><span class="line">    lea     rdi, [rsp + <span class="number">32</span>]</span><br><span class="line">    mov     qword ptr [rsp + <span class="number">24</span>], rdi</span><br><span class="line">    mov     edx, <span class="number">5</span></span><br><span class="line">    call    &lt;alloc::string::<span class="type">String</span> <span class="keyword">as</span> core::convert::<span class="built_in">From</span>&lt;&amp;<span class="type">str</span>&gt;&gt;::from</span><br><span class="line">    mov     rdi, qword ptr [rsp + <span class="number">24</span>]</span><br><span class="line">    lea     rsi, [rip + .L__unnamed_8]</span><br><span class="line">    mov     edx, <span class="number">3</span></span><br><span class="line">    call    &lt;alloc::string::<span class="type">String</span> <span class="keyword">as</span> core::ops::arith::AddAssign&lt;&amp;<span class="type">str</span>&gt;&gt;::add_assign</span><br><span class="line">    jmp     .LBB36_3</span><br></pre></td></tr></table></figure>
+<p>首先看下<code>+</code>。这里的<code>+</code>运算符实际上是调用了<code>String</code>的方法，<code>String</code>这个结构重载了<code>+</code>这个运算符。这与C++的运算符重载类似。在汇编中，显示出调用的函数为<code>&lt;alloc::string::String as core::ops::arith::AddAssign&lt;&amp;str&gt;&gt;::add_assign</code>。实际上，Rust运算符重载的本质就是对“加”这个操作的Trait的impl，它与Rust中其他Trait并没有太大的区别，只有在使用的时候能够直接用运算符代替显式的方法调用罢了。需要注意的是，使用<code>+</code>运算符或<code>push_str</code>时，参数只能是字符串切片而不能是字符串，这是因为这两个方法不需要获取<code>String</code>的所有权，如果能够传入<code>String</code>，那么在这个函数执行后参数实际上就被销毁了，这当然是不希望看到的。另外，由于有解引用强制转换，我们传入<code>String</code>的引用也是被允许的。</p>
+<p>对于上面的示例，一开始的字符串创建时，其指针指向的实际上并不是堆地址空间，而是字符串切片<code>CoLin</code>中保存的字符串常量地址。此时<code>s</code>中的字符串长度与字符串容量相同，均为5。随后使用<code>+</code>运算符增加字符串长度时，由于检测到字符串没有多余容量，因此会在堆空间分配一块更大的空间，将字符串拼接的结果保存到这块空间中，与<code>realloc</code>有相似之处。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;CoLin&quot;</span>);</span><br><span class="line">    s.<span class="title function_ invoke__">push_str</span>(<span class="string">&quot;666&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">example::main:</span><br><span class="line">    sub     rsp, <span class="number">152</span></span><br><span class="line">    lea     rsi, [rip + .L__unnamed_7]</span><br><span class="line">    lea     rdi, [rsp + <span class="number">32</span>]</span><br><span class="line">    mov     qword ptr [rsp + <span class="number">24</span>], rdi</span><br><span class="line">    mov     edx, <span class="number">5</span></span><br><span class="line">    call    &lt;alloc::string::<span class="type">String</span> <span class="keyword">as</span> core::convert::<span class="built_in">From</span>&lt;&amp;<span class="type">str</span>&gt;&gt;::from</span><br><span class="line">    mov     rdi, qword ptr [rsp + <span class="number">24</span>]</span><br><span class="line">    lea     rsi, [rip + .L__unnamed_8]</span><br><span class="line">    mov     edx, <span class="number">3</span></span><br><span class="line">    call    alloc::string::<span class="type">String</span>::push_str</span><br><span class="line">    jmp     .LBB36_3</span><br></pre></td></tr></table></figure>
+<p>上面是使用<code>push_str</code>的汇编结果，可以看到只有函数调用发生了改变，甚至二者传入的参数都是一样的，分别是：原来的<code>String</code>栈地址，看做<code>this</code>、字符串指针、字符串长度。</p>
+<h2 id="format"><a class="markdownIt-Anchor" href="#format"></a> <code>format!</code></h2>
+<p>当需要拼接的字符串较多，或符合某种格式时，使用<code>format!</code>宏是一种更加简洁的方法。对于<code>format!</code>宏，我们实际上已经分析过了，因为<code>println!</code>的前半部分就是<code>format!</code>，也就是<code>core::fmt::Arguments::new_v1</code>方法的调用流程。这个在第一篇文章中已经介绍过了，这里不再赘述。</p>
+<h2 id="bytes方法"><a class="markdownIt-Anchor" href="#bytes方法"></a> <code>bytes</code>方法</h2>
+<p>这个方法返回的是字符串中的所有字节。不过需要注意的是这个方法返回的是一个不可变借用，除非这个方法的返回值被删除，否则字符串不能修改。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;CoLin&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">t</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;666&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">u</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;s&#125; is &#123;t&#125;&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = u.<span class="title function_ invoke__">bytes</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">b</span> <span class="keyword">in</span> x&#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">.LBB27_9:</span><br><span class="line">    mov     rax, qword ptr [rsp + 216]</span><br><span class="line">    mov     qword ptr [rsp + 192], rax</span><br><span class="line">    movups  xmm0, xmmword ptr [rsp + 200]</span><br><span class="line">    movaps  xmmword ptr [rsp + 176], xmm0</span><br><span class="line">    lea     rdi, [rsp + 176]</span><br><span class="line">    call    &lt;alloc::string::String as core::ops::deref::Deref&gt;::deref</span><br><span class="line">    mov     qword ptr [rsp + 64], rdx</span><br><span class="line">    mov     qword ptr [rsp + 72], rax</span><br><span class="line">    jmp     .LBB27_12</span><br><span class="line">    ...</span><br><span class="line">.LBB27_12:</span><br><span class="line">    mov     rsi, qword ptr [rsp + 64]</span><br><span class="line">    mov     rdi, qword ptr [rsp + 72]</span><br><span class="line">    call    core::str::&lt;impl str&gt;::bytes</span><br><span class="line">    mov     qword ptr [rsp + 48], rdx</span><br><span class="line">    mov     qword ptr [rsp + 56], rax</span><br><span class="line">    jmp     .LBB27_13</span><br><span class="line">.LBB27_13:</span><br><span class="line">    mov     rsi, qword ptr [rsp + 48]</span><br><span class="line">    mov     rdi, qword ptr [rsp + 56]</span><br><span class="line">    mov     rax, qword ptr [rip + &lt;I as core::iter::traits::collect::IntoIterator&gt;::into_iter@GOTPCREL]</span><br><span class="line">    call    rax</span><br><span class="line">    mov     qword ptr [rsp + 32], rdx</span><br><span class="line">    mov     qword ptr [rsp + 40], rax</span><br><span class="line">    jmp     .LBB27_14</span><br><span class="line">.LBB27_14:</span><br><span class="line">    mov     rax, qword ptr [rsp + 32]</span><br><span class="line">    mov     rcx, qword ptr [rsp + 40]</span><br><span class="line">    mov     qword ptr [rsp + 304], rcx</span><br><span class="line">    mov     qword ptr [rsp + 312], rax</span><br><span class="line">.LBB27_15:</span><br><span class="line">    lea     rdi, [rsp + 304]</span><br><span class="line">    call    &lt;core::str::iter::Bytes as core::iter::traits::iterator::Iterator&gt;::next</span><br><span class="line">    mov     byte ptr [rsp + 30], dl</span><br><span class="line">    mov     byte ptr [rsp + 31], al</span><br><span class="line">    jmp     .LBB27_16</span><br></pre></td></tr></table></figure>
+<p>可以看到，上面的代码中，首先对<code>String</code>类型进行<code>deref</code>解引用获取字符串切片，然后调用<code>bytes</code>方法，这个方法的第一个参数是字符串指针，第二个参数是字符串长度。这个方法的返回值有两个，<code>rax</code>为字符串开头的地址，<code>rdx</code>为字符串末尾的地址。后面是<code>into_iter</code>方法，这个方法的参数和返回值一样。下面就是正常的迭代器迭代流程，在前面的文章中有分析。</p>
+<h2 id="chars方法"><a class="markdownIt-Anchor" href="#chars方法"></a> <code>chars</code>方法</h2>
+<p>这个方法返回的是字符串中所有字符的集合。由于字符串中每个字符占用的字节数量可能不同，那么如何表示字符的集合就很值得我们研究了。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;CoLin&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">t</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;太6了!&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">u</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;s&#125; &#123;t&#125;&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = u.<span class="title function_ invoke__">chars</span>();</span><br><span class="line">    <span class="keyword">for</span> <span class="variable">b</span> <span class="keyword">in</span> x&#123;</span><br><span class="line">        <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, b);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">.LBB27_9:</span><br><span class="line">    mov     rax, qword ptr [rsp + 216]</span><br><span class="line">    mov     qword ptr [rsp + 192], rax</span><br><span class="line">    movups  xmm0, xmmword ptr [rsp + 200]</span><br><span class="line">    movaps  xmmword ptr [rsp + 176], xmm0</span><br><span class="line">    lea     rdi, [rsp + 176]</span><br><span class="line">    call    &lt;alloc::string::String as core::ops::deref::Deref&gt;::deref</span><br><span class="line">    mov     qword ptr [rsp + 64], rdx</span><br><span class="line">    mov     qword ptr [rsp + 72], rax</span><br><span class="line">    jmp     .LBB27_12</span><br><span class="line">    ...</span><br><span class="line">.LBB27_12:</span><br><span class="line">    mov     rsi, qword ptr [rsp + 64]</span><br><span class="line">    mov     rdi, qword ptr [rsp + 72]</span><br><span class="line">    call    core::str::&lt;impl str&gt;::chars</span><br><span class="line">    mov     qword ptr [rsp + 48], rdx</span><br><span class="line">    mov     qword ptr [rsp + 56], rax</span><br><span class="line">    jmp     .LBB27_13</span><br><span class="line">.LBB27_13:</span><br><span class="line">    mov     rsi, qword ptr [rsp + 48]</span><br><span class="line">    mov     rdi, qword ptr [rsp + 56]</span><br><span class="line">    mov     rax, qword ptr [rip + &lt;I as core::iter::traits::collect::IntoIterator&gt;::into_iter@GOTPCREL]</span><br><span class="line">    call    rax</span><br><span class="line">    mov     qword ptr [rsp + 32], rdx</span><br><span class="line">    mov     qword ptr [rsp + 40], rax</span><br><span class="line">    jmp     .LBB27_14</span><br><span class="line">.LBB27_14:</span><br><span class="line">    mov     rax, qword ptr [rsp + 32]</span><br><span class="line">    mov     rcx, qword ptr [rsp + 40]</span><br><span class="line">    mov     qword ptr [rsp + 304], rcx</span><br><span class="line">    mov     qword ptr [rsp + 312], rax</span><br><span class="line">.LBB27_15:</span><br><span class="line">    lea     rdi, [rsp + 304]</span><br><span class="line">    call    &lt;core::str::iter::Chars as core::iter::traits::iterator::Iterator&gt;::next</span><br><span class="line">    mov     dword ptr [rsp + 28], eax</span><br><span class="line">    jmp     .LBB27_16</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>可以看到，这里与<code>bytes</code>类似。经过调试发现，<code>chars</code>方法返回的也是两个地址，开始地址和结尾地址。因为<code>chars</code>返回的类型是迭代器，所以Rust可以通过调用<code>next</code>方法动态地判断下一个字符占用的字节数量，因此不需要返回每一个字符占用的字节数。但是，我们有方法让Rust返回<strong>真正的字符数组</strong>，那就是使用<code>collect</code>方法将迭代器转换为<code>Vec</code>：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">main</span>()&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;CoLin&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">t</span> = <span class="type">String</span>::<span class="title function_ invoke__">from</span>(<span class="string">&quot;太6了!&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">u</span> = <span class="built_in">format!</span>(<span class="string">&quot;&#123;s&#125; &#123;t&#125;&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">x</span> = u.<span class="title function_ invoke__">chars</span>();</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">y</span>: <span class="type">Vec</span>&lt;<span class="type">char</span>&gt; = x.<span class="title function_ invoke__">collect</span>();</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, y[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x5555555b6c00</span><br><span class="line">00:0000│  0x5555555b6c00 ◂— 0x6f00000043 /* &#x27;C&#x27; */</span><br><span class="line">01:0008│  0x5555555b6c08 ◂— 0x690000004c /* &#x27;L&#x27; */</span><br><span class="line">02:0010│  0x5555555b6c10 ◂— 0x200000006e /* &#x27;n&#x27; */</span><br><span class="line">03:0018│  0x5555555b6c18 ◂— 0x360000592a /* &#x27;*Y&#x27; */</span><br><span class="line">04:0020│  0x5555555b6c20 ◂— 0x2100004e86</span><br></pre></td></tr></table></figure>
+<p><code>collect</code>方法在一个栈地址中保存了一个堆地址，而这个堆地址的内容就如上面所示。可以看到，Rust为每一个字符分配了4个字节的空间，虽然大多数字符都占不到4个字节，但是为了索引的需要，Rust必须分配一个足够容纳所有字符的空间，也就是UTF-8的一个字符可能占用的最大字节数。</p>
+<h1 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h1>
+<p>本文我们学习了：</p>
+<ol>
+<li>字符数组在内存中的结构</li>
+<li>字符串遍历过程的逆向</li>
+<li>Rust字符串的相关知识</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/11/15/seccomp%E5%AD%A6%E4%B9%A0-3/" rel="prev" title="seccomp学习 (3)">
+      <i class="fa fa-chevron-left"></i> seccomp学习 (3)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#reverse-for-string"><span class="nav-number">1.</span> <span class="nav-text"> Reverse for String</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#push_str-%E4%B8%8E"><span class="nav-number">1.1.</span> <span class="nav-text"> push_str 与 +</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#format"><span class="nav-number">1.2.</span> <span class="nav-text"> format!</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bytes%E6%96%B9%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text"> bytes方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chars%E6%96%B9%E6%B3%95"><span class="nav-number">1.4.</span> <span class="nav-text"> chars方法</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">145</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.3m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">19:44</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

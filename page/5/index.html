@@ -150,6 +150,349 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第4章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:12:26 / Modified: 09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:26+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>6.3k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>6 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-4-进程管理"><a class="markdownIt-Anchor" href="#chapter-4-进程管理"></a> Chapter 4 进程管理</h1>
+<h2 id="41-进程的概念"><a class="markdownIt-Anchor" href="#41-进程的概念"></a> 4.1 进程的概念</h2>
+<p>定义：程序在并发环境下在一个数据集下的一次运行过程。</p>
+<p>特征：</p>
+<ul>
+<li>动态性：是程序的一次执行过程，其动态产生和消亡。</li>
+<li>并发性：进程可以同其他进程一起向前推进。</li>
+<li>异步性：进程按照各自速度向前推进。</li>
+<li>独立性：进程是系统分配资源和调度CPU的单位。</li>
+</ul>
+<p><font color=red>一个程序可能有多个进程对应。</font></p>
+<ul>
+<li>进程是动态的，程序是静态的</li>
+<li>进程是暂存的，程序是长久的</li>
+</ul>
+<h2 id="42-进程的状态和转换"><a class="markdownIt-Anchor" href="#42-进程的状态和转换"></a> 4.2 进程的状态和转换</h2>
+<p>进程的3个基本运行状态：</p>
+<ul>
+<li><font color=red>运行状态</font>：进程占用CPU正在CPU上运行的状态。</li>
+<li><font color=red>就绪状态</font>：进程已经可以运行但是还没有获得CPU，暂时还无法运行的状态。</li>
+<li><font color=red>阻塞状态</font>：进程因为缺少某个运行所需的必要条件（资源或信号）而进入等待的状态，如IO操作等。</li>
+</ul>
+<p>进程状态的改变：</p>
+<ul>
+<li>运行→阻塞：需要等待信号、服务结束或某个资源时</li>
+<li>阻塞→就绪：信号到来、服务结束或所需资源有空闲</li>
+<li>就绪→运行：通过进程调度使得该进程获得了CPU</li>
+<li>运行→就绪：CPU被抢占</li>
+</ul>
+<p>扩展进程状态：</p>
+<ul>
+<li>新建状态：操作系统创建进程的过程，创建完毕后进入就绪状态。</li>
+<li>终止状态：进程退出后的状态，虽不能运行但仍保留一些信息。只能由运行状态转换而来。</li>
+</ul>
+<p>具有挂起和解挂操作的进程状态：</p>
+<ul>
+<li>将就绪状态拆分为静止就绪和活跃就绪状态，将阻塞状态拆分为静止阻塞状态和活跃阻塞状态。处于静止状态时表示挂起状态，便于操作系统进行资源调度。</li>
+<li>运行→静止就绪，活动就绪→静止就绪，活动阻塞→静止阻塞：进程挂起</li>
+<li>静止就绪→活跃就绪，静止阻塞→活跃阻塞：解挂</li>
+<li>静止阻塞→静止就绪：期待活动完成</li>
+</ul>
+<h2 id="43-进程控制块pcb"><a class="markdownIt-Anchor" href="#43-进程控制块pcb"></a> 4.3 进程控制块——PCB</h2>
+<p>进程控制块至少应该包含以下信息：</p>
+<ul>
+<li>进程ID（PID）：标识进程的编号</li>
+<li>进程起始地址：进程的可执行映像在内存（物理内存）中的起始地址</li>
+<li>进程状态：当前状态</li>
+<li>优先级：进程优先级别，用于进程调度</li>
+<li>CPU现场保护区：发生中断时对CPU状态的拷贝区，便于下一次将进程加载进CPU继续执行</li>
+<li>进程间通信区：记录进程之间通信的控制信息、信号和信息缓冲区</li>
+<li>资源列表：进程拥有的资源清单，主要为外设的占用信息</li>
+<li>文件列表：进程打开的文件列表</li>
+<li>内存列表：进程占用的内存空间（虚拟空间和物理空间）</li>
+</ul>
+<p>创建进程时创建PCB，进程撤销时PCB应该同时撤销。</p>
+<h2 id="44-linux进程控制块task_struct"><a class="markdownIt-Anchor" href="#44-linux进程控制块task_struct"></a> 4.4 Linux进程控制块——task_struct</h2>
+<p>进程状态：</p>
+<ul>
+<li>TASK_RUNNING：运行态和就绪态。</li>
+<li>TASK_UNINTERRUPTIBLE：不可中断，不可被其他进程通过信号和时钟中断唤醒，只有资源得到满足才会进入就绪状态，一般非常短暂。</li>
+<li>TASK_INTERRUPTIBLE：可以被其他进程通过信号和时钟中断唤醒。</li>
+<li>TASK_ZOMBIE：进程终止执行，释放大部分资源。</li>
+<li>TASK_STOPPED：进程被挂起。</li>
+</ul>
+<p>ps命令：可查看当前进程状态<br />
+<code>ps aux</code>，输出有多行。其中STAT行表示进程状态，字段含义：</p>
+<ul>
+<li>R：TASK_RUNNING</li>
+<li>S：TASK_INTERRUPTIBLE</li>
+<li>I：空闲</li>
+<li>Z：TASK_ZOMBIE</li>
+<li>D：TASK_UNINTERRUPTIBLE</li>
+<li>T：TASK_STOPPED/TASK_TRACED，停止或被调试</li>
+</ul>
+<p><font color=red>task_struct中的重要字段：</font></p>
+<ul>
+<li>进程状态</li>
+<li>进程调度信息</li>
+<li>标识符：包含自身的ID（<code>getpid()</code>获取）、父进程ID（<code>getppid()</code>获取）、进程组ID</li>
+<li>进程通信信息</li>
+<li>链接信息</li>
+<li>时间和计时器</li>
+<li>文件系统</li>
+<li>虚拟内存信息</li>
+<li>处理器信息/现场保留区</li>
+<li>进程链表：<code>struct *next_task, prev_task</code>，所有进程在一个双向链表之中。</li>
+</ul>
+<h2 id="45-进程基本控制"><a class="markdownIt-Anchor" href="#45-进程基本控制"></a> 4.5 进程基本控制</h2>
+<h3 id="451-进程创建"><a class="markdownIt-Anchor" href="#451-进程创建"></a> 4.5.1 进程创建</h3>
+<p>参数：进程标识、优先级、进程起始地址、CPU初始状态、资源清单等<br />
+步骤：</p>
+<ul>
+<li>分配PCB</li>
+<li>分配并赋值PID</li>
+<li>分配内存空间</li>
+<li>初始化PCB（CPU状态、内存、优先级、进程状态、链表队列）</li>
+<li>插入相应的进程队列</li>
+<li>调度程序</li>
+</ul>
+<h3 id="452-进程阻塞"><a class="markdownIt-Anchor" href="#452-进程阻塞"></a> 4.5.2 进程阻塞</h3>
+<p>当需要等待外设IO操作、等待系统服务完成、等待请求资源、等待其他进程的约束、服务进程没有新任务可做时进行阻塞。<br />
+步骤：</p>
+<ul>
+<li>进程停止运行（需要保存现场等）</li>
+<li>修改PCB状态</li>
+<li>插入相应阻塞队列</li>
+<li>调度程序</li>
+</ul>
+<h3 id="453-进程唤醒"><a class="markdownIt-Anchor" href="#453-进程唤醒"></a> 4.5.3 进程唤醒</h3>
+<p>时机与进程阻塞相反。<br />
+步骤：</p>
+<ul>
+<li>修改PCB状态</li>
+<li>插入相应就绪队列</li>
+<li>调度程序</li>
+</ul>
+<h3 id="454-进程撤销"><a class="markdownIt-Anchor" href="#454-进程撤销"></a> 4.5.4 进程撤销</h3>
+<p>终止此进程的运行。<br />
+步骤：</p>
+<ul>
+<li>在队列中查找该进程</li>
+<li>获取进程状态</li>
+<li>如果该进程正在运行则立即终止</li>
+<li>释放进程资源</li>
+<li>将进程从队列中移除</li>
+</ul>
+<h3 id="455-原语"><a class="markdownIt-Anchor" href="#455-原语"></a> 4.5.5 原语</h3>
+<p>进程控制涉及底层的操作，为提高系统的稳定性和效率，进程操作由操作系统内核完成，且加以特殊保护。</p>
+<p><font color=red>原语</font>是由若干条指令组成的一段小程序，用于实现某个特定操作，原语具有不可分割性，要么全部运行成功，要么彻底失败，执行过程不可中断。一个操作如果为原语则称该操作具有原子性，称该操作为原子操作。</p>
+<p>主要的控制原语除了上述的创建原语、撤销原语、阻塞原语、唤醒原语外还包括挂起原语、激活原语等。</p>
+<h2 id="46-windows进程控制"><a class="markdownIt-Anchor" href="#46-windows进程控制"></a> 4.6 Windows进程控制</h2>
+<p>windows创建进程可以使用多个API实现：</p>
+<ul>
+<li>system</li>
+<li>WinExec</li>
+<li>ShellExecute</li>
+<li>CreateProcess，前面3个最终都需要调用CreateProcess</li>
+</ul>
+<p>CreateProcess有很多参数，其中包含可执行程序名、程序参数、执行选项等。其执行步骤：</p>
+<ul>
+<li>创建进程内核对象，创建虚拟地址空间</li>
+<li>装载exe文件和dll文件到虚拟内存中</li>
+<li>创建主线程和线程内核对象</li>
+<li>启动主线程，进入主函数</li>
+</ul>
+<p>结束进程：</p>
+<ul>
+<li>ExitProcess</li>
+<li>TerminateProcess</li>
+</ul>
+<h2 id="47-linux进程控制"><a class="markdownIt-Anchor" href="#47-linux进程控制"></a> 4.7 Linux进程控制</h2>
+<h3 id="471-linux进程分类"><a class="markdownIt-Anchor" href="#471-linux进程分类"></a> 4.7.1 Linux进程分类</h3>
+<p>用户在Linux中执行一条命令就是创建了一个新的进程。</p>
+<p>Linux进程可分为交互式进程、批处理进程、实时进程、守护进程等。</p>
+<h3 id="472-linux进程创建"><a class="markdownIt-Anchor" href="#472-linux进程创建"></a> 4.7.2 Linux进程创建</h3>
+<p>Linux中可以使用fork函数创建一个进程。创建出来的进程是一个子进程，创建进程的进程即为父进程。<font color=red>这里的子进程是父进程的复制，父进程和子进程并发运行</font>。</p>
+<p>fork函数的返回值是一个整数，表示进程号。<font color=red>在子进程中，该函数返回的值为0，父进程中返回一个大于0的值，如果创建进程错误则返回-1</font>。在fork函数之后可以通过判断fork函数返回值的方法实现父进程和子进程分别执行不同的代码，让二者执行的分支不同。</p>
+<h3 id="473-fork函数实现过程"><a class="markdownIt-Anchor" href="#473-fork函数实现过程"></a> 4.7.3 fork函数实现过程</h3>
+<p>fork函数的执行流程：</p>
+<ul>
+<li>分配task_struct结构体</li>
+<li>拷贝父进程，复制正文段、数据段以及系统数据段（复制父进程task_struct的大部分内容，而修改小部分内容）</li>
+<li>将新进程的task_struct保存到队列中</li>
+<li>新进程置于就绪状态</li>
+</ul>
+<p>fork函数的特殊机制：<font color=red>写时复制（COW）</font>，即父进程的资源被设置为只读，当父进程或子进程试图修改某些内容时，内核才在修改前对部分内容进行拷贝。</p>
+<p>fork函数的实际开销主要就在于复制父进程页表以及给子进程创建PCB。</p>
+<p>Linux启动的第一个进程是init进程（进程号为1），其余进程均为init的子孙进程。</p>
+<h3 id="475-execve函数创建进程"><a class="markdownIt-Anchor" href="#475-execve函数创建进程"></a> 4.7.5 execve函数创建进程</h3>
+<p>exec族函数可用于在子进程空间指定要执行的可执行程序。</p>
+<p>首先根据文件名找到可执行程序，然后将可执行程序的内容填充入子进程的地址空间中。若exec调用成功则进入新的进程不再返回，若调用失败则继续从调用点向下进行。</p>
+<p>除了execve外，还有execl、execlp、execle、execv、execvp等。</p>
+<h3 id="476-linux进程撤销"><a class="markdownIt-Anchor" href="#476-linux进程撤销"></a> 4.7.6 Linux进程撤销</h3>
+<p>exit函数用于终结此进程，终结进程后需要释放资源并向父进程报告。终结该进程后，该进程变成僵尸状态，保留部分PCB信息供wait函数进行收集。</p>
+<p>进程结束时可调用schedule函数选择新进程运行。</p>
+<h3 id="477-linux的wait函数"><a class="markdownIt-Anchor" href="#477-linux的wait函数"></a> 4.7.7 Linux的wait()函数</h3>
+<p>wait函数用于进行<font color=red>进程的阻塞</font>，通过wait函数可以阻塞自身，其会监测是否有子进程结束，如果没有则一直阻塞，如果有则停止阻塞，收集该结束的子进程信息并将其彻底终止，返回。wait函数有一个整型参数int&amp; status接收子进程退出时的退出代码。若忽略子进程退出信息则参数填NULL。</p>
+<p>sleep函数也可以用于进程阻塞，阻塞当前进程暂停执行多少秒，系统暂停调度该进程。</p>
+<h2 id="48-线程"><a class="markdownIt-Anchor" href="#48-线程"></a> 4.8 线程</h2>
+<h3 id="481-线程概念"><a class="markdownIt-Anchor" href="#481-线程概念"></a> 4.8.1 线程概念</h3>
+<p>线程是进程内部的一个相对独立的运行路径，一个进程可以有多个线程。线程是进程内创建的可运行模块，能够执行指定的任务。线程和线程之间可以并发进行。</p>
+<p><font color=red>在具有线程概念的操作系统中，线程是操作系统进行调度的最小单位，如windows系统。</font></p>
+<ul>
+<li>线程能够提高系统的并发性能，其并发粒度比进程更细，能够充分发挥CPU的性能。</li>
+<li>线程的应用成本更低，更灵活。<font color=red>进程为线程提供地址空间和资源</font>，线程与线程之间的通信比进程之间更加灵活。</li>
+<li>大多数操作系统都采用了线程技术。</li>
+</ul>
+<p>下面场景适用多线程：</p>
+<ul>
+<li>多个功能需要并发</li>
+<li>需要改善窗口交互性</li>
+<li>需要改善程序结构</li>
+<li>多核CPU之间的应用</li>
+</ul>
+<p>现代操作系统中，进程=资源集+线程组。</p>
+<p>线程的缺点：难以调试，容易造成线程安全问题，并发过程难以控制。</p>
+<h3 id="482-windows线程"><a class="markdownIt-Anchor" href="#482-windows线程"></a> 4.8.2 Windows线程</h3>
+<p>windows中可以通过CreateThread函数创建线程，并为其指定一个任务。</p>
+<h2 id="49-进程相互制约关系"><a class="markdownIt-Anchor" href="#49-进程相互制约关系"></a> 4.9 进程相互制约关系</h2>
+<h3 id="491-互斥关系"><a class="markdownIt-Anchor" href="#491-互斥关系"></a> 4.9.1 互斥关系</h3>
+<p>在进程运行过程中互相排斥地访问一个具有独占性的公共资源，必须协调各个进程对资源的存取顺序，确保没有任何两个或两个以上的进程同时进行资源存取。</p>
+<p>将一次只允许一个进程独占访问的资源称为<font color=red>临界资源</font>，访问临界资源的代码段称为<font color=red>临界区</font>。</p>
+<h3 id="492-同步关系"><a class="markdownIt-Anchor" href="#492-同步关系"></a> 4.9.2 同步关系</h3>
+<p>合作进程中某些操作之间需要满足某种先后关系或某个操作能否进行取决于某个前提条件是否满足，否则只能等待。互斥关系是特殊的同步关系。</p>
+<h3 id="493-同步机制"><a class="markdownIt-Anchor" href="#493-同步机制"></a> 4.9.3 同步机制</h3>
+<p>有效的同步机制满足：</p>
+<ul>
+<li>当进程即将要执行的某个操作的运行条件不满足时，能够让该进程立即暂停执行该操作。</li>
+<li>当被暂停的操作的运行条件满足时，相应进程能够被尽快唤醒以便继续运行。</li>
+<li>同步机制在实现上也属于原子操作。</li>
+</ul>
+<p>有关于多个进程不能同时访问临界区的问题，在硬件上可以通过中断屏蔽来完成，进入临界区时关中断，离开临界区时开中断。在软件上可以通过<font color=red>锁和信号量</font>来解决。</p>
+<h2 id="410-锁"><a class="markdownIt-Anchor" href="#410-锁"></a> 4.10 锁</h2>
+<h3 id="4101-临界资源和临界区"><a class="markdownIt-Anchor" href="#4101-临界资源和临界区"></a> 4.10.1 临界资源和临界区</h3>
+<h3 id="4102-锁的概念"><a class="markdownIt-Anchor" href="#4102-锁的概念"></a> 4.10.2 锁的概念</h3>
+<p>锁机制通过设置标志来标识临界区是否可以进入或临界资源是否可用。如果为不可用状态，则程序在临界区之外进行等待，若为可用状态，则进入临界区并将临界资源设置为不可用状态。</p>
+<p>上锁操作：检测锁S的状态，如果S=0则返回继续检测，如果S=1则设置S=0<br />
+开锁操作：将S设置为1<br />
+上锁和开锁都应该是原语。</p>
+<p>锁可以保证临界区中最多只能有1个进程能够进入其中，在进入临界区之前执行上锁操作，在退出临界区时执行开锁操作。</p>
+<p><font color=red>设置临界区访问机制的4个原则</font>：</p>
+<ul>
+<li><font color=red>忙则等待</font>：临界区忙时其他的进程应该在外面等待</li>
+<li><font color=red>空闲让进</font>：没有进程位于临界区时允许其他进程抢占临界区</li>
+<li><font color=red>有限等待</font>：进程进入临界区的请求应该在有限时间内得到满足</li>
+<li><font color=red>让权等待</font>：等待进程放弃CPU，以让其他进程有机会得到CPU</li>
+</ul>
+<p>锁机制满足上面4个原则中的前三个。</p>
+<h2 id="411-信号量与p-v操作"><a class="markdownIt-Anchor" href="#411-信号量与p-v操作"></a> 4.11 信号量与P-V操作</h2>
+<h3 id="4111-信号量概念"><a class="markdownIt-Anchor" href="#4111-信号量概念"></a> 4.11.1 信号量概念</h3>
+<p>信号量的核心数据结构是一个二元组（S,Q），其中S是一个初值非负的整型变量，Q是初始为空的队列。S可以表示某一类资源的可用数量，可以指某些条件等。当由于信号量的变化而导致某一个合作进程被阻塞，它将被挂接在队列Q中，而当信号量的变化导致满足了进程的运行条件时该进程将被唤醒，并离开队列Q。</p>
+<h3 id="4112-p-v操作的定义"><a class="markdownIt-Anchor" href="#4112-p-v操作的定义"></a> 4.11.2 P-V操作的定义</h3>
+<p>P操作指通过：</p>
+<ul>
+<li>S自减1</li>
+<li>如果S大于或等于0，则函数返回，且调用者进程继续执行</li>
+<li>如果S小于0，则函数返回，且调用者进程阻塞并插入到等待队列Q中，并由调度程序调度其他进程执行</li>
+</ul>
+<p>S操作指释放：</p>
+<ul>
+<li>S自增1</li>
+<li>若S大于0，则函数返回，且调用者进程继续执行</li>
+<li>若S小于或等于0，则函数返回，调用者进程继续执行，并同时从等待队列Q中唤醒某一个等待进程</li>
+</ul>
+<p>这两个操作在内核中均使用原语控制。</p>
+<p>总结而言，P操作可能会阻塞某一个进程，V操作可能会唤醒某一个进程。<font color=red>对于S的初始值设置要合理</font>。信号量实际上就是可以控制多个进程中最多可以有几个进程同时在临界区中运行。</p>
+<p>在关键操作之前执行P操作，在关键操作之后执行V操作。</p>
+<h2 id="例题"><a class="markdownIt-Anchor" href="#例题"></a> 例题</h2>
+<h3 id="1-进程之间的互斥模型"><a class="markdownIt-Anchor" href="#1-进程之间的互斥模型"></a> 1. 进程之间的互斥模型</h3>
+<p>进程之间的互斥模型几乎是必考的题型，需要理解锁与信号量控制进程之间互斥的原理。</p>
+<p><font color=red>技巧</font>：</p>
+<ul>
+<li>对于那些总量有限制的资源，需要定义两个信号量，一个信号量表示当前该资源剩余量，另一个信号量表示当前该资源最多还能够产生几个。</li>
+<li>对于那些临界资源，临界区可能修改临界资源的值，需要加锁处理，或者使用一个初值为1的信号量代替锁。</li>
+</ul>
+<p>例-1：生产者-消费者模型，一共有10个生产者生产5种资源，一个资源由2个生产者负责。另外有2个消费者，第1个消费者需要资源1、2、3循环进行操作A，第2个消费者需要资源3、4、5循环进行操作B。写出代码，实现10个生产者与2个消费者之间的进程互斥。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">semaphore res1 = <span class="number">0</span>, res2 = <span class="number">0</span>, res3 = <span class="number">0</span>, res4 = <span class="number">0</span>, res5 = <span class="number">0</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">producer_12</span><span class="params">()</span>&#123;V(res1);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">producer_34</span><span class="params">()</span>&#123;V(res2);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">producer_56</span><span class="params">()</span>&#123;V(res3);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">producer_78</span><span class="params">()</span>&#123;V(res4);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">producer_90</span><span class="params">()</span>&#123;V(res5);&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">consumer_1</span><span class="params">()</span>&#123;</span><br><span class="line">	P(res1);</span><br><span class="line">	P(res2);</span><br><span class="line">	P(res3);</span><br><span class="line">	A();</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">consumer_2</span><span class="params">()</span>&#123;</span><br><span class="line">	P(res3);</span><br><span class="line">	P(res4);</span><br><span class="line">	P(res5);</span><br><span class="line">	B();</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">	corun&#123;</span><br><span class="line">		producer_12</span><br><span class="line">		producer_12</span><br><span class="line">		producer_34</span><br><span class="line">		producer_34</span><br><span class="line">		producer_56</span><br><span class="line">		producer_56</span><br><span class="line">		producer_78</span><br><span class="line">		producer_78</span><br><span class="line">		producer_90</span><br><span class="line">		producer_90</span><br><span class="line">		consumer_1</span><br><span class="line">		consumer_2</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例-2 某高速出口设有若干人工服务区和ETC服务区，不断有汽车从高速到达出口，其中货车只能选择人工通道，轿车可以选择人工通道也可以选择ETC通道，一辆轿车到达时优先选择ETC通道，如果ETC通道均在排队则选择人工通道。现设人工通道有1个，ETC通道有1个，要求写出代码，能够实时统计每一个通道前排队的车辆数。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> queuep = <span class="number">0</span>, queueetc = <span class="number">0</span>;</span><br><span class="line">semaphore p = <span class="number">1</span>, etc = <span class="number">1</span>, mutex_p = <span class="number">1</span>, mutex_etc = <span class="number">1</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">car</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">		<span class="keyword">if</span>(queueetc)&#123;</span><br><span class="line">			P(etc);</span><br><span class="line">			P(mutex_etc);</span><br><span class="line">			queueetc++;</span><br><span class="line">			V(mutex_etc);</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			P(p);</span><br><span class="line">			P(mutex_p);</span><br><span class="line">			queuep++;</span><br><span class="line">			V(mutex_p);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">person</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">		<span class="keyword">if</span>(queuep &gt; <span class="number">0</span>)&#123;</span><br><span class="line">			V(p);</span><br><span class="line">			P(mutex_p);</span><br><span class="line">			queuep--;</span><br><span class="line">			V(mutex_p);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">etc</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">		<span class="keyword">if</span>(queueetc &gt; <span class="number">0</span>)&#123;</span><br><span class="line">			V(etc);</span><br><span class="line">			P(mutex_etc);</span><br><span class="line">			queueetc--;</span><br><span class="line">			V(mutex_etc);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1894,278 +2237,6 @@ MIPS<sub>2</sub>=301.9</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第6章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:01:45 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>4 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="第6章-中央处理器"><a class="markdownIt-Anchor" href="#第6章-中央处理器"></a> 第6章 中央处理器</h1>
-<h2 id="61-概述"><a class="markdownIt-Anchor" href="#61-概述"></a> 6.1 概述</h2>
-<p>CPU的基本组成：运算器、控制器<br />
-CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等</p>
-<p>主要寄存器：</p>
-<ul>
-<li>PC：程序计数器，即EIP(x86/x86-64)/PC(ARM/MIPS)</li>
-<li>IR：指令寄存器，保存当前正在执行的指令</li>
-<li>AR：地址寄存器，用于保存CPU访问主存的单元地址</li>
-<li>DR：数据寄存器，用于保存从主存读入或将写入主存的数据</li>
-<li>AC：累加寄存器</li>
-<li>PSW：程序状态字，保存由某些指令建立的条件标志</li>
-</ul>
-<h2 id="62-指令周期"><a class="markdownIt-Anchor" href="#62-指令周期"></a> 6.2 指令周期</h2>
-<p>指令执行时，首先以PC为地址访问主存取指令，同时更新PC的值作为后续指令的地址。若为分支指令且满足分支条件，则重新修改PC值作为分支目标地址，否则经历<font color=red>取操作数、执行指令、存操作数</font>的基本过程。</p>
-<ul>
-<li>时钟周期=节拍脉冲=震荡周期，可以完成一次微操作</li>
-<li>机器周期=CPU周期，从主存读出一条指令的最短时间，可以完成一次复杂操作</li>
-<li>指令周期，从主存取一条指令并执行指令的时间，由若干机器周期构成，机器周期包含若干时钟周期。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png" alt="" /></p>
-<p>时间控制的方式：</p>
-<ul>
-<li>定长指令周期：早期三级时序系统，机器周期数固定，节拍数固定，按照机器周期同步，mips单周期。</li>
-<li>变长指令周期：现代时序系统，机器周期数可变，节拍数可变，按照时钟周期同步，mips多周期。</li>
-</ul>
-<p>将一条指令从取出到执行完成所需要的时间称为指令周期，指令周期可分为：</p>
-<ul>
-<li>取指周期：以PC的内容为地址从主存中取出指令，并计算后续指令的地址。对于变长指令需要经过指令译码得到指令的实际字节长度之后才能计算并修改PC的值。</li>
-<li>译码/取操作数周期：对指令寄存器中的指令字进行指令译码，识别指令类型。根据指令地址码生成操作数有效地址，然后访问相应寄存器或主存单元。若为间接寻址则还需要加入间址周期（访存周期）得到操作数的地址。该周期内不能并行读取操作数，因此可能会经历多次取操作数周期。</li>
-<li>执行周期：向运算器等部件发送操作控制命令，对已经取出的操作数进行加工处理，并将处理状态送入PSW中。不同指令的执行周期不同。</li>
-<li>写回周期：将运算结果写回到目的寄存器或存储器中，将运算结果写回存储器较慢。</li>
-</ul>
-<h2 id="63-数据通路及指令操作流程"><a class="markdownIt-Anchor" href="#63-数据通路及指令操作流程"></a> 6.3 数据通路及指令操作流程</h2>
-<p>数据通路——执行部件之间传输信息的路径。</p>
-<ul>
-<li>通路的建立由控制信号控制，受到时钟驱动。</li>
-<li>不同指令，同一指令在执行的不同阶段的数据通路不同。</li>
-<li>数据通路可以分为共享通路和专用通路。</li>
-</ul>
-<h3 id="631-数据通路模型与定时"><a class="markdownIt-Anchor" href="#631-数据通路模型与定时"></a> 6.3.1 数据通路模型与定时</h3>
-<p>时钟信号上升沿时刻到寄存器输出稳定时刻之间有一段时延，称为<font color=red>寄存器延迟（clk_to_q）</font>。数据处理单元处理寄存器内容有一定时延，将所有输出信号稳定的延迟，也即所需稳定时间最长的输出信号的稳定时间，称为<font color=red>关键路径延迟（max）</font>。将计算结果保存到寄存器之后还需要稳定一段时间才能够接受下一个上升沿，称为<font color=red>寄存器建立时间（setup）</font>。时钟上升沿到来之前的数据输入需要保持一定时间的稳定，称为<font color=red>寄存器保持时间（hold）</font>。故<font color=red>数据通路的最小时钟周期必须大于T<sub>clk_to_q</sub>+T<sub>max</sub>+T<sub>setup</sub></font>，其中T<sub>max</sub>占主导。</p>
-<p><img src="https://img-blog.csdnimg.cn/de0f98f42136464585ebed5fce96d6d5.png" alt="" /></p>
-<p>保持时间违例：两个寄存器在一个上升沿同时更新新值，其中一个寄存器经过寄存器延迟和最短路径延迟（T<sub>min</sub>）到达另一个寄存器输入端，为了不让该信号修改寄存器的值，应该满足<font color=red>寄存器保持时间T<sub>hold</sub>&lt;寄存器延迟T<sub>clk_to_q</sub>+组合逻辑最短路径延迟T<sub>min</sub></font>。</p>
-<h3 id="632-单总线结构的数据通路"><a class="markdownIt-Anchor" href="#632-单总线结构的数据通路"></a> 6.3.2 单总线结构的数据通路</h3>
-<p>数据通路的分类：</p>
-<ul>
-<li>共享通路（总线型）：主要部件都连接在公共总线上，各个部件之间通过总线进行数据传输。其结构简单，实现容易，但并发性较差，需要分时使用总线，效率较低。</li>
-<li>专用通路：并发度高，性能好，但设计复杂，成本高。可以看做多总线结构。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/3f0cfe89124c43659c4411dc548d251a.png" alt="" /></p>
-<p>CPU的运算器、控制器、寄存器堆等核心部件均由一条内部的公共总线连接起来，构成单总线结构的数据通路。这条内部公共总线称为CPU的内总线。将连接CPU、内存及输入输出设备等部件构成计算机系统的总线称为系统总线或外总线。</p>
-<p>考虑执行指令add r0, r1，首先需要从寄存器堆中取出两个寄存器的值并输入到ALU的两个输入端，ALU的两个输入端连接有两个锁存器，可以分别保存两个寄存器的值，取出两个寄存器的值需要使用两个时钟周期，两次取值操作分别占用总线一个周期。之后ALU计算得到结果，通过总线输入到寄存器堆中，共需要3个周期和2个锁存器。</p>
-<p>如果能够添加一条总线直接连接ALU的一个输入和寄存器堆，则只需要两个时钟周期即可执行上述指令。第一步将一个寄存器的值保存到ALU一端的锁存器，第二步第二条总线将第二个寄存器的值输入到ALU另一端，ALU进行计算并通过第一条总线输出到寄存器堆中。共需2个时钟周期和1个锁存器。</p>
-<h4 id="指令执行示例"><a class="markdownIt-Anchor" href="#指令执行示例"></a> 指令执行示例</h4>
-<p><strong>LOAD R0, 6#</strong><br />
-功能：将主存地址为6的内容写入R0寄存器</p>
-<ul>
-<li>取指令数据通路：
-<ul>
-<li>T1：PC保存到AR和X中，准备访问AR处地址的指令内容</li>
-<li>T2：X+1保存到Z中，程序计数器+1，准备将Z写到PC，Z即为下一条指令地址</li>
-<li>T3：Z保存到PC，从主存取出指令内容保存到DR</li>
-<li>T4：将DR保存到IR，至此取指完成，指令内容已经被保存到IR。</li>
-</ul>
-</li>
-<li>译码周期：略</li>
-<li>执行周期，完成指令要求的任务，即首先取内存地址为6的数据，再保存到寄存器R0
-<ul>
-<li>T1：将IR中的地址操作数部分（值为6）保存到AR，X保存PC的值</li>
-<li>T2：主存读取</li>
-<li>T3：主存将读取的数据保存到DR</li>
-<li>T4：将DR的内容保存到寄存器R0</li>
-</ul>
-</li>
-</ul>
-<p><strong>MOVE R1, 10</strong></p>
-<ul>
-<li>执行周期：
-<ul>
-<li>T1：将指令中的地址操作数部分（值为10）保存到R1</li>
-</ul>
-</li>
-</ul>
-<p><strong>ADD R0, R1</strong></p>
-<ul>
-<li>执行周期
-<ul>
-<li>T1：将寄存器R0保存到X</li>
-<li>T2：R1的值输出到总线，ALU接收X和总线的数据，计算结果并保存到Z</li>
-<li>T3：将Z的值写入到R0</li>
-</ul>
-</li>
-</ul>
-<p><strong>STORE R0, (R2)</strong></p>
-<ul>
-<li>执行周期，将R0的值保存到地址为R2的内存空间
-<ul>
-<li>T1：将R2的值保存到AR</li>
-<li>T2：将R0的值保存到DR</li>
-<li>T3：将DR的值写入到内存地址为AR的空间</li>
-</ul>
-</li>
-</ul>
-<p><strong>JMP 1000</strong></p>
-<ul>
-<li>执行周期
-<ul>
-<li>T1：将IR中的地址操作数（1000）保存到PC</li>
-</ul>
-</li>
-</ul>
-<h2 id="65-硬布线控制器"><a class="markdownIt-Anchor" href="#65-硬布线控制器"></a> 6.5 硬布线控制器</h2>
-<p>硬布线控制器可以看成产生固定时序控制信号的逻辑电路。<br />
-输入信号：指令译码，时钟信号，反馈信号<br />
-输出信号：功能部件控制信号序列<br />
-设计目标：最少元件，最快速度<br />
-理论基础：布尔代数<br />
-组成器件：门电路、触发器</p>
-<ul>
-<li>定长指令周期：使用2个机器周期，8个时钟周期，由于一些指令并不需要所有8个时钟周期，因此速度较慢（会浪费时间），但设计简单</li>
-<li>变长指令周期：时钟周期数量可变，速度快，但设计较复杂</li>
-</ul>
-<p>硬布线控制器模型：包含指令寄存器和指令译码器，时序发生器、硬布线控制器组合逻辑单元等几个部分，其中硬布线控制器组合逻辑单元用于产生指令执行所需要的所有控制信号序列，是控制器的核心。<br />
-输入来自：</p>
-<ul>
-<li>指令译码器的输出</li>
-<li>执行部件以及IO总线的反馈信号</li>
-<li>时序发生器的状态周期电位信号和节拍电位信号</li>
-</ul>
-<p>输出信号：微操作控制信号序列，可以看做所有输入信号的逻辑函数，每个控制信号都是由不同的指令译码信号、状态周期信号、节拍定位信号、状态反馈信号构成的逻辑与操作的和。（积之和范式）</p>
-<p>固定指令周期硬布线控制器设计过程</p>
-<ul>
-<li>设计三级时序产生器：所有指令固定机器周期数，节拍数</li>
-<li>列出所有机器指令的指令周期流程图，明确每个节拍的控制信号</li>
-<li>找出产生同一个微操作控制信号的条件</li>
-<li>写出各个微操作控制信号的布尔表达式</li>
-<li>化简各个表达式</li>
-<li>利用组合逻辑电路实现</li>
-</ul>
-<p>可变周期硬布线控制器设计步骤</p>
-<ul>
-<li>列出所有机器指令的指令周期流程图，明确每一个节拍的控制信号</li>
-<li>绘制指令执行状态转换图</li>
-<li>根据状态转换图构建状态集真值表，实现有限状态机组合逻辑</li>
-<li>实现控制器组合逻辑电路</li>
-</ul>
-<h2 id="66-微程序控制器"><a class="markdownIt-Anchor" href="#66-微程序控制器"></a> 6.6 微程序控制器</h2>
-<h3 id="661-微程序控制器的基本概念"><a class="markdownIt-Anchor" href="#661-微程序控制器的基本概念"></a> 6.6.1 微程序控制器的基本概念</h3>
-<p>硬布线为同步逻辑，设计复杂，速度快，贵，且难以修改。一条指令有多个时钟周期，一个时钟周期对应一个状态，一个状态对应一组并发信号。<br />
-微程序为存储逻辑，设计简单，速度慢，偏移，容易修改。将并发信号实现保存为微指令，一条指令对应于多条微指令，状态等同于存储器地址。</p>
-<p>微地址寄存器μAR为控制存储器提供微指令地址，初始化为0，控制存储器0号单元应该为取指令微程序的第一条微指令。</p>
-<h3 id="662-微程序控制器组成原理"><a class="markdownIt-Anchor" href="#662-微程序控制器组成原理"></a> 6.6.2 微程序控制器组成原理</h3>
-<p>利用软件方法设计硬件的技术，将完成指令所需的控制信号按照格式编写为微指令，并存放到<font color=red>控制存储器（控存ROM）</font>，一条机器指令对应于一段微程序，微程序中有多条微指令。<br />
-将存储技术与程序设计相结合，可以回避复杂的同步时序逻辑设计。</p>
-<p>单总线CPU的微指令构造：</p>
-<ul>
-<li>操作控制字段：用于存储操作控制信号，每一位对应一个控制信号，也称微命令，可以同时给出多个操作信号。</li>
-<li>顺序控制字段：用于控制微程序的执行顺序，判别逻辑为0，下一条微指令地址从<font color=red>下址字段</font>获取，否则按照约定规则生成。一个微程序的最后一条微指令的判别字段非零，代表地址跳转。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/b777065d983a410c8cc1d0af5fcd6870.png" alt="" /></p>
-<h3 id="663-微程序控制器设计"><a class="markdownIt-Anchor" href="#663-微程序控制器设计"></a> 6.6.3 微程序控制器设计</h3>
-<p>微指令包含操作控制字段和顺序控制字段，一条微指令对应于一个时钟周期，微指令操作控制字段的信号在该时钟周期之内有效。指令需要多少时钟周期就包含多少微指令。操作控制字段的每一位都代表一个控制结构的开启与否。在一个时钟周期内，需要开启的控制字段在操作控制字段中的对应位会被设置为1。</p>
-<p>上面的顺序控制字段中P<sub>1</sub>表示下址字段是否有效，在取指周期的最后一个时钟周期，下址字段就无效，因为下一条微命令的地址不确定。其他的微程序的最后一个微命令的下址字段基本都为0。</p>
-<p>微指令设计原则：</p>
-<ul>
-<li>有利于缩短微指令字长度</li>
-<li>有利于减少控存容量</li>
-<li>有利于提高微程序执行速度</li>
-<li>有利于对微程序进行修改</li>
-<li>有利于提高微程序设计的灵活性</li>
-</ul>
-<p>微指令的直接表示法简单直观，便于输出控制，但微指令长度太长，控存容量大。优化方法：</p>
-<ul>
-<li>修改直接表示为编码表示，压缩互斥性的微指令，如4个互斥性的微指令可以不用4个二进制位表示，而是用2个二进制位替换。</li>
-<li>去掉下址字段，采用μPC=μPC+1的方式生成微指令地址。
-<ul>
-<li>微指令地址的形成方法有两种，一种是通过下址字段，另一种就是计数器法。前者微指令长，但控存容量大，后者微指令短，但需要加法器。</li>
-</ul>
-</li>
-<li>修改水平型微指令为垂直型微指令，牺牲了并行性。
-<ul>
-<li>水平型微指令：在一个微指令周期内能够同时给出多个微命令的微指令。并行操作能力强，效率高，灵活性强，字较长，微程序短，控存容量大，性能好。</li>
-<li>垂直型微指令：采用完全编码方法，将全部微命令编码化。字长短，微程序长，控存容量小，性能差，与指令相似，易于掌握，已经基本被淘汰。</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2235,7 +2306,7 @@ CPU的主要功能：程序控制、操作控制、时序控制、异常控制�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">145</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2293,7 +2364,7 @@ CPU的主要功能：程序控制、操作控制、时序控制、异常控制�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:38</span>
+    <span title="Reading time total">19:44</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

@@ -150,6 +150,640 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第4,5章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-02 23:47:13 / Modified: 23:48:42" itemprop="dateCreated datePublished" datetime="2023-03-02T23:47:13+08:00">2023-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-4-网络层数据平面"><a class="markdownIt-Anchor" href="#chapter-4-网络层数据平面"></a> Chapter 4 网络层——数据平面</h1>
+<h2 id="41-网络层概述"><a class="markdownIt-Anchor" href="#41-网络层概述"></a> 4.1 网络层概述</h2>
+<p><font color=red>网络层的任务：完成主机到主机之间的通信</font></p>
+<p>网络层是五层架构中的第三层，为运输层（进程之间的通信）提供支持。</p>
+<p>为实现从源主机到目标主机成功的移动数据分组，整个路径上每一台分组交换机上均需要实现网络层，才能实现通信。</p>
+<p>网络层功能：</p>
+<ul>
+<li>在全局范围内对主机通信进行选路，结果反映为分组交换机上的转发表（理解为每一台设备尝试获取整个网络的拓扑结构，控制层面）</li>
+<li>分组交换机上的网络层根据转发表以及分组头部信息，将分组向合适的链路进行转发（数据层面）</li>
+<li>对于面向连接的网络层服务，提供连接建立的功能</li>
+</ul>
+<p>分组交换机分类：</p>
+<ul>
+<li>根据链路层首部信息进行转发的——链路层结点交换机</li>
+<li>根据网络层首部信息进行转发的——路由器</li>
+</ul>
+<p><font color=red>注意：链路层结点交换机和路由器的区别的理解：链路层在网络层之下，通过以太网（Ethernet）协议工作，链路层结点交换机根据MAC地址找到主机，而路由器通过IP地址找到主机。在一个内网之中，可能存在有多个交换机，交换机在内网主机之间的通信效率高于路由器（主机与路由器直接相连也可以实现交换机的功能，但效率不如交换机）。</font>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_32045201/article/details/78305586?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166865182216800184174368%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=166865182216800184174368&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-78305586-null-null.142%5Ev63%5Econtrol,201%5Ev3%5Econtrol_1,213%5Ev2%5Et3_esquery_v1&amp;utm_term=%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%92%8C%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E5%8C%BA%E5%88%AB&amp;spm=1018.2226.3001.4187">路由器与交换机的区别与联系_WhataNerd的博客-CSDN博客_交换机和路由器的区别</a></p>
+<p>网络层可能提供的服务：</p>
+<ul>
+<li>确保交付：确保分组最终到达目的地（与以太网协议不同，以太网协议为尽力传输）</li>
+<li>具有时延上界的确保交付：在时延上限以内交付</li>
+<li>有序分组交付：以发送顺序到达</li>
+<li>确保最小带宽：以低于特定比特率速率传输时分组不会丢失而且在时延内可达</li>
+<li>确保最大时延抖动：连续分组间隔时间不超过特定值</li>
+<li>安全性服务：机密性、完整性和源鉴别（如TLS）</li>
+</ul>
+<p>网络层提供的服务可以分为：（下面两种只能提供一种，而运输层可通知提供两种）</p>
+<ul>
+<li>面向有连接的服务：虚电路，需要事先握手</li>
+<li>面向无连接的服务：数据报，不需事先握手</li>
+</ul>
+<p><font color=red>网络层与运输层中相应服务的区别</font>：</p>
+<ul>
+<li>网络层是向运输层提供主机到主机的服务，而运输层是向应用层提供进程到进程的服务。</li>
+<li>网络层仅提供上述两种服务中的一种，不同时提供两种，而运输层则同时提供两种。</li>
+<li>运输层的服务在网络边缘的端系统中实现，而网络层的服务则在整个网络中实现，含路由器。</li>
+</ul>
+<h4 id="虚电路网络"><a class="markdownIt-Anchor" href="#虚电路网络"></a> 虚电路网络</h4>
+<p>虚电路的目标是使首发双方之间的路径表现得如同电话线路一般。<br />
+工作机制：</p>
+<ul>
+<li>数据开始流动之前，呼叫建立，流动结束后要断开</li>
+<li>每一个分组携带虚电路的标识（而不是目的主机的地址）</li>
+<li>路径上的每一个路由器必须为进行中的连接维持连接状态信息</li>
+<li>链路，路由器资源可以分配给虚电路，为了达到类似线路交换的性能</li>
+</ul>
+<p>虚电路的组成：</p>
+<ul>
+<li>从源到目的主机的路径，含有一系列链路和路由器</li>
+<li>VC号，沿着该路径的每段链路的一个号码
+<ul>
+<li>一条虚电路在每条链路上具有不同的VC号</li>
+<li>每台中间路由器必须用一个新的VC号替代每个传输分组的VC号</li>
+</ul>
+</li>
+<li>沿着该路径的每台路由器中的转发表
+<ul>
+<li>创建一条新的虚电路，转发表增加一个新表项</li>
+<li>终止一条虚电路，表中相应项被删除</li>
+</ul>
+</li>
+</ul>
+<h4 id="数据报网络"><a class="markdownIt-Anchor" href="#数据报网络"></a> 数据报网络</h4>
+<p>数据报网络在网络层没有连接建立过程。路由器在端到端的连接中不维护连接状态信息（在网络层不存在“连接”的概念）。传输报文时使用目的主机地址信息，同一对主机之间的报文可能会走不同的路径。</p>
+<p>虚电路网络与数据报网络的对比：虚电路网络将重点放在网络，数据报网络将重点放在终端。数据报网络互联不同类型的网络更加容易，启用新服务的速度更快更简单。</p>
+<h2 id="42-路由器工作原理"><a class="markdownIt-Anchor" href="#42-路由器工作原理"></a> 4.2 路由器工作原理</h2>
+<p>路由器关键组成：</p>
+<ul>
+<li>运行路由算法/协议（如RIP选路算法）</li>
+<li>从入口到出口的转发</li>
+</ul>
+<p><font color=red>路由器的分散式交换：</font></p>
+<ul>
+<li>按照给定的目标地址，使用输入端口内存中存储的路由表，查找输出端口</li>
+<li>路由器需要以“线路速度”完成输入输出端口的处理</li>
+<li>如果数据报到达的速度超过了输入输出端口将数据报转交给交换结构的速度，则会产生排队现象。
+<ul>
+<li>基于目标的转发：仅基于目标IP地址的转发，以<font color=red>最长前缀匹配方法</font>确定向何处转发。</li>
+<li>通用转发：基于任意首部字段值转发</li>
+</ul>
+</li>
+</ul>
+<h3 id="输入端口"><a class="markdownIt-Anchor" href="#输入端口"></a> 输入端口</h3>
+<p>输入端口排队：</p>
+<ul>
+<li>输入端口处理速率超过交换结构速率时产生</li>
+<li>当输入缓冲区溢出时可能会导致排队丢包和时延</li>
+<li><font color=red>线头阻塞</font>：在输入队列中排队的分组必须等待通过交换结构发送，因为它被位于线头的另一个分组阻塞了。</li>
+</ul>
+<p>交换结构工作原理：</p>
+<ul>
+<li>经总线交换：输入端口通过一根共享总线直接传送到输出端口，缺点是<font color=red>总线的带宽是交换速度的瓶颈</font>。一次处理一个分组。</li>
+<li>经内联网络：将长度变化的IP分组分片为固定尺寸的信元，通过交换结构对信元进行转发。克服了总线带宽的限制。</li>
+<li>经内存交换：在输入端口和输出端口之间的交换是在CPU的直接控制下完成的。分组被拷贝到系统内存中，CPU提出报头中的目标地址，查找路由表中的输出接口，将数据包拷贝到输出接口。其转发速度受限于内存的带宽（吞吐量&lt;带宽/2），一次转发一个分组。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/2cd2649418ff4561b35808c705a039e2.png" alt="" /></p>
+<h3 id="输出端口"><a class="markdownIt-Anchor" href="#输出端口"></a> 输出端口</h3>
+<p>输出端口需要缓存管理和调度原则。当交换结构将分组交付给输出端口的速率超过输出链路速率时进行缓存管理，在数据报队列中选择数据报进行传输时需要调度原则。</p>
+<p>输出端口排队：</p>
+<ul>
+<li>当通过交换结构到达的分组速率超过输出链路速率时产生。</li>
+<li>需要对分组进行缓存，超过缓存缓冲区大小会造成排队和丢包。</li>
+</ul>
+<h3 id="拥塞问题的解决方法"><a class="markdownIt-Anchor" href="#拥塞问题的解决方法"></a> 拥塞问题的解决方法</h3>
+<p>缓冲区设置问题：</p>
+<ul>
+<li>经过试验认为对于有N条TCP连接经过的链路而言，缓冲区大小应为：$$B=\frac{\operatorname{RTT}\times R}{\sqrt{N}}$$其中R为带宽，RTT为往返时间。</li>
+</ul>
+<p>输出端口分组调度策略：</p>
+<ul>
+<li>先来先服务策略（First Come First Serve，FIFO的队列策略）
+<ul>
+<li>当缓冲区满时，有几种丢弃方法：
+<ul>
+<li>尾部丢弃</li>
+<li>按照优先级丢弃</li>
+<li>随机丢弃</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>优先级排队策略
+<ul>
+<li>针对高优先级和低优先级的数据报创建多个不同队列</li>
+</ul>
+</li>
+<li>循环调度策略
+<ul>
+<li>循环扫描不同类的队列，轮流发送数据包</li>
+</ul>
+</li>
+<li>加权公平队列策略
+<ul>
+<li>每一个类赋予对应的权重，在一个周期之内可以获得一定数量的服务，既可以保证高优先级队列获得最大优先权，又可以防止低优先级队列等待时间过长。</li>
+</ul>
+</li>
+</ul>
+<p>分组丢弃策略</p>
+<ul>
+<li>被动策略
+<ul>
+<li>丢弃尾部</li>
+<li>随机丢弃已排队分组</li>
+</ul>
+</li>
+<li>主动策略
+<ul>
+<li>随时计算平均队列长度，并设置一个最小和最大阈值。</li>
+<li>当队列长度小于最小阈值时，无条件允许分组入队列。</li>
+<li>当队列长度大于最大阈值时，无条件禁止分组入队列。</li>
+<li>当队列长度在两个阈值之间时，按照概率标记或丢弃分组。</li>
+</ul>
+</li>
+</ul>
+<h2 id="43-网际协议"><a class="markdownIt-Anchor" href="#43-网际协议"></a> 4.3 网际协议</h2>
+<p><font color=red><strong>IPv4协议数据报格式：</strong></font><br />
+<img src="https://img-blog.csdnimg.cn/4d9498e0c9024f3a908ffc12db15464f.jpeg#pic_center" alt="" /></p>
+<h3 id="ip分片和重组"><a class="markdownIt-Anchor" href="#ip分片和重组"></a> IP分片和重组</h3>
+<p>MTU：最大传送单元，一个网络层数据包的最大长度（包含网络层协议头）</p>
+<p>受限于MTU，大的数据包在一些链路中会被拆分为多个数据包。<font color=red>网络中的交换机都有可能会拆分数据包，但只有目标主机会对数据包进行重组，具有较大MTU的链路即使接收到小数据包也不会进行重组。</font> 重组后由于数据包头部数量增加，因此总的传输的字节数量会增加。</p>
+<p><font color=red><strong>IP地址</strong></font></p>
+<ul>
+<li>结构：网络号（子网号）+主机号，在同一个网络下的主机和路由器的IP地址中的网络号必须相同，同一网络下的主机可以直接通信。</li>
+<li>接口：连接主机、路由器之间的物理链路，一般路由器有多个接口，主机也有可能有多个接口，IP地址只和接口有关而与主机、路由器没有太多关联。</li>
+<li>传统形式下的IP地址分类：
+<ul>
+<li>A类：0.0.0.0~127.255.255.255，网络号7位，主机号24位</li>
+<li>B类：128.0.0.0~191.255.255.255，网络号14位，主机号16位</li>
+<li>C类：192.0.0.0~223.255.255.255，网络号21位，主机号8位</li>
+<li>D类：224.0.0.0~239.255.255.255，组播地址</li>
+<li>E类：240.0.0.0~255.255.255.255，保留</li>
+</ul>
+</li>
+<li>路由器的IP地址：为完成分组转发功能，路由器至少拥有两个IP地址，接入不同的子网之中，用于不同子网之间的通信。</li>
+<li>子网划分方法：在主机号中借用一部分位数作为子网号</li>
+<li>子网掩码：对内用于指示网络号和子网号的位置，对外可以隐藏子网的存在。获得方法：通过在网络号的子网号相应的位置全部置为1，主机号相应的位置全部置为0，即可得到子网掩码。</li>
+<li>在同一个局域网上的主机或路由器的IP地址中的网络号必须是一样的，图中的网络号就是IP地址中的net-id。路由器总是具有两个或两个以上的IP地址，路由器的每一个接口都有一个不同网络号的IP地址。</li>
+</ul>
+<h3 id="ipv4编址"><a class="markdownIt-Anchor" href="#ipv4编址"></a> IPv4编址</h3>
+<p>网络地址=IP地址 逻辑与 子网掩码。<br />
+采用子网掩码之后，路由器的寻址过程将演变为一个两级寻址过程：</p>
+<ul>
+<li>检查分组目的IP地址中的网络号，若网络号不是本网络，则从路由表中找出相应的的转发节点地址将其转发出去。</li>
+<li>检查子网号：当网络号是本网络时，路由器将检查子网号，向相应的子网转发此分组。</li>
+</ul>
+<p>IP地址扩展：构造超网，从网络号中借用一部分位数作为主机号。</p>
+<h4 id="cidr"><a class="markdownIt-Anchor" href="#cidr"></a> CIDR</h4>
+<p>无类别域间路由选择。应用于地址空间的利用率低，地址空间面临耗尽时。</p>
+<p>编址格式：IP地址::={网络前缀，主机号}<br />
+斜线记法：192.168.0.1/24<br />
+简写记法：10.0.0.0/10可以简写为10/10</p>
+<p>最长前缀匹配：</p>
+<ul>
+<li>使用CIDR时，路由表中的每一个项目由“网络前缀”和“下一条地址”组成，在查找路由表时可能会得到不止一个匹配结果。</li>
+<li>应当从匹配结果中选择具有最长网络前缀的路由：最长前缀匹配。</li>
+<li>网络前缀越长，其地址块就越小，因而路由就越具体。</li>
+<li>最长前缀匹配又被称为最长匹配或最佳匹配。</li>
+</ul>
+<p>主机获得IP地址的方法：手工配置，或使用DHCP协议动态获取。</p>
+<h4 id="dhcp动态主机配置协议"><a class="markdownIt-Anchor" href="#dhcp动态主机配置协议"></a> DHCP：动态主机配置协议</h4>
+<p>允许主机在加入网络时动态地从网络服务器中获取其网络地址。</p>
+<ul>
+<li>能够在使用过程中更新地址</li>
+<li>允许地址重用</li>
+<li>支持移动用户</li>
+</ul>
+<p>主要流程</p>
+<ul>
+<li>主机广播DHCP发现报文。</li>
+<li>DHCP服务器使用“DHCP提供”报文进行应答（广播方式，由于现在主机还没有获取IP地址，因此只能广播）。</li>
+<li>主机使用DHCP请求报文请求IP地址。</li>
+<li>DHCP服务器使用DHCP ACK报文响应。</li>
+</ul>
+<p>DHCP除了可以获取IP地址，还可以获取网关地址、DNS地址、子网掩码。其<font color=red>工作在应用层</font>，是引导程序协议的一种，属于局域网的网络协议，使用UDP协议工作。<br />
+DHCP有3个端口，67和68作为正常的DHCP服务端口，分别是服务器和客户端的服务端口，546号端口用于DHCPv6客户端，这是为了特别开启DHCP failover服务。</p>
+<h3 id="网络地址转换nat"><a class="markdownIt-Anchor" href="#网络地址转换nat"></a> 网络地址转换（NAT）</h3>
+<p>其目的是让本地网络只使用一个IP地址就可以和外部网络相连，且不需要从ISP获取大批的IP地址，所有的设备可以使用同一个IP地址，可以在不通知外部网络的情况下改变内网主机的IP地址，即使改变了ISP也无需改变内网主机的IP地址，且内网主机对于外网主机是不可见的，不可寻址的。</p>
+<p>实现方法：</p>
+<ul>
+<li>发送数据报：将每个外出报文的源IP地址和端口号替换为NAT的IP地址以及新的端口号，远程客户机或服务器将以NAT IP地址以及新的端口号作为目的地址进行响应。</li>
+<li>网关存储每一个地址转换对，在接收数据报时根据NAT转换表将每一个进入报文的NAT IP地址和端口号替换为相应的源IP地址以及端口号。</li>
+</ul>
+<p>三种地址转换方式：</p>
+<ul>
+<li>静态NAT：一个本地地址对应于一个全球地址</li>
+<li>动态NAT：一个全球地址对应于多个本地地址</li>
+<li>端口NAT：一个本地地址的端口对应到一个全球地址的端口</li>
+</ul>
+<p>争议：</p>
+<ul>
+<li>端口号是用于进程编址而不是用于主机编址的</li>
+<li>路由器仅应当处理高达第三层的分组</li>
+<li>NAT协议违反了端到端原则，即主机彼此应当相互直接对话，结点不应该介入。</li>
+<li>应该使用IPv6来解决IP地址的短缺问题</li>
+</ul>
+<h4 id="icmp因特网控制报文协议"><a class="markdownIt-Anchor" href="#icmp因特网控制报文协议"></a> ICMP：因特网控制报文协议</h4>
+<p>用于主机、路由器、网关之间交换网络层信息，其传递的信息包括：</p>
+<ul>
+<li>错误报告，如主机、网络、端口、协议不可达等</li>
+<li>回声请求/回答，如ping</li>
+</ul>
+<p>从体系结构上看其位于IP层之上，被封装在IP分组中。报文种类有两种：ICMP差错报告报文和询问报文。</p>
+<h2 id="52-路由选择算法"><a class="markdownIt-Anchor" href="#52-路由选择算法"></a> 5.2 路由选择算法</h2>
+<p><font color=red>默认路由器</font>：一台主机直接连接到的路由器<br />
+<font color=red>源路由器</font>：源主机的默认路由器<br />
+<font color=red>目的路由器</font>：目的主机的默认路由器</p>
+<p>选路算法的目的：</p>
+<ul>
+<li>给定一组路由器以及连接路由器的链路，从中找到一条从源路由器到目标路由器的“好的”路径，这条路径通常需要拥有最低的成本。</li>
+</ul>
+<p>选路算法分类：</p>
+<ul>
+<li>根据信息是全局性还是分散性的进行分类
+<ul>
+<li>全局选路算法
+<ul>
+<li>所有路由器都知道整个网络的拓扑图以及链路的费用信息</li>
+<li>链路状态算法</li>
+</ul>
+</li>
+<li>分散式选路算法
+<ul>
+<li>每一个路由器仅有与其相连的链路的费用信息</li>
+<li>通过迭代计算过程与相邻结点交换信息</li>
+<li>距离向量算法</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>根据信息是静态还是动态进行分类
+<ul>
+<li>静态选路算法
+<ul>
+<li>随着时间的流逝，路由的变化很慢</li>
+</ul>
+</li>
+<li>动态选路算法
+<ul>
+<li>路由信息可以很快地发生变化</li>
+<li>需要对路由信息进行周期性的更新</li>
+<li>可以相应拓扑或链路费用的变化</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>根据是否对负载敏感进行分类
+<ul>
+<li>负载敏感算法
+<ul>
+<li>链路费用会动态地变化以反映出链路的当前状况</li>
+</ul>
+</li>
+<li>负载迟钝算法
+<ul>
+<li>链路费用不明显地反映链路的当前状况</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="dijkstra算法"><a class="markdownIt-Anchor" href="#dijkstra算法"></a> Dijkstra算法</h3>
+<p>条件：</p>
+<ul>
+<li>所有结点都知道网络拓扑和链路费用
+<ul>
+<li>通过链路状态广播获得信息</li>
+<li>所有结点具有该网络的同一个完整的视图</li>
+</ul>
+</li>
+<li>计算从某结点到网络中所有其他结点的最低费用
+<ul>
+<li>为该结点提供转发表</li>
+</ul>
+</li>
+<li>迭代：经过算法的K次迭代之后，可以知道到K个目的节点的最低费用路径。</li>
+<li>通过跟踪前一跳结点可以构造最短路径树。</li>
+</ul>
+<p>复杂性：</p>
+<ul>
+<li>对于第一次迭代，需要搜索所有的n个结点以确定出结点w，w具有最低费用</li>
+<li>在所有迭代中需要搜索的结点总数为n(n+1)/2，所以链路状态算法在最差情况下的复杂性为O(n<sup>2</sup>)</li>
+<li>该算法的一种更复杂的实现（堆）可以降到O(nlogn)</li>
+</ul>
+<p>缺点：当路径的价值在不断变化时，每一次都需要重新进行计算，耗费资源。<br />
+解决方案：</p>
+<ul>
+<li>强制链路费用不依赖于所承载的流量，但这无法解决高拥塞的问题</li>
+<li>确保并非所有的路由器同时运行LS算法（链路状态路由选择算法），这样因特网上的路由器能够自同步，随机化路由器发送链路通告的时间。</li>
+</ul>
+<h2 id="53-ospf协议"><a class="markdownIt-Anchor" href="#53-ospf协议"></a> 5.3 OSPF协议</h2>
+<p>OSPF协议是公开发表的，用于因特网中自治系统内部的路由选择。<br />
+最短路径优先是因为使用了Dijkstra提出的最短路径算法SPF。这是一个分布式的链路状态协议。</p>
+<p>链路状态在路由器之间交流使用的方法：洪泛法，其向本自治系统中所有路由器发送信息，<font color=red>发送的信息就是与本路由器相邻的所有路由器的链路状态</font>。只有当链路状态发生变化时，路由器采用洪泛法向所有路由器发送此信息。</p>
+<p>由于各个路由器之间频繁交换链路状态信息，所有的路由器最终都能够建立一个<font color=red>链路状态数据库</font>。这个数据库实际上描述了全网的拓扑结构图，在全网范围是一致的。OSPF的链路状态数据能够较快地进行更新，使得各个路由器能够及时更新其路由表。<font color=red>OSPF的更新过程收敛快就是其重要优点</font>。</p>
+<h4 id="ospf协议特点"><a class="markdownIt-Anchor" href="#ospf协议特点"></a> OSPF协议特点：</h4>
+<ul>
+<li>不强制如何设置链路权值的策略，但是提供对给定链路权值集合确定最低费用路径的机制。</li>
+<li>即使链路状态未发生变化，每30分钟广播一次链路状态。</li>
+<li>链路状态以OSPF通告形式封装于OSPF报文中，由IP分组承载，协议号89。</li>
+<li>OSPF路由器之间的交换都是经过鉴别的，以确认OSPF通告的真实性以防止伪造和篡改。</li>
+<li>OSPF通告具有序列号，可防止重放攻击。</li>
+<li>OSPF中支持多条具有相同费用的路径。</li>
+<li>OSPF支持多播选路和层次路由。</li>
+</ul>
+<h3 id="ospf距离向量选路算法"><a class="markdownIt-Anchor" href="#ospf距离向量选路算法"></a> OSPF距离向量选路算法</h3>
+<p>特点：迭代、分布、自我终止、异步<br />
+思想：</p>
+<ul>
+<li>d<sub>x</sub>(y)=min<sub>v</sub>{c(x, v)+d<sub>v</sub>(y)}</li>
+<li>每一个路由器中都有一张路由表，包含3个内容：目的网络号、经过的邻居路由器、距离</li>
+<li>路由器定期向其邻居路由器传送路由表的拷贝</li>
+</ul>
+<p>路由表更新算法：将每条边的权值都定义为1</p>
+<ul>
+<li>路由器X得到相邻路由器Y的路由表，从而得知：Y到网络Z的最短距离为N</li>
+<li>如果路由器X没有到网络Z的路由条目，则添加一条经由路由器Y到网络Z距离为N+1的路由条目</li>
+<li>如果路由器X已经有到网络Z的路由条目，其距离为M，如果M&gt;N+1，则更新该条目为经由路由器Y到网络Z距离为N+1，否则不更新。</li>
+<li>特点：
+<ul>
+<li>好消息传播快，每一次发现距离更新的路径，都能够很快通知到邻居：
+<ul>
+<li>在t0时刻，y检测到链路费用变化，更新自己的距离向量，同时将这个变化通知给它的邻居</li>
+<li>在t1时刻，z收到来自y的更新报文并更新了自己的距离向量表，计算出到x的新的最低费用，并向邻居发送它的新距离向量</li>
+<li>在t2时刻，y收到来自z的更新并更新其距离向量表，Y的最低费用不变，因此y不发送任何报文给z。</li>
+</ul>
+</li>
+<li>坏消息传播慢，如果一条链路的权值增大，每一次更新只能让链路最短距离增加1，这会导致路由选择环路（P252）。解决方案：毒性逆转，即如果z通过y选路到达目的地x，则z通告y其到x的距离为无穷大，这样在比较时不会产生上述情况，但仍然没有解决不可记数问题。涉及3个或更多结点的环路将无法使用毒性逆转技术检测到。</li>
+</ul>
+</li>
+</ul>
+<h3 id="链路状态路由选择算法ls-距离向量路由选择算法dv"><a class="markdownIt-Anchor" href="#链路状态路由选择算法ls-距离向量路由选择算法dv"></a> 链路状态路由选择算法LS &amp; 距离向量路由选择算法DV</h3>
+<ul>
+<li>从报文的复杂性来看：
+<ul>
+<li>LS：对于n个结点和E条链路，需要发送O(nE)个报文</li>
+<li>DV：只对直连的邻居发送报文</li>
+</ul>
+</li>
+<li>从收敛速度来看：
+<ul>
+<li>算法收敛时间依赖于许多因素，因此可变</li>
+<li>LS：是一个要求O(nE)个报文的O(n<sup>2</sup>)算法，可能会存在震荡</li>
+<li>DV：收敛时间不确定。可能会遇到环路选路和无穷记数问题</li>
+</ul>
+</li>
+<li>从健壮性来看：
+<ul>
+<li>LS：结点能够向其连接的链路广播不正确费用，每一个结点只计算自己的转发表</li>
+<li>DV：一个结点可以向任意或所有目的结点通告其不正确的最低费用路径，每一个结点的计算都会传递给它的邻居</li>
+</ul>
+</li>
+</ul>
+<h2 id="rip协议"><a class="markdownIt-Anchor" href="#rip协议"></a> RIP协议</h2>
+<ul>
+<li>相邻两点间链路上的费用定义为1，即只考虑源到目标经过多少个路由器，或多少“跳”</li>
+<li>一条路径的最大费用限制为15</li>
+<li>选路更新信息每30s在邻居之间以RIP响应报文的形式进行交换</li>
+<li>路由器经过180s没有收到来自某个邻居的RIP通告，则认为该邻居已经离线，修改选路表，向其他邻居广播</li>
+<li><font color=red>RIP是一个运行在UDP上的应用层协议</font>（端口520）</li>
+</ul>
+<h2 id="层次路由"><a class="markdownIt-Anchor" href="#层次路由"></a> 层次路由</h2>
+<p>当因特网规模过大时，路由器无法存储每一台主机的选路信息，路由表更新的报文广播太多占用带宽。另外路由器也需要有一个子网管理的功能，每个网络管理员可能希望能够按照自己的愿望进行管理其网络。</p>
+<p>解决方法：</p>
+<ul>
+<li>将路由器聚合到一个区域，形成一个自治系统（AS）</li>
+<li>在相同AS内的路由器可以全部运行同样的选路算法：自治系统内部选路协议，最常用的是内部网关协议IGP，包含RIP和OSPF</li>
+<li>在不同AS内的路由器可以运行不同的自治系统内部选路协议</li>
+<li>转发表是由AS内部选路算法与AS间选路算法共同决定的，AS内部选路算法为内部目的地址设置转发表信息，AS内部选路算法与AS外部选路算法共同为外部目的地址设置转发表信息</li>
+</ul>
+<p>自治系统间路由器的任务：<br />
+需要知道自己所在AS通过某个相邻的AS能够到达哪些AS，并将这些可达性信息向自身AS中的所有路由器传播。</p>
+<p>当从源到目标在AS粒度下只有一条路可选时，源知道其哪一个接口在到AS边缘路由器的最低费用路径上，因此将接口与目标作为一对放入转发表。如果不止一条路可选，那么源必须确定通过哪一个网关路由器转发报文，其策略是<font color=red>将报文发送到最近的路由器</font>，即热土豆选路原则</p>
+<h3 id="因特网中的as内层次路由层次ospf"><a class="markdownIt-Anchor" href="#因特网中的as内层次路由层次ospf"></a> 因特网中的AS内层次路由：层次OSPF</h3>
+<ul>
+<li>为了使得OSPF能够用于规模更大的网络，OSPF将一个自治系统再划分为若干个更小的范围，称为区域</li>
+<li>每一个区域都有一个32bit的区域标识符</li>
+<li>区域不能太大，一个区域内最好不要有200个以上路由器</li>
+<li>划分区域的好处就是将利用洪泛法交换链路状态信息的范围局限于每一个区域而不是整个自治系统，这就减少了整个网络上的通信量。</li>
+<li>在一个区域内部的路由器只知道本区域的完整网络拓扑，而不知道其他区域内的网络拓扑的情况。</li>
+<li>OSPF使用层次结构的区域划分。在上层的区域叫做主干区域。主干区域的标识符规定为0.0.0.0，主干区域的作用是用于连通其他在下层的区域。</li>
+</ul>
+<h3 id="因特网上的as间路由bgp4"><a class="markdownIt-Anchor" href="#因特网上的as间路由bgp4"></a> 因特网上的AS间路由：BGP4</h3>
+<ul>
+<li>在自治系统之间寻找最佳路由的代价很大，不现实，因此需要考虑有关策略。</li>
+<li>BGP为每一个AS提供一种手段，来处理
+<ul>
+<li>从相邻AS获取子网可达性信息</li>
+<li>向该AS内部所有路由器传播这些可达性信息</li>
+<li>基于该可达性信息和AS策略，决定达到子网的好路由</li>
+<li>注意BGP只是寻找一个较好的路由，而不一定是最好的路由</li>
+</ul>
+</li>
+</ul>
+<p>每一个自治系统的管理员要选择至少一个路由器作为该自治系统的BGP发言人，一般两个发言人都是通过一个共享网络连接在一起的，而BGP发言人往往是BGP边界路由器，但也可以不是。</p>
+<p>一个BGP发言人与其他自治系统中的BGP发言人交换路由信息，首先需要建立TCP连接，然后在此连接基础上交换BGP报文以建立BGP会话，利用BGP会话交换路由信息</p>
+<p>使用TCP连接能够提供可靠服务，也简化了路由选择协议。</p>
+<p>使用TCP连接交换路由信息的两个发言人彼此成为对方的邻站或对等站。</p>
+<ul>
+<li>BGP路由通告
+<ul>
+<li>一个AS可以集合多个前缀为一个，并使用BGP向其他AS通告单一前缀，则当前AS承诺它将沿着朝向该前缀的路径，转发指向该前缀的任何数据报。</li>
+</ul>
+</li>
+<li>选路算法
+<ul>
+<li>在不同AS的网关路由器之间使用eBGP，一个AS向另一个AS发送一个自其自身可达的前缀列表。</li>
+<li>而另一个AS的网关路由器使用iBGP对话向该AS中的其他路由器发布这些前缀。</li>
+<li>这个AS内的其他网关路由器使用eBGP会话将学习到的前缀信息发布到与其直接相连的其他AS的网关路由器中。</li>
+<li>当一个路由器得知一个新的前缀，它为该前缀在其转发表中创建一个表项。</li>
+</ul>
+</li>
+<li>路径和BGP路由
+<ul>
+<li>当路由器通告一个前缀时，它随着前缀包含一些BGP属性，前缀+属性=路由。</li>
+<li>两个重要属性：
+<ul>
+<li>AS_PATH：该属性包含了前缀的通告已经通过的那些AS</li>
+<li>NEXT_HOP：指明到下一跳AS的具体的路由器（从当前AS到下一跳AS之间可能有多条链路）</li>
+</ul>
+</li>
+<li>当一台网关路由器接收到一个路由器通告时，它使用输入策略决定是否接收或过滤该路由。</li>
+</ul>
+</li>
+<li>BGP路由选择
+<ul>
+<li>一台路由器可能知道到一条前缀的多条路由路，路由器必须在可能的路由之中选择一条。消除规则：
+<ul>
+<li>本地偏好值：策略决定，具有最高本地偏好值的路由将被选择</li>
+<li>最短AS-PATH：在余下的路由之中，具有最短AS-PATH的路由将被选择</li>
+<li>从余下的路由中，选择具有最靠近NEXT-HOP路由器的路由：热土豆路由。</li>
+<li>如果依然剩下多条路由，该路由器使用BGP标识来选择路由</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>步骤：</p>
+<ul>
+<li>路由器知晓前缀的存在性：通过BGP通告得知</li>
+<li>确定此前缀的转发端口：使用BGP路由选择确定最佳域间路由，使用IGP路由选择确定最佳域内路由，确定最佳路由的转发端口</li>
+<li>将（前缀，端口）表项放入转发表中</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/b0c5406d99d74ce6acff9f1951647399.png" alt="" /></p>
+<h2 id="ip组播"><a class="markdownIt-Anchor" href="#ip组播"></a> IP组播</h2>
+<p>组播：将数据分发给网络中处于同一个组的多台主机上的应用进程。</p>
+<h2 id="55-sdn"><a class="markdownIt-Anchor" href="#55-sdn"></a> 5.5 SDN</h2>
+<p>传统网络的问题：</p>
+<ul>
+<li>各个设备厂家网络层实现的方式各不相同，架构封闭，导致接口模糊封闭，功能单元界面不清晰。封闭架构导致设备制造商对新技术的驱动力不强，协议更新慢。</li>
+</ul>
+<p>路由器实现的控制平面：每一个路由器都具备独立的路由功能和数据转发功能，路由算法组件分布在不同的路由器上，彼此交互，计算生成转发表，构成分布式的控制平面。</p>
+<p>实现目标：</p>
+<ul>
+<li>确定性路由：从固定源到固定目标要求经过固定的路由</li>
+<li>负载均衡路由：从源到目标的多条路径上实现负载均衡</li>
+</ul>
+<p>解决方案：分层<br />
+路由控制功能从本地路由器分离，汇聚到远程控制器，与路由器中的本地控制代理进行交互，来计算转发表。</p>
+<p>SDN架构包含数据平面与控制平面，数据平面负责处理和转发数据包，根据转发状态和数据报头决定转发决策，而控制平面负责计算路由器的转发状态，确定数据报应该如何转发和转发到哪里，对路由、流量工程和防火墙状态管理控制，实现分布路由协议、手工配置或集中计算。不同的平面需要分别进行抽象，以满足SDN需求。</p>
+<p><img src="https://img-blog.csdnimg.cn/7ad8eca1f6f44aeaac7b88047fc8723a.png" alt="" /></p>
+<h3 id="openflow流表"><a class="markdownIt-Anchor" href="#openflow流表"></a> OpenFlow流表</h3>
+<p>由多个流条目组成，流条目包括：</p>
+<ul>
+<li>
+<p>头域：用于匹配规则确定输入报文是否与本条目匹配</p>
+</li>
+<li>
+<p>计数器：用于与本流相关的跟踪统计</p>
+</li>
+<li>
+<p>动作：描述交换机针对匹配报文采取的动作</p>
+</li>
+<li>
+<p>OpenFlow交换机由OpenFlow协议、安全通道、报文匹配、流表与动作等构成。</p>
+</li>
+<li>
+<p>报文匹配功能基于流表对输入报文进行匹配，将其引导至动作箱。</p>
+</li>
+<li>
+<p>动作包括三种可选动作</p>
+<ul>
+<li>转发报文输出，可能先修改头域字段</li>
+<li>丢弃报文</li>
+<li>通过报文输入消息将报文转发至控制器</li>
+</ul>
+</li>
+<li>
+<p>控制器和交换机之间的报文通过安全通道传输</p>
+</li>
+<li>
+<p>当控制器有报文需要通过交换机输出时采用PACKET_OUT消息</p>
+</li>
+<li>
+<p>控制器直接指定输出端口</p>
+</li>
+<li>
+<p>控制器通过报文匹配逻辑决定转发策略</p>
+</li>
+</ul>
+<p>SDN控制平面：包括SDN控制器和SDN网络控制应用程序。</p>
+<ul>
+<li>控制平面基于网络的抽象，简化了网络编程控制</li>
+<li>SDN控制平面包括两个层面的抽象：
+<ul>
+<li>流抽象-交换机API，通过OpenFlow协议与数据平面交互</li>
+<li>映射抽象-网络API，控制器与网络控制应用程序之间交互</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2461,187 +3095,6 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-%E4%B8%AA%E4%BA%BA%E6%80%BB%E7%BB%93%E2%80%94%E2%80%94%E7%94%B5%E8%B7%AF%E8%AE%BE%E8%AE%A1%E8%A1%A8%E8%BE%BE%E5%BC%8F%E5%8F%98%E5%BD%A2%E6%80%BB%E7%BB%93/" class="post-title-link" itemprop="url">数字逻辑 个人总结——电路设计表达式变形总结</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 23:15:14" itemprop="dateCreated datePublished" datetime="2023-02-28T23:15:14+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-02 17:00:12" itemprop="dateModified" datetime="2023-03-02T17:00:12+08:00">2023-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>2.7k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在电路设计中，最直观的方式是与或表达式，但有时这种方式所需的逻辑门电路较多。有时可以对其加以变形。在变形的过程中，通过画出卡诺图能够让我们更加直观地理解其中的变化过程。</p>
-<ol>
-<li>或与表达式</li>
-</ol>
-<p>画出卡诺图，圈出0的部分，直接写出或与表达式。</p>
-<p><strong>例1</strong></p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">CD\AB</th>
-<th style="text-align:center">00</th>
-<th style="text-align:center">01</th>
-<th style="text-align:center">11</th>
-<th style="text-align:center">10</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">00</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-</tr>
-<tr>
-<td style="text-align:center">01</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-</tr>
-<tr>
-<td style="text-align:center">11</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-</tr>
-<tr>
-<td style="text-align:center">10</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">1</td>
-</tr>
-</tbody>
-</table>
-<p>Step 1: 画出0部分的划分圈</p>
-<p><img src="1.png" alt="" /></p>
-<p>红圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mi>D</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline C * \overline D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi><mo>+</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">C + D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span><br />
-绿圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mi>B</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline A * \overline B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>+</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A + B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span><br />
-蓝圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">\overline A * C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>+</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">A + \overline C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span></p>
-<p>上述卡诺图对应的或与表达式就为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mi>C</mi><mo>+</mo><mi>D</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(C+D)(A+B)(A+\overline C)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.13333em;vertical-align:-0.25em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mclose">)</span></span></span></span></p>
-<ol start="2">
-<li>与非表达式</li>
-</ol>
-<p>将与非表达式以电路的形式展现时，电路中只能有与非门这一种门电路。对于每一个与非表达式，其最外面一定是一个非，在非的下面是多个与非表达式的与。这些与非表达式相与的结果应该对应卡诺图中0的部分，也即这里面任何一个与非表达式都应该包含0的所有部分。也即这里面任何一个与非表达式中非下面的部分都不应该包含0的任何部分。这样我们就转化成对1的部分进行分片的操作了。</p>
-<p><strong>例2</strong></p>
-<p>卡诺图与例1相同，可以将1分为以下3块。</p>
-<p><img src="2.png" alt="" /></p>
-<p>红圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∗</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">A * C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span>，在与非表达式中写为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mo>∗</mo><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{A * C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span><br />
-绿圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>∗</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">B * \overline C * D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>，在与非表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {B * \overline C * D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span><br />
-蓝圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∗</mo><mi>D</mi></mrow><annotation encoding="application/x-tex">A * D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>，在与非表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {A * D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span></p>
-<p>上述卡诺图对应的与非表达式就为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mi>A</mi><mo>∗</mo><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mrow><mi>A</mi><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {\overline {A * C} * \overline {B * \overline C * D} * \overline {A * D}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2833300000000003em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.2833300000000003em;"><span style="top:-3.08333em;"><span class="pstrut" style="height:3.08333em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.28666em;"><span class="pstrut" style="height:3.08333em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>。它实际上可以由与或表达式加两条杠转化而成，因此根据卡诺图求与非表达式实际上就是求与或表达式，非常方便。</p>
-<p>如果要求出花费与非门最少的表达式，则需要关注0部分，为0部分画卡诺圈，这些圈都可以作为共同项写入每一个与非项中。如上例中可以写成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mi>C</mi><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover><mo>⋅</mo><mover accent="true"><mrow><mi>A</mi><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover><mi>A</mi></mrow><mo stretchy="true">‾</mo></mover><mo>⋅</mo><mover accent="true"><mrow><mover accent="true"><mrow><mi>C</mi><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover><mo>⋅</mo><mover accent="true"><mrow><mi>A</mi><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{\overline{\overline{CD}\cdot\overline{A\overline C}A}\cdot\overline{\overline{CD}\cdot\overline{A\overline C}B}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.4833300000000005em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.4833300000000005em;"><span style="top:-3.2833300000000003em;"><span class="pstrut" style="height:3.2833300000000003em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.2833300000000003em;"><span style="top:-3.08333em;"><span class="pstrut" style="height:3.08333em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal">A</span></span></span><span style="top:-4.28666em;"><span class="pstrut" style="height:3.08333em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.2833300000000003em;"><span style="top:-3.08333em;"><span class="pstrut" style="height:3.08333em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span><span style="top:-4.28666em;"><span class="pstrut" style="height:3.08333em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.686660000000001em;"><span class="pstrut" style="height:3.2833300000000003em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，这样需要5个与非门，与例2中需要的与非门数量相同。</p>
-<ol start="3">
-<li>或非表达式</li>
-</ol>
-<p>使用与非表达式同样的方法进行分析：或非表达式的总的非下面有很多或非表达式的或，他们的或对应所有0的部分。因此其中每一个或非表达式都不能包含任何1的部分，也即其中每一个或非表达式中非的下面都应该包含所有1的部分。这样看来，或非表达式实际上是或与表达式加两条杠转化而来。</p>
-<p><strong>例3</strong></p>
-<p>卡诺图与例1相同，划分也与例1相同。</p>
-<p>红圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mi>D</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline C * \overline D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mi>D</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {\overline C + \overline D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.16666em;vertical-align:-0.08333em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span></span><br />
-绿圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mover accent="true"><mi>B</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline A * \overline B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mi>B</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {\overline A + \overline B}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.16666em;vertical-align:-0.08333em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span></span><br />
-蓝圈实际表示的是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>C</mi></mrow><annotation encoding="application/x-tex">\overline A * C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span></span>，在或与表达式中写为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {\overline A + C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.16666em;vertical-align:-0.08333em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span></span></p>
-<p>上述卡诺图对应的或非表达式就为：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mi>D</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mi>B</mi><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover><mo>+</mo><mover accent="true"><mrow><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo>+</mo><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{\overline {\overline C + \overline D}+\overline {\overline A + \overline B}+\overline {\overline A + C}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.3666600000000002em;vertical-align:-0.08333em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.2833300000000003em;"><span style="top:-3.08333em;"><span class="pstrut" style="height:3.08333em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span><span style="top:-4.28666em;"><span class="pstrut" style="height:3.08333em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span></span></p>
-<ol start="4">
-<li>不含反变量的与非表达式</li>
-</ol>
-<p>如果与非表达式中可以有反变量，则不会产生嵌套，否则可能需要进行嵌套。</p>
-<p>我们直接分析例子，一边分析一边总结规律。</p>
-<p><strong>例4</strong></p>
-<p>卡诺图同例1。</p>
-<p>设表达式为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>X</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，其中<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span></span></span></span>是一系列与非表达式的与。则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>X</mi></mrow><annotation encoding="application/x-tex">X</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07847em;">X</span></span></span></span>表示的是图中所有0的部分。所有的与非项都应包含所有0部分。<br />
-其中，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>A</mi><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {AD}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>C</mi><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {CD}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>仍然可用，这与例2相同，但例2中的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {B * \overline C * D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>不再可用，我们必须将内部的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>换掉。方法很简单，将<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>改成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mi>C</mi><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {B*C*D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>即可。在具体设计电路的情景下，这里的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mi>C</mi><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {B*C*D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>也可以改成<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>B</mi><mo>∗</mo><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {B*C}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>或<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mi>C</mi><mo>∗</mo><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline {C*D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>，看如何修改使逻辑门电路的输出结果得到最大限度的复用。</p>
-<p>因此，如果我们想要获得不含反变量的与非表达式，只需要将原来的反变量下添加与其相乘的正变量即可，且是否添加均可选，但不能都不选。</p>
-<p>但是不难发现，上述方法产生的表达式至多只有两层嵌套，能否利用多层嵌套实现功能呢？</p>
-<ol start="5">
-<li>高阶与非表达式探究（慎用！）<br />
-对于含有4个变量的形如<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mover accent="true"><mrow><mi>A</mi><mi>B</mi></mrow><mo stretchy="true">‾</mo></mover><mi>C</mi></mrow><mo stretchy="true">‾</mo></mover><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{\overline{\overline {AB}C}D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.2833300000000003em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.2833300000000003em;"><span style="top:-3.08333em;"><span class="pstrut" style="height:3.08333em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-4.28666em;"><span class="pstrut" style="height:3.08333em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>（3个与非门）的与非表达式（<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo mathvariant="normal">≠</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A\ne B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel"><span class="mrel"><span class="mord vbox"><span class="thinbox"><span class="rlap"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="inner"><span class="mrel"></span></span><span class="fix"></span></span></span></span></span><span class="mrel">=</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>），其需要3个与非门完成，等价于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover><mi>D</mi><mo>+</mo><mi>A</mi><mi>B</mi><mi>D</mi></mrow><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline{\overline CD+ABD}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.16666em;vertical-align:-0.08333em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.08333em;"><span></span></span></span></span></span></span></span></span>（4个与非门），使用代换规则可以在卡诺图中构造出类似于这样的很多表达式。当四个变量均不相同时，卡诺图中0的个数应为5。从与非表达式转换为与或表达式不如从与或表达式转换为与非表达式有用。如果题中明确采用与非表达式且要求使用的门电路最少，不妨可以考虑这种高阶与非表达式，有利于构造不规则卡诺图形状。观察到其转化后的与非项两项都有<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi></mrow><annotation encoding="application/x-tex">D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>，因此反带时可以将非反变量的共同项看成是<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>D</mi></mrow><annotation encoding="application/x-tex">D</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">D</span></span></span></span>。但要注意，在<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mi>C</mi><mo stretchy="true">‾</mo></mover></mrow><annotation encoding="application/x-tex">\overline C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mi>B</mi></mrow><annotation encoding="application/x-tex">AB</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>的选择上，有时两项除共同项外无法直接配出这两项，这时不适合使用高阶表达式，直接采用第四点中的表达式即可。</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2711,7 +3164,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">145</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2769,7 +3222,7 @@ TM-Reset：码表清零端，清零时为1，将记录和时间均清除</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:38</span>
+    <span title="Reading time total">19:44</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

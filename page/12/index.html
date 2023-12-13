@@ -150,6 +150,150 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-8/" class="post-title-link" itemprop="url">Kernel pwn 入门 (8)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:34:41" itemprop="dateCreated datePublished" datetime="2023-02-28T22:34:41+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:30:43" itemprop="dateModified" datetime="2023-03-01T11:30:43+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/kernel-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">kernel pwn 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>9.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>9 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在本篇文章中笔者不打算分析题目，而是对Linux中的slub系统进行深入的学习与分析。</p>
+<p>参考资料：上一篇文章中提到的三篇与kernel内存分配有关的文章。在阅读本文时，建议与这三篇文章对照食用。</p>
+<h1 id="1-伙伴系统重温"><a class="markdownIt-Anchor" href="#1-伙伴系统重温"></a> 1. 伙伴系统重温</h1>
+<p>slub作为小块内存的分配器，其在伙伴系统之下运作，因此首先我们还是来回顾一下伙伴系统。</p>
+<p>在第4篇文章中，我们简单介绍了伙伴系统的运作机理，以页为单位进行大块内存空间的分配与释放。其具体的数据结构如下图所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 伙伴系统的一个块，描述1,2,4,8,16,32,64,128,256,512或1024个连续页框的块 */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">free_area</span> &#123;</span></span><br><span class="line">    <span class="comment">/* 指向这个块中所有空闲小块的第一个页描述符，这些小块会按照MIGRATE_TYPES类型存放在不同指针里 */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span>    <span class="title">free_list</span>[<span class="title">MIGRATE_TYPES</span>];</span></span><br><span class="line">    <span class="comment">/* 空闲小块的个数 */</span></span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span>        nr_free;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><font color=red><strong>需要注意的是，伙伴系统并不是内核内存分配系统中最上层的结构，在其上还有其他的结构，但在Kernel pwn中我们对更为上层的结构接触较少，因此这里只介绍到伙伴系统。</strong></font></p>
+<p>上图的<code>free_area</code>表示一系列页的链表的数组。而在Linux系统内核中，一共有11个这样的<code>free_area</code>，分别保存所有大小为1,2,4,8,16,32,64,128,256,512,1024个页大小的内存空间（这些空间都是连续的），在<code>free_area</code>中，<code>free_list</code>是一系列这样的内存空间组成的链表的数组，内含多个链表，这些链表中的内存空间大小相同，但属性不同，对于<code>MIGRATE_TYPES</code>的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">migratetype</span> &#123;</span></span><br><span class="line">	MIGRATE_UNMOVABLE,</span><br><span class="line">	MIGRATE_MOVABLE,</span><br><span class="line">	MIGRATE_RECLAIMABLE,</span><br><span class="line">	MIGRATE_PCPTYPES,	<span class="comment">/* the number of types on the pcp lists */</span></span><br><span class="line">	MIGRATE_HIGHATOMIC = MIGRATE_PCPTYPES,</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_CMA</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * MIGRATE_CMA migration type is designed to mimic the way</span></span><br><span class="line"><span class="comment">	 * ZONE_MOVABLE works.  Only movable pages can be allocated</span></span><br><span class="line"><span class="comment">	 * from MIGRATE_CMA pageblocks and page allocator never</span></span><br><span class="line"><span class="comment">	 * implicitly change migration type of MIGRATE_CMA pageblock.</span></span><br><span class="line"><span class="comment">	 *</span></span><br><span class="line"><span class="comment">	 * The way to use it is to change migratetype of a range of</span></span><br><span class="line"><span class="comment">	 * pageblocks to MIGRATE_CMA which can be done by</span></span><br><span class="line"><span class="comment">	 * __free_pageblock_cma() function.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	MIGRATE_CMA,</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_MEMORY_ISOLATION</span></span><br><span class="line">	MIGRATE_ISOLATE,	<span class="comment">/* can&#x27;t allocate from here */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	MIGRATE_TYPES</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里定义了链表中内存块的属性：</p>
+<blockquote>
+<p>linux为了防止内存中产生过多的碎片，一般把页的类型分为三种：<br />
+不可移动页：在内存中有固定位置，不能移动到其他地方。内核中使用的页大部分是属于这种类型。<br />
+可回收页：不能直接移动，但可以删除，页中的内容可以从某些源中重新生成。例如，页内容是映射到文件数据的页就属于这种类型。对于这种类型，在内存短缺(分配失败)时，会发起内存回收，将这类型页进行回写释放。<br />
+可移动页：可随意移动，用户空间的进程使用的没有映射具体磁盘文件的页就属于这种类型(比如堆、栈、shmem共享内存、匿名mmap共享内存)，它们是通过进程页表映射的，把这些页复制到新位置时，只要更新进程页表就可以了。一般这些页是从高端内存管理区获取。</p>
+</blockquote>
+<p>上面的每一个链表中保存的所有内存块的属性都是一样的。因此总的来看，伙伴系统可以表示为下图所示的结构：</p>
+<p><img src="1.png" alt="" /><br />
+其中枚举类型具体的含义我们只需要了解即可，在Kernel pwn中我们应该应对的最多的还是SLAB和SLUB系统。虽然SLAB系统正逐渐被SLUB替换，但还是有必要进行了解。</p>
+<h1 id="2-slab系统介绍"><a class="markdownIt-Anchor" href="#2-slab系统介绍"></a> 2. SLAB系统介绍</h1>
+<p>SLAB分配器建立在伙伴系统基础上，由于参考资料年代较为久远，部分源码与最近的Linux内核源码差距较大，因此不做解释，但影响不大。</p>
+<p>在SLAB中，我们将可分配的内存块称之为<font color=red><strong>对象</strong></font>，一个分配器由结构体<code>kmem_cache</code>描述，结构如下（选自Linux 5.18.19版本内核）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">array_cache</span> __<span class="title">percpu</span> *<span class="title">cpu_cache</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 1) Cache tunables. Protected by slab_mutex */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> batchcount;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> limit;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> shared;</span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> size;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">reciprocal_value</span> <span class="title">reciprocal_buffer_size</span>;</span></span><br><span class="line"><span class="comment">/* 2) touched by every alloc &amp; free from the backend */</span></span><br><span class="line"></span><br><span class="line">	<span class="type">slab_flags_t</span> flags;		<span class="comment">/* constant flags */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> num;		<span class="comment">/* # of objs per slab */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* 3) cache_grow/shrink */</span></span><br><span class="line">	<span class="comment">/* order of pgs per slab (2^n) */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> gfporder;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* force GFP flags, e.g. GFP_DMA */</span></span><br><span class="line">	<span class="type">gfp_t</span> allocflags;</span><br><span class="line"></span><br><span class="line">	<span class="type">size_t</span> colour;			<span class="comment">/* cache colouring range */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> colour_off;	<span class="comment">/* colour offset */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> *<span class="title">freelist_cache</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> freelist_size;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* constructor func */</span></span><br><span class="line">	<span class="type">void</span> (*ctor)(<span class="type">void</span> *obj);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 4) cache creation/removal */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *name;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">list</span>;</span></span><br><span class="line">	<span class="type">int</span> refcount;</span><br><span class="line">	<span class="type">int</span> object_size;</span><br><span class="line">	<span class="type">int</span> align;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 5) statistics */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_DEBUG_SLAB</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> num_active;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> num_allocations;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> high_mark;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> grown;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> reaped;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> errors;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> max_freeable;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> node_allocs;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> node_frees;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> node_overflow;</span><br><span class="line">	<span class="type">atomic_t</span> allochit;</span><br><span class="line">	<span class="type">atomic_t</span> allocmiss;</span><br><span class="line">	<span class="type">atomic_t</span> freehit;</span><br><span class="line">	<span class="type">atomic_t</span> freemiss;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * If debugging is enabled, then the allocator can add additional</span></span><br><span class="line"><span class="comment">	 * fields and/or padding to every object. &#x27;size&#x27; contains the total</span></span><br><span class="line"><span class="comment">	 * object size including these internal fields, while &#x27;obj_offset&#x27;</span></span><br><span class="line"><span class="comment">	 * and &#x27;object_size&#x27; contain the offset to the user object and its</span></span><br><span class="line"><span class="comment">	 * size.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">int</span> obj_offset;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">/* CONFIG_DEBUG_SLAB */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KASAN</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kasan_cache</span> <span class="title">kasan_info</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLAB_FREELIST_RANDOM</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> *random_seq;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> useroffset;	<span class="comment">/* Usercopy region offset */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> usersize;		<span class="comment">/* Usercopy region size */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_node</span> *<span class="title">node</span>[<span class="title">MAX_NUMNODES</span>];</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>其中<code>kmem_cache_node *node[MAX_NUMNODES]</code>中就保存有SLAB分配器中的一些核心结构，这里的<code>MAX_NUMNODES</code>在x86-64架构下的值为64：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_node</span> &#123;</span></span><br><span class="line">	<span class="type">spinlock_t</span> list_lock;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLAB</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slabs_partial</span>;</span>	<span class="comment">/* partial list first, better asm code */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slabs_full</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slabs_free</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> total_slabs;	<span class="comment">/* length of all slab lists */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> free_slabs;	<span class="comment">/* length of free slab list only */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> free_objects;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> free_limit;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> colour_next;	<span class="comment">/* Per-node cache coloring */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">array_cache</span> *<span class="title">shared</span>;</span>	<span class="comment">/* shared per node */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">alien_cache</span> **<span class="title">alien</span>;</span>	<span class="comment">/* on other nodes */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> next_reap;	<span class="comment">/* updated without locking */</span></span><br><span class="line">	<span class="type">int</span> free_touched;		<span class="comment">/* updated without locking */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> nr_partial;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">partial</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB_DEBUG</span></span><br><span class="line">	<span class="type">atomic_long_t</span> nr_slabs;</span><br><span class="line">	<span class="type">atomic_long_t</span> total_objects;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">full</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里的<code>list_head</code>里面只保存了两个值：<code>next</code>指针和<code>prev</code>指针，也就是双向链表的经典结构。这里可以看到有三个双向链表：<code>slabs_partial</code>、<code>slabs_full</code>、<code>slabs_free</code>，分别保存的是<strong>内部有部分对象被分配的SLAB、内部所有对象都被分配的SLAB、内部所有对象都空闲的SLAB</strong>。这三个链表中的slab可以互相转化，如向一个所有对象都空闲的SLAB中申请空间成功后，这个SLAB就会从<code>slabs_free</code>移动到<code>slabs_partial</code>。</p>
+<p>虽然文章开头参考的文章已经在一定程度上过时，但其中关于SLAB分配器的实现原理和思想却一直沿用至今。在5.18.19版本的<code>page</code>结构体中，已经找不到参考文章中的一些关键结构，不过这不影响我们对SLAB本身的分析。</p>
+<p>下面是5.18.19版本内核的<code>slab</code>结构体声明：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">slab</span> &#123;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> __page_flags;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> defined(CONFIG_SLAB)</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slab_list</span>;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span> <span class="title">rcu_head</span>;</span></span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> *<span class="title">slab_cache</span>;</span></span><br><span class="line">	<span class="type">void</span> *freelist;	<span class="comment">/* array of free object indexes */</span></span><br><span class="line">	<span class="type">void</span> *s_mem;	<span class="comment">/* first object */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> active;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(CONFIG_SLUB)</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slab_list</span>;</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> <span class="title">rcu_head</span> <span class="title">rcu_head</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB_CPU_PARTIAL</span></span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="class"><span class="keyword">struct</span> <span class="title">slab</span> *<span class="title">next</span>;</span></span><br><span class="line">			<span class="type">int</span> slabs;	<span class="comment">/* Nr of slabs left */</span></span><br><span class="line">		&#125;;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> *<span class="title">slab_cache</span>;</span></span><br><span class="line">	<span class="comment">/* Double-word boundary */</span></span><br><span class="line">	<span class="type">void</span> *freelist;		<span class="comment">/* first free object */</span></span><br><span class="line">	<span class="class"><span class="keyword">union</span> &#123;</span></span><br><span class="line">		<span class="type">unsigned</span> <span class="type">long</span> counters;</span><br><span class="line">		<span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">			<span class="type">unsigned</span> inuse:<span class="number">16</span>;</span><br><span class="line">			<span class="type">unsigned</span> objects:<span class="number">15</span>;</span><br><span class="line">			<span class="type">unsigned</span> frozen:<span class="number">1</span>;</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> __unused;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">elif</span> defined(CONFIG_SLOB)</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">slab_list</span>;</span></span><br><span class="line">	<span class="type">void</span> *__unused_1;</span><br><span class="line">	<span class="type">void</span> *freelist;		<span class="comment">/* first free block */</span></span><br><span class="line">	<span class="type">long</span> units;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> __unused_2;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">error</span> <span class="string">&quot;Unexpected slab allocator configured&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="type">atomic_t</span> __page_refcount;</span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_MEMCG</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> memcg_data;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>可以看到，历史版本中的诸如<code>s_mem</code>等关键控制结构体从<code>page</code>移到了<code>slab</code>中。由此，<code>page</code>结构体中也就不需要定义这些属性了。<code>s_mem</code>指向的是该SLAB分配器中的第一个对象，而<code>freelist</code>指向的是一个重要的标识对象使用情况的结构，我们接下来就会提到。这两个指针指向同一页中的不同地址，其中如果一个<code>page</code>被用作SLAB分配器，那么它的<code>virtual</code>（<code>page</code>中的最后一个属性）属性值与SLAB中的<code>freelist</code>指向相同地址。</p>
+<p>关于SLAB内的分配机制，以下面一张图进行展示，其中需要注意的是：<strong>分配到哪一个对象不是外界能够决定的，而释放哪一个对象是外界能够决定的</strong>。如下图所示的分配方式能够最大限度保证分配到的对象是最近释放的。<strong><font color=red>在进行分配时，active读取其索引指向的值，并向前移动一位，在进行释放时，active首先回退一位，在将这一位对应的索引值修改为被释放的对象的索引值。</font></strong><br />
+<img src="2.png" alt="" /><br />
+在这种分配机制下，很容易判断一个SLAB中的对象究竟是全部分配，还是全部释放，还是部分分配。因为分配对应一次索引值前移，而释放对应一次索引值后移，只要索引值为0，这个SLAB就一定为空；只要索引值等于SLAB中对象的个数-1，这个SLAB就一定为满。</p>
+<p>看到这里，我们对于SLAB的分配机制应该有了一个基本的认识，但是SLAB中还有一个<strong>染色</strong>的问题。有了上面的组织形式，SLAB已经能够作为一个成熟的内存分配器了，至于为什么要添加染色的机制，主要是为了性能的考虑：</p>
+<blockquote>
+<p>我们知道内存需要处理时要先放入CPU硬件高速缓存中，而CPU硬件高速缓存与内存的映射方式有多种。在同一个kmem_cache中所有SLAB都是相同大小，都是相同连续长度的页框组成，这样的话在不同SLAB中相同对象号对于页框的首地址的偏移量也相同，这样有很可能导致不同SLAB中相同对象号的对象放入CPU硬件高速缓存时会处于同一行，当我们交替操作这两个对象时，CPU的cache就会交替换入换出，效率就非常差。SLAB着色就是在同一个kmem_cache中对不同的SLAB添加一个偏移量，就让相同对象号的对象不会对齐，也就不会放入硬件高速缓存的同一行中，提高了效率。</p>
+</blockquote>
+<blockquote>
+<p>着色空间就是前端的空闲区域，这个区有大小都是在分配新的SLAB时计算好的，计算方法很简单，node结点对应的kmem_cache_node中的colour_next乘上kmem_cache中的colour_off就得到了偏移量，然后colour_next++，当colour_next等于kmem_cache中的colour时，colour_next回归到0。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">偏移量 = kmem_cache.colour_off * kmem_cache.node[NODE_ID].colour_next;</span><br><span class="line"></span><br><span class="line">kmem_cache.node[NODE_ID].colour_next++;</span><br><span class="line"><span class="keyword">if</span> (kmem_cache.node[NODE_ID].colour_next == kmem_cache.colour)</span><br><span class="line">    kmem_cache.node[NODE_ID].colour_next = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+</blockquote>
+<h1 id="3-slub系统介绍"><a class="markdownIt-Anchor" href="#3-slub系统介绍"></a> 3. SLUB系统介绍</h1>
+<p>说完了SLAB，终于可以开始我们的重点——SLUB系统了。都说SLUB系统是SLAB的升级版，那么SLUB到底比SLAB升级在什么地方呢？</p>
+<p>简单地来说，<strong>首先SLUB直接删掉了两个SLAB链表，即在SLAB节点中表示全空和全满的对象链表，只保留了一个部分满的SLAB链表。其次，在<code>slab</code>结构体内部也有很大的变化，删去了SLAB中指引内存分配的关键的数组结构和描述符数组，而只是使用一个指针形成链表，将所有空闲的对象串连在一起：</strong></p>
+<p><img src="3.png" alt="" /><br />
+（原文是有贴图的，但是在笔者的windows系统下加载不出来，在ubuntu倒是可以加载出来。上图选自<a target="_blank" rel="noopener" href="https://blog.csdn.net/wh8_2011/article/details/52287557?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166522587916800182720892%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=166522587916800182720892&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-4-52287557-null-null.142%5Ev52%5Ejs_top,201%5Ev3%5Econtrol_1&amp;utm_term=slub&amp;spm=1018.2226.3001.4187">资料</a>）</p>
+<p>注意slab和slub分别使用了不同的<code>kmem_cache</code>结构体，分别定义在<code>/include/linux/slab_def.h</code>和<code>/include/linux/slub_def.h</code>中。上面解释SLAB的时候使用的是<code>/include/linux/slab_def.h</code>的结构体。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache</span> &#123;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_cpu</span> __<span class="title">percpu</span> *<span class="title">cpu_slab</span>;</span></span><br><span class="line">	<span class="comment">/* Used for retrieving partial slabs, etc. */</span></span><br><span class="line">	<span class="type">slab_flags_t</span> flags;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> min_partial;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> size;	<span class="comment">/* The size of an object including metadata */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> object_size;<span class="comment">/* The size of an object without metadata */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">reciprocal_value</span> <span class="title">reciprocal_size</span>;</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> offset;	<span class="comment">/* Free pointer offset */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB_CPU_PARTIAL</span></span><br><span class="line">	<span class="comment">/* Number of per cpu partial objects to keep around */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> cpu_partial;</span><br><span class="line">	<span class="comment">/* Number of per cpu partial slabs to keep around */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> cpu_partial_slabs;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_order_objects</span> <span class="title">oo</span>;</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Allocation and freeing of slabs */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_order_objects</span> <span class="title">max</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_order_objects</span> <span class="title">min</span>;</span></span><br><span class="line">	<span class="type">gfp_t</span> allocflags;	<span class="comment">/* gfp flags to use on each alloc */</span></span><br><span class="line">	<span class="type">int</span> refcount;		<span class="comment">/* Refcount for slab cache destroy */</span></span><br><span class="line">	<span class="type">void</span> (*ctor)(<span class="type">void</span> *);</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> inuse;		<span class="comment">/* Offset to metadata */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> align;		<span class="comment">/* Alignment */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> red_left_pad;	<span class="comment">/* Left redzone padding size */</span></span><br><span class="line">	<span class="type">const</span> <span class="type">char</span> *name;	<span class="comment">/* Name (only for display!) */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">list</span>;</span>	<span class="comment">/* List of slab caches */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SYSFS</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kobject</span> <span class="title">kobj</span>;</span>	<span class="comment">/* For sysfs */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLAB_FREELIST_HARDENED</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> random;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_NUMA</span></span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Defragmentation by allocating from a remote node.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> remote_node_defrag_ratio;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLAB_FREELIST_RANDOM</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> *random_seq;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_KASAN</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kasan_cache</span> <span class="title">kasan_info</span>;</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> useroffset;	<span class="comment">/* Usercopy region offset */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">int</span> usersize;		<span class="comment">/* Usercopy region size */</span></span><br><span class="line"></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_node</span> *<span class="title">node</span>[<span class="title">MAX_NUMNODES</span>];</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在SLUB的<code>kmem_cache</code>中，有一个<code>kmem_cache_cpu</code>结构体指针，这是SLUB分配器的描述符：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">kmem_cache_cpu</span> &#123;</span></span><br><span class="line">	<span class="type">void</span> **freelist;	<span class="comment">/* Pointer to next available object */</span></span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> tid;	<span class="comment">/* Globally unique transaction id */</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">slab</span> *<span class="title">slab</span>;</span>	<span class="comment">/* The slab from which we are allocating */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB_CPU_PARTIAL</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">slab</span> *<span class="title">partial</span>;</span>	<span class="comment">/* Partially allocated frozen slabs */</span></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">	<span class="type">local_lock_t</span> lock;	<span class="comment">/* Protects the fields above */</span></span><br><span class="line"><span class="meta">#<span class="keyword">ifdef</span> CONFIG_SLUB_STATS</span></span><br><span class="line">	<span class="type">unsigned</span> stat[NR_SLUB_STAT_ITEMS];</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>结构如下图所示（图片选自<a target="_blank" rel="noopener" href="https://blog.csdn.net/whenloce/article/details/88949002?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166522587916800182720892%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=166522587916800182720892&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~baidu_landing_v2~default-3-88949002-null-null.142%5Ev52%5Ejs_top,201%5Ev3%5Econtrol_1&amp;utm_term=slub&amp;spm=1018.2226.3001.4187">资料</a>）</p>
+<p><img src="4.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3doZW5sb2Nl,size_16,color_FFFFFF,t_70" alt="" /><br />
+其中需要重点关注的就是<code>freelist</code>，里面保存的就是对象本身，以链表连接。在上一篇文章中，我们使用了SLUB的结构特性实现了利用，在那道题中，读者可以进行调试发现，对象内部的内容非常简单，空闲的对象开头8字节保存的就是下一个空闲对象的地址，以链表形式连接，在释放一个对象时，会将该对象放在<code>freelist</code>链表头部。这也就是为什么在上一题中通过修改指针的值就可以让SLUB为我们分配到任意地址了。<strong>在实际的pwn利用中，有一个思路就是恶意篡改SLUB中的<code>freelist</code>，破坏链表以实现任意地址分配，后续可能可以进行任意地址读写</strong>。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1624,235 +1768,6 @@ Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-7/" class="post-title-link" itemprop="url">how2heap 深入学习(7)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-02-28 22:24:48" itemprop="dateCreated datePublished" datetime="2023-02-28T22:24:48+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-03-02 16:24:03" itemprop="dateModified" datetime="2023-03-02T16:24:03+08:00">2023-03-02</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/glibc-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">glibc 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>9k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>8 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
-Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.27/source/malloc/malloc.c#L3516">传送门</a><br />
-参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 18.04<br />
-Glibc 版本：Ubuntu GLIBC 2.27-3ubuntu1.5</p>
-<p>按照顺序，本文将分析glibc 2.27文件夹下的第7~8源码，对house_of_storm进行了深入的分析。<br />
-如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="7-house_of_mind_fastbin"><a class="markdownIt-Anchor" href="#7-house_of_mind_fastbin"></a> 7. house_of_mind_fastbin</h1>
-<p>这是一种伪造arena以将一个大chunk中的一处值改为很大的利用方式，和glibc 2.23差别不大，但是2.23的分析感觉逻辑不是太清晰，还是再写一遍吧。</p>
-<p><strong>Step 1: 分配0x1010的chunk，要改写的地址为(chunk head + 0x40)。</strong></p>
-<p>这里解释一下为什么改写的是chunk head + 0x40。<br />
-这个chunk是要作为伪造的arena使用的，参考2.27的arena结构体——malloc_state如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="comment">/* Serialize access.  */</span></span><br><span class="line">  __libc_lock_define (, mutex);</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Flags (formerly in max_fast).  */</span></span><br><span class="line">  <span class="type">int</span> flags;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Set if the fastbin chunks contain recently inserted free blocks.  */</span></span><br><span class="line">  <span class="comment">/* Note this is a bool but not all targets support atomics on booleans.  */</span></span><br><span class="line">  <span class="type">int</span> have_fastchunks;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Fastbins */</span></span><br><span class="line">  mfastbinptr fastbinsY[NFASTBINS];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Base of the topmost chunk -- not otherwise kept in a bin */</span></span><br><span class="line">  mchunkptr top;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* The remainder from the most recent split of a small request */</span></span><br><span class="line">  mchunkptr last_remainder;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Normal bins packed as described above */</span></span><br><span class="line">  mchunkptr bins[NBINS * <span class="number">2</span> - <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Bitmap of bins */</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> binmap[BINMAPSIZE];</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Linked list for free arenas.  Access to this field is serialized</span></span><br><span class="line"><span class="comment">     by free_list_lock in arena.c.  */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">malloc_state</span> *<span class="title">next_free</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Number of threads attached to this arena.  0 if the arena is on</span></span><br><span class="line"><span class="comment">     the free list.  Access to this field is serialized by</span></span><br><span class="line"><span class="comment">     free_list_lock in arena.c.  */</span></span><br><span class="line">  INTERNAL_SIZE_T attached_threads;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Memory allocated from the system in this arena.  */</span></span><br><span class="line">  INTERNAL_SIZE_T system_mem;</span><br><span class="line">  INTERNAL_SIZE_T max_system_mem;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>后面分配的是0x60大小的fastbin chunk，会被链入到这个假chunk中，而链入的地址就是chunk head + 0x40。在2.23中这个地址为0x38，2.27由于添加了一个have_fastchunks这个成员，因此地址往后移动了8字节。</p>
-<table align=center>
-	<tr align=center>
-		<td> addr </td> <td> 0x0 </td> <td> 0x4 </td> <td> 0x8 </td> <td> 0xC </td>
-	</tr>
-	<tr align=center>
-		<td> 0x603420 </td> <td> mutex </td> <td> flag </td> <td> have_fastchunks </td> <td>-</td>
-	</tr>
-	<tr align=center>
-		<td> 0x603430 </td> <td colspan=2> fastbinsY[0] (for chunk size=0x20) </td> <td colspan=2> fastbinsY[1] (for chunk size=0x30) </td>
-	</tr>
-	<tr align=center>
-		<td> 0x603440 </td> <td colspan=2> fastbinsY[2] (for chunk size=0x40) </td> <td colspan=2> fastbinsY[3] (for chunk size=0x50)  </td>
-	</tr>
-	<tr align=center>
-		<td> 0x603450 </td> <td colspan=2> <font color=red> fastbinsY[4] (for chunk size=0x60) </font> </td> <td colspan=2> ...... </td>
-	</tr>
-</table>
-<p><strong>Step 2: 设置假arena的system_mem为0xFFFFFF。</strong></p>
-<p>system_mem标志的是这个arena管理的空间大小。在_int_malloc函数中有这么一项检查：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__builtin_expect (chunksize_nomask (victim) &lt;= <span class="number">2</span> * SIZE_SZ, <span class="number">0</span>)</span><br><span class="line">              || __builtin_expect (chunksize_nomask (victim)</span><br><span class="line">				   &gt; av-&gt;system_mem, <span class="number">0</span>))</span><br><span class="line">            malloc_printerr (<span class="string">&quot;malloc(): memory corruption&quot;</span>);</span><br></pre></td></tr></table></figure>
-<p>这个检查是在分配unsorted bin和large bins前进行的，表明请求的内存不能大于system_mem。</p>
-<p><strong>Step 3: 计算假arena管理的空间位置。</strong></p>
-<p>在系统堆初始化之后，将堆的大小定为0x4000000，因此后面申请的假arena管理的地址在这个堆之后。要计算这个堆的起始地址。</p>
-<p><strong>Step 4: 一直分配chunk直到系统heap被占满。</strong></p>
-<p>在源码中，这里一直分配大小为0x1ff00的chunk，因为mmap_threshold=0x20000，它表示当用户分配大于0x20000的空间时，就不使用堆而是直接通过mmap获取了，这种情况需要避免，因此最大分配0x1ff00的chunk。</p>
-<p><strong>Step 5: 分配一个0x60的chunk在堆空间之上。</strong></p>
-<p><strong>Step 6: 填满0x60的tcache。</strong></p>
-<p><strong>Step 7: 修改系统heap之上的假heap的控制信息。</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">heap_info</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  mstate ar_ptr; <span class="comment">/* Arena for this heap. */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">heap_info</span> *<span class="title">prev</span>;</span> <span class="comment">/* Previous heap. */</span></span><br><span class="line">  <span class="type">size_t</span> size;   <span class="comment">/* Current size in bytes. */</span></span><br><span class="line">  <span class="type">size_t</span> mprotect_size; <span class="comment">/* Size in bytes that has been mprotected</span></span><br><span class="line"><span class="comment">                           PROT_READ|PROT_WRITE.  */</span></span><br><span class="line">  <span class="comment">/* Make sure the following data is properly aligned, particularly</span></span><br><span class="line"><span class="comment">     that sizeof (heap_info) + 2 * SIZE_SZ is a multiple of</span></span><br><span class="line"><span class="comment">     MALLOC_ALIGNMENT. */</span></span><br><span class="line">  <span class="type">char</span> pad[<span class="number">-6</span> * SIZE_SZ &amp; MALLOC_ALIGN_MASK];</span><br><span class="line">&#125; heap_info;</span><br></pre></td></tr></table></figure>
-<p>将计算得到的假heap地址的开头写入假arena的地址，即ar_ptr</p>
-<p><strong>Step 8: 修改0x60 chunk的non_main_arena标志位。</strong></p>
-<p><strong>Step 9: 释放最后一个chunk，修改假main_arena对应位置的值。</strong></p>
-<p>此时，当我们free时，libc会根据_heap_info的ar_ptr找到我们的假chunk，然后在假chunk里面更改内容。这也就是我们的目的。</p>
-<h1 id="8-house_of_storm"><a class="markdownIt-Anchor" href="#8-house_of_storm"></a> 8. house_of_storm</h1>
-<p>源码要修改bss段的一个全局变量。</p>
-<p>Tips: 如果使用gdb调试需要加上-no-pie参数去掉pie，否则后面的检查通不过。</p>
-<p><strong>Step 1: 构造堆环境并进行堆风水检查。</strong></p>
-<p>本漏洞利用需要的堆环境为：一个unsorted bin chunk和一个large bins chunk，且unsorted bin chunk大于large bins chunk。</p>
-<p>首先分配0x4f0的chunk（之后将作为unsorted bin chunk），检查该chunk的地址最高非0位的值x，这里需要检查的原因在后面说明。具体检查方式：</p>
-<p>首先判断x是否小于0x10，x小于0x10不行。</p>
-<p>然后判断x的最低4位——bit-0~bit-3：</p>
-<p>bit-3必须为0；<br />
-bit-2为1时bit-1不能为0；</p>
-<p>由于要分配的大小在tcache范围，因此需要填满对应的tcache。</p>
-<p>然后分配0x4e0的chunk，之后将作为large bins chunk。<br />
-分配一个小chunk防止top chunk合并。<br />
-随后依次释放0x4e0和0x4f0，先释放小chunk。再分配回大chunk再释放，小chunk就能顺利进入large bins。<br />
-至此，堆结构构造完成。</p>
-<p>检查原因：因为最高非0位是作为size呈现的，因此不能小于0x10这个最小值。其次，chunk的大小应该是0x10的倍数，因此bit-3不能为1。再次，bit-2是non_main_arena标志位，bit-1是mmap标志位，这两者也不能够有一定的组合：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(_int_malloc glibc <span class="number">2.27</span> line <span class="number">3438</span>)</span><br><span class="line">  assert (!mem || chunk_is_mmapped (mem2chunk (mem)) ||</span><br><span class="line">          av == arena_for_chunk (mem2chunk (mem)));</span><br></pre></td></tr></table></figure>
-<p>不然也无法通过检查。</p>
-<p><strong>Step 2: 修改unsorted bin chunk和large bins chunk的bk，large bins chunk的bk_nextsize。</strong></p>
-<p>由于需要修改bss段内容，设需要修改的地址为y，要在这里伪造一个chunk，那么chunk头应该在y-0x10处。将unsorted bin chunk的bk修改为y-0x10，large bins chunk的bk修改为y-0x8。将large bins chunk的bk_nextsize修改为y-0x18-(偏移)。这个偏移指的是unsorted bin chunk的地址的非零字节数-1。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">unsorted bin chunk + 0x10</td>
-<td style="text-align:center">fd</td>
-<td style="text-align:center">y - 0x10</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">large bin chunk + 0x10</td>
-<td style="text-align:center">fd</td>
-<td style="text-align:center">y - 0x8</td>
-</tr>
-<tr>
-<td style="text-align:center">large bin chunk + 0x20</td>
-<td style="text-align:center">fd_nextsize</td>
-<td style="text-align:center">y - 0x18 - &lt;offset&gt;</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-</tbody>
-</table>
-<p>下面是修改完成后两个chunk的情况：（目标地址为0x6020A0）</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x603250</span><br><span class="line">Size: 0x4f1</span><br><span class="line">fd: 0x7ffff7dcdca0</span><br><span class="line">bk: 0x602090</span><br><span class="line"></span><br><span class="line">Free chunk (largebins) | PREV_INUSE</span><br><span class="line">Addr: 0x603a00</span><br><span class="line">Size: 0x4e1</span><br><span class="line">fd: 0x7ffff7dce0c0</span><br><span class="line">bk: 0x602098</span><br><span class="line">fd_nextsize: 0x603a00</span><br><span class="line">bk_nextsize: 0x602076</span><br></pre></td></tr></table></figure>
-<p><strong>Step 3: 调用calloc返回目标地址。</strong></p>
-<p>这里使用calloc而不使用malloc是为了避开tcache。而在这一步中蕴含了很多操作。</p>
-<p>由于last_remainder为空，因此unsorted bin中的这个chunk实际上并不会被切割，而是直接被分配到bins中去了。这里的unsorted bin chunk大于small bins的最大阈值，因此被分配到了large bins中。</p>
-<p>在glibc 2.23中对large bins的插入规则没有进行详细分析，这里解释一下。</p>
-<h2 id="large-bin的链入过程"><a class="markdownIt-Anchor" href="#large-bin的链入过程"></a> large bin的链入过程</h2>
-<p>在_int_malloc进入大循环中时，每一次会从unsorted bin中弹出一个chunk，不符合需求就将会被放入small bins或large bins中。假设unsorted bins中全部都会被放入一个large bins中。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// (line 3734)</span></span><br><span class="line">	bck = victim-&gt;bk;</span><br><span class="line">	......</span><br><span class="line"><span class="comment">// (line 3778~3779)</span></span><br><span class="line">	unsorted_chunks (av)-&gt;bk = bck;</span><br><span class="line">    bck-&gt;fd = unsorted_chunks (av);</span><br><span class="line">    ......</span><br><span class="line"><span class="comment">// (line 3820)</span></span><br><span class="line">	victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line">    ......</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">      victim_index = largebin_index (size);</span><br><span class="line">      bck = bin_at (av, victim_index);</span><br><span class="line">      fwd = bck-&gt;fd;</span><br><span class="line"></span><br><span class="line">      <span class="comment">/* maintain large bins in sorted order */</span></span><br><span class="line">      <span class="keyword">if</span> (fwd != bck)</span><br><span class="line">        &#123;</span><br><span class="line">          <span class="comment">/* Or with inuse bit to speed comparisons */</span></span><br><span class="line">          size |= PREV_INUSE;</span><br><span class="line">          <span class="comment">/* if smaller than smallest, bypass loop below */</span></span><br><span class="line">          assert (chunk_main_arena (bck-&gt;bk));</span><br><span class="line">          <span class="keyword">if</span> ((<span class="type">unsigned</span> <span class="type">long</span>) (size) &lt; (<span class="type">unsigned</span> <span class="type">long</span>) chunksize_nomask (bck-&gt;bk))</span><br><span class="line">            &#123;</span><br><span class="line">              fwd = bck;</span><br><span class="line">              bck = bck-&gt;bk;</span><br><span class="line"></span><br><span class="line">              victim-&gt;fd_nextsize = fwd-&gt;fd;</span><br><span class="line">              victim-&gt;bk_nextsize = fwd-&gt;fd-&gt;bk_nextsize;</span><br><span class="line">              fwd-&gt;fd-&gt;bk_nextsize = victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">            &#125;</span><br><span class="line">          <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">              assert (chunk_main_arena (fwd));</span><br><span class="line">              <span class="keyword">while</span> ((<span class="type">unsigned</span> <span class="type">long</span>) size &lt; chunksize_nomask (fwd))</span><br><span class="line">                &#123;</span><br><span class="line">                  fwd = fwd-&gt;fd_nextsize;</span><br><span class="line">				  assert (chunk_main_arena (fwd));</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">              <span class="keyword">if</span> ((<span class="type">unsigned</span> <span class="type">long</span>) size == (<span class="type">unsigned</span> <span class="type">long</span>) chunksize_nomask (fwd))</span><br><span class="line">                <span class="comment">/* Always insert in the second position.  */</span></span><br><span class="line">                fwd = fwd-&gt;fd;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                  victim-&gt;fd_nextsize = fwd;</span><br><span class="line">                  victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">                  fwd-&gt;bk_nextsize = victim;</span><br><span class="line">                  victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">                &#125;</span><br><span class="line">              bck = fwd-&gt;bk;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        victim-&gt;fd_nextsize = victim-&gt;bk_nextsize = victim;</span><br><span class="line">    &#125;</span><br><span class="line">	mark_bin (av, victim_index);</span><br><span class="line">    victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
-<p>上面是所有涉及到bins修改的代码。每一次循环时，进行操作的chunk是victim，bck = victim-&gt;bk。</p>
-<pre><code>a. 将victim脱离unsorted bin链，即line 3778~3779。
-b. 如果victim正好是请求的大小，直接返回，即line 3783~3808
-c. 发现是large bin，进入large bin调整过程，即line 3818
-</code></pre>
-<p>调整之前，首先找到这个large bin应该被放入的bin的索引，即line 3820的调用largebin_index函数；bck设置为这个bin的头指针，fwd设置为bck的fd指针。下面是判断这个bin是否有chunk。这里有一处需要注意：如果这个bin没有chunk，那么bck会指向前一个chunk。这样找到bck-&gt;fd时找到的是下一个bin，而下一个bin指向的正好是当前bin，就像下面这样。这就可以解释为什么<code>fwd != bck</code>可以用来判断bin中是否有chunk。不过存放chunk的真正bin应该是bck-&gt;fd而不是bck，这点也需要注意，在gdb调试过程中可以发现。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">00:0000│ r8 0x7ffff7dce0d0 (main_arena+1168) —▸ 0x7ffff7dce0c0 (main_arena+1152) —▸ 0x7ffff7dce0b0 (main_arena+1136) —▸ 0x7ffff7dce0a0 (main_arena+1120) —▸ 0x7ffff7dce090 (main_arena+1104) ◂— ...</span><br><span class="line">01:0008│    0x7ffff7dce0d8 (main_arena+1176) —▸ 0x7ffff7dce0c0 (main_arena+1152) —▸ 0x7ffff7dce0b0 (main_arena+1136) —▸ 0x7ffff7dce0a0 (main_arena+1120) —▸ 0x7ffff7dce090 (main_arena+1104) ◂— ...</span><br><span class="line">02:0010│    0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">03:0018│    0x7ffff7dce0e8 (main_arena+1192) —▸ 0x602250 ◂— 0x0</span><br><span class="line">04:0020│    0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">05:0028│    0x7ffff7dce0f8 (main_arena+1208) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">06:0030│    0x7ffff7dce100 (main_arena+1216) —▸ 0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br><span class="line">07:0038│    0x7ffff7dce108 (main_arena+1224) —▸ 0x7ffff7dce0f0 (main_arena+1200) —▸ 0x7ffff7dce0e0 (main_arena+1184) —▸ 0x602250 ◂— 0x0</span><br></pre></td></tr></table></figure>
-<p>如果这个bin中没有chunk，则将victim链入bin中，将fd_nextsize和bk_nextsize设为其自身。如果有，则继续下面的操作。这大致可以用几张图来展示。</p>
-<p>如果victim的size小于这个bin中最后一个chunk的size，则进行下面的操作，将victim链入到bin的最后位置。<font color=red><strong>注意：每一个bin的第一个chunk的bk和最后一个chunk的fd指向的并不是这个bin的头指针，而是上一个bin的头指针！</strong></font></p>
-<p><img src="1.png" alt="" /></p>
-<p>否则，进行如下操作：</p>
-<p>找到应该插入的位置，如果没有找到与victim大小相同的chunk，则进行插入操作，更新fd, bk, fd_nextsize和bk_nextsize。如下图：<br />
-<img src="2.png" alt="" /></p>
-<p>如果找到了与victim大小相同的chunk，则在其后进行插入，使victim成为这个大小的chunk中第二靠前的chunk。如下图：</p>
-<p><img src="3.png" alt="" /></p>
-<p>综上所述，large bin要维护的实际上是这样一个结构，其中每一个bin里面可以按照chunk的大小划分，bin head指向的是最大的chunk，那些大小相同的chunk中只有最靠前的chunk有fd_nextsize和bk_nextsize。</p>
-<p><img src="4.png" alt="" /></p>
-<hr />
-<p>再回到这个漏洞上面来。整个漏洞的执行过程一共有十几个调整bin的步骤。在漏洞调整chunk之后，bins的结构如图：</p>
-<p><img src="5.png" alt="" /></p>
-<p>调整的过程如下：</p>
-<p><img src="6.png" alt="" /></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// line 3778~3779, Step 0</span></span><br><span class="line">	unsorted_chunks (av)-&gt;bk = bck;</span><br><span class="line">    bck-&gt;fd = unsorted_chunks (av);</span><br><span class="line"><span class="comment">// line 3820~3822, Step 1, 2</span></span><br><span class="line">    victim_index = largebin_index (size);</span><br><span class="line">    bck = bin_at (av, victim_index);</span><br><span class="line">    fwd = bck-&gt;fd;</span><br><span class="line"><span class="comment">// line 3856~3859, Step 3, 4, 5, 6</span></span><br><span class="line">	victim-&gt;fd_nextsize = fwd;</span><br><span class="line">    victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">    fwd-&gt;bk_nextsize = victim;</span><br><span class="line">    victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line"><span class="comment">// line 3861, Step 7</span></span><br><span class="line">	bck = fwd-&gt;bk;</span><br><span class="line"><span class="comment">// line 3869~3872, Step 8, 9, 10, 11</span></span><br><span class="line">	victim-&gt;bk = bck;</span><br><span class="line">    victim-&gt;fd = fwd;</span><br><span class="line">    fwd-&gt;bk = victim;</span><br><span class="line">    bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
-<p>之后再次进行一次循环，到达line 3778时将victim赋值为target-0x10（Step 0中已经将unsorted bin head赋值为target-0x10）。后面判断target-0x10这个chunk的大小，发现正好满足（Step 6中错位赋值所致），因此返回target。</p>
-<p>这个地方非常不好理解，要知道它为什么会返回target，我死抠源码抠了好几天才捋清楚这一整个过程到底是怎么一个流程。建议对照源码仔细消化理解，搞清楚每一步干了什么。gdb有的时候调试源码定位不准确，因此只能这样一步步去推演了。</p>
-<p>用了这么长时间，算是把house of storm研究透了，这种攻击方式真是巧妙，能够想到这种方式的人真的是天才。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1922,7 +1837,7 @@ c. 发现是large bin，进入large bin调整过程，即line 3818
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">145</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1980,7 +1895,7 @@ c. 发现是large bin，进入large bin调整过程，即line 3818
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:38</span>
+    <span title="Reading time total">19:44</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

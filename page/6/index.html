@@ -150,6 +150,278 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第6章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:01:45 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>4.1k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>4 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="第6章-中央处理器"><a class="markdownIt-Anchor" href="#第6章-中央处理器"></a> 第6章 中央处理器</h1>
+<h2 id="61-概述"><a class="markdownIt-Anchor" href="#61-概述"></a> 6.1 概述</h2>
+<p>CPU的基本组成：运算器、控制器<br />
+CPU的主要功能：程序控制、操作控制、时序控制、异常控制、数据加工等</p>
+<p>主要寄存器：</p>
+<ul>
+<li>PC：程序计数器，即EIP(x86/x86-64)/PC(ARM/MIPS)</li>
+<li>IR：指令寄存器，保存当前正在执行的指令</li>
+<li>AR：地址寄存器，用于保存CPU访问主存的单元地址</li>
+<li>DR：数据寄存器，用于保存从主存读入或将写入主存的数据</li>
+<li>AC：累加寄存器</li>
+<li>PSW：程序状态字，保存由某些指令建立的条件标志</li>
+</ul>
+<h2 id="62-指令周期"><a class="markdownIt-Anchor" href="#62-指令周期"></a> 6.2 指令周期</h2>
+<p>指令执行时，首先以PC为地址访问主存取指令，同时更新PC的值作为后续指令的地址。若为分支指令且满足分支条件，则重新修改PC值作为分支目标地址，否则经历<font color=red>取操作数、执行指令、存操作数</font>的基本过程。</p>
+<ul>
+<li>时钟周期=节拍脉冲=震荡周期，可以完成一次微操作</li>
+<li>机器周期=CPU周期，从主存读出一条指令的最短时间，可以完成一次复杂操作</li>
+<li>指令周期，从主存取一条指令并执行指令的时间，由若干机器周期构成，机器周期包含若干时钟周期。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/18348aec40574fe5867cf25c61a083f7.png" alt="" /></p>
+<p>时间控制的方式：</p>
+<ul>
+<li>定长指令周期：早期三级时序系统，机器周期数固定，节拍数固定，按照机器周期同步，mips单周期。</li>
+<li>变长指令周期：现代时序系统，机器周期数可变，节拍数可变，按照时钟周期同步，mips多周期。</li>
+</ul>
+<p>将一条指令从取出到执行完成所需要的时间称为指令周期，指令周期可分为：</p>
+<ul>
+<li>取指周期：以PC的内容为地址从主存中取出指令，并计算后续指令的地址。对于变长指令需要经过指令译码得到指令的实际字节长度之后才能计算并修改PC的值。</li>
+<li>译码/取操作数周期：对指令寄存器中的指令字进行指令译码，识别指令类型。根据指令地址码生成操作数有效地址，然后访问相应寄存器或主存单元。若为间接寻址则还需要加入间址周期（访存周期）得到操作数的地址。该周期内不能并行读取操作数，因此可能会经历多次取操作数周期。</li>
+<li>执行周期：向运算器等部件发送操作控制命令，对已经取出的操作数进行加工处理，并将处理状态送入PSW中。不同指令的执行周期不同。</li>
+<li>写回周期：将运算结果写回到目的寄存器或存储器中，将运算结果写回存储器较慢。</li>
+</ul>
+<h2 id="63-数据通路及指令操作流程"><a class="markdownIt-Anchor" href="#63-数据通路及指令操作流程"></a> 6.3 数据通路及指令操作流程</h2>
+<p>数据通路——执行部件之间传输信息的路径。</p>
+<ul>
+<li>通路的建立由控制信号控制，受到时钟驱动。</li>
+<li>不同指令，同一指令在执行的不同阶段的数据通路不同。</li>
+<li>数据通路可以分为共享通路和专用通路。</li>
+</ul>
+<h3 id="631-数据通路模型与定时"><a class="markdownIt-Anchor" href="#631-数据通路模型与定时"></a> 6.3.1 数据通路模型与定时</h3>
+<p>时钟信号上升沿时刻到寄存器输出稳定时刻之间有一段时延，称为<font color=red>寄存器延迟（clk_to_q）</font>。数据处理单元处理寄存器内容有一定时延，将所有输出信号稳定的延迟，也即所需稳定时间最长的输出信号的稳定时间，称为<font color=red>关键路径延迟（max）</font>。将计算结果保存到寄存器之后还需要稳定一段时间才能够接受下一个上升沿，称为<font color=red>寄存器建立时间（setup）</font>。时钟上升沿到来之前的数据输入需要保持一定时间的稳定，称为<font color=red>寄存器保持时间（hold）</font>。故<font color=red>数据通路的最小时钟周期必须大于T<sub>clk_to_q</sub>+T<sub>max</sub>+T<sub>setup</sub></font>，其中T<sub>max</sub>占主导。</p>
+<p><img src="https://img-blog.csdnimg.cn/de0f98f42136464585ebed5fce96d6d5.png" alt="" /></p>
+<p>保持时间违例：两个寄存器在一个上升沿同时更新新值，其中一个寄存器经过寄存器延迟和最短路径延迟（T<sub>min</sub>）到达另一个寄存器输入端，为了不让该信号修改寄存器的值，应该满足<font color=red>寄存器保持时间T<sub>hold</sub>&lt;寄存器延迟T<sub>clk_to_q</sub>+组合逻辑最短路径延迟T<sub>min</sub></font>。</p>
+<h3 id="632-单总线结构的数据通路"><a class="markdownIt-Anchor" href="#632-单总线结构的数据通路"></a> 6.3.2 单总线结构的数据通路</h3>
+<p>数据通路的分类：</p>
+<ul>
+<li>共享通路（总线型）：主要部件都连接在公共总线上，各个部件之间通过总线进行数据传输。其结构简单，实现容易，但并发性较差，需要分时使用总线，效率较低。</li>
+<li>专用通路：并发度高，性能好，但设计复杂，成本高。可以看做多总线结构。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/3f0cfe89124c43659c4411dc548d251a.png" alt="" /></p>
+<p>CPU的运算器、控制器、寄存器堆等核心部件均由一条内部的公共总线连接起来，构成单总线结构的数据通路。这条内部公共总线称为CPU的内总线。将连接CPU、内存及输入输出设备等部件构成计算机系统的总线称为系统总线或外总线。</p>
+<p>考虑执行指令add r0, r1，首先需要从寄存器堆中取出两个寄存器的值并输入到ALU的两个输入端，ALU的两个输入端连接有两个锁存器，可以分别保存两个寄存器的值，取出两个寄存器的值需要使用两个时钟周期，两次取值操作分别占用总线一个周期。之后ALU计算得到结果，通过总线输入到寄存器堆中，共需要3个周期和2个锁存器。</p>
+<p>如果能够添加一条总线直接连接ALU的一个输入和寄存器堆，则只需要两个时钟周期即可执行上述指令。第一步将一个寄存器的值保存到ALU一端的锁存器，第二步第二条总线将第二个寄存器的值输入到ALU另一端，ALU进行计算并通过第一条总线输出到寄存器堆中。共需2个时钟周期和1个锁存器。</p>
+<h4 id="指令执行示例"><a class="markdownIt-Anchor" href="#指令执行示例"></a> 指令执行示例</h4>
+<p><strong>LOAD R0, 6#</strong><br />
+功能：将主存地址为6的内容写入R0寄存器</p>
+<ul>
+<li>取指令数据通路：
+<ul>
+<li>T1：PC保存到AR和X中，准备访问AR处地址的指令内容</li>
+<li>T2：X+1保存到Z中，程序计数器+1，准备将Z写到PC，Z即为下一条指令地址</li>
+<li>T3：Z保存到PC，从主存取出指令内容保存到DR</li>
+<li>T4：将DR保存到IR，至此取指完成，指令内容已经被保存到IR。</li>
+</ul>
+</li>
+<li>译码周期：略</li>
+<li>执行周期，完成指令要求的任务，即首先取内存地址为6的数据，再保存到寄存器R0
+<ul>
+<li>T1：将IR中的地址操作数部分（值为6）保存到AR，X保存PC的值</li>
+<li>T2：主存读取</li>
+<li>T3：主存将读取的数据保存到DR</li>
+<li>T4：将DR的内容保存到寄存器R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>MOVE R1, 10</strong></p>
+<ul>
+<li>执行周期：
+<ul>
+<li>T1：将指令中的地址操作数部分（值为10）保存到R1</li>
+</ul>
+</li>
+</ul>
+<p><strong>ADD R0, R1</strong></p>
+<ul>
+<li>执行周期
+<ul>
+<li>T1：将寄存器R0保存到X</li>
+<li>T2：R1的值输出到总线，ALU接收X和总线的数据，计算结果并保存到Z</li>
+<li>T3：将Z的值写入到R0</li>
+</ul>
+</li>
+</ul>
+<p><strong>STORE R0, (R2)</strong></p>
+<ul>
+<li>执行周期，将R0的值保存到地址为R2的内存空间
+<ul>
+<li>T1：将R2的值保存到AR</li>
+<li>T2：将R0的值保存到DR</li>
+<li>T3：将DR的值写入到内存地址为AR的空间</li>
+</ul>
+</li>
+</ul>
+<p><strong>JMP 1000</strong></p>
+<ul>
+<li>执行周期
+<ul>
+<li>T1：将IR中的地址操作数（1000）保存到PC</li>
+</ul>
+</li>
+</ul>
+<h2 id="65-硬布线控制器"><a class="markdownIt-Anchor" href="#65-硬布线控制器"></a> 6.5 硬布线控制器</h2>
+<p>硬布线控制器可以看成产生固定时序控制信号的逻辑电路。<br />
+输入信号：指令译码，时钟信号，反馈信号<br />
+输出信号：功能部件控制信号序列<br />
+设计目标：最少元件，最快速度<br />
+理论基础：布尔代数<br />
+组成器件：门电路、触发器</p>
+<ul>
+<li>定长指令周期：使用2个机器周期，8个时钟周期，由于一些指令并不需要所有8个时钟周期，因此速度较慢（会浪费时间），但设计简单</li>
+<li>变长指令周期：时钟周期数量可变，速度快，但设计较复杂</li>
+</ul>
+<p>硬布线控制器模型：包含指令寄存器和指令译码器，时序发生器、硬布线控制器组合逻辑单元等几个部分，其中硬布线控制器组合逻辑单元用于产生指令执行所需要的所有控制信号序列，是控制器的核心。<br />
+输入来自：</p>
+<ul>
+<li>指令译码器的输出</li>
+<li>执行部件以及IO总线的反馈信号</li>
+<li>时序发生器的状态周期电位信号和节拍电位信号</li>
+</ul>
+<p>输出信号：微操作控制信号序列，可以看做所有输入信号的逻辑函数，每个控制信号都是由不同的指令译码信号、状态周期信号、节拍定位信号、状态反馈信号构成的逻辑与操作的和。（积之和范式）</p>
+<p>固定指令周期硬布线控制器设计过程</p>
+<ul>
+<li>设计三级时序产生器：所有指令固定机器周期数，节拍数</li>
+<li>列出所有机器指令的指令周期流程图，明确每个节拍的控制信号</li>
+<li>找出产生同一个微操作控制信号的条件</li>
+<li>写出各个微操作控制信号的布尔表达式</li>
+<li>化简各个表达式</li>
+<li>利用组合逻辑电路实现</li>
+</ul>
+<p>可变周期硬布线控制器设计步骤</p>
+<ul>
+<li>列出所有机器指令的指令周期流程图，明确每一个节拍的控制信号</li>
+<li>绘制指令执行状态转换图</li>
+<li>根据状态转换图构建状态集真值表，实现有限状态机组合逻辑</li>
+<li>实现控制器组合逻辑电路</li>
+</ul>
+<h2 id="66-微程序控制器"><a class="markdownIt-Anchor" href="#66-微程序控制器"></a> 6.6 微程序控制器</h2>
+<h3 id="661-微程序控制器的基本概念"><a class="markdownIt-Anchor" href="#661-微程序控制器的基本概念"></a> 6.6.1 微程序控制器的基本概念</h3>
+<p>硬布线为同步逻辑，设计复杂，速度快，贵，且难以修改。一条指令有多个时钟周期，一个时钟周期对应一个状态，一个状态对应一组并发信号。<br />
+微程序为存储逻辑，设计简单，速度慢，偏移，容易修改。将并发信号实现保存为微指令，一条指令对应于多条微指令，状态等同于存储器地址。</p>
+<p>微地址寄存器μAR为控制存储器提供微指令地址，初始化为0，控制存储器0号单元应该为取指令微程序的第一条微指令。</p>
+<h3 id="662-微程序控制器组成原理"><a class="markdownIt-Anchor" href="#662-微程序控制器组成原理"></a> 6.6.2 微程序控制器组成原理</h3>
+<p>利用软件方法设计硬件的技术，将完成指令所需的控制信号按照格式编写为微指令，并存放到<font color=red>控制存储器（控存ROM）</font>，一条机器指令对应于一段微程序，微程序中有多条微指令。<br />
+将存储技术与程序设计相结合，可以回避复杂的同步时序逻辑设计。</p>
+<p>单总线CPU的微指令构造：</p>
+<ul>
+<li>操作控制字段：用于存储操作控制信号，每一位对应一个控制信号，也称微命令，可以同时给出多个操作信号。</li>
+<li>顺序控制字段：用于控制微程序的执行顺序，判别逻辑为0，下一条微指令地址从<font color=red>下址字段</font>获取，否则按照约定规则生成。一个微程序的最后一条微指令的判别字段非零，代表地址跳转。</li>
+</ul>
+<p><img src="https://img-blog.csdnimg.cn/b777065d983a410c8cc1d0af5fcd6870.png" alt="" /></p>
+<h3 id="663-微程序控制器设计"><a class="markdownIt-Anchor" href="#663-微程序控制器设计"></a> 6.6.3 微程序控制器设计</h3>
+<p>微指令包含操作控制字段和顺序控制字段，一条微指令对应于一个时钟周期，微指令操作控制字段的信号在该时钟周期之内有效。指令需要多少时钟周期就包含多少微指令。操作控制字段的每一位都代表一个控制结构的开启与否。在一个时钟周期内，需要开启的控制字段在操作控制字段中的对应位会被设置为1。</p>
+<p>上面的顺序控制字段中P<sub>1</sub>表示下址字段是否有效，在取指周期的最后一个时钟周期，下址字段就无效，因为下一条微命令的地址不确定。其他的微程序的最后一个微命令的下址字段基本都为0。</p>
+<p>微指令设计原则：</p>
+<ul>
+<li>有利于缩短微指令字长度</li>
+<li>有利于减少控存容量</li>
+<li>有利于提高微程序执行速度</li>
+<li>有利于对微程序进行修改</li>
+<li>有利于提高微程序设计的灵活性</li>
+</ul>
+<p>微指令的直接表示法简单直观，便于输出控制，但微指令长度太长，控存容量大。优化方法：</p>
+<ul>
+<li>修改直接表示为编码表示，压缩互斥性的微指令，如4个互斥性的微指令可以不用4个二进制位表示，而是用2个二进制位替换。</li>
+<li>去掉下址字段，采用μPC=μPC+1的方式生成微指令地址。
+<ul>
+<li>微指令地址的形成方法有两种，一种是通过下址字段，另一种就是计数器法。前者微指令长，但控存容量大，后者微指令短，但需要加法器。</li>
+</ul>
+</li>
+<li>修改水平型微指令为垂直型微指令，牺牲了并行性。
+<ul>
+<li>水平型微指令：在一个微指令周期内能够同时给出多个微命令的微指令。并行操作能力强，效率高，灵活性强，字较长，微程序短，控存容量大，性能好。</li>
+<li>垂直型微指令：采用完全编码方法，将全部微命令编码化。字长短，微程序长，控存容量小，性能差，与指令相似，易于掌握，已经基本被淘汰。</li>
+</ul>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2630,640 +2902,6 @@ b. 不能。这样就无法通过标识号的规律对数据报进行源关联�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC4,5%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第4,5章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:47:13 / Modified: 23:48:42" itemprop="dateCreated datePublished" datetime="2023-03-02T23:47:13+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>9.6k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>9 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-4-网络层数据平面"><a class="markdownIt-Anchor" href="#chapter-4-网络层数据平面"></a> Chapter 4 网络层——数据平面</h1>
-<h2 id="41-网络层概述"><a class="markdownIt-Anchor" href="#41-网络层概述"></a> 4.1 网络层概述</h2>
-<p><font color=red>网络层的任务：完成主机到主机之间的通信</font></p>
-<p>网络层是五层架构中的第三层，为运输层（进程之间的通信）提供支持。</p>
-<p>为实现从源主机到目标主机成功的移动数据分组，整个路径上每一台分组交换机上均需要实现网络层，才能实现通信。</p>
-<p>网络层功能：</p>
-<ul>
-<li>在全局范围内对主机通信进行选路，结果反映为分组交换机上的转发表（理解为每一台设备尝试获取整个网络的拓扑结构，控制层面）</li>
-<li>分组交换机上的网络层根据转发表以及分组头部信息，将分组向合适的链路进行转发（数据层面）</li>
-<li>对于面向连接的网络层服务，提供连接建立的功能</li>
-</ul>
-<p>分组交换机分类：</p>
-<ul>
-<li>根据链路层首部信息进行转发的——链路层结点交换机</li>
-<li>根据网络层首部信息进行转发的——路由器</li>
-</ul>
-<p><font color=red>注意：链路层结点交换机和路由器的区别的理解：链路层在网络层之下，通过以太网（Ethernet）协议工作，链路层结点交换机根据MAC地址找到主机，而路由器通过IP地址找到主机。在一个内网之中，可能存在有多个交换机，交换机在内网主机之间的通信效率高于路由器（主机与路由器直接相连也可以实现交换机的功能，但效率不如交换机）。</font>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/baidu_32045201/article/details/78305586?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522166865182216800184174368%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=166865182216800184174368&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-78305586-null-null.142%5Ev63%5Econtrol,201%5Ev3%5Econtrol_1,213%5Ev2%5Et3_esquery_v1&amp;utm_term=%E4%BA%A4%E6%8D%A2%E6%9C%BA%E5%92%8C%E8%B7%AF%E7%94%B1%E5%99%A8%E7%9A%84%E5%8C%BA%E5%88%AB&amp;spm=1018.2226.3001.4187">路由器与交换机的区别与联系_WhataNerd的博客-CSDN博客_交换机和路由器的区别</a></p>
-<p>网络层可能提供的服务：</p>
-<ul>
-<li>确保交付：确保分组最终到达目的地（与以太网协议不同，以太网协议为尽力传输）</li>
-<li>具有时延上界的确保交付：在时延上限以内交付</li>
-<li>有序分组交付：以发送顺序到达</li>
-<li>确保最小带宽：以低于特定比特率速率传输时分组不会丢失而且在时延内可达</li>
-<li>确保最大时延抖动：连续分组间隔时间不超过特定值</li>
-<li>安全性服务：机密性、完整性和源鉴别（如TLS）</li>
-</ul>
-<p>网络层提供的服务可以分为：（下面两种只能提供一种，而运输层可通知提供两种）</p>
-<ul>
-<li>面向有连接的服务：虚电路，需要事先握手</li>
-<li>面向无连接的服务：数据报，不需事先握手</li>
-</ul>
-<p><font color=red>网络层与运输层中相应服务的区别</font>：</p>
-<ul>
-<li>网络层是向运输层提供主机到主机的服务，而运输层是向应用层提供进程到进程的服务。</li>
-<li>网络层仅提供上述两种服务中的一种，不同时提供两种，而运输层则同时提供两种。</li>
-<li>运输层的服务在网络边缘的端系统中实现，而网络层的服务则在整个网络中实现，含路由器。</li>
-</ul>
-<h4 id="虚电路网络"><a class="markdownIt-Anchor" href="#虚电路网络"></a> 虚电路网络</h4>
-<p>虚电路的目标是使首发双方之间的路径表现得如同电话线路一般。<br />
-工作机制：</p>
-<ul>
-<li>数据开始流动之前，呼叫建立，流动结束后要断开</li>
-<li>每一个分组携带虚电路的标识（而不是目的主机的地址）</li>
-<li>路径上的每一个路由器必须为进行中的连接维持连接状态信息</li>
-<li>链路，路由器资源可以分配给虚电路，为了达到类似线路交换的性能</li>
-</ul>
-<p>虚电路的组成：</p>
-<ul>
-<li>从源到目的主机的路径，含有一系列链路和路由器</li>
-<li>VC号，沿着该路径的每段链路的一个号码
-<ul>
-<li>一条虚电路在每条链路上具有不同的VC号</li>
-<li>每台中间路由器必须用一个新的VC号替代每个传输分组的VC号</li>
-</ul>
-</li>
-<li>沿着该路径的每台路由器中的转发表
-<ul>
-<li>创建一条新的虚电路，转发表增加一个新表项</li>
-<li>终止一条虚电路，表中相应项被删除</li>
-</ul>
-</li>
-</ul>
-<h4 id="数据报网络"><a class="markdownIt-Anchor" href="#数据报网络"></a> 数据报网络</h4>
-<p>数据报网络在网络层没有连接建立过程。路由器在端到端的连接中不维护连接状态信息（在网络层不存在“连接”的概念）。传输报文时使用目的主机地址信息，同一对主机之间的报文可能会走不同的路径。</p>
-<p>虚电路网络与数据报网络的对比：虚电路网络将重点放在网络，数据报网络将重点放在终端。数据报网络互联不同类型的网络更加容易，启用新服务的速度更快更简单。</p>
-<h2 id="42-路由器工作原理"><a class="markdownIt-Anchor" href="#42-路由器工作原理"></a> 4.2 路由器工作原理</h2>
-<p>路由器关键组成：</p>
-<ul>
-<li>运行路由算法/协议（如RIP选路算法）</li>
-<li>从入口到出口的转发</li>
-</ul>
-<p><font color=red>路由器的分散式交换：</font></p>
-<ul>
-<li>按照给定的目标地址，使用输入端口内存中存储的路由表，查找输出端口</li>
-<li>路由器需要以“线路速度”完成输入输出端口的处理</li>
-<li>如果数据报到达的速度超过了输入输出端口将数据报转交给交换结构的速度，则会产生排队现象。
-<ul>
-<li>基于目标的转发：仅基于目标IP地址的转发，以<font color=red>最长前缀匹配方法</font>确定向何处转发。</li>
-<li>通用转发：基于任意首部字段值转发</li>
-</ul>
-</li>
-</ul>
-<h3 id="输入端口"><a class="markdownIt-Anchor" href="#输入端口"></a> 输入端口</h3>
-<p>输入端口排队：</p>
-<ul>
-<li>输入端口处理速率超过交换结构速率时产生</li>
-<li>当输入缓冲区溢出时可能会导致排队丢包和时延</li>
-<li><font color=red>线头阻塞</font>：在输入队列中排队的分组必须等待通过交换结构发送，因为它被位于线头的另一个分组阻塞了。</li>
-</ul>
-<p>交换结构工作原理：</p>
-<ul>
-<li>经总线交换：输入端口通过一根共享总线直接传送到输出端口，缺点是<font color=red>总线的带宽是交换速度的瓶颈</font>。一次处理一个分组。</li>
-<li>经内联网络：将长度变化的IP分组分片为固定尺寸的信元，通过交换结构对信元进行转发。克服了总线带宽的限制。</li>
-<li>经内存交换：在输入端口和输出端口之间的交换是在CPU的直接控制下完成的。分组被拷贝到系统内存中，CPU提出报头中的目标地址，查找路由表中的输出接口，将数据包拷贝到输出接口。其转发速度受限于内存的带宽（吞吐量&lt;带宽/2），一次转发一个分组。</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/2cd2649418ff4561b35808c705a039e2.png" alt="" /></p>
-<h3 id="输出端口"><a class="markdownIt-Anchor" href="#输出端口"></a> 输出端口</h3>
-<p>输出端口需要缓存管理和调度原则。当交换结构将分组交付给输出端口的速率超过输出链路速率时进行缓存管理，在数据报队列中选择数据报进行传输时需要调度原则。</p>
-<p>输出端口排队：</p>
-<ul>
-<li>当通过交换结构到达的分组速率超过输出链路速率时产生。</li>
-<li>需要对分组进行缓存，超过缓存缓冲区大小会造成排队和丢包。</li>
-</ul>
-<h3 id="拥塞问题的解决方法"><a class="markdownIt-Anchor" href="#拥塞问题的解决方法"></a> 拥塞问题的解决方法</h3>
-<p>缓冲区设置问题：</p>
-<ul>
-<li>经过试验认为对于有N条TCP连接经过的链路而言，缓冲区大小应为：$$B=\frac{\operatorname{RTT}\times R}{\sqrt{N}}$$其中R为带宽，RTT为往返时间。</li>
-</ul>
-<p>输出端口分组调度策略：</p>
-<ul>
-<li>先来先服务策略（First Come First Serve，FIFO的队列策略）
-<ul>
-<li>当缓冲区满时，有几种丢弃方法：
-<ul>
-<li>尾部丢弃</li>
-<li>按照优先级丢弃</li>
-<li>随机丢弃</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>优先级排队策略
-<ul>
-<li>针对高优先级和低优先级的数据报创建多个不同队列</li>
-</ul>
-</li>
-<li>循环调度策略
-<ul>
-<li>循环扫描不同类的队列，轮流发送数据包</li>
-</ul>
-</li>
-<li>加权公平队列策略
-<ul>
-<li>每一个类赋予对应的权重，在一个周期之内可以获得一定数量的服务，既可以保证高优先级队列获得最大优先权，又可以防止低优先级队列等待时间过长。</li>
-</ul>
-</li>
-</ul>
-<p>分组丢弃策略</p>
-<ul>
-<li>被动策略
-<ul>
-<li>丢弃尾部</li>
-<li>随机丢弃已排队分组</li>
-</ul>
-</li>
-<li>主动策略
-<ul>
-<li>随时计算平均队列长度，并设置一个最小和最大阈值。</li>
-<li>当队列长度小于最小阈值时，无条件允许分组入队列。</li>
-<li>当队列长度大于最大阈值时，无条件禁止分组入队列。</li>
-<li>当队列长度在两个阈值之间时，按照概率标记或丢弃分组。</li>
-</ul>
-</li>
-</ul>
-<h2 id="43-网际协议"><a class="markdownIt-Anchor" href="#43-网际协议"></a> 4.3 网际协议</h2>
-<p><font color=red><strong>IPv4协议数据报格式：</strong></font><br />
-<img src="https://img-blog.csdnimg.cn/4d9498e0c9024f3a908ffc12db15464f.jpeg#pic_center" alt="" /></p>
-<h3 id="ip分片和重组"><a class="markdownIt-Anchor" href="#ip分片和重组"></a> IP分片和重组</h3>
-<p>MTU：最大传送单元，一个网络层数据包的最大长度（包含网络层协议头）</p>
-<p>受限于MTU，大的数据包在一些链路中会被拆分为多个数据包。<font color=red>网络中的交换机都有可能会拆分数据包，但只有目标主机会对数据包进行重组，具有较大MTU的链路即使接收到小数据包也不会进行重组。</font> 重组后由于数据包头部数量增加，因此总的传输的字节数量会增加。</p>
-<p><font color=red><strong>IP地址</strong></font></p>
-<ul>
-<li>结构：网络号（子网号）+主机号，在同一个网络下的主机和路由器的IP地址中的网络号必须相同，同一网络下的主机可以直接通信。</li>
-<li>接口：连接主机、路由器之间的物理链路，一般路由器有多个接口，主机也有可能有多个接口，IP地址只和接口有关而与主机、路由器没有太多关联。</li>
-<li>传统形式下的IP地址分类：
-<ul>
-<li>A类：0.0.0.0~127.255.255.255，网络号7位，主机号24位</li>
-<li>B类：128.0.0.0~191.255.255.255，网络号14位，主机号16位</li>
-<li>C类：192.0.0.0~223.255.255.255，网络号21位，主机号8位</li>
-<li>D类：224.0.0.0~239.255.255.255，组播地址</li>
-<li>E类：240.0.0.0~255.255.255.255，保留</li>
-</ul>
-</li>
-<li>路由器的IP地址：为完成分组转发功能，路由器至少拥有两个IP地址，接入不同的子网之中，用于不同子网之间的通信。</li>
-<li>子网划分方法：在主机号中借用一部分位数作为子网号</li>
-<li>子网掩码：对内用于指示网络号和子网号的位置，对外可以隐藏子网的存在。获得方法：通过在网络号的子网号相应的位置全部置为1，主机号相应的位置全部置为0，即可得到子网掩码。</li>
-<li>在同一个局域网上的主机或路由器的IP地址中的网络号必须是一样的，图中的网络号就是IP地址中的net-id。路由器总是具有两个或两个以上的IP地址，路由器的每一个接口都有一个不同网络号的IP地址。</li>
-</ul>
-<h3 id="ipv4编址"><a class="markdownIt-Anchor" href="#ipv4编址"></a> IPv4编址</h3>
-<p>网络地址=IP地址 逻辑与 子网掩码。<br />
-采用子网掩码之后，路由器的寻址过程将演变为一个两级寻址过程：</p>
-<ul>
-<li>检查分组目的IP地址中的网络号，若网络号不是本网络，则从路由表中找出相应的的转发节点地址将其转发出去。</li>
-<li>检查子网号：当网络号是本网络时，路由器将检查子网号，向相应的子网转发此分组。</li>
-</ul>
-<p>IP地址扩展：构造超网，从网络号中借用一部分位数作为主机号。</p>
-<h4 id="cidr"><a class="markdownIt-Anchor" href="#cidr"></a> CIDR</h4>
-<p>无类别域间路由选择。应用于地址空间的利用率低，地址空间面临耗尽时。</p>
-<p>编址格式：IP地址::={网络前缀，主机号}<br />
-斜线记法：192.168.0.1/24<br />
-简写记法：10.0.0.0/10可以简写为10/10</p>
-<p>最长前缀匹配：</p>
-<ul>
-<li>使用CIDR时，路由表中的每一个项目由“网络前缀”和“下一条地址”组成，在查找路由表时可能会得到不止一个匹配结果。</li>
-<li>应当从匹配结果中选择具有最长网络前缀的路由：最长前缀匹配。</li>
-<li>网络前缀越长，其地址块就越小，因而路由就越具体。</li>
-<li>最长前缀匹配又被称为最长匹配或最佳匹配。</li>
-</ul>
-<p>主机获得IP地址的方法：手工配置，或使用DHCP协议动态获取。</p>
-<h4 id="dhcp动态主机配置协议"><a class="markdownIt-Anchor" href="#dhcp动态主机配置协议"></a> DHCP：动态主机配置协议</h4>
-<p>允许主机在加入网络时动态地从网络服务器中获取其网络地址。</p>
-<ul>
-<li>能够在使用过程中更新地址</li>
-<li>允许地址重用</li>
-<li>支持移动用户</li>
-</ul>
-<p>主要流程</p>
-<ul>
-<li>主机广播DHCP发现报文。</li>
-<li>DHCP服务器使用“DHCP提供”报文进行应答（广播方式，由于现在主机还没有获取IP地址，因此只能广播）。</li>
-<li>主机使用DHCP请求报文请求IP地址。</li>
-<li>DHCP服务器使用DHCP ACK报文响应。</li>
-</ul>
-<p>DHCP除了可以获取IP地址，还可以获取网关地址、DNS地址、子网掩码。其<font color=red>工作在应用层</font>，是引导程序协议的一种，属于局域网的网络协议，使用UDP协议工作。<br />
-DHCP有3个端口，67和68作为正常的DHCP服务端口，分别是服务器和客户端的服务端口，546号端口用于DHCPv6客户端，这是为了特别开启DHCP failover服务。</p>
-<h3 id="网络地址转换nat"><a class="markdownIt-Anchor" href="#网络地址转换nat"></a> 网络地址转换（NAT）</h3>
-<p>其目的是让本地网络只使用一个IP地址就可以和外部网络相连，且不需要从ISP获取大批的IP地址，所有的设备可以使用同一个IP地址，可以在不通知外部网络的情况下改变内网主机的IP地址，即使改变了ISP也无需改变内网主机的IP地址，且内网主机对于外网主机是不可见的，不可寻址的。</p>
-<p>实现方法：</p>
-<ul>
-<li>发送数据报：将每个外出报文的源IP地址和端口号替换为NAT的IP地址以及新的端口号，远程客户机或服务器将以NAT IP地址以及新的端口号作为目的地址进行响应。</li>
-<li>网关存储每一个地址转换对，在接收数据报时根据NAT转换表将每一个进入报文的NAT IP地址和端口号替换为相应的源IP地址以及端口号。</li>
-</ul>
-<p>三种地址转换方式：</p>
-<ul>
-<li>静态NAT：一个本地地址对应于一个全球地址</li>
-<li>动态NAT：一个全球地址对应于多个本地地址</li>
-<li>端口NAT：一个本地地址的端口对应到一个全球地址的端口</li>
-</ul>
-<p>争议：</p>
-<ul>
-<li>端口号是用于进程编址而不是用于主机编址的</li>
-<li>路由器仅应当处理高达第三层的分组</li>
-<li>NAT协议违反了端到端原则，即主机彼此应当相互直接对话，结点不应该介入。</li>
-<li>应该使用IPv6来解决IP地址的短缺问题</li>
-</ul>
-<h4 id="icmp因特网控制报文协议"><a class="markdownIt-Anchor" href="#icmp因特网控制报文协议"></a> ICMP：因特网控制报文协议</h4>
-<p>用于主机、路由器、网关之间交换网络层信息，其传递的信息包括：</p>
-<ul>
-<li>错误报告，如主机、网络、端口、协议不可达等</li>
-<li>回声请求/回答，如ping</li>
-</ul>
-<p>从体系结构上看其位于IP层之上，被封装在IP分组中。报文种类有两种：ICMP差错报告报文和询问报文。</p>
-<h2 id="52-路由选择算法"><a class="markdownIt-Anchor" href="#52-路由选择算法"></a> 5.2 路由选择算法</h2>
-<p><font color=red>默认路由器</font>：一台主机直接连接到的路由器<br />
-<font color=red>源路由器</font>：源主机的默认路由器<br />
-<font color=red>目的路由器</font>：目的主机的默认路由器</p>
-<p>选路算法的目的：</p>
-<ul>
-<li>给定一组路由器以及连接路由器的链路，从中找到一条从源路由器到目标路由器的“好的”路径，这条路径通常需要拥有最低的成本。</li>
-</ul>
-<p>选路算法分类：</p>
-<ul>
-<li>根据信息是全局性还是分散性的进行分类
-<ul>
-<li>全局选路算法
-<ul>
-<li>所有路由器都知道整个网络的拓扑图以及链路的费用信息</li>
-<li>链路状态算法</li>
-</ul>
-</li>
-<li>分散式选路算法
-<ul>
-<li>每一个路由器仅有与其相连的链路的费用信息</li>
-<li>通过迭代计算过程与相邻结点交换信息</li>
-<li>距离向量算法</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>根据信息是静态还是动态进行分类
-<ul>
-<li>静态选路算法
-<ul>
-<li>随着时间的流逝，路由的变化很慢</li>
-</ul>
-</li>
-<li>动态选路算法
-<ul>
-<li>路由信息可以很快地发生变化</li>
-<li>需要对路由信息进行周期性的更新</li>
-<li>可以相应拓扑或链路费用的变化</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>根据是否对负载敏感进行分类
-<ul>
-<li>负载敏感算法
-<ul>
-<li>链路费用会动态地变化以反映出链路的当前状况</li>
-</ul>
-</li>
-<li>负载迟钝算法
-<ul>
-<li>链路费用不明显地反映链路的当前状况</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="dijkstra算法"><a class="markdownIt-Anchor" href="#dijkstra算法"></a> Dijkstra算法</h3>
-<p>条件：</p>
-<ul>
-<li>所有结点都知道网络拓扑和链路费用
-<ul>
-<li>通过链路状态广播获得信息</li>
-<li>所有结点具有该网络的同一个完整的视图</li>
-</ul>
-</li>
-<li>计算从某结点到网络中所有其他结点的最低费用
-<ul>
-<li>为该结点提供转发表</li>
-</ul>
-</li>
-<li>迭代：经过算法的K次迭代之后，可以知道到K个目的节点的最低费用路径。</li>
-<li>通过跟踪前一跳结点可以构造最短路径树。</li>
-</ul>
-<p>复杂性：</p>
-<ul>
-<li>对于第一次迭代，需要搜索所有的n个结点以确定出结点w，w具有最低费用</li>
-<li>在所有迭代中需要搜索的结点总数为n(n+1)/2，所以链路状态算法在最差情况下的复杂性为O(n<sup>2</sup>)</li>
-<li>该算法的一种更复杂的实现（堆）可以降到O(nlogn)</li>
-</ul>
-<p>缺点：当路径的价值在不断变化时，每一次都需要重新进行计算，耗费资源。<br />
-解决方案：</p>
-<ul>
-<li>强制链路费用不依赖于所承载的流量，但这无法解决高拥塞的问题</li>
-<li>确保并非所有的路由器同时运行LS算法（链路状态路由选择算法），这样因特网上的路由器能够自同步，随机化路由器发送链路通告的时间。</li>
-</ul>
-<h2 id="53-ospf协议"><a class="markdownIt-Anchor" href="#53-ospf协议"></a> 5.3 OSPF协议</h2>
-<p>OSPF协议是公开发表的，用于因特网中自治系统内部的路由选择。<br />
-最短路径优先是因为使用了Dijkstra提出的最短路径算法SPF。这是一个分布式的链路状态协议。</p>
-<p>链路状态在路由器之间交流使用的方法：洪泛法，其向本自治系统中所有路由器发送信息，<font color=red>发送的信息就是与本路由器相邻的所有路由器的链路状态</font>。只有当链路状态发生变化时，路由器采用洪泛法向所有路由器发送此信息。</p>
-<p>由于各个路由器之间频繁交换链路状态信息，所有的路由器最终都能够建立一个<font color=red>链路状态数据库</font>。这个数据库实际上描述了全网的拓扑结构图，在全网范围是一致的。OSPF的链路状态数据能够较快地进行更新，使得各个路由器能够及时更新其路由表。<font color=red>OSPF的更新过程收敛快就是其重要优点</font>。</p>
-<h4 id="ospf协议特点"><a class="markdownIt-Anchor" href="#ospf协议特点"></a> OSPF协议特点：</h4>
-<ul>
-<li>不强制如何设置链路权值的策略，但是提供对给定链路权值集合确定最低费用路径的机制。</li>
-<li>即使链路状态未发生变化，每30分钟广播一次链路状态。</li>
-<li>链路状态以OSPF通告形式封装于OSPF报文中，由IP分组承载，协议号89。</li>
-<li>OSPF路由器之间的交换都是经过鉴别的，以确认OSPF通告的真实性以防止伪造和篡改。</li>
-<li>OSPF通告具有序列号，可防止重放攻击。</li>
-<li>OSPF中支持多条具有相同费用的路径。</li>
-<li>OSPF支持多播选路和层次路由。</li>
-</ul>
-<h3 id="ospf距离向量选路算法"><a class="markdownIt-Anchor" href="#ospf距离向量选路算法"></a> OSPF距离向量选路算法</h3>
-<p>特点：迭代、分布、自我终止、异步<br />
-思想：</p>
-<ul>
-<li>d<sub>x</sub>(y)=min<sub>v</sub>{c(x, v)+d<sub>v</sub>(y)}</li>
-<li>每一个路由器中都有一张路由表，包含3个内容：目的网络号、经过的邻居路由器、距离</li>
-<li>路由器定期向其邻居路由器传送路由表的拷贝</li>
-</ul>
-<p>路由表更新算法：将每条边的权值都定义为1</p>
-<ul>
-<li>路由器X得到相邻路由器Y的路由表，从而得知：Y到网络Z的最短距离为N</li>
-<li>如果路由器X没有到网络Z的路由条目，则添加一条经由路由器Y到网络Z距离为N+1的路由条目</li>
-<li>如果路由器X已经有到网络Z的路由条目，其距离为M，如果M&gt;N+1，则更新该条目为经由路由器Y到网络Z距离为N+1，否则不更新。</li>
-<li>特点：
-<ul>
-<li>好消息传播快，每一次发现距离更新的路径，都能够很快通知到邻居：
-<ul>
-<li>在t0时刻，y检测到链路费用变化，更新自己的距离向量，同时将这个变化通知给它的邻居</li>
-<li>在t1时刻，z收到来自y的更新报文并更新了自己的距离向量表，计算出到x的新的最低费用，并向邻居发送它的新距离向量</li>
-<li>在t2时刻，y收到来自z的更新并更新其距离向量表，Y的最低费用不变，因此y不发送任何报文给z。</li>
-</ul>
-</li>
-<li>坏消息传播慢，如果一条链路的权值增大，每一次更新只能让链路最短距离增加1，这会导致路由选择环路（P252）。解决方案：毒性逆转，即如果z通过y选路到达目的地x，则z通告y其到x的距离为无穷大，这样在比较时不会产生上述情况，但仍然没有解决不可记数问题。涉及3个或更多结点的环路将无法使用毒性逆转技术检测到。</li>
-</ul>
-</li>
-</ul>
-<h3 id="链路状态路由选择算法ls-距离向量路由选择算法dv"><a class="markdownIt-Anchor" href="#链路状态路由选择算法ls-距离向量路由选择算法dv"></a> 链路状态路由选择算法LS &amp; 距离向量路由选择算法DV</h3>
-<ul>
-<li>从报文的复杂性来看：
-<ul>
-<li>LS：对于n个结点和E条链路，需要发送O(nE)个报文</li>
-<li>DV：只对直连的邻居发送报文</li>
-</ul>
-</li>
-<li>从收敛速度来看：
-<ul>
-<li>算法收敛时间依赖于许多因素，因此可变</li>
-<li>LS：是一个要求O(nE)个报文的O(n<sup>2</sup>)算法，可能会存在震荡</li>
-<li>DV：收敛时间不确定。可能会遇到环路选路和无穷记数问题</li>
-</ul>
-</li>
-<li>从健壮性来看：
-<ul>
-<li>LS：结点能够向其连接的链路广播不正确费用，每一个结点只计算自己的转发表</li>
-<li>DV：一个结点可以向任意或所有目的结点通告其不正确的最低费用路径，每一个结点的计算都会传递给它的邻居</li>
-</ul>
-</li>
-</ul>
-<h2 id="rip协议"><a class="markdownIt-Anchor" href="#rip协议"></a> RIP协议</h2>
-<ul>
-<li>相邻两点间链路上的费用定义为1，即只考虑源到目标经过多少个路由器，或多少“跳”</li>
-<li>一条路径的最大费用限制为15</li>
-<li>选路更新信息每30s在邻居之间以RIP响应报文的形式进行交换</li>
-<li>路由器经过180s没有收到来自某个邻居的RIP通告，则认为该邻居已经离线，修改选路表，向其他邻居广播</li>
-<li><font color=red>RIP是一个运行在UDP上的应用层协议</font>（端口520）</li>
-</ul>
-<h2 id="层次路由"><a class="markdownIt-Anchor" href="#层次路由"></a> 层次路由</h2>
-<p>当因特网规模过大时，路由器无法存储每一台主机的选路信息，路由表更新的报文广播太多占用带宽。另外路由器也需要有一个子网管理的功能，每个网络管理员可能希望能够按照自己的愿望进行管理其网络。</p>
-<p>解决方法：</p>
-<ul>
-<li>将路由器聚合到一个区域，形成一个自治系统（AS）</li>
-<li>在相同AS内的路由器可以全部运行同样的选路算法：自治系统内部选路协议，最常用的是内部网关协议IGP，包含RIP和OSPF</li>
-<li>在不同AS内的路由器可以运行不同的自治系统内部选路协议</li>
-<li>转发表是由AS内部选路算法与AS间选路算法共同决定的，AS内部选路算法为内部目的地址设置转发表信息，AS内部选路算法与AS外部选路算法共同为外部目的地址设置转发表信息</li>
-</ul>
-<p>自治系统间路由器的任务：<br />
-需要知道自己所在AS通过某个相邻的AS能够到达哪些AS，并将这些可达性信息向自身AS中的所有路由器传播。</p>
-<p>当从源到目标在AS粒度下只有一条路可选时，源知道其哪一个接口在到AS边缘路由器的最低费用路径上，因此将接口与目标作为一对放入转发表。如果不止一条路可选，那么源必须确定通过哪一个网关路由器转发报文，其策略是<font color=red>将报文发送到最近的路由器</font>，即热土豆选路原则</p>
-<h3 id="因特网中的as内层次路由层次ospf"><a class="markdownIt-Anchor" href="#因特网中的as内层次路由层次ospf"></a> 因特网中的AS内层次路由：层次OSPF</h3>
-<ul>
-<li>为了使得OSPF能够用于规模更大的网络，OSPF将一个自治系统再划分为若干个更小的范围，称为区域</li>
-<li>每一个区域都有一个32bit的区域标识符</li>
-<li>区域不能太大，一个区域内最好不要有200个以上路由器</li>
-<li>划分区域的好处就是将利用洪泛法交换链路状态信息的范围局限于每一个区域而不是整个自治系统，这就减少了整个网络上的通信量。</li>
-<li>在一个区域内部的路由器只知道本区域的完整网络拓扑，而不知道其他区域内的网络拓扑的情况。</li>
-<li>OSPF使用层次结构的区域划分。在上层的区域叫做主干区域。主干区域的标识符规定为0.0.0.0，主干区域的作用是用于连通其他在下层的区域。</li>
-</ul>
-<h3 id="因特网上的as间路由bgp4"><a class="markdownIt-Anchor" href="#因特网上的as间路由bgp4"></a> 因特网上的AS间路由：BGP4</h3>
-<ul>
-<li>在自治系统之间寻找最佳路由的代价很大，不现实，因此需要考虑有关策略。</li>
-<li>BGP为每一个AS提供一种手段，来处理
-<ul>
-<li>从相邻AS获取子网可达性信息</li>
-<li>向该AS内部所有路由器传播这些可达性信息</li>
-<li>基于该可达性信息和AS策略，决定达到子网的好路由</li>
-<li>注意BGP只是寻找一个较好的路由，而不一定是最好的路由</li>
-</ul>
-</li>
-</ul>
-<p>每一个自治系统的管理员要选择至少一个路由器作为该自治系统的BGP发言人，一般两个发言人都是通过一个共享网络连接在一起的，而BGP发言人往往是BGP边界路由器，但也可以不是。</p>
-<p>一个BGP发言人与其他自治系统中的BGP发言人交换路由信息，首先需要建立TCP连接，然后在此连接基础上交换BGP报文以建立BGP会话，利用BGP会话交换路由信息</p>
-<p>使用TCP连接能够提供可靠服务，也简化了路由选择协议。</p>
-<p>使用TCP连接交换路由信息的两个发言人彼此成为对方的邻站或对等站。</p>
-<ul>
-<li>BGP路由通告
-<ul>
-<li>一个AS可以集合多个前缀为一个，并使用BGP向其他AS通告单一前缀，则当前AS承诺它将沿着朝向该前缀的路径，转发指向该前缀的任何数据报。</li>
-</ul>
-</li>
-<li>选路算法
-<ul>
-<li>在不同AS的网关路由器之间使用eBGP，一个AS向另一个AS发送一个自其自身可达的前缀列表。</li>
-<li>而另一个AS的网关路由器使用iBGP对话向该AS中的其他路由器发布这些前缀。</li>
-<li>这个AS内的其他网关路由器使用eBGP会话将学习到的前缀信息发布到与其直接相连的其他AS的网关路由器中。</li>
-<li>当一个路由器得知一个新的前缀，它为该前缀在其转发表中创建一个表项。</li>
-</ul>
-</li>
-<li>路径和BGP路由
-<ul>
-<li>当路由器通告一个前缀时，它随着前缀包含一些BGP属性，前缀+属性=路由。</li>
-<li>两个重要属性：
-<ul>
-<li>AS_PATH：该属性包含了前缀的通告已经通过的那些AS</li>
-<li>NEXT_HOP：指明到下一跳AS的具体的路由器（从当前AS到下一跳AS之间可能有多条链路）</li>
-</ul>
-</li>
-<li>当一台网关路由器接收到一个路由器通告时，它使用输入策略决定是否接收或过滤该路由。</li>
-</ul>
-</li>
-<li>BGP路由选择
-<ul>
-<li>一台路由器可能知道到一条前缀的多条路由路，路由器必须在可能的路由之中选择一条。消除规则：
-<ul>
-<li>本地偏好值：策略决定，具有最高本地偏好值的路由将被选择</li>
-<li>最短AS-PATH：在余下的路由之中，具有最短AS-PATH的路由将被选择</li>
-<li>从余下的路由中，选择具有最靠近NEXT-HOP路由器的路由：热土豆路由。</li>
-<li>如果依然剩下多条路由，该路由器使用BGP标识来选择路由</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p>步骤：</p>
-<ul>
-<li>路由器知晓前缀的存在性：通过BGP通告得知</li>
-<li>确定此前缀的转发端口：使用BGP路由选择确定最佳域间路由，使用IGP路由选择确定最佳域内路由，确定最佳路由的转发端口</li>
-<li>将（前缀，端口）表项放入转发表中</li>
-</ul>
-<p><img src="https://img-blog.csdnimg.cn/b0c5406d99d74ce6acff9f1951647399.png" alt="" /></p>
-<h2 id="ip组播"><a class="markdownIt-Anchor" href="#ip组播"></a> IP组播</h2>
-<p>组播：将数据分发给网络中处于同一个组的多台主机上的应用进程。</p>
-<h2 id="55-sdn"><a class="markdownIt-Anchor" href="#55-sdn"></a> 5.5 SDN</h2>
-<p>传统网络的问题：</p>
-<ul>
-<li>各个设备厂家网络层实现的方式各不相同，架构封闭，导致接口模糊封闭，功能单元界面不清晰。封闭架构导致设备制造商对新技术的驱动力不强，协议更新慢。</li>
-</ul>
-<p>路由器实现的控制平面：每一个路由器都具备独立的路由功能和数据转发功能，路由算法组件分布在不同的路由器上，彼此交互，计算生成转发表，构成分布式的控制平面。</p>
-<p>实现目标：</p>
-<ul>
-<li>确定性路由：从固定源到固定目标要求经过固定的路由</li>
-<li>负载均衡路由：从源到目标的多条路径上实现负载均衡</li>
-</ul>
-<p>解决方案：分层<br />
-路由控制功能从本地路由器分离，汇聚到远程控制器，与路由器中的本地控制代理进行交互，来计算转发表。</p>
-<p>SDN架构包含数据平面与控制平面，数据平面负责处理和转发数据包，根据转发状态和数据报头决定转发决策，而控制平面负责计算路由器的转发状态，确定数据报应该如何转发和转发到哪里，对路由、流量工程和防火墙状态管理控制，实现分布路由协议、手工配置或集中计算。不同的平面需要分别进行抽象，以满足SDN需求。</p>
-<p><img src="https://img-blog.csdnimg.cn/7ad8eca1f6f44aeaac7b88047fc8723a.png" alt="" /></p>
-<h3 id="openflow流表"><a class="markdownIt-Anchor" href="#openflow流表"></a> OpenFlow流表</h3>
-<p>由多个流条目组成，流条目包括：</p>
-<ul>
-<li>
-<p>头域：用于匹配规则确定输入报文是否与本条目匹配</p>
-</li>
-<li>
-<p>计数器：用于与本流相关的跟踪统计</p>
-</li>
-<li>
-<p>动作：描述交换机针对匹配报文采取的动作</p>
-</li>
-<li>
-<p>OpenFlow交换机由OpenFlow协议、安全通道、报文匹配、流表与动作等构成。</p>
-</li>
-<li>
-<p>报文匹配功能基于流表对输入报文进行匹配，将其引导至动作箱。</p>
-</li>
-<li>
-<p>动作包括三种可选动作</p>
-<ul>
-<li>转发报文输出，可能先修改头域字段</li>
-<li>丢弃报文</li>
-<li>通过报文输入消息将报文转发至控制器</li>
-</ul>
-</li>
-<li>
-<p>控制器和交换机之间的报文通过安全通道传输</p>
-</li>
-<li>
-<p>当控制器有报文需要通过交换机输出时采用PACKET_OUT消息</p>
-</li>
-<li>
-<p>控制器直接指定输出端口</p>
-</li>
-<li>
-<p>控制器通过报文匹配逻辑决定转发策略</p>
-</li>
-</ul>
-<p>SDN控制平面：包括SDN控制器和SDN网络控制应用程序。</p>
-<ul>
-<li>控制平面基于网络的抽象，简化了网络编程控制</li>
-<li>SDN控制平面包括两个层面的抽象：
-<ul>
-<li>流抽象-交换机API，通过OpenFlow协议与数据平面交互</li>
-<li>映射抽象-网络API，控制器与网络控制应用程序之间交互</li>
-</ul>
-</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3333,7 +2971,7 @@ DHCP有3个端口，67和68作为正常的DHCP服务端口，分别是服务器�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">144</span>
+          <span class="site-state-item-count">145</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -3391,7 +3029,7 @@ DHCP有3个端口，67和68作为正常的DHCP服务端口，分别是服务器�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:38</span>
+    <span title="Reading time total">19:44</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
