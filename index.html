@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-02-06 10:17:04" itemprop="dateModified" datetime="2024-02-06T10:17:04+08:00">2024-02-06</time>
+                <time title="Modified: 2024-02-06 10:27:13" itemprop="dateModified" datetime="2024-02-06T10:27:13+08:00">2024-02-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -230,15 +230,15 @@
 <p>在经历了两届招新赛和本次L3HCTF后，我发现我实际上是有自己的出题风格的。我喜欢将题目本身置于一个真实的场景之中，让选手解题时能够身临其境（笑）。本题也是如此，创建了一个挖宝的场景，并通过该场景中可能出现的经典元素作为本题的关键内容。本题的漏洞点实际上很简单，第一个是一个10字节的溢出，我还特意在堆的最低地址处塞了一个0x400的chunk，这样选手可以通过这个溢出修改Swisstable内部的指针，对内部的数据结构进行伪造，从而达到攻击效果。另外如果选手攒够了足够的金币，可以以一个较低的价格“买到”修改control bytes的机会以及Hashmap的地址。这也是第二个漏洞点，选手可以通过这个漏洞点，与第一个漏洞点配合完成若干次任意地址的读写。最终我的exp中就是通过任意地址读写直接修改栈上的返回地址，构造一个短的ROP链完成控制流劫持。</p>
 <p>所以总的来说，本题如果除去Swisstable不看，实际上一个很简单的赛题，没有用到对glibc堆的任何house。因此本题非常考验选手对Swisstable数据结构的理解，否则将无法通过其完成读写操作。这也是我认为我出题出的不好的一点，没有完全贯彻“将已知和未知相结合”的理念。</p>
 <p>行了不废话了，下面贴出本题的源码。</p>
-<p><a href="hashmap.h">hashmap.h</a></p>
-<p><a href="hashmap.cpp">hashmap.cpp</a></p>
-<p><a href="main.cpp">main.cpp</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/hashmap.h">hashmap.h</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/hashmap.cpp">hashmap.cpp</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/main.cpp">main.cpp</a></p>
 <p>下面是本题的出题人版本exp以及Dockerfile等一些配置文件。</p>
-<p><a href="exp.py">exp.py</a></p>
-<p><a href="Dockerfile">Dockerfile</a></p>
-<p><a href="service.sh">service.sh</a></p>
-<p><a href="start_docker.sh">start_docker.sh</a></p>
-<p><a href="pwn.xinetd">pwn.xinetd</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/exp.py">exp.py</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/Dockerfile">Dockerfile</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/service.sh">service.sh</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/start_docker.sh">start_docker.sh</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Hornos3/Hornos3.github.io/tree/master/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/pwn.xinetd">pwn.xinetd</a></p>
 <p>我的思路是，首先把所有能挖的金币全挖出来，然后买到hashmap地址。由于本题的堆环境比较固定，可以通过这个hashmap地址获取到其他chunk的地址，通过固定偏移实现。随后我们通过将最开始的0x400的chunk分配出来（后面就是hashmap的chunk），通过10字节溢出将存放数据的指针进行修改，修改到我们伪造的地址中去，在exp中，伪造的数组在0x400中进行构造。由于hashmap没有检查边界，所以伪造后可以实现最多0x1C字节任意地址读。本题的挖矿区域是由mmap分配的，调试时可以看到这块空间位于ld.so的正下方，因此考虑可以在ld.so中寻找合适的偏移来泄露栈地址、libc地址等关键地址。这一步在正式比赛过程中成为了出题人的噩梦，因为我发现远程环境的偏移不一样，虽然说也可以通过爆破的方式通过多次连接完成多个字节的读写，但是这样会大大破坏做题的体验，因此比赛时不得不在队内服务器又部署了一份正常的然后端口映射到平台的端口，这也是为什么treasure_hunter在第一天不太稳定。（在此磕头谢罪砰砰砰）</p>
 <p>在获取到关键地址之后，我们再一次分配那个最开始的0x400地址，准备开始写ROP chain。不过由于一开始我们并不知道返回值那个地方保存了什么值，所以需要首先读取然后通过加减金币完成写操作。出题人脚本里面是写入了一个pop rdi, ret ; addrof /bin/sh ; system这样一个简单的ROP chain，由于本题hashmap的大小为0x20，在不扩展的情况下最多可以读写0x1C个字节（0x1C这个数字怎么来的呢，这个就是Rust Swisstable的一个实现，Swisstable在填满7/8空间时就会进行扩展），足够完成这样一个ROP chain的编写。（审wp补档：看到了好几队都是通过写_IO_list_all来打fsop的，这种攻击方式我认为是更加出色的）</p>
 <p>以上就是本题的做题流程。说实话我感觉这题出的还是不太好，有种强迫选手学Swisstable的感觉。但好在这也是迈出了第一步。后面的话还是要多接触一些好题，多学一些东西，向L3H大手子之路继续迈进。也非常感谢各位选手的包容以及评价。</p>
