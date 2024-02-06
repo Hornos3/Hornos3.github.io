@@ -150,6 +150,291 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机组成原理——第2章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:02:03 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:03+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="21"><a class="markdownIt-Anchor" href="#21"></a> 2.1</h3>
+<ul>
+<li>真值：使用加号或减号表示数据符号的数据书写格式被称为真值。<font color=red>注意真值指的不是数据的值，而是数据的一种书写格式。一个数据必须要有一个书写格式才能展示出来。</font></li>
+<li>机器码：在计算机中采用0或1表示数据的正负，由符号和数值一起编码表示的二进制数称为机器数或机器码。</li>
+<li>原码：符号化的数值，正数符号位为0，负数为1，其余为与真值表示相同。</li>
+<li>反码：又称1的补码，符号位与原码相同，真值为正数时，反码与原码相同；真值为负数时，反码数值与真值数值位相反。</li>
+<li>补码：当真值为正数时，补码等于真值；当真值为负数时，真值加上模数即为补码，或者是反码加1。</li>
+<li>移码：只用于定点整数的表示，通常用于表示浮点数阶码。编码方式是直接将真值x加上一个常数偏移量。移码可以直接比较大小。</li>
+<li>模：模数，数值计量系统的计量范围。</li>
+<li>定点数：约定计算机中所有数据的小数点位置固定。将小数点的位置固定在数据的最高数位之前的数据称为定点小数，将小数点固定在最低数位之后的数据称为定点整数。</li>
+<li>浮点数：浮点数中的小数位不固定。</li>
+<li>溢出：当数据超过计算机能够表示的数据范围时产生了溢出。</li>
+<li>精度溢出：数轴上所有不在数值刻度上面的纯小数都超过了定点小数所能够表示的精度，无法表示，此时定点小数发生精度溢出。</li>
+<li>浮点数规格化：使得浮点数的尾数真值最高有效位为1，即尾数的绝对值应该大于0.1<sub>2</sub>。</li>
+<li>隐藏位：在规格化浮点数中由于尾数的最高有效位一定为1，因此这一位可以不用保存到数据中，这就是被隐藏的一位，即隐藏位。</li>
+<li>码距：在编码系统中，两个编码一一对应的所有二进制位中不同的二进制位数，又称海明距离。</li>
+<li>校验码：具有发现错误或纠正错误能力的数据编码，用于提升数据在时间和空间两个维度上的可靠性传输的机制。</li>
+<li>多重奇偶校验：对数据中的某一位数据位都有多个奇偶校验码对其进行校验的校验方式。</li>
+<li>海明码：一种既能检错又能纠错的校验码。</li>
+<li>CRC码：循环冗余校验码。</li>
+</ul>
+<h3 id="22"><a class="markdownIt-Anchor" href="#22"></a> 2.2</h3>
+<ol>
+<li>B<br />
+3个1和5个0能够表示的最小整数为10000011，值为131-256=-125。</li>
+<li>A</li>
+<li>B<br />
+65530是无符号数，这里进行无符号扩展后真值依然为65530，因此为0000FFFAH</li>
+<li>C</li>
+<li>A<br />
+IEEE754标注规定32位浮点数含1位符号位、8位阶码和23位尾数位。-8.25=-1000.01<sub>2</sub>=-1.00001×2<sup>11</sup>（二进制），因此符号位为1，阶码为3+127=130=10000010，尾数为00001000 00000000 0000000。因此存储的值为：11000001 00000100 00000000 00000000，即C1040000H。</li>
+<li>A<br />
+C6400000即为1100 0110 0100 0000 0000 0000 0000 0000，符号位1，阶码为10001100=140，阶数为13，尾数为0.1，加上1变成1.1<sub>2</sub>。因此值为-1.5×2<sup>13</sup>。</li>
+<li>D<br />
+按照IEEE754标准，float型能够表示最大整数时，阶码对应的阶数为254-127=127，尾数为1.111…，易知尾数+2<sup>-23</sup>=2，因此尾数的值为2-2<sup>23</sup>。最终的值为2<sup>127</sup>×(2-2<sup>23</sup>)=2<sup>128</sup>-2<sup>104</sup>。</li>
+<li>A<br />
+按照IEEE754标准，最小的规格化正数阶码对应的阶数为1-127=-126，尾数全0，最终的值为2<sup>-126</sup>。</li>
+<li>A<br />
+CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码为01100001=97，二者均为负数，且前者绝对值更大，因此前者小于后者。</li>
+<li>B<br />
+将浮点数类型转换为int类型之后小数部分会丢失，但i本来就没有小数部分，因此A正确，B错误。C由于f的表示范围在float之内，因此转为double之后再转回到float没有影响，C正确。D错误，d比f大得多，会导致f+d时f丢失。</li>
+<li>C</li>
+</ol>
+<h3 id="23"><a class="markdownIt-Anchor" href="#23"></a> 2.3</h3>
+<ul>
+<li>
+<ol>
+<li>因为二进制的数据使用硬件表示较为方便，其容易与简单的物理状态对应，算数逻辑运算电路更容易实现。</li>
+</ol>
+</li>
+<li>
+<ol start="2">
+<li>首先最为明显的一点代价就是校验码的位数大大增加。单纯的奇偶校验只需要1位校验码，而交叉奇偶校验需要行数+列数个校验位。其次就是校验过程较普通的奇偶校验复杂，需要提取每一行每一列的数据进行校验。</li>
+</ol>
+</li>
+<li>
+<ol start="3">
+<li>补码计算加减法较原码和反码更方便。</li>
+</ol>
+</li>
+<li>
+<ol start="4">
+<li>表示范围由阶码位数决定，精度由尾数位数决定。</li>
+</ol>
+</li>
+<li>
+<ol start="8">
+<li>浮点数的正负只需要看最高位符号位即可。</li>
+</ol>
+</li>
+<li>
+<ol start="9">
+<li>浮点数有两个0指的是浮点数的尾数采用原码表示，因此存在正0和负0两种0。在比较上需要另外进行判断，增加了硬件和软件设计的复杂性。</li>
+</ol>
+</li>
+<li>
+<ol start="10">
+<li>选择一个合适的信息多项式，需要满足多项式最高次数r（也是校验位数）与原始数据信息之和k小于2<sup>r</sup>-1，将原来的数据左移r位之后进行模2除法运算，将余数填入最终数据的最低r位作为校验位。在校验时依然进行模2除法，如果余数为0认为没有错误，否则发现错误。CRC可以纠正一位错误。</li>
+</ol>
+</li>
+</ul>
+<h3 id="24"><a class="markdownIt-Anchor" href="#24"></a> 2.4</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">真值</th>
+<th style="text-align:center">原码</th>
+<th style="text-align:center">反码</th>
+<th style="text-align:center">补码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0.000…</td>
+<td style="text-align:center">0.000…</td>
+<td style="text-align:center">0.000…</td>
+</tr>
+<tr>
+<td style="text-align:center">-0</td>
+<td style="text-align:center">1.000…</td>
+<td style="text-align:center">1.111…</td>
+<td style="text-align:center">0.000…</td>
+</tr>
+<tr>
+<td style="text-align:center">0.10101</td>
+<td style="text-align:center">0.10101</td>
+<td style="text-align:center">0.10101</td>
+<td style="text-align:center">0.10101</td>
+</tr>
+<tr>
+<td style="text-align:center">-0.10101</td>
+<td style="text-align:center">1.10101</td>
+<td style="text-align:center">1.01010</td>
+<td style="text-align:center">1.01011</td>
+</tr>
+<tr>
+<td style="text-align:center">0.11111</td>
+<td style="text-align:center">0.11111</td>
+<td style="text-align:center">0.11111</td>
+<td style="text-align:center">0.11111</td>
+</tr>
+<tr>
+<td style="text-align:center">-0.11111</td>
+<td style="text-align:center">1.11111</td>
+<td style="text-align:center">1.00000</td>
+<td style="text-align:center">1.00001</td>
+</tr>
+<tr>
+<td style="text-align:center">-0.10000</td>
+<td style="text-align:center">1.10000</td>
+<td style="text-align:center">1.01111</td>
+<td style="text-align:center">1.10000</td>
+</tr>
+<tr>
+<td style="text-align:center">0.10000</td>
+<td style="text-align:center">0.10000</td>
+<td style="text-align:center">0.10000</td>
+<td style="text-align:center">0.10000</td>
+</tr>
+</tbody>
+</table>
+<h3 id="25"><a class="markdownIt-Anchor" href="#25"></a> 2.5</h3>
+<ul>
+<li>0.10010的真值为0.10010</li>
+<li>1.00000的真值为-1.00000（减2，反码无法表示这个数）</li>
+<li>1.10010的真值为-0.01110</li>
+<li>0.10001的真值为0.10001</li>
+<li>1.11111的真值为-0.00001</li>
+<li>1.00001的真值为-0.11111</li>
+</ul>
+<h3 id="26"><a class="markdownIt-Anchor" href="#26"></a> 2.6</h3>
+<p>略</p>
+<h3 id="27"><a class="markdownIt-Anchor" href="#27"></a> 2.7</h3>
+<p>16位无符号数：0-65535<br />
+16位原码定点小数：1位作为符号位，数据范围为-32767/32768-32767/32768<br />
+16位补码定点小数：数据范围为-1-32767/32768<br />
+16位补码定点整数：数据范围为-32768-32767</p>
+<h3 id="28"><a class="markdownIt-Anchor" href="#28"></a> 2.8</h3>
+<p>补码的模为2<sup>最高位的进位位权值</sup>=256</p>
+<h3 id="29"><a class="markdownIt-Anchor" href="#29"></a> 2.9</h3>
+<p>-6.625=-110.101，符号位1，阶码127+2=10000001<sub>2</sub>，尾数10101000…，结果：11000000 11010100 0…=C0D40000<sub>16</sub></p>
+<p>3.1415927需要首先计算尾数。尾数省略最高的1后为10010010 00011111 1011010，后面一位为1，因此进位为1011011。</p>
+<p>64000=11111010 00000000</p>
+<h3 id="210"><a class="markdownIt-Anchor" href="#210"></a> 2.10</h3>
+<p>单精度浮点数43940000H=0100 0011 1001 0100 0…，符号位0，阶码10000111=135，阶数8，位数0010100…，结果为1.00101×2<sup>8</sup>=100101000=296。</p>
+<h3 id="211"><a class="markdownIt-Anchor" href="#211"></a> 2.11</h3>
+<p>单精度浮点数能够表示的最大数为2<sup>128</sup>-2<sup>104</sup>，能够表示的最小数是上面数字的相反数。最小正数为非规格化浮点数，尾数为00…01，阶码为0，阶数为<font color=red>-126（不是-127！）</font>。表示的数为2<sup>-126</sup>×2<sup>-23</sup>=2<sup>-149</sup>。</p>
+<h3 id="212"><a class="markdownIt-Anchor" href="#212"></a> 2.12</h3>
+<ol>
+<li>可能</li>
+<li>不可能</li>
+</ol>
+<h3 id="213"><a class="markdownIt-Anchor" href="#213"></a> 2.13</h3>
+<p>3位阶码，移码为4。（尾数中没有隐藏位的设定，尾数和阶码均为补码）<br />
+最大正数为2<sup>3</sup>×(1-2<sup>6</sup>)<br />
+最小正数为2<sup>-4</sup>×2<sup>-6</sup><br />
+最大负数为-2<sup>-4</sup>×2<sup>-6</sup><br />
+最小负数为2<sup>-3</sup></p>
+<h3 id="214"><a class="markdownIt-Anchor" href="#214"></a> 2.14</h3>
+<p>57=111001，57/128=0.0111001，阶码为-2=1110，尾数为01.11001，最高的0为符号位，结果为1110 0111001000，第二个数略。</p>
+<h3 id="215"><a class="markdownIt-Anchor" href="#215"></a> 2.15</h3>
+<p>01011011的奇校验码为0，偶校验码为1。将收到的信息中的所有位统计1的个数或进行异或运算，奇校验异或结果为1则没有错误，偶校验异或结果为0则没有错误。</p>
+<h3 id="216"><a class="markdownIt-Anchor" href="#216"></a> 2.16</h3>
+<p>略</p>
+<h3 id="217"><a class="markdownIt-Anchor" href="#217"></a> 2.17</h3>
+<p>01101110计算海明校验码：<br />
+海明校验码前面几位的第1、2、4、8位为校验码位，其余为数据位。<br />
+因此结果必然为：??0?110?1110。<br />
+第1位校验码校验第3、5、7、9、11位数据位，值为1。<br />
+第2位校验码校验第3、6、7、10、11位数据位，值为1。<br />
+第3位校验码校验第5、6、7、12位数据位，值为0<br />
+第4位校验码校验第9、10、11、12位数据位，值为1。<br />
+结果为110011011110。</p>
+<p>如果第8位数据位出错，那么第3和第4个指错字值为1出错，定位到海明码中的第12位，即第8位数据位出错，将对应位取反即可。</p>
+<h3 id="218"><a class="markdownIt-Anchor" href="#218"></a> 2.18</h3>
+<p>数据为1001，生成多项式1101。<br />
+对数据左移3位为1001000，除以1101的余数为011，故校验值为011。<br />
+若接收到的数据信息为1101，则使用1101011除以011余数不为0，错误。纠错方法：对余数补零继续除获得余数，直到余数为1未知，除的次数即为错误的比特位的位置（左起第几位）。</p>
+<p>原理：总校验码的第i位出错时，相除得到的余数补零再除得到的余数等于总校验码的第i+1位出错时相除得到的余数值。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2296,577 +2581,6 @@ ARP高速缓存（ARP表）</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机网络——第5章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-02 23:49:04 / Modified: 23:52:10" itemprop="dateCreated datePublished" datetime="2023-03-02T23:49:04+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>3.2k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>3 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="课后习题和问题"><a class="markdownIt-Anchor" href="#课后习题和问题"></a> 课后习题和问题</h2>
-<h3 id="52"><a class="markdownIt-Anchor" href="#52"></a> 5.2</h3>
-<ol start="3">
-<li>集中式路由选择算法用完整的、全局性的网络知识计算出从源到目的地之间的最低开销路径，该算法以所有结点之间的连通性以及所有链路的开销为输入。这要求该算法在真正开始计算之前要以某种方式获取这些信息。<font color=red>具有全局状态信息的算法常被称为链路状态算法（LS）</font>。分散式路由选择算法中路由器以迭代、分布式的方式计算出最低开销路径。没有节点拥有关于所有网络链路开销的完整信息。每个节点仅有与其直接相连链路的开销知识即可开始工作。<font color=red>距离向量算法（DV）属于分散式路由选择算法</font>。OSPF协议属于集中式路由选择算法，BGP协议属于分散式路由选择算法。</li>
-<li>这两种算法一个是集中式的，另一种是分布式的。</li>
-<li>无穷计数问题与DV算法中“坏消息传得慢”这一特性有关。当一条链路的代价增加时，该链路两端的某一个路由器检测到代价增加，开始重新计算其到其他路由器的代价最小路由，但这个计算过程需要使用该路由器之前计算得到的到其他路由器的代价最小路由，而随着这一条链路的代价增加，这些最小路由很可能不再是最小的路由，因此每一次更新只能够将最短路由增加1，从而导致无穷计数问题的产生。无穷计数问题会导致代价增加这个“坏消息”的处理时间大大增加，严重影响到整个网络的性能。</li>
-<li>没有必要，不同的AS的内部路由器互相不关联，因此无论当前AS使用什么内部路由选择算法，其对外部的路由器都是透明不可见的。</li>
-</ol>
-<h3 id="52~53"><a class="markdownIt-Anchor" href="#52~53"></a> 5.2~5.3</h3>
-<ol start="7">
-<li>考虑到了以下3点因素：（P263）<br />
-策略。有些AS可能不希望其他AS的流量经过自身，也可能希望经过，但这种策略问题在AS内部选择路由算法中并不重要，强行设计则会增加系统的冗余度。<br />
-规模。在一个AS之内，通常网络的规模不会太大，如果一个AS内的网络规模超出了该AS内部路由选择算法的承载能力，完全可以将这个AS分割为多个AS，并通过AS间路由选择协议进行管理。这使得AS内部路由选择算法没有必要考虑当网络规模特别大时产生的诸多问题。<br />
-性能。在AS之间基本没有与路由相关的开销概念，而在AS内部，一切的路由选择都需要将性能放在至关重要的位置，因此AS间路由选择算法与AS内路由选择算法对于性能的要求不同。</li>
-<li>错误，OSPF属于集中式路由选择算法，其自身发送的链路状态信息需要被这个网络中的所有路由器知悉，因此该信息将会在网络中不断传递，直到被所有路由器接收确认为止。</li>
-<li>一个区域指的是AS中的一组路由器，一个区域内可以实现自己的OSPF算法，不同区域之间通过边界路由器实现互相通信。引入区域的概念主要是用于构建大型网络，简化路由器中的路由表，并提升路由选择算法的效率。</li>
-<li>子网是一个更大的网络中的一部分，一定隶属于某个网络，<font color=red>其不包含路由器，其边界是由路由器和主机接口所定义的。</font>前缀表示的是一个子网或一个子网的集合，是CIDR化的网络部分。CIDR即无类别域间路由选择，是因特网的地址分配策略。BGP路由指的是前缀及其属性。属性包含有AS-PATH、NEXT-HOP等。当路由器通过BGP连接通告前缀时，在前缀中会包括一些BGP属性。</li>
-<li>NEXT-HOP是AS-PATH起始的路由器接口的IP地址，是BGP要前往的下一个AS中的第一个路由器地址，作用是配置路由表的下一条为NEXT-HOP指向的地址。AS-PATH记录了到目的地的一系列地址前缀，作用有检测环路、多路选择。</li>
-<li>如果一个一级ISP不得在另两个ISP（A和B）之间运输中转流量，而该ISP与另外两个ISP有对等传输协议，该ISP只需要不将通过A的路由通知给B，不将通过B的路由通知给A，那么该ISP在A和B看来就是透明的。</li>
-<li>错误。有时为了特殊需求，BGP路由器可以选择不将自己的表示添加到已经接受的路径之中，此时该BGP将不会作为中转路由器工作。</li>
-</ol>
-<h3 id="56"><a class="markdownIt-Anchor" href="#56"></a> 5.6</h3>
-<ol start="19">
-<li>ICMP报文有：ping报文（回显报文）、traceroute（目标端口不可达报文、TTL过期报文）、用于拥塞控制的源抑制报文。</li>
-<li>TTL过期报文和目标端口不可达报文。解释：Traceroute用ICMP报文实现，源主机的数据报中携带了一个具有不可达UDP端口号的UDP报文段，第1个数据报的TTL为1，第2个为2，等等。当TTL为0时，接收到该数据报的路由器应该向源主机发送一个ICMP警告报文给源主机。如果有数据报到达了目的主机，那么该目的主机将向源发送一个端口不可达的ICMP报文，以标志路由探测完毕。</li>
-</ol>
-<h2 id="习题"><a class="markdownIt-Anchor" href="#习题"></a> 习题</h2>
-<ol>
-<li>y→x→u，y→w→x→u，y→w→v→u，y→w→v→x→u，y→z→w→v→x→u，y→z→w→v→u，y→z→w→x→u等。</li>
-<li>略</li>
-<li></li>
-</ol>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">节点</th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">v</th>
-<th style="text-align:center">w</th>
-<th style="text-align:center">t</th>
-<th style="text-align:center">u</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center"><mark>8.z</mark></td>
-<td style="text-align:center">12.z</td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">zx</td>
-<td style="text-align:center">8.z</td>
-<td style="text-align:center">12.z</td>
-<td style="text-align:center"><mark>11.x</mark></td>
-<td style="text-align:center">14.x</td>
-<td style="text-align:center"></td>
-<td style="text-align:center"></td>
-</tr>
-<tr>
-<td style="text-align:center">zxv</td>
-<td style="text-align:center">8.z</td>
-<td style="text-align:center"><mark>12.z</mark></td>
-<td style="text-align:center">11.x</td>
-<td style="text-align:center">14.x</td>
-<td style="text-align:center">15.v</td>
-<td style="text-align:center">14.v</td>
-</tr>
-<tr>
-<td style="text-align:center">zxvyw</td>
-<td style="text-align:center">8.z</td>
-<td style="text-align:center">12.z</td>
-<td style="text-align:center">11.x</td>
-<td style="text-align:center"><mark>14.x</mark></td>
-<td style="text-align:center">15.v</td>
-<td style="text-align:center">14.v</td>
-</tr>
-<tr>
-<td style="text-align:center">zxvywu</td>
-<td style="text-align:center">8.z</td>
-<td style="text-align:center">12.z</td>
-<td style="text-align:center">11.x</td>
-<td style="text-align:center">14.x</td>
-<td style="text-align:center">15.v</td>
-<td style="text-align:center"><mark>14.v</mark></td>
-</tr>
-<tr>
-<td style="text-align:center">zxvywut</td>
-<td style="text-align:center">8.z</td>
-<td style="text-align:center">12.z</td>
-<td style="text-align:center">11.x</td>
-<td style="text-align:center">14.x</td>
-<td style="text-align:center"><mark>15.v</mark></td>
-<td style="text-align:center">14.v</td>
-</tr>
-</tbody>
-</table>
-<ol start="4">
-<li>略</li>
-<li>DV算法流程：</li>
-</ol>
-<p>z表</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-<th style="text-align:center">u</th>
-<th style="text-align:center">v</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">6</td>
-</tr>
-<tr>
-<td style="text-align:center">v</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-<th style="text-align:center">u</th>
-<th style="text-align:center">v</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">3</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">5</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">7</td>
-<td style="text-align:center">5</td>
-</tr>
-<tr>
-<td style="text-align:center">v</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-<th style="text-align:center">u</th>
-<th style="text-align:center">v</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">3</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">5</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">7</td>
-<td style="text-align:center">5</td>
-</tr>
-<tr>
-<td style="text-align:center">v</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-<th style="text-align:center">u</th>
-<th style="text-align:center">v</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">3</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">2</td>
-<td style="text-align:center">5</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">7</td>
-<td style="text-align:center">5</td>
-</tr>
-<tr>
-<td style="text-align:center">v</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">1</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<ol start="6">
-<li>最大迭代次数为这个网络中最长无环路径的长度，迭代到这个值时网络中所有的路径都能够被遍历到。</li>
-<li>a. D<sub>x</sub>(w)=2，D<sub>x</sub>(y)=4，D<sub>x</sub>(u)=7。<br />
-b. 若让x通知邻居有一条通往u的新的最低开销路径，则可以将c(x,w)的值增大，只要让c(x,w)+c(w,u)&gt;=c(x,y)+c(y,u)，即c(x,w)&gt;6即可。或者让c(x,y)的值变为1。<br />
-c. 只能让c(x,w)的值增加到7或以上才可以。</li>
-<li></li>
-</ol>
-<p>初始向量表：<br />
-x：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">4</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>y：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">6</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>z：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-<td style="text-align:center">∞</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>第一次迭代后：<br />
-x：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">4</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">6</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>y：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">4</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">6</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<p>z：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center"></th>
-<th style="text-align:center">x</th>
-<th style="text-align:center">y</th>
-<th style="text-align:center">z</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">x</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">4</td>
-</tr>
-<tr>
-<td style="text-align:center">y</td>
-<td style="text-align:center">3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">6</td>
-</tr>
-<tr>
-<td style="text-align:center">z</td>
-<td style="text-align:center">4</td>
-<td style="text-align:center">6</td>
-<td style="text-align:center">0</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<ol start="9">
-<li>不会。将没有链路的两个节点连接，相当于距离从无穷大降到了有限值。</li>
-<li>每一次更新，至少有一个距离向量的某维度的值减小。(假如没有任何距离向量发生改变，更新就停止。)<br />
-由于这些值都是整数、不可能增加、也不可能小于0、所以减小的次数必然是有限的，所以更新也必然是有限的。</li>
-<li>a. 考虑增加了毒性逆转。y将通知w和z其到x的最短距离为4。z将通知w，其到x的距离为无穷大，因为z此时到x的最短路径是通过w的。另外z通知y其到x的距离为6（因为z只保存了其下一跳，因此并不知道它到x最短路径经过y，因此不发送无穷大）。w通知z其到x的距离为5，通知y其到x的距离为无穷大。<br />
-b. 不能。问题出在z上，因为z和x的最短路径经过了y，z却告知y的Dz(x)=6（这是毒性逆转作用不到的地方），y就会把Dy(x)更新成9（实际上并不是）,然后陷入了无穷计数。<br />
-c. 设置为无穷大即可。</li>
-<li>BGP是ISP之间的路由选择，如果在寻路时发现了自己所在ISP的路由器，则说明产生了环路。</li>
-<li>不是。路由器将偏向于本地偏好值。</li>
-<li>a. 路由器3c从eBGP中学习到了前缀x，因为其与AS4直接相连。<br />
-b. 路由器3a从iBGP学习到前缀x，其需要通过iBGP与3c通信。<br />
-c. 路由器1c从eBGP学习到前缀x。<br />
-d. 路由器1d从iBGP学习到。</li>
-<li>a. I<sub>1</sub>，距离1c更近。<br />
-b. I<sub>2</sub>，根据热土豆路由选择算法其距离2a更近。<br />
-c. I<sub>1</sub>，这样AS-PATH更短。</li>
-<li>考虑到B将流量传给C的西海岸路由器，因此为了减少西海岸路由器的负担，C可以只告诉D它的东海岸路由器。</li>
-<li>因为B不希望C通过它自身转发分组，因此B和C的这条链路对于w是不可见的。同理x为了不想通过自身转发C和B之间的分组，不会告诉B自己与C连接，因此C和w的这条链路对于w也不可见。同理，为了不让x经过自己转发到w的流量，C到A的链路对于x不可见，且C到B的链路对于x不可见。</li>
-<li>BitTorrent</li>
-<li>A会向B通告其有到w的路由，不会向c通告，A会向B和C通告有到v的路由。</li>
-<li>不允许。</li>
-<li>略</li>
-<li>略</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2936,14 +2650,14 @@ c. I<sub>1</sub>，这样AS-PATH更短。</li>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">146</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -2978,7 +2692,7 @@ c. I<sub>1</sub>，这样AS-PATH更短。</li>
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -2994,7 +2708,7 @@ c. I<sub>1</sub>，这样AS-PATH更短。</li>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:59</span>
+    <span title="Reading time total">20:09</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

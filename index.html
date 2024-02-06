@@ -150,6 +150,117 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/02/04/L3HCTF%E5%91%BD%E9%A2%98%E8%AE%B0%E4%BA%8B/" class="post-title-link" itemprop="url">L3HCTF命题记事</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-02-04 23:35:03" itemprop="dateCreated datePublished" datetime="2024-02-04T23:35:03+08:00">2024-02-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-02-06 10:17:04" itemprop="dateModified" datetime="2024-02-06T10:17:04+08:00">2024-02-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9A%8F%E6%83%B3/" itemprop="url" rel="index"><span itemprop="name">随想</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2.9k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>在我写这篇博客的时候，L3HCTF还有不足10个小时结束。这也是我第一次为一场正规的，全国及以上范围的CTF比赛命题。</p>
+<p>当队长将pwn方向的命题管理权交给我时，我实际上是心虚的。要说pwn，我也学了两年多了，我真的是一名有水平、有实力的pwn选手吗，还是一个只能靠那些队内研究生元老大杀四方来蹭到决赛机会的CTF寄生虫呢。从目前来看，我似乎更像后者一些。每逢比赛，只有看到一些熟悉的，自己仔细分析过的赛题类型才敢去做，才敢尝试，且不一定能够尝试成功；而对于那些较为陌生的东西，则是避之不及，连查资料的时间也不愿意去花。</p>
+<p>而当我命题结束时，我想清楚了一件事。一成不变，不愿接触新事物的选手，无论如何都无法取得真正的成就。你永远都不可能记得所有Linux常用命令的所有用法，解题本身不是一个对已有知识的复制粘贴，而更多的是将已知与未知相结合，并通过赛题本身学到更多的东西。</p>
+<p>扯远了，说回命题。</p>
+<p>本次L3HCTF的4道pwn题中，我命题的只有1道——treasure_hunter。它的灵感来源于我前段时间的Rust逆向学习上。我本来的打算，是通过对Rust二进制程序进行分析，同时提升自己对Rust语言以及Rust程序逆向的理解。这是一门优雅的语言，值得我细细品味。</p>
+<p>在我接触到Rust的Hashmap时，我真正地尝到了一丝逆向的苦头。一开始，我并不知道Rust基于Swisstable实现Hashmap，只是想着通过纯逆向搞清楚其中的逻辑。但经过了长时间的尝试后，我发现这很难。于是我抱着碰一碰运气的心态，随便找了一些Rust源码中Hashmap底层的函数名放到网上查，居然一查就出现了想要的结果，我的理解进程大幅加快。</p>
+<p>但在查资料的过程中，我也发现，网络中对于这个新型高效的Hashmap数据结构并没有太多的分析，有较为完整的介绍博客，但数量很少。因此，我萌生了以Swisstable为主题命题的想法，让更多选手了解这个数据结构以及相关的算法。</p>
+<p>最初，我计划出的是Rust pwn，以Rust语言现成的Swisstable模板出题，这样更加方便。但出题过程中我发现，Rust语言是一个天生不适合出pwn题的语言，一些C/C<ins>中习以为常的内存操作却必须使用Unsafe包裹，很是不优雅，因此仅尝试了一小段时间后我就放弃了Rust pwn这个想法，转而想使用C</ins>手搓一个简易的Swisstable。这样埋设漏洞更加方便。当然，这样也就意味着我的工作量大大提高。好在，在牺牲了一些低耦合与灵活性的情况下，我还是成功完成了数据结构的构建。</p>
+<p>在题目框架完成之后，下一步就需要考虑赛题应该使用什么漏洞利用方式了。由于数据结构本身比较复杂，如果需要使用一些利用条件较为苛刻的利用方式，无疑对解题者来说是一个身体和心理上的双重折磨，此类问题也是我最为深恶痛绝的，因此我决定将漏洞点设置地简单一些，但又让选手绕不开Swisstable这个数据结构本身，这样的话，解题体验应该会好很多吧。（另外做过题的选手应该都知道，我在最终给出的ELF文件中没有去除符号表，这实际上一方面暗示了本题的考点，另一方面省去了一些令人抓狂的逆向环节。事实证明，即使如此解出的队伍数量也不超过20，符合最终的难度预期）（笑）</p>
+<p>在经历了两届招新赛和本次L3HCTF后，我发现我实际上是有自己的出题风格的。我喜欢将题目本身置于一个真实的场景之中，让选手解题时能够身临其境（笑）。本题也是如此，创建了一个挖宝的场景，并通过该场景中可能出现的经典元素作为本题的关键内容。本题的漏洞点实际上很简单，第一个是一个10字节的溢出，我还特意在堆的最低地址处塞了一个0x400的chunk，这样选手可以通过这个溢出修改Swisstable内部的指针，对内部的数据结构进行伪造，从而达到攻击效果。另外如果选手攒够了足够的金币，可以以一个较低的价格“买到”修改control bytes的机会以及Hashmap的地址。这也是第二个漏洞点，选手可以通过这个漏洞点，与第一个漏洞点配合完成若干次任意地址的读写。最终我的exp中就是通过任意地址读写直接修改栈上的返回地址，构造一个短的ROP链完成控制流劫持。</p>
+<p>所以总的来说，本题如果除去Swisstable不看，实际上一个很简单的赛题，没有用到对glibc堆的任何house。因此本题非常考验选手对Swisstable数据结构的理解，否则将无法通过其完成读写操作。这也是我认为我出题出的不好的一点，没有完全贯彻“将已知和未知相结合”的理念。</p>
+<p>行了不废话了，下面贴出本题的源码。</p>
+<p><a href="hashmap.h">hashmap.h</a></p>
+<p><a href="hashmap.cpp">hashmap.cpp</a></p>
+<p><a href="main.cpp">main.cpp</a></p>
+<p>下面是本题的出题人版本exp以及Dockerfile等一些配置文件。</p>
+<p><a href="exp.py">exp.py</a></p>
+<p><a href="Dockerfile">Dockerfile</a></p>
+<p><a href="service.sh">service.sh</a></p>
+<p><a href="start_docker.sh">start_docker.sh</a></p>
+<p><a href="pwn.xinetd">pwn.xinetd</a></p>
+<p>我的思路是，首先把所有能挖的金币全挖出来，然后买到hashmap地址。由于本题的堆环境比较固定，可以通过这个hashmap地址获取到其他chunk的地址，通过固定偏移实现。随后我们通过将最开始的0x400的chunk分配出来（后面就是hashmap的chunk），通过10字节溢出将存放数据的指针进行修改，修改到我们伪造的地址中去，在exp中，伪造的数组在0x400中进行构造。由于hashmap没有检查边界，所以伪造后可以实现最多0x1C字节任意地址读。本题的挖矿区域是由mmap分配的，调试时可以看到这块空间位于ld.so的正下方，因此考虑可以在ld.so中寻找合适的偏移来泄露栈地址、libc地址等关键地址。这一步在正式比赛过程中成为了出题人的噩梦，因为我发现远程环境的偏移不一样，虽然说也可以通过爆破的方式通过多次连接完成多个字节的读写，但是这样会大大破坏做题的体验，因此比赛时不得不在队内服务器又部署了一份正常的然后端口映射到平台的端口，这也是为什么treasure_hunter在第一天不太稳定。（在此磕头谢罪砰砰砰）</p>
+<p>在获取到关键地址之后，我们再一次分配那个最开始的0x400地址，准备开始写ROP chain。不过由于一开始我们并不知道返回值那个地方保存了什么值，所以需要首先读取然后通过加减金币完成写操作。出题人脚本里面是写入了一个pop rdi, ret ; addrof /bin/sh ; system这样一个简单的ROP chain，由于本题hashmap的大小为0x20，在不扩展的情况下最多可以读写0x1C个字节（0x1C这个数字怎么来的呢，这个就是Rust Swisstable的一个实现，Swisstable在填满7/8空间时就会进行扩展），足够完成这样一个ROP chain的编写。（审wp补档：看到了好几队都是通过写_IO_list_all来打fsop的，这种攻击方式我认为是更加出色的）</p>
+<p>以上就是本题的做题流程。说实话我感觉这题出的还是不太好，有种强迫选手学Swisstable的感觉。但好在这也是迈出了第一步。后面的话还是要多接触一些好题，多学一些东西，向L3H大手子之路继续迈进。也非常感谢各位选手的包容以及评价。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/11/28/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1545,192 +1656,6 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/10/17/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/17/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-1/" class="post-title-link" itemprop="url">Rust逆向学习 (1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-10-17 21:50:25" itemprop="dateCreated datePublished" datetime="2023-10-17T21:50:25+08:00">2023-10-17</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-10-19 00:05:53" itemprop="dateModified" datetime="2023-10-19T00:05:53+08:00">2023-10-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Rust%E9%80%86%E5%90%91%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Rust逆向系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>6.9k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>6 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>近年来，Rust语言的热度越来越高，很多人都对Rust优雅的代码和优秀的安全性赞不绝口。对于开发是如此，对于CTF也是如此，在逆向题和pwn题中都有出现。从本文开始我们将开始进行Rust逆向的学习，笔者将尽可能通过现有的IDA（7.7版本）对Rust ELF文件中包含的特性进行分析与总结，尽可能地减少Rust逆向的难度，尽可能地解决分析过程中产生的每一个问题，最终争取达到能够通过IDA反汇编结果还原Rust代码的程度。</p>
-<p>本系列将跟随《Rust权威指南》的学习路线完成Rust逆向工程的学习。</p>
-<p>阅读本文前，建议首先掌握：</p>
-<ul>
-<li>✅ x86-64逆向的基础知识</li>
-<li>✅ Rust语言的基本使用</li>
-</ul>
-<h1 id="hello-rust-reverse"><a class="markdownIt-Anchor" href="#hello-rust-reverse"></a> Hello, Rust Reverse</h1>
-<p>首先我们写一个流程较猜数字稍简单一些的Rust程序，完成Rust ELF的第一次分析。<br />
-以下是Rust源码：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::io;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">input</span>: <span class="type">String</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    io::<span class="title function_ invoke__">stdin</span>().<span class="title function_ invoke__">read_line</span>(&amp;<span class="keyword">mut</span> input).<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Read Error!&quot;</span>);</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">num</span> = input.<span class="title function_ invoke__">trim</span>().<span class="title function_ invoke__">parse</span>().<span class="title function_ invoke__">expect</span>(<span class="string">&quot;Input not a number!&quot;</span>);</span><br><span class="line">    <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, <span class="keyword">match</span> num &#123;</span><br><span class="line">        <span class="number">1</span> =&gt; <span class="string">&quot;one&quot;</span>,</span><br><span class="line">        <span class="number">2</span> =&gt; <span class="string">&quot;two&quot;</span>,</span><br><span class="line">        x <span class="keyword">if</span> x &lt; <span class="number">10</span> =&gt; <span class="string">&quot;Something smaller than 10&quot;</span>,</span><br><span class="line">        _ =&gt; <span class="string">&quot;Something not smaller than 10&quot;</span></span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>使用cargo build编译后将ELF文件放入IDA中进行分析。这个ELF文件没有去除符号表，便于分析。</p>
-<h2 id="0x01-main函数定位"><a class="markdownIt-Anchor" href="#0x01-main函数定位"></a> 0x01. main函数定位</h2>
-<p><img src="1.png" alt="" /></p>
-<p>反汇编完成后，可以看到，左边栏的函数名大多很长，但也有一些规律可循。定位到main函数发现，main函数本身只有很少的几行代码，但Rust真正的main函数也不难找。看到<code>0xA020</code>处有一个main函数，这个项目笔者将其命名为revlab，而这个函数名中也正好就有revlab，因此可以推测出，这就是我们要找的Rust main函数。</p>
-<p>但我们可以先不急着查看main函数的具体内容，单是这个main函数名就有一番研究的必要。<code>_ZN6revlab4main17h512e681518e409c2E</code>，这是Rust编译器赋予我们自己的main函数的函数名。有没有觉得这个函数名的命名规则很熟悉呢？没错，这种函数命名方式被称为<strong>name mangling</strong>，与C++编译器对函数的命名规则类似。这里参考<a target="_blank" rel="noopener" href="https://rustmagazine.github.io/rust_magazine_2021/chapter_7/hw-rust-name-mangling.html">资料</a>。我们就可以将这个函数名进行简单的翻译：<code>revlab::main</code>，前面的_ZN是固定开头，6代表下一个模块的名字长度，也就是后面的revlab，4相同，即解析main，17h后面是函数的哈希值，可以忽略。这里通过左边栏可以看到，IDA能够自动为我们完成函数名的解析。</p>
-<h2 id="0x02-main函数分析"><a class="markdownIt-Anchor" href="#0x02-main函数分析"></a> 0x02. main函数分析</h2>
-<p>别看我们第一次写的main函数只有短短的几行，转换成汇编之后却有点让人头疼。考虑到这是我们第一次进行分析，笔者尝试借助其他的工具辅助分析——<a target="_blank" rel="noopener" href="https://godbolt.org/">传送门</a>。这个网站可以帮助我们将源代码与汇编代码对应起来，帮助我们进行分析。</p>
-<p><img src="2.png" alt="" /></p>
-<p>可以看到，main函数的汇编逻辑还是比较复杂的，这也是Rust ELF的一个特点，使得Rust反汇编较C/C++更难。</p>
-<h3 id="line-1"><a class="markdownIt-Anchor" href="#line-1"></a> line 1</h3>
-<p>第一行定义了一个字符串变量，使用<code>String::new()</code>方法。但是在汇编中可以发现，<code>call</code>调用<code>String::new()</code>函数并没有对返回值进行操作，而是将<code>rdi</code>进行了赋值，这与C语言不同，如果按照C语言的逻辑，则更像是<code>String::new(&amp;input)</code>。随后，笔者修改了代码进行试验，发现<code>Vec</code>的<code>new</code>方法流程类似。可见各个对象的<code>new</code>方法实际上是传了参的。</p>
-<h3 id="line-2"><a class="markdownIt-Anchor" href="#line-2"></a> line 2</h3>
-<p>第二行就比第一行热闹多了，由于<code>io::stdin()</code>返回的是<code>Stdin</code>，代码中使用的返回值与C语言一样，保存在<code>rax</code>中。不过这里是首先将函数地址赋值给<code>rax</code>，通过<code>call rax</code>完成调用。调用完<code>stdin()</code>后，Rust不知道为什么用了一个<code>jmp</code>指令，跨越了几条指令再继续执行后面的<code>read_line</code>方法。对于<code>read_line</code>方法，可以看到前3个寄存器进行了赋值。其中<code>rsi</code>是<code>io::stdin()</code>的返回值，也就是<code>Stdin</code>对象实例，<code>rdx</code>是字符串<code>input</code>的地址，这一点可以通过第一行对<code>[rsp+80]</code>赋值得知，那么<code>rdi</code>是什么呢？这里就需要返回到IDA界面查看。</p>
-<p><img src="3.png" alt="" /></p>
-<p>从上图可知，IDA将第一个参数解析为<code>self</code>，类型为<code>core::result::Result&lt;usize,std::io::error::Error&gt;</code>，而这个是<code>read_line</code>函数的返回值。这与<code>io::stdin()</code>不同，也是没有将返回值保存到<code>rax</code>。随后，代码继续向下，继续调用了<code>expect</code>方法，传入的d第一个参数就是<code>Result</code>实例，第二个参数是我们设置的错误字符串<code>Read Error!</code>地址，第三个参数为11，推测是错误字符串的长度，第四个参数通过查看发现，是这段汇编代码对应的源代码在工程中的路径。由此我们可以发现，如果今后我们需要分析一个不带符号的Rust ELF，发现有一个函数有4个参数，其中第2、4个参数均为字符串，且第4个参数是源文件地址、第3个参数是第2个参数字符串的长度，那么这个函数很有可能就是<code>expect</code>，通过跟踪第一个参数<code>Result</code>对象，可以继续进行分析。</p>
-<p>汇编代码看到这里，我们能够发现，即使代码顺序执行，Rust编译器也一定要在一个函数调用结束后插入一个<code>jmp</code>指令，这一点可以从调用<code>read_line</code>方法可以得知，向下不断滑动窗口也能发现，整个<code>main</code>函数似乎是被许多<code>jmp</code>指令划分为许多小部分。</p>
-<h3 id="line-3"><a class="markdownIt-Anchor" href="#line-3"></a> line 3</h3>
-<p><img src="4.png" alt="" /></p>
-<p>第三行首先看到，代码中使用了<code>deref</code>这个方法，至于为什么使用这个方法其实很好理解。<code>deref</code>传入的是<code>String</code>实例，返回的是字符串切片<code>&amp;str</code>，而<code>trim</code>方法实际上是以切片作为<code>self</code>的，因此这里Rust隐式地将<code>String</code>转成切片之后再执行<code>trim</code>。</p>
-<p>调用<code>deref</code>方法后需要注意，这里将<code>rdx</code>和<code>rax</code>保存到了栈中。记得在学习字符串切片的时候，书中有提及字符串切片实际上由两个部分组成——指针与长度。这里我们只通过静态分析无法判断<code>rdx</code>和<code>rax</code>到底是多少，虽然我们心中可能已经知道答案，但这里还是通过简单的调试来验证一下。</p>
-<p><img src="5.png" alt="" /></p>
-<p>可以看到，这与我们的预期是相同的，<code>rdx</code>保存的是长度，<code>rax</code>保存的是字符串指针。因此我们知道了，<code>String</code>类型的<code>deref</code>方法会将返回值保存在两个寄存器——<code>rdx</code>与<code>rax</code>中。</p>
-<p>好继续往下看。随后就是<code>trim</code>方法的调用，传入的第1个参数是字符串指针，第2个参数是长度。其返回值依然是保存在两个寄存器中。可见对于返回值为<code>&amp;str</code>的Rust方法，其返回的方式也有一定规律。</p>
-<p><code>trim</code>之后是<code>parse</code>，返回值是<code>Result</code>类型，和<code>read_line</code>不同的是，<code>read_line</code>返回的<code>Result</code>实例没有泛型（<code>Result&lt;usize&gt;</code>），但是<code>parse</code>的返回值是<code>Result&lt;F, F::Err&gt;</code>，可能是这个原因，导致<code>read_line</code>可以将<code>Result</code>指针直接作为参数传递，而<code>parse</code>只能通过<code>rax</code>返回。不过目前这只是猜测，有关于Rust编译器对泛型的处理，就留到后面的文章中进行分析吧。</p>
-<p>随后，有几行看似没有意义的汇编代码，像是<code>mov qword ptr [rsp + 240], rax</code>，这里的<code>[rsp+240]</code>在main函数自始至终只有这里被使用过。所以直接忽略。随后<code>expect</code>的传参与之前规则相同。</p>
-<p>不过这里的<code>expect</code>是需要将返回值保存在<code>num</code>中的，也就是<code>mov dword ptr [rsp + 28], eax</code>这条语句，可见<code>num</code>是保存在<code>[rsp+0x28]</code>的位置。</p>
-<h3 id="line-4~9"><a class="markdownIt-Anchor" href="#line-4~9"></a> line 4~9</h3>
-<p>下面的几行是一个<code>println!</code>一个<code>match</code>语句的值。在学Rust的时候我们了解到，<code>match</code>语句可以实现类似于lambda函数的功能，每一个分支的<code>=&gt;</code>后都可以看成这个条件下<code>match</code>的返回值。就如这几行是将<code>match</code>的每一个分支语句都定义一个字符串切片作为传入<code>println!</code><br />
-的格式化参数。</p>
-<p>在上一行语句执行结束后，汇编代码首先将<code>num</code>的值放到<code>eax</code>中，随后进行分支判断。判断顺序是：是否等于1、是否等于2、是否小于10，而且<code>match</code>的判断语句是统一写在前面，具体的语句内容则放在后面。</p>
-<p>通过对分支语句简单分析，容易得到<code>match</code>语句的“返回值”是保存在<code>[rsp+208]</code>和<code>[rsp+216]</code>，因为这个是<code>&amp;str</code>，所以要用<code>0x10</code>大小保存。</p>
-<p><img src="6.png" alt="" /></p>
-<p>不过在汇编代码中，<code>println!</code>的处理流程可能不是都在所有<code>match</code>流程之后，而是在中间插入了一段，随后又在跳转到后面。使用1.69.0的rustc版本编译发现所有的<code>match</code>分支都位于<code>println!</code>之后，而更新版本的1.73.0则是将<code>println!</code>前半部分放在<code>match</code>分支部分中间。</p>
-<p>随后则是<code>println!</code>的宏展开部分，考虑到<code>println!</code>太常见，通过IDA的反汇编输出的源代码可以识别出其特征。可以看到在汇编中调用了<code>core::fmt::ArgumentV1::new_display</code>、<code>core::fmt::Arguments::new_v1</code>、<code>std::io::stdio::_print</code>这三个方法。其中前面两个推测是Rust宏的转换函数，也就是将宏中大括号部分替换为具体的参数，而最后一个方法则是输出内容到控制台。</p>
-<p>对于第一个函数，其唯一一个参数是<code>match</code>返回的字符串切片的栈地址。而对于第二个函数，传参情况则比较复杂。根据下文的<code>_print</code>函数传入的参数判断，第一个参数应该是返回值字符串的地址，第二个参数指向一个换行符的地址，但意义不明，第三个参数为2，第四个参数为第一个函数的返回值<code>rax</code>内容。第五个参数为1。目前只能确定第1个参数的含义，因此我们需要请求gdb的帮助。</p>
-<p><img src="7.png" alt="" /></p>
-<p>可以看到，第1个函数返回的<code>rax</code>是要输出的字符串。注意到在ELF中并没有找到左右大括号<code>&#123;&#125;</code>这个字符串，判断可能是Rust使用了其他的方式进行解析。但是除了第一个参数之外其他参数的意义还是不明。我们不妨稍稍修改一下<code>println!</code>格式化字符串的值，看看代码有什么变化。</p>
-<p><img src="8.png" alt="" /></p>
-<p>这里我们将字符串修改为<code>a&#123;&#125;a&#123;&#125;</code>，在后面添加一个1作为第二个括号的占位符。随后我们发现，<code>core::fmt::ArgumentV1::new_display</code>函数被调用了两次。第一次调用传入<code>match</code>返回的字符串，而第二次调用传入的是这个东西：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.L__unnamed_27:</span><br><span class="line">        .asciz  &quot;\001\000\000&quot;</span><br></pre></td></tr></table></figure>
-<p>这不正好就是1吗？也就是说，<code>core::fmt::ArgumentV1::new_display</code>这个函数是用来解析<code>println!</code>后面的参数的，将其转换为字符串切片，有几个大括号就需要调用几次。随后继续进行分析，发现汇编代码将两个函数解析得到的两个字符串切片放到了一个连续的栈地址空间，并将其作为参数4（<code>rcx</code>）传入。</p>
-<p><img src="9.png" alt="" /></p>
-<p>如上图所示，这里红框部分就是赋值过程，这个地方像是一个数组的结构，按照顺序排列每个大括号对应的字符串切片。由此便可以判断出参数5（<code>r8d</code>）的含义，其实就是解析的字符串切片的数量。</p>
-<p>接下来我们再看一下参数2到底是什么东西。参数2指向了一个这样的结构：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.L__unnamed_28:</span><br><span class="line">        .quad   .L__unnamed_36</span><br><span class="line">        .asciz  &quot;\001\000\000\000\000\000\000&quot;</span><br><span class="line">        .quad   .L__unnamed_36</span><br><span class="line">        .asciz  &quot;\001\000\000\000\000\000\000&quot;</span><br><span class="line">        .quad   .L__unnamed_37</span><br><span class="line">        .asciz  &quot;\001\000\000\000\000\000\000&quot;</span><br></pre></td></tr></table></figure>
-<p>其中有：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">.L__unnamed_36:</span><br><span class="line">        .byte   97      ; &#x27;a&#x27;</span><br><span class="line"></span><br><span class="line">.L__unnamed_37:</span><br><span class="line">        .byte   10      ; &#x27;\n&#x27;</span><br></pre></td></tr></table></figure>
-<p>这样看来，这里的含义也就清楚了。编译器在对宏进行展开时转义大括号的内容是这样操作的：</p>
-<ul>
-<li>首先将含有大括号的字符串以大括号分隔，并形成上面的这个数组结构。</li>
-<li>对于每一个大括号，都调用一次转义函数进行转义，在栈中形成一个<code>&amp;str</code>的数组。</li>
-<li>随后再调用另外一个函数（<code>core::fmt::Arguments::new_v1</code>）将这些切片拼起来组成最终的字符串。</li>
-</ul>
-<p><code>core::fmt::Arguments::new_v1</code>的5个参数含义分别就是：</p>
-<ul>
-<li><code>rdi</code>：输出字符串指针</li>
-<li><code>rsi</code>：预编译的数组结构，表示宏不需要转义的字符串部分</li>
-<li><code>rdx</code>：预编译数组结构的长度</li>
-<li><code>rcx</code>：运行时解析的已经被转义的<code>&amp;str</code>数组</li>
-<li><code>r8</code>：运行时解析的<code>&amp;str</code>数组长度</li>
-</ul>
-<p>这个函数调用完之后，就可以进行宏展开的后续代码了。对于<code>println!</code>而言是输出，也即调用<code>std::io::stdio::_print</code>。</p>
-<p>输出之后，后面就没有多少代码了：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">.LBB60_18:</span><br><span class="line">        lea     rdi, [rsp + 80]</span><br><span class="line">        call    qword ptr [rip + core::ptr::drop_in_place&lt;alloc::string::String&gt;@GOTPCREL]</span><br><span class="line">        add     rsp, 248</span><br><span class="line">        ret</span><br><span class="line">        mov     rax, qword ptr [rip + core::panicking::panic_cannot_unwind@GOTPCREL]</span><br><span class="line">        call    rax</span><br><span class="line">        ud2</span><br><span class="line">.LBB60_20:</span><br><span class="line">        mov     rdi, qword ptr [rsp + 224]</span><br><span class="line">        call    _Unwind_Resume@PLT</span><br><span class="line">        ud2</span><br></pre></td></tr></table></figure>
-<p>这里的<code>core::ptr::drop_in_place</code>应该是Rust将这个<code>String</code>对象实例回收了。随后将栈上抬，main函数就正常返回了。</p>
-<h2 id="0x03-ida反汇编"><a class="markdownIt-Anchor" href="#0x03-ida反汇编"></a> 0x03. IDA反汇编</h2>
-<p>上一节我们对Rust ELF的分析大多是基于汇编层面进行的，当代码量比较多的时候，基本块之间的跳转关系可能会更加复杂，不利于我们的分析。不过IDA提供了非常实用的反汇编功能，在分析时，笔者认为如果我们能够将反汇编的内容与纯汇编代码相结合，效果会更好。</p>
-<p>但IDA的反汇编功能一开始毕竟是为C/C++设计的，对于Rust的反汇编结果不很直观也是正常的。</p>
-<p><img src="10.png" alt="" /></p>
-<p>在反汇编的输出结果中，出现了比较奇怪的地方。</p>
-<p>最为明显的就是字符串的解析。通过查看ELF中保存字符串的地方可以发现，Rust的字符串与字符串之间有的是以换行符隔开的，有的根本就没有分割的字符，这与C/C++使用0字符分割每个字符串不同。因为Rust字符串切片的特性，对一个字符串切片的操作必然需要使用到这个切片的长度。既然已经知道了字符串的长度，字符串与字符串之间的分隔就显得没有那么必要了。</p>
-<p>不过庆幸的是，反汇编中对于main函数的主要逻辑的解析还是比较清楚的，第一行的<code>String::new()</code>表示创建了一个<code>String</code>实例，随后多个函数的调用连在一起就组成了第二行的读取字符串内容，就是<code>expect</code>函数的解析看上去不是很舒服，毕竟其与C/C++的函数调用规则有些许不同。</p>
-<p>再往下，可以看到<code>deref</code>、<code>trim</code>、<code>parse</code>、<code>expect</code>，这些函数组成了第三行的内容。</p>
-<p>对于接下来的<code>match</code>，在反汇编界面中是将其解析成了多个<code>if-else</code>语句。随后就是<code>println!</code>的宏展开，输出字符串。输出后通过<code>drop_in_place</code>删除了一开始创建的<code>String</code>实例，函数返回。</p>
-<h2 id="0x04-总结"><a class="markdownIt-Anchor" href="#0x04-总结"></a> 0x04. 总结</h2>
-<p>以上就是我们的第一次Rust逆向尝试，还是有很多收获的，下面是本文的总结：</p>
-<ol>
-<li>Rust的main函数与ELF中的main不同，但很好找。</li>
-<li>Rust编译器喜欢将代码用<code>jmp</code>指令分割为一个个小部分。</li>
-<li>对于返回<code>&amp;str</code>的方法，是将切片的指针和长度分别保存在<code>rax</code>和<code>rdx</code>之中。</li>
-<li>对于<code>struct</code>的<code>new</code>方法，一般可在反汇编界面中直接识别，在汇编中实际执行的更像是通过<code>xxx.new(&amp;target)</code>的方式进行初始化。</li>
-<li>Rust对宏展开的处理有一定的规律，可通过这些规律在反汇编界面中识别出宏展开的部分。</li>
-</ol>
-<p>不得不说，Rust编译器在汇编层面的处理还是有点意思的。在后面的文章中，我们将尝试分析更加复杂的代码，尝试整理出更多Rust语言特性在汇编层面中的实现方式。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1800,14 +1725,14 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">146</span>
+          <span class="site-state-item-count">147</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">22</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -1842,7 +1767,7 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
 <div class="copyright">
   
   &copy; 
-  <span itemprop="copyrightYear">2023</span>
+  <span itemprop="copyrightYear">2024</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -1858,7 +1783,7 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">19:59</span>
+    <span title="Reading time total">20:09</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
