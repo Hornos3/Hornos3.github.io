@@ -150,6 +150,239 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC9%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC9%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第9章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 09:12:41 / Modified: 09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:41+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>3 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-9-文件系统"><a class="markdownIt-Anchor" href="#chapter-9-文件系统"></a> Chapter 9 文件系统</h1>
+<h2 id="91-文件系统概念"><a class="markdownIt-Anchor" href="#91-文件系统概念"></a> 9.1 文件系统概念</h2>
+<p>文件是信息存放形式，由若干信息项有序组成。<br />
+文件具有唯一文件名。<br />
+用户通过读写指针存取文件的信息项。</p>
+<p>按照文件用途可以将文件分为系统文件、库文件和用户文件。<br />
+按照文件操作权限可以将文件分为只读文件、只写文件、可执行文件、可读可写文件、不保护文件。<br />
+按照文件存储时间可以将文件分为永久文件和临时文件。<br />
+按照文件性质可以将文件分为普通文件、目录文件和设备文件。</p>
+<p>文件系统是管理文件的机构，负责文件的创建、撤销、读写、修改、复制和存取控制等，这方便用户以文件名来存取文件。还负责管理文件存储设备的空间和存取，可以高效利用存储空间和高效存取文件。</p>
+<h2 id="92-文件逻辑结构与存取方式"><a class="markdownIt-Anchor" href="#92-文件逻辑结构与存取方式"></a> 9.2 文件逻辑结构与存取方式</h2>
+<ul>
+<li>记录式文件：按照记录读写文件
+<ul>
+<li>信息项是记录，一个记录中包含有若干成员。</li>
+<li>分为定长记录文件和非定长记录文件。文件头部需要保存记录数量和记录长度等说明信息</li>
+<li>记录式文件较浪费存储空间</li>
+</ul>
+</li>
+<li>流式文件：按照字节读写文件
+<ul>
+<li>信息项是字节。</li>
+<li>文件长度就是字节的数量，在现代操作系统中所有文件均为流式文件，由应用程序根据特定的文件格式（协议）去解释和处理文件。</li>
+</ul>
+</li>
+</ul>
+<p>文件存取方式可以采用两种方式：顺序存取和随机存取。</p>
+<ul>
+<li>顺序存取：从前到后的顺序依次对文件信息项进行读写，直到定位到目标信息位置。</li>
+<li>随机存取：直接定位到文件目标信息项进行读写，适合流式文件或定长记录文件。</li>
+</ul>
+<h4 id="存储介质"><a class="markdownIt-Anchor" href="#存储介质"></a> 存储介质</h4>
+<ul>
+<li>一盘磁带、一个磁盘组或一张软盘都成为<font color=red>一卷</font>，卷是存储介质的物理单位。</li>
+<li><font color=red>块</font>是存储介质上连续信息所构成的一个区域，也叫做物理记录。
+<ul>
+<li>块是内存和外存进行信息交换的物理单位，每一次总是交换一块或整数块信息。</li>
+<li>块大小要考虑用户使用方式、数据传输效率和存储设备等因素。</li>
+</ul>
+</li>
+<li>文件存储结构密切地依赖于存储设备的物理特性，存储设备的特性也决定了文件的存取方法。</li>
+</ul>
+<h4 id="顺序存储设备"><a class="markdownIt-Anchor" href="#顺序存储设备"></a> 顺序存储设备</h4>
+<p>顺序存储设备严格依赖信息物理位置进行定位和读/写的存储设备，<font color=red>只有在前面的物理块被存取访问过之后，才能存取后续的物理块的内容</font>。如磁带机。按照顺序存取方式访问时速度比较高，而随机方式或按键存取方式效率不高。</p>
+<p>优点：存储容量大，稳定可靠，文件卷可拆卸，便于保存和块长变化范围较大等，被广泛用于保存档案文件的存储介质。</p>
+<h4 id="随机存储设备"><a class="markdownIt-Anchor" href="#随机存储设备"></a> 随机存储设备</h4>
+<p>随机存储设备允许文件系统<font color=red>直接存取对应存储介质上的任意物理块</font>。磁盘机是一种典型随机存储设备，存取任何一个物理块所需时间几乎不依赖于此信息的位置。这是一种高速、大容量、旋转型的存储设备，将信息记录在盘片上，每一个盘片都有正反两面，若干张盘片可以组成一个盘组。</p>
+<h4 id="驱动机构"><a class="markdownIt-Anchor" href="#驱动机构"></a> 驱动机构</h4>
+<ul>
+<li>
+<p>固定磁头型：磁头不可移动，每一个磁道上设置一个磁头，优点是速度快，但结构复杂，目前使用较少</p>
+</li>
+<li>
+<p>可移动磁头型：每一个盘面有一个读写磁头，所有读写磁头被固定在唯一移动臂，读写磁头按照从上到下的次序从0开始编号，称为<font color=red>磁头号</font>。每一个盘面有很多磁道，从0开始按照由外向里的次序顺序编号称为<font color=red>磁道号</font>，不同盘面上具有相同编号的磁道在一个柱面上，把盘面上的磁道号称为<font color=red>柱面号</font>。所有的磁头都在一个柱面上，<font color=red>每一次只有其中的一个磁头可以进行读写操作</font>。</p>
+</li>
+<li>
+<p>在磁盘初始化时每一个盘面划分为相等数量的扇区，按照磁盘旋转的方向从1开始给各个扇区编号，称为<font color=red>扇区号</font>。</p>
+</li>
+<li>
+<p>每一个扇区各个磁道均可存放相等数量字符，称为块。块是信息读写的最小单位。</p>
+</li>
+<li>
+<p>一个具有<font color=red>正反两个盘面的盘片，有2个磁头</font>。</p>
+</li>
+<li>
+<p>需要确定一个块的位置需要给出3个参数：<font color=red>柱面号、磁头号、扇区号</font>。实际上相当于柱面坐标系中的r、z、θ。</p>
+</li>
+</ul>
+<p>若扇区数量s，磁头数量t，则第i个柱面、第j个磁头、第k个扇区的块号<font color=red><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mi>t</mi><mo>+</mo><mi>j</mi><mo stretchy="false">)</mo><mo>×</mo><mi>s</mi><mo>+</mo><mo stretchy="false">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">b=(i\times t+j)\times s+(k-1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></font>，即索引从小到大依次为：扇区、磁头、柱面。也可以根据块号确定该块在磁盘中的位置。第P块在磁盘上的位置为：<font color=red>柱面号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mi>P</mi><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><mi>s</mi><mo>×</mo><mi>t</mi><mo stretchy="false">)</mo><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[P/(s×t)]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">/</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mclose">]</span></span></span></span>，磁头号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo stretchy="false">(</mo><mi>P</mi><mi mathvariant="normal">%</mi><mo stretchy="false">(</mo><mi>s</mi><mo>×</mo><mi>t</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mi>s</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[(P\%(s×t))/s]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">%</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mclose">)</span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mclose">]</span></span></span></span>，扇区号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi mathvariant="normal">%</mi><mi>s</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">P\%s+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">%</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></font>。</p>
+<p>存储介质的容量逐渐增大，且有些像磁带一样可以随时更换，因此也可以作为保存档案，成为一种高速、大容量、可以拆卸的海量存储器。</p>
+<h2 id="93-文件的物理结构"><a class="markdownIt-Anchor" href="#93-文件的物理结构"></a> 9.3 文件的物理结构</h2>
+<p>文件的物理结构类型有连续文件、串联文件、索引文件3种。</p>
+<h3 id="连续文件"><a class="markdownIt-Anchor" href="#连续文件"></a> 连续文件</h3>
+<p><font color=red>文件存放于连续的存储块中</font>。文件目录记录文件长度（块数）和第一个存储块号。<br />
+优点：支持顺序存取和随机存取，顺序存取速度快。<br />
+缺点：文件不易动态增加，预留空间容易造成浪费，造成外部碎片。</p>
+<h3 id="串联文件"><a class="markdownIt-Anchor" href="#串联文件"></a> 串联文件</h3>
+<p>串联文件存放于离散存储块中，<font color=red>每一个存储块包含一个链接指针记录下一块的位置。</font><br />
+优点：可以显著消除存储碎片，创建文件时无需知道文件长度，文件动态增加时可以动态分配存储块，支持文件增删改等操作。<br />
+缺点：适合顺序访问模式（随机访问效率极低），如果某一个链接指针损坏，文件后面将无法访问。FAT文件系统就是使用这种形式保存文件。</p>
+<h3 id="索引文件"><a class="markdownIt-Anchor" href="#索引文件"></a> 索引文件</h3>
+<p>文件存放于不连续存储块中，<font color=red>系统建立索引表记录文件逻辑块和存储块的对应关系</font>。索引文件=索引表+数据区。文件目录记录文件名和对应的索引表。</p>
+<p>索引表的组织——多级索引。</p>
+<ul>
+<li>直接索引</li>
+<li>一级间接索引：文件目录项中有一组表项，其内容登记第一级索引表块的块号</li>
+<li>二级间接索引</li>
+</ul>
+<p>优点：读取索引文件需要索引表，支持顺序存取和随机存取，支持文件动态增长、插入、删除等要求。<br />
+缺点：索引表占据额外空间。</p>
+<p>其中ext文件系统就采用索引文件方式。</p>
+<h2 id="94-磁盘空间存储管理"><a class="markdownIt-Anchor" href="#94-磁盘空间存储管理"></a> 9.4 磁盘空间存储管理</h2>
+<h3 id="空闲文件目录"><a class="markdownIt-Anchor" href="#空闲文件目录"></a> 空闲文件目录</h3>
+<p>将连续空闲区组成的特殊文件称为<font color=red>空闲文件</font>。存储设备上的所有空闲文件就代表了存储设备上的全部空闲空间。<br />
+<font color=red>空闲文件目录</font>是为空闲文件建立的目录，记录空闲文件的首个存储块号和存储块数量。</p>
+<h3 id="空闲块链"><a class="markdownIt-Anchor" href="#空闲块链"></a> 空闲块链</h3>
+<p>把所有空闲存储块使用链表存储在一起，当<font color=red>申请空闲块时从链表头部取空闲块，回收时将块加载链表尾部</font>。</p>
+<h3 id="位示图"><a class="markdownIt-Anchor" href="#位示图"></a> 位示图</h3>
+<p>内存中划出一块区域，<font color=red>每一位对应存储块使用情况</font>（占用或空闲），空闲时对应位为1，否则为0。<br />
+根据磁盘总块数决定位示图中有多少个字。</p>
+<h3 id="成组链接法"><a class="markdownIt-Anchor" href="#成组链接法"></a> 成组链接法</h3>
+<p>把空闲块分为<font color=red>若干组</font>，每一组第一个空闲块登记下一组空闲块的块号的空闲块数。在UNIX系统中100个空闲块为1组，余下不足100块的块号和块数登记在一个专用块中。<br />
+分配：将专用块读取到存储器，当需要分配空闲块时，直接在内存中找到哪些块是空闲的，每分配一块空闲块数-1。把一组中第一个空闲块分配前将登记在该块中的下一组块号即块数保存到专用块中。当一组空闲块被分配完后把专用块内容读取到内存储器。<br />
+回收：归还一块登记后将当前块数+1即可。如果当前组已经满100块将内存中的内容写到归还的那一块，作为新组中的第一块。</p>
+<h2 id="95-文件目录"><a class="markdownIt-Anchor" href="#95-文件目录"></a> 9.5 文件目录</h2>
+<p>文件目录功能：实现“按名存取”：用户向系统提供文件名，就能够找到指定文件</p>
+<p>目录文件：文件目录可以看做一个特殊文件。</p>
+<p>文件目录项：描述文件的基本信息、使用信息和存取控制信息的数据结构</p>
+<ul>
+<li>基本信息：文件名、存储位置等</li>
+<li>使用信息：属性、大小、建立时间、修改时间</li>
+<li>存取控制信息</li>
+</ul>
+<p>目录结构</p>
+<ul>
+<li>单级目录
+<ul>
+<li>最简单的目录结构，这种组织形式下全部文件都登记在同一个目录中。便于简单和实现，但查找速度慢，不允许重名和文件共享。</li>
+</ul>
+</li>
+<li>二级目录
+<ul>
+<li>第一级称为主目录，第二级目录称为用户目录，即每一个用户有一个子目录，可以解决文件重名的问题，不同用户可以使用相同的名字。</li>
+</ul>
+</li>
+<li>多级目录（树形目录）
+<ul>
+<li>二级目录结构的扩充，目录结构是倒置的树，根节点为主目录（根目录）</li>
+</ul>
+</li>
+</ul>
+<p>文件全名：从根目录到文件为止整个通路上面所有目录、子目录和文件的名字用&quot;/&quot;顺序连接构成的字符串称为文件全名。路径名分为绝对路径名和相对路径名。</p>
+<p>文件属性：指定文件的类型、操作特性和存取保护等信息。一般保存在文件的目录中。</p>
+<p>文件操作：创建、写、读、文件定位、删除、截短、属性设置和读取<br />
+目录操作：创建、删除</p>
+<p>对于文件的访问系统首先需要检查访问权限（文件保护）：读写执行、追加、修改等</p>
+<h2 id="96-linux索引文件inode"><a class="markdownIt-Anchor" href="#96-linux索引文件inode"></a> 9.6 Linux索引文件/inode</h2>
+<p>索引文件=索引结点inode+若干数据块<br />
+索引结点inode：有一个指针指向数据块，指示文件的存储位置</p>
+<p>创建文件时需要分配1个索引结点inode和1个数据块，数据块记录文件的内容。如果文件增长太大，则为该文件分配更多的数据块，分配更多的索引表。<br />
+创建目录与文件相同，分配1个索引结点inode和1个数据块，如果目录中的文件太多，则为该目录存放更多的数据块。</p>
+<p>虚拟文件系统（VFS）：覆盖在逻辑文件系统之上面向操作系统的接口层，对于每一个逻辑文件系统的实现细节进行抽象，使得不同的文件系统在Linux核心以及其他进程看来都相同。</p>
+<ul>
+<li>索引结点（inode）包含一个文件的所有信息</li>
+<li>超级块描述物理文件系统的信息，每一个物理文件系统都有自己的超级块，建立文件系统时需要创建该超级块，卸载文件系统删除超级块</li>
+<li>目录项为文件名与结点的对应位置</li>
+<li>文件对象表示进程已经打开的文件</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2638,173 +2871,6 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机组成原理——第5章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:02:13 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:13+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="52"><a class="markdownIt-Anchor" href="#52"></a> 5.2</h3>
-<ol>
-<li>A<br />
-三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址）</li>
-<li>A<br />
-寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。</li>
-<li>A<br />
-16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范围为0~255。</li>
-<li>C</li>
-<li>C</li>
-<li>A</li>
-<li>D</li>
-<li>D</li>
-<li>D<br />
-注意本题为大端序，LSB位于高地址处。</li>
-<li>B</li>
-<li>C<br />
-无符号整数大于则ZF=0，CF=0。</li>
-<li>A</li>
-<li>略</li>
-</ol>
-<h3 id="53"><a class="markdownIt-Anchor" href="#53"></a> 5.3</h3>
-<ol>
-<li>指令是用户使用计算机与计算机本身运行的基本功能单位。指令系统是计算机系统性能的几种体现，是计算机软、硬件的设计基础。</li>
-<li>计算机设计多种操作数寻址方式是为了提升寻址的灵活性，同时可以在一定程度上减少地址寻址所使用的指令位数。</li>
-<li>作为寻址方式字段给出。</li>
-<li>基址寻址面向系统，用于程序的重定位和扩展程序空间。变址寻址面向用户，主要解决程序循环问题。二者在计算有效地址的方式上相似，但基址寄存器的基址值一般不变且形式地址表示的偏移量位数较短，偏移范围较小；而变址寄存器的值可以改变，偏移量位数足以表示整个存储空间。</li>
-<li>略</li>
-<li>定长指令便于机器解码执行，结构规整，有利于设计硬件，但不容易扩展。变长指令灵活，但不易解码。</li>
-<li>指令的地址码指的是指令中用于寻址的地址值，通常指定操作数的地址，地址码的字段的作用随着指令类型和寻址方式的不同而不同。指令中的操作码用于区分不同功能的指令，标识指令的种类。</li>
-</ol>
-<h3 id="54"><a class="markdownIt-Anchor" href="#54"></a> 5.4</h3>
-<ol>
-<li>立即数</li>
-<li>直接</li>
-<li>寄存器</li>
-<li>寄存器间接</li>
-</ol>
-<p>注：寻址方式区分技巧<br />
-需要两次找其他值的是间接。间接寻址指的是操作数地址的地址在主存，寄存器间接寻址指的是操作数地址在寄存器，前一个需要两次访问主存，后一个需要首先访问寄存器再访问主存。</p>
-<h3 id="55"><a class="markdownIt-Anchor" href="#55"></a> 5.5</h3>
-<ol>
-<li>操作数地址码由寻址方式字段和寄存器号字段组成。16个通用寄存器需要4位标识，8种寻址方式需要3位标识，剩余字段数量为9位，故单操作数指令最多为512条。</li>
-<li>4条。</li>
-<li>0~7，对于直接寻址，应该是使用寻址方式这3位来寻址。</li>
-<li>变址寻址考虑到寄存器16位，因此寻址范围为2<sup>16</sup>个字即64KW。</li>
-</ol>
-<h3 id="56"><a class="markdownIt-Anchor" href="#56"></a> 5.6</h3>
-<ol>
-<li>若操作码字段不固定，已经设计出m条双操作数指令，n条无操作数指令。对于双操作数指令，有4位可用于标识指令码，现在已经设计了m条，还剩下16-m种前4位的组合可以用于单操作数指令和无操作数指令。对于单操作数指令，有10位可用于标识指令码，去除前4位，不管无操作数指令，可知单操作数指令对于指令前10位一共有(16-m)×64种组合可用。还需要考虑到无操作数指令，无操作数指令全部16位都可以用于标识指令码，则前10位的一种组合可设计64条无操作数指令，那么n条无操作数指令一共需要占用单操作数指令前10位组合中的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>种组合，故单操作数指令一共可以设计<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>16</mn><mo>−</mo><mi>m</mi><mo stretchy="false">)</mo><mo>×</mo><mn>64</mn><mo>−</mo><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">(16-m)\times 64-\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">6</span><span class="mord">4</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>条。</li>
-<li>双操作数指令取最大数为15，因为要留出一种前4位的组合给单操作数指令和无操作数指令，单操作数指令取最大数为63，因为要留出一种前10位的组合给无操作数指令。此时无操作数指令最多只能设计64条。</li>
-</ol>
-<h3 id="57"><a class="markdownIt-Anchor" href="#57"></a> 5.7</h3>
-<ol>
-<li>290-256-3=31，转移指令第二个字节为0x1F，第三个字节为0。</li>
-<li>110-128-3=-31，转移指令第二个字节为0xE1，第三个字节为0xFF。</li>
-</ol>
-<h3 id="58"><a class="markdownIt-Anchor" href="#58"></a> 5.8</h3>
-<ol>
-<li>4420H=0100 0100 0010 0000=010001 00 00100000，寻址方式为直接寻址，形式地址为0x20，有效地址为0x20。</li>
-<li>2244H=0010 0010 0100 0100=001000 10 01000100，寻址方式为变址寄存器X2变址，形式地址为0x44，有效地址为0x1122+0x44=0x1166。</li>
-<li>1322H=0001 0011 0010 0010=000100 11 00100010，寻址方式为相对寻址，形式地址为0x22，有效地址为0x1234+2+0x22=0x1258。</li>
-<li>3521H=0011 0101 0010 0001=001101 01 00100001，寻址方式为变址寄存器X1变址，形式地址为0x21，有效地址为0x37+0x21=0x58。</li>
-</ol>
-<h3 id="59"><a class="markdownIt-Anchor" href="#59"></a> 5.9</h3>
-<ol>
-<li>增加的32条指令中的前6位不能与原来的60条指令中的任意一条的前6位相等，否则会冲突，因此这32条指令的前6位只有4种可能的值，每一种可能的值需要设计8条指令，因此扩展操作码总共9位，这32条指令的操作码为111100000~111111111。</li>
-<li>平均长度为(60×6+32×9)/92≈7.04。</li>
-</ol>
-<h3 id="510"><a class="markdownIt-Anchor" href="#510"></a> 5.10</h3>
-<p>add $s0, $a1, $t7。</p>
-<h3 id="511"><a class="markdownIt-Anchor" href="#511"></a> 5.11</h3>
-<p>略</p>
-<h3 id="512"><a class="markdownIt-Anchor" href="#512"></a> 5.12</h3>
-<ol>
-<li>最多有16条指令，该计算机最多有8个通用寄存器。</li>
-<li>16位，因为主存空间128KB，含64KW。</li>
-<li>0~2<sup>16</sup>-1</li>
-<li>0010 0011 0001 0101=2315H。</li>
-</ol>
-<h3 id="513"><a class="markdownIt-Anchor" href="#513"></a> 5.13</h3>
-<p>略</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2874,7 +2940,7 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-count">150</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2926,13 +2992,13 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.3m</span>
+    <span title="Symbols count total">1.4m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">20:25</span>
+    <span title="Reading time total">20:31</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

