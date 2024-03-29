@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="实验室研究需要，有关物联网的一些基础还是需要掌握的。于是开始研究实验室买的STM板子，下面通过一个官方demo进行基础内容的学习。  准备工作 我使用的开发板是STM32F429 Nucleo-144，MCU为STM32F429ZIT6，属于STM32系列中的高性能MCU。从官网查询信息可知，该MCU一共带有2MB的Flash以及256KB的RAM，核心频率可达180MHz。开发板如下图所示。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="STM32学习 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="实验室研究需要，有关物联网的一些基础还是需要掌握的。于是开始研究实验室买的STM板子，下面通过一个官方demo进行基础内容的学习。  准备工作 我使用的开发板是STM32F429 Nucleo-144，MCU为STM32F429ZIT6，属于STM32系列中的高性能MCU。从官网查询信息可知，该MCU一共带有2MB的Flash以及256KB的RAM，核心频率可达180MHz。开发板如下图所示。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/2.jpg">
+<meta property="og:image" content="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/1.png">
+<meta property="article:published_time" content="2024-03-29T04:42:50.000Z">
+<meta property="article:modified_time" content="2024-03-29T10:34:37.028Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/2.jpg">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-cn'
+  };
+</script>
+
+  <title>STM32学习 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/03/29/STM32%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          STM32学习 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-03-29 12:42:50 / Modified: 18:34:37" itemprop="dateCreated datePublished" datetime="2024-03-29T12:42:50+08:00">2024-03-29</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="Symbols count in article">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">Symbols count in article: </span>
+              <span>6k</span>
+            </span>
+            <span class="post-meta-item" title="Reading time">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">Reading time &asymp;</span>
+              <span>5 mins.</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>实验室研究需要，有关物联网的一些基础还是需要掌握的。于是开始研究实验室买的STM板子，下面通过一个官方demo进行基础内容的学习。</p>
+<h1 id="准备工作"><a class="markdownIt-Anchor" href="#准备工作"></a> 准备工作</h1>
+<p>我使用的开发板是STM32F429 Nucleo-144，MCU为STM32F429ZIT6，属于STM32系列中的高性能MCU。从官网查询信息可知，该MCU一共带有2MB的Flash以及256KB的RAM，核心频率可达180MHz。开发板如下图所示。</p>
+<p><img src="2.jpg" alt="" /></p>
+<p>下面使用Keil进行分析。在官网下载Keil之后安装，UV4目录中有IDE的启动程序UV4.exe以及包管理器PackInstaller.exe。</p>
+<p>打开PackInstaller，左边选择Devices可以找到上面的MCU型号，选择后，右边有Packs和Examples。Packs为开发时可能需要的硬件支持包，包含对各类外设的处理等，Examples则是可以直接烧录到开发板上的demo示例。</p>
+<p>在Pack一栏，我安装了2个Device Specific包，Generic中则安装有：</p>
+<ul>
+<li>ARM::CMSIS</li>
+<li>ARM::CMSIS-Driver</li>
+<li>ARM::CMSIS-DSP</li>
+<li>ARM::CMSIS-NN</li>
+<li>Keil::ARM_Compiler</li>
+<li>Keil::MDK-Middleware</li>
+<li>Keil::MDK-Middleware_Graphics</li>
+</ul>
+<p>如果需要安装其他包，只需直接点击安装即可，包管理器能够自动分析依赖并将某个包所依赖的所有包全部安装。</p>
+<p>在Examples一栏中，前两个就是最简单的亮灯demo。在Install后Copy到某个目录下，使用Keil打开对应的项目文件即可打开demo。</p>
+<p><img src="1.png" alt="" /></p>
+<h1 id="程序分析"><a class="markdownIt-Anchor" href="#程序分析"></a> 程序分析</h1>
+<p>打开Blinky项目，Source Files中只有一个Blinky.c文件，包含这个demo的主要逻辑。</p>
+<p>下面简述这个demo的功能。</p>
+<p>开发板下方左右各有一个按钮，左边蓝色右边黑色（黑色为复位按钮）。在MCU正上方有三个User LED，分别为LD1、LD2、LD3。将开发板上电后（USB应插入上面的USB接口而不是下面，插入后，该接口右边的COM指示灯亮起红灯，User LED右边的PWR指示灯亮起绿灯表示已经供电），在用户无操作时，LD1到LD3依次亮起绿、蓝、红三色灯，每一次点亮持续0.5s，随后熄灭，等待0.5秒后亮起下一个灯，一次循环为3s时间。在循环过程中，如果用户按下蓝色按钮，则循环暂停，正在点亮的灯会持续点亮，如果灯全部熄灭则会持续熄灭。松开按钮后循环继续进行。如果用户按下黑色按钮，循环立即停止并将状态返回至循环开始。黑色按钮不松开时循环暂停，松开后循环重新开始。黑色按钮的优先级高于蓝色按钮，如果两个按钮均按下，则循环重置。</p>
+<h2 id="mainc"><a class="markdownIt-Anchor" href="#mainc"></a> main.c</h2>
+<p>这个项目使用了STM32 CubeMX自动构建项目，它能够为STM32项目提供初始化代码的模板，用户只需要在该模板基础上进行开发即可。不过我们这里暂且不研究这个模板的使用，主要还是以代码为主。</p>
+<p>在main.c中，最重要的就属main函数了。在blinky中，由于只需要完成用户LED的简单点亮操作，因此不需要将进行多余的初始化操作。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">  HAL_Init();</span><br><span class="line">  SystemClock_Config();</span><br><span class="line">  SystemCoreClockUpdate();</span><br><span class="line">  MX_GPIO_Init();</span><br><span class="line">  osKernelInitialize();</span><br><span class="line">  osThreadNew(app_main, <span class="literal">NULL</span>, &amp;app_main_attr);</span><br><span class="line">  osKernelStart();</span><br><span class="line">  <span class="keyword">while</span> (<span class="number">1</span>)&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里基本都是一些与初始化相关的函数。<code>HAL_Init</code>用于初始化外设，下面两个与系统时钟相关，<code>MX_GPIO_Init</code>初始化GPIO引脚，随后<code>osKernelInitialize</code>是操作系统的初始化，这里的操作系统指的是封装了CMSIS-OS的FreeRTOS。CMSIS-RTOS是一层可以封装在不同RTOS上的一个API层，能够为用户提供统一的API，便于编程。这里进行初始化之后调用了<code>osThreadNew</code>函数创建了一个线程，线程执行的函数是<code>app_main</code>，参数为NULL，即没有参数，线程属性为<code>&amp;app_main_attr</code>。线程属性定义了这个线程拥有的栈空间地址及大小，后面在Blinky.c中可以找到。随后<code>osKernelStart</code>即启动OS内核，开始执行用户线程。</p>
+<h2 id="blinkyc"><a class="markdownIt-Anchor" href="#blinkyc"></a> Blinky.c</h2>
+<p>Blinky.c的内容并不多：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Name:    Blinky.c</span></span><br><span class="line"><span class="comment"> * Purpose: LED Flasher</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * This file is part of the uVision/ARM development tools.</span></span><br><span class="line"><span class="comment"> * This software may only be used under the terms of a valid, current,</span></span><br><span class="line"><span class="comment"> * end user licence from KEIL for a compatible version of KEIL software</span></span><br><span class="line"><span class="comment"> * development tools. Nothing else gives you the right to use this software.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * This software is supplied &quot;AS IS&quot; without warranties of any kind.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Copyright (c) 2017-2021 Keil - An ARM Company. All rights reserved.</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Board_LED.h&quot;</span>                  <span class="comment">/* ::Board Support:LED */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Board_Buttons.h&quot;</span>              <span class="comment">/* ::Board Support:Buttons */</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;RTE_Components.h&quot;</span>             <span class="comment">/* Component selection */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Main stack size must be multiple of 8 Bytes</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> APP_MAIN_STK_SZ (512U)</span></span><br><span class="line"><span class="type">uint64_t</span> app_main_stk[APP_MAIN_STK_SZ / <span class="number">8</span>];</span><br><span class="line"><span class="type">const</span> osThreadAttr_t app_main_attr = &#123;</span><br><span class="line">  .stack_mem  = &amp;app_main_stk[<span class="number">0</span>],</span><br><span class="line">  .stack_size = <span class="keyword">sizeof</span>(app_main_stk)</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="keyword">volatile</span> <span class="type">uint32_t</span> delay_val = <span class="number">500U</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> osThreadId_t tid_thrLED;         <span class="comment">/* Thread id of thread: LED */</span></span><br><span class="line"><span class="type">static</span> osThreadId_t tid_thrBUT;         <span class="comment">/* Thread id of thread: BUT */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">  thrLED: blink LED</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">static</span> <span class="type">void</span> <span class="title function_">thrLED</span><span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line">  <span class="type">uint32_t</span> led_max    = LED_GetCount();</span><br><span class="line">  <span class="type">uint32_t</span> led_num    = <span class="number">0U</span>;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    osThreadFlagsWait(<span class="number">0x0001</span>U, osFlagsWaitAny ,osWaitForever);</span><br><span class="line">    LED_On(led_num);                                            <span class="comment">/* Turn specified LED on */</span></span><br><span class="line">    osThreadFlagsWait(<span class="number">0x0001</span>U, osFlagsWaitAny ,osWaitForever);</span><br><span class="line">    LED_Off(led_num);                                           <span class="comment">/* Turn specified LED off */</span></span><br><span class="line"></span><br><span class="line">    led_num++;                                                  <span class="comment">/* Change LED number */</span></span><br><span class="line">    <span class="keyword">if</span> (led_num &gt;= led_max) &#123;</span><br><span class="line">      led_num = <span class="number">0U</span>;                                             <span class="comment">/* Restart with first LED */</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">  thrBUT: check button state</span></span><br><span class="line"><span class="comment"> *----------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">static</span> <span class="type">void</span> <span class="title function_">thrBUT</span><span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line">  <span class="type">uint32_t</span> button_msk = (<span class="number">1U</span> &lt;&lt; Buttons_GetCount()) - <span class="number">1U</span>;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">    osDelay(delay_val);                                 <span class="comment">/* Wait */</span></span><br><span class="line">    <span class="keyword">while</span> (Buttons_GetState() &amp; (button_msk));          <span class="comment">/* Wait while holding USER button */</span></span><br><span class="line">    osThreadFlagsSet(tid_thrLED, <span class="number">0x0001</span>U);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/*----------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Application main thread</span></span><br><span class="line"><span class="comment"> *---------------------------------------------------------------------------*/</span></span><br><span class="line">__NO_RETURN <span class="type">void</span> <span class="title function_">app_main</span> <span class="params">(<span class="type">void</span> *argument)</span> &#123;</span><br><span class="line"></span><br><span class="line">  (<span class="type">void</span>)argument;</span><br><span class="line"></span><br><span class="line">  LED_Initialize();                                     <span class="comment">/* initalize LEDs */</span></span><br><span class="line">  Buttons_Initialize();                                 <span class="comment">/* initalize Buttons */</span></span><br><span class="line"></span><br><span class="line">  tid_thrBUT = osThreadNew (thrBUT, <span class="literal">NULL</span>, <span class="literal">NULL</span>);        <span class="comment">/* create BUT thread */</span></span><br><span class="line">  <span class="keyword">if</span> (tid_thrBUT == <span class="literal">NULL</span>) &#123; <span class="comment">/* add error handling */</span> &#125;</span><br><span class="line"></span><br><span class="line">  tid_thrLED = osThreadNew (thrLED, <span class="literal">NULL</span>, <span class="literal">NULL</span>);        <span class="comment">/* create LED thread */</span></span><br><span class="line">  <span class="keyword">if</span> (tid_thrLED == <span class="literal">NULL</span>) &#123; <span class="comment">/* add error handling */</span> &#125;</span><br><span class="line"></span><br><span class="line">  osThreadExit();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先看到<code>app_main_attr</code>，这里定义了栈空间以及大小，使用了一个512字节的预分配空间。</p>
+<p>然后是<code>app_main</code>函数，这是线程的入口点。其中首先对LED灯和按钮进行初始化，随后创建了两个子线程，分别执行<code>thrBUT</code>函数和<code>thrLED</code>函数，这两个函数没有指定栈空间，前者控制按钮，后者控制LED灯。</p>
+<p>在<code>thrBUT</code>中有死循环，首先延时500ms，然后循环判断<code>Buttons_GetState() &amp; button_msk</code>的值，为0时退出循环并设置<code>tid_thrLED</code>的标志位为1，其中<code>tid_thrLED</code>为LED线程的线程标志。<code>Buttons_GetState</code>函数会返回一个int值，每一位都代表一个按钮的按下状态。在上面的开发板中只有一个用户按钮（Reset不算），因此该函数的返回值只能为0或1。button_msk的值为1，根据逻辑可以推断出：当按钮按下时，<code>Buttons_GetState</code>的返回值为1，否则为0。当用户没有操作时，内部的while循环总是不循环，即每过0.5s就将LED线程的标志位设置为1。</p>
+<p>在<code>thrLED</code>中也存在一个死循环，首先调用<code>osThreadFlagsWait</code>，当该线程的标志位中有0x1，选项是<code>osFlagsWaitAny</code>，即永远（osWaitForever）等待标志位的最低位被设置为1，当检测到标志位被置位时，立即退出并将标志位复位为0。等待结束后打开LED灯，随后继续等待，等待后关闭LED灯，更换目标LED灯，继续循环。</p>
+<p>整个过程非常清晰，延时的时间长度由<code>thrBUT</code>函数决定，当用户按下按钮时，相当于<code>thrBUT</code>函数阻塞在了内部的<code>while</code>循环中，暂时无法进行下一次置位。两个线程是一个“生产者与消费者”的关系，“消费”的对象就是LED线程的标志位。</p>
+<p>通过上面的示例，我们对CMSIS-RTOS中不同线程之间的交互有了一定的了解。不同线程之间的交互可以通过标志位完成，以控制不同线程之间的逻辑时序。当然很显然仅通过这种方式进行交互还不够，如果需要数据传输则需要另外的方式。</p>
+<h2 id="逆向分析"><a class="markdownIt-Anchor" href="#逆向分析"></a> 逆向分析</h2>
+<p>除了分析C代码之外，简单分析下汇编代码也是有必要的。在Github中可以搜索到一个SVD-loader项目，它是一个Ghidra插件，能够在输入svd文件后自动分析文件中的外设定义，并将外设与对应内存建立联系，大大提高汇编代码及反汇编C代码的可读性。</p>
+<p>每一个市面的MCU都可以找到其对应的svd文件，其中记录有所有外设的信息。最为重要的是所有外设映射的内存地址空间。在程序中，我们只能通过内存和寄存器来进行数据的存取，而无法直接与外设交互。即使是最底层的库，也不能脱离内存玩外设。为了解决这个问题，需要对MCU进行额外的设计，将外设与固定的内存地址建立映射关系。当代码访问到外设映射的内存地址时，MCU可以通过硬件找到外设对应的接口并完成相应操作。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/03/CVE-2022-0847%E5%A4%8D%E7%8E%B0%E8%AE%B0%E5%BD%95/" rel="prev" title="CVE-2022-0847复现记录">
+      <i class="fa fa-chevron-left"></i> CVE-2022-0847复现记录
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text"> 准备工作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A8%8B%E5%BA%8F%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text"> 程序分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mainc"><span class="nav-number">2.1.</span> <span class="nav-text"> main.c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#blinkyc"><span class="nav-number">2.2.</span> <span class="nav-text"> Blinky.c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%86%E5%90%91%E5%88%86%E6%9E%90"><span class="nav-number">2.3.</span> <span class="nav-text"> 逆向分析</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">151</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">Symbols count total: </span>
+    <span title="Symbols count total">1.4m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">Reading time total &asymp;</span>
+    <span title="Reading time total">20:37</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
