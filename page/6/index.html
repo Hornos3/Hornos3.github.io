@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-cn">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -37,7 +37,7 @@
     sidebar: "",
     isHome : true,
     isPost : false,
-    lang   : 'zh-cn'
+    lang   : 'zh-CN'
   };
 </script>
 
@@ -81,7 +81,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
+    <div class="toggle" aria-label="切换导航栏">
       <span class="toggle-line toggle-line-first"></span>
       <span class="toggle-line toggle-line-middle"></span>
       <span class="toggle-line toggle-line-last"></span>
@@ -110,17 +110,17 @@
   <ul id="menu" class="main-menu menu">
         <li class="menu-item menu-item-home">
 
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories</a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
   </ul>
@@ -149,7 +149,376 @@
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第2章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:12:19 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:19+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.7k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-2-操作系统的硬件基础"><a class="markdownIt-Anchor" href="#chapter-2-操作系统的硬件基础"></a> Chapter 2 操作系统的硬件基础</h1>
+<h2 id="21-计算机三总线硬件结构"><a class="markdownIt-Anchor" href="#21-计算机三总线硬件结构"></a> 2.1 计算机三总线硬件结构</h2>
+<p>计算机硬件结构主要包括CPU、内存和外设。三者通过<font color=red>地址总线、数据总线、控制总线</font>3条总线进行连接。外设需要有IO接口的模块才能连接到总线上。</p>
+<h2 id="22-cpu结构"><a class="markdownIt-Anchor" href="#22-cpu结构"></a> 2.2 CPU结构</h2>
+<p>CPU的主要功能是按照一定的逻辑流程分析和执行指令流。CPU在逻辑上可以被划分为3个部分：</p>
+<ul>
+<li>控制单元：由指令寄存器、指令解码器、指令计数器等构成。根据用户事先编写好的程序，依次从存储器中取出每一条指令放在指令寄存器中，通过指令解码器分析确定好应该执行什么样的操作，然后按照确定的时序向相应的部件发出微操作控制信号，并更新指令计数器的地址。</li>
+<li>运算单元：执行算术运算和逻辑运算。接受控制单元的命令而进行动作。</li>
+<li>寄存器单元：主要指寄存器组，即CPU中暂存数据的地方，保存等待处理的数据或已经处理过的数据。寄存器起到一个缓存的作用，可以减少CPU访问内存的次数，提高其工作速度。寄存器分为通用寄存器和专用寄存器，通用寄存器数量因处理器而异。</li>
+</ul>
+<h2 id="23-cpu的态"><a class="markdownIt-Anchor" href="#23-cpu的态"></a> 2.3 CPU的态</h2>
+<p>CPU不同的态支持不同的指令集和资源：</p>
+<ul>
+<li><font color=red>核态</font>：具有最高特权级，也称为特权态、系统态、内核态或核心态。可以执行所有包括特权级指令，使用所有资源，且能够改变处理器状态。</li>
+<li><font color=red>用户态</font>：具有较低特权级，不能使用特权指令，不能直接使用系统资源，不能改变CPU工作状态，只能访问用户程序的存储空间。</li>
+<li>管态：一个模棱两可的中间状态，介于上面两个状态之间，也可以理解为核态。</li>
+</ul>
+<p>特权指令包括：能够改变CPU状态的指令、能够修改特殊寄存器的指令、涉及外部设备的输入输出指令。</p>
+<p><font color=red>硬件按“态”区分CPU的状态，操作系统通过“态”区分进程的状态。</font></p>
+<p>特权级：Intel架构的CPU支持4个特权级，即0-3级，0级最高3级最低。对于一段连续内存（称为段），其头部有段描述符明确规定这段内存的访问特权级，称为<font color=red>描述符特权级（DPL）</font>。UNIX和Linux只支持0、1、3特权级，其中1为管态，Windows只支持0、3级。</p>
+<p>CPU的态从用户态向内核态进行转换的方法：</p>
+<ul>
+<li>系统调用：用户态进程通过系统调用申请使用操作系统提供的服务完成工作。</li>
+<li>异常：CPU运行时发现不可预知的异常，使当前进程被切换到处理该异常的内核相关程序中。</li>
+<li><font color=red>外部设备中断</font>：外部设备发送数据或接收数据就绪后向CPU发出中断信号，CPU暂停执行原来的指令转而去执行与中断信号相关的处理程序。</li>
+</ul>
+<p>内核态向用户态转换一般都是IRET的中断返回指令完成的。</p>
+<h2 id="24-内存"><a class="markdownIt-Anchor" href="#24-内存"></a> 2.4 内存</h2>
+<p>内存又称为主存储器，是计算机系统存放指令和数据的存储器单元。通常分为只读存储器（ROM）、随机存储器（RAM）和高速缓存存储器（Cache）3种类型。</p>
+<p>按照与CPU的联系可以分为主存和辅存，主存可以直接与CPU交换信息而辅存不行。<br />
+按照存储元的材料可以分为半导体存储器（常用主存）、磁存储器（磁盘等）、光存储器（光盘等）<br />
+按照读写工作方式可以分为RAM和ROM。</p>
+<p>高速缓存位于CPU和内存之间，容量比内存小但存取速度比内存快，其为内存中一小部分数据的复制，这一小部分数据可能是CPU短时间内访问较为频繁的，CPU访问高速缓存中有的数据时可以减少内存的访问次数，提高CPU速度。</p>
+<p>理想的存储系统速度快、容量大、成本低，但现实中不可能实现。现实中将存储系统分层管理，最上层为寄存器，速度最快，容量最小，价格最贵，往下依次为高速缓存、内存、辅存，速度依次降低，容量依次增加，价格依次降低。</p>
+<p>CPU访问指令或数据时的访问顺序：</p>
+<ul>
+<li>访问缓存命中为HIT</li>
+<li>访问内存命中为MISS</li>
+<li>访问辅存命中为缺页（PAGE FAULT）</li>
+</ul>
+<h2 id="26-中断系统"><a class="markdownIt-Anchor" href="#26-中断系统"></a> 2.6 中断系统</h2>
+<p>中断是指CPU收到外部信号后停止当前工作，自动转去调用事先准备好的中断服务程序处理外部事件，待处理完毕后再回到原来的中断处继续工作的过程或机制。</p>
+<p>引入中断的目的是实现并发活动、实现实时处理、故障自动处理。</p>
+<p>引起中断的程序被称为<font color=red>中断源</font></p>
+<p>中断类型可分为：</p>
+<ul>
+<li><font color=red>强迫中断和自愿中断</font>，强迫中断是程序没有预期地进行中断，如外部中断；而自愿中断是程序有预期地中断，如访管指令</li>
+<li><font color=red>外中断和内中断</font>：外中断由CPU外部事件引起，内中断由CPU内部事件引起。</li>
+<li><font color=red>可屏蔽中断和不可屏蔽中断</font>：二者均属于外部中断，不可屏蔽的中断是CPU必须进行响应的，可屏蔽中断CPU可以不响应。</li>
+</ul>
+<p>程序中断的地方被称为<font color=red>断点</font>，也即为将要执行的下一条指令的地址。</p>
+<p>程序正确运行依赖的信息集合被称为<font color=red>现场</font>，在进入中断程序之前需要进行现场保护，即将CPU的重要信息暂时保存到栈上，中断程序结束后需要恢复现场，即将栈中的CPU信息加载到CPU中。</p>
+<p>中断流程：<font color=red>识别中断源→保护断点→保护现场→进入中断服务程序→恢复现场→中断返回</font>。</p>
+<p>触发中断使用INT指令实现，从中断返回使用IRET指令实现。</p>
+<p>中断响应的实质是交换指令执行地址、交换CPU的态。</p>
+<h2 id="27-基本输入输出系统"><a class="markdownIt-Anchor" href="#27-基本输入输出系统"></a> 2.7 基本输入输出系统</h2>
+<p>BIOS，固化到计算机中的一类程序，是计算机加电后运行的第一个软件，为计算机提供最初级的最直接的硬件操控。</p>
+<ul>
+<li>加电自检及初始化：加电自检（POST）用于计算机刚接通电源时对硬件部分的检测，通常是对CPU、内存等进行测试。发现问题会直接警告。然后会查找其他设备的BIOS并执行这些设备的BIOS。</li>
+<li>设置CMOS参数：用于帮助用户设置基本的系统参数，如系统日期等。</li>
+<li>系统启动：根据用户指定顺序从硬盘或光驱等媒介启动操作系统，为用户建立用户环境，OS启动后就由OS接管计算机。</li>
+<li>基本输入输出处理程序：为应用程序和操作系统提供硬件接口服务，这些服务主要与输入输出设备有关，如键盘操作等。BIOS使用的基本中断号为10H-1FH，如13H表示软盘调用，INT 13标号为02的子功能为读扇区。</li>
+</ul>
+<p>系统BIOS的位置为F0000H-FFFFFH。</p>
+<h2 id="28-操作系统启动过程"><a class="markdownIt-Anchor" href="#28-操作系统启动过程"></a> 2.8 操作系统启动过程</h2>
+<h3 id="281-操作系统启动概述"><a class="markdownIt-Anchor" href="#281-操作系统启动概述"></a> 2.8.1 操作系统启动概述</h3>
+<p><font color=red>实模式</font>：程序按照8086方式进行寻址，寻址位一共20位，共可以访问1MB的地址空间，由CPU单任务进行。实模式前640KB（00000H-9FFFFH）为基本内存，中128KB（A0000H-BFFFFH）为显卡显存，后256KB（C0000H-FFFFFH）为BIOS系统。</p>
+<p><font color=red>保护模式</font>：内存保护模式，地址寻址共32位，可寻址4GB空间。在该模式下段具有了新的含义和工作机制，且新增了多个寄存器可以操作。其中的地址均为虚拟地址，应用程序和操作系统的运行均被保护。此时CPU支持多任务。</p>
+<p>操作系统的启动过程：</p>
+<ul>
+<li><font color=red>初始引导</font>：用于将OS内核加载到内存的指定位置，从BIOS的启动代码开始执行开始。按下电源开关后电源开始供电，控制芯片组让CPU恢复到初始状态。之后CPU开始执行FFFF0处的代码，BIOS开始进行加电自检。自检完成后开始运行BIOS启动代码，主要用于寻找可用的启动设备，并将其中的引导程序加载到内存中。引导程序可以加载操作系统到内存中的适当位置，并将CPU使用权交给OS内核。</li>
+<li><font color=red>核心初始化</font>：用于OS内核初始化系统的核心数据，并继续加载操作系统除了内核之外的部分到内存中。该过程还包含初始化存储系统和页表、构建核心进程、引导内核运行等，最终控制权将被交给内核，进入系统初始化阶段。</li>
+<li><font color=red>系统初始化</font>：继续初始化操作系统，并最终准备好操作系统的桌面和控制台，该过程主要包含初始化文件系统、初始化网格系统、初始化控制台、初始化图形界面，最终处于待命状态。</li>
+</ul>
+<p>DOS系统的启动过程：</p>
+<ul>
+<li>POST，BIOS自检。</li>
+<li>初始引导，BIOS从MBR（主引导记录）中读取引导程序，并加载到内存，引导程序将io.sys和msdos.sys加载到内存中，DOS系统开始运行并接管系统。</li>
+<li>核心初始化，操作系统读取config.sys配置系统核心。</li>
+<li>系统初始化，操作系统读入 <a target="_blank" rel="noopener" href="http://Command.com">Command.com</a>，执行autoexec.bat，系统待命。</li>
+</ul>
+<p>Windows的启动过程：</p>
+<ul>
+<li>POST，BIOS自检。</li>
+<li>初始引导，BIOS从MBR（主引导记录）中读取引导程序，并加载到内存，引导程序启动DOS7.0，调入操作系统核心，然后由Windows接管系统。</li>
+<li>核心初始化</li>
+<li>系统初始化</li>
+</ul>
+<h3 id="282-linux启动过程"><a class="markdownIt-Anchor" href="#282-linux启动过程"></a> 2.8.2 Linux启动过程</h3>
+<ul>
+<li>POST</li>
+<li>MBR</li>
+<li>KERNEL映像</li>
+<li>KERNEL映像自解压并执行</li>
+<li>内核初始化</li>
+<li>内核启动</li>
+</ul>
+<p>在内核完成引导后需要加载init程序，init进程是所有进程的祖先，进程号为1。init首先使用/etc/inittab脚本文件进行系统初始化，然后执行一系列文件设置其他选项，最后设置键盘、字体等。</p>
+<p>操作系统的安装过程：首先需要将OS映像拷贝到存储空间，后写启动相关代码和数据（MBR中的PBR）。对于多操作系统的安装需要修改MBR，进行重写或追加。</p>
+<p>MBR：主引导记录，又称为主启动扇区，是计算机开机后访问硬盘必须访问的第一个扇区，操作系统启动相关数据和代码就保存在主启动扇区中。大小为512字节，最后两个字节为0x55和0xAA表明该设备可以用于启动。主引导记录中主要包含有磁盘分区信息、启动参数、操作系统内核位置信息、引导代码等。</p>
+<h2 id="210-操作系统的生成"><a class="markdownIt-Anchor" href="#210-操作系统的生成"></a> 2.10 操作系统的生成</h2>
+<p>一些操作系统可以根据用户需要进行配置和构建。其前提是：</p>
+<ul>
+<li>由可以拆装的模块生成</li>
+<li>有交互式配置工具</li>
+<li>有映像构建工具</li>
+</ul>
+<p>对于Linux系统即可以通过下载内核、选择和启动配置程序进行配置内核模块和参数、编译新的内核、安装和启动内核这些步骤来完成操作系统的生成。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第1章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:12:14 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:14+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-1-操作系统概述"><a class="markdownIt-Anchor" href="#chapter-1-操作系统概述"></a> Chapter 1 操作系统概述</h1>
+<h2 id="11-操作系统直观认识和定义"><a class="markdownIt-Anchor" href="#11-操作系统直观认识和定义"></a> 1.1 操作系统直观认识和定义</h2>
+<h3 id="111-操作系统的直观认识"><a class="markdownIt-Anchor" href="#111-操作系统的直观认识"></a> 1.1.1 操作系统的直观认识</h3>
+<p>操作系统提供以下几种直观功能：</p>
+<ul>
+<li>提供操作界面，用户可以利用一些可视化的元素来操作计算机，展示计算机的执行结果。</li>
+<li>控制程序运行，利用图形化或命令行的方式启动一个程序、结束一个程序、强制结束没有响应的程序等。</li>
+<li>管理系统资源，用户可以更新驱动程序或安装新的驱动、卸载不再需要的设备，访问打印机、硬盘等资源。</li>
+<li>配置系统参数，设置或改变系统参数。</li>
+<li>监控系统状态，通过任务管理器等可以观察系统的实时工作情况。</li>
+<li>工具软件集合，提供用于系统管理的辅助工具和内置命令便于用户进行个性化配置、调优或测试。</li>
+</ul>
+<h3 id="112-操作系统的定义"><a class="markdownIt-Anchor" href="#112-操作系统的定义"></a> 1.1.2 操作系统的定义</h3>
+<p>操作系统是一个大型的系统程序，它<font color=red>管理和分配计算机系统中软、硬件资源</font>，控制和协调并发活动，<font color=red>为用户提供接口</font>和良好的工作环境。</p>
+<h2 id="12-操作系统的发展历史"><a class="markdownIt-Anchor" href="#12-操作系统的发展历史"></a> 1.2 操作系统的发展历史</h2>
+<h3 id="121-手动操作阶段"><a class="markdownIt-Anchor" href="#121-手动操作阶段"></a> 1.2.1 手动操作阶段</h3>
+<p>即电子管时代（1946-1955），此时没有操作系统，一个程序需要程序员通过打孔的方式写在纸带上，然后将纸带装入到设备中，启动输入设备将程序和数据输入到计算机内存中，然后控制台开关启动程序开始处理数据。整个过程中计算机被一个程序员占用。</p>
+<p>特点：用户独占、缺少交互、效率低下（如运行一次程序可能需要提前几十分钟将设备全部装好，运行完之后还需要几十分钟将设备全部拆卸）</p>
+<h3 id="122-单道批处理系统"><a class="markdownIt-Anchor" href="#122-单道批处理系统"></a> 1.2.2 单道批处理系统</h3>
+<p>即晶体管时代（1955-1965）。单道批处理能够控制计算机自动处理一批作业，逐个加载、运行和撤出其中的每一个作业，直到全部作业处理完毕。批处理系统的特点：<font color=red>成批、自动、单道</font>。缺点是平均周转时间长、无交互能力。</p>
+<p>单道批处理系统两种实现方式：<font color=red>联机批处理系统和脱机批处理系统</font>。联机批处理系统的输入输出过程都由主机控制，主机和输入设备之间添加一个磁带作为存储设备。运行于主机上的监督程序控制成批地将输入机上的用户作业读入磁带并形成作业队列，然后依次将磁带上的用户作业逐个装入主机运行并将结果输出到输出机，直到该批作业完成。脱机批处理系统增加一台与主机不直接相连而专门用于输入输出的卫星机，主机的作用是利用批处理方式自动按批处理磁带上的作业并将结果存放到输出磁带上。</p>
+<h3 id="123-多道批处理系统"><a class="markdownIt-Anchor" href="#123-多道批处理系统"></a> 1.2.3 多道批处理系统</h3>
+<p>集成电路时代（1965-1980），多道批处理系统利用多道程序处理技术，在内存中存放多道程序，当某道程序因为某种原因不能继续运行时监控程序会调度另一个程序运行，使得CPU尽量处于忙碌状态。多道批处理系统可以让CPU与外设，外设与外设之间处于并行状态。缺点是作业处理时间长，运行过程不确定，交互能力差。</p>
+<h3 id="124-分时操作系统"><a class="markdownIt-Anchor" href="#124-分时操作系统"></a> 1.2.4 分时操作系统</h3>
+<p>60年代中断技术的出现、80年代后大规模集成电路的出现、事务性程序和任务的出现允许CPU进行更加复杂的作业调度。现在的操作系统要求能够进行多任务多用户的调度。主机采用分时技术轮流为每一个终端服务，每一个终端都认为自己独占了整台计算机。</p>
+<p>主机<font color=red>以很短的时间片为单位将CPU循环地轮流分配给每一个作业使用</font>，直到全部作业运行完毕。时间片是较短的时间间隔，使得主机的响应时间较短。分时系统的特点：多路调制性、独占性（用户认为独占计算机）、交互性（能够及时响应用户请求）</p>
+<h3 id="125-分时操作系统衍化"><a class="markdownIt-Anchor" href="#125-分时操作系统衍化"></a> 1.2.5 分时操作系统衍化</h3>
+<ul>
+<li>微型计算机操作系统</li>
+<li>实时操作系统（可靠性、安全性、强调作业完成时限和可预测性）
+<ul>
+<li>硬实时系统：必须按时完成</li>
+<li>软实时系统：尽量按时完成</li>
+</ul>
+</li>
+<li>嵌入式操作系统</li>
+<li>网络操作系统</li>
+<li>分布式操作系统</li>
+</ul>
+<h2 id="13-操作系统的功能"><a class="markdownIt-Anchor" href="#13-操作系统的功能"></a> 1.3 操作系统的功能</h2>
+<h3 id="131-处理机管理"><a class="markdownIt-Anchor" href="#131-处理机管理"></a> 1.3.1 处理机管理</h3>
+<p>处理机是计算机系统的核心资源，处理机管理即为进程管理或CPU管理。一个操作系统应该能够进行<font color=red>进程控制、进程同步、进程通信与进程调度</font>。</p>
+<ul>
+<li>进程控制：为一个作业创建一个或多个进程，并分配必要的资源。进程运行结束后应该撤销该进程并回收该进程占用的各种资源。主要功能是为作业创建进程、撤销已经结束的进程。</li>
+<li>进程同步：保证进程之间有条不紊地进行，协调多个进程之间的运行。</li>
+<li>进程通信：用于合作进程之间交换信息，操作系统使用合适的机制完成信息传输。</li>
+<li>进程调度：操作系统需要根据某种策略选择合适的进程占用CPU。</li>
+</ul>
+<h3 id="132-存储管理"><a class="markdownIt-Anchor" href="#132-存储管理"></a> 1.3.2 存储管理</h3>
+<p>操作系统需要能够合理调度内存，内存管理需要支持多道程序设计，包含<font color=red>内存分配、内存共享、内存保护、地址映射和虚拟存储</font>。</p>
+<ul>
+<li>内存分配：程序运行需要将其存放在内存中，在程序运行前和运行时需要为其分配一定大小的内存。</li>
+<li>内存共享：允许多道程序存放在内存中，实现内存的共享。另外实现多个进程共用一块内存空间，如dll文件所在的内存。</li>
+<li>内存保护：保证进程在自己的内存空间中运行而不互相干扰，需要检查进程对内存的访问是否越界或越权。</li>
+<li>地址映射：操作系统提供地址映射机构将进程地址空间的逻辑地址转化为内存空间对应的物理地址，地址映射可以使用户不必关心物理存储空间的分配细节。</li>
+<li>虚拟存储：内存扩充功能，避免因为物理内存太小而导致大型程序无法运行或限制了多个进程的并发运行。实现了物理内存在逻辑上进行扩充，在不增加物理内存的情况下使用虚拟存储技术获得内存扩充的效果。</li>
+</ul>
+<h3 id="133-设备管理"><a class="markdownIt-Anchor" href="#133-设备管理"></a> 1.3.3 设备管理</h3>
+<p>操作系统不能让用户直接使用这些设备，这会使得用户的使用变得困难，因此操作系统需要使用合适的方式为进程分配这些资源，提高CPU和设备的使用率。操作系统<font color=red>提供统一规范的接口给应用程序使用</font>，完成进程对设备的输入输出请求并方便用户添加新设备或删除旧设备。</p>
+<ul>
+<li>分配设备：为申请设备的进程分配设备，记录设备的使用情况。</li>
+<li>设备控制：通过合适的方式完成设备与CPU之间的数据传输。</li>
+<li>设备映射：使用所谓的逻辑设备而不是物理设备，可以极大提高程序的灵活性、可移植性和可阅读性。用户可以使用友好名和不同的配置选项选择一个逻辑设备。</li>
+<li>缓冲区管理：提高CPU的利用率，提高系统吞吐量，在内存中设置缓冲区并对缓冲区中的读写更新等操作进行有效管理以获得更好的系统性能。</li>
+</ul>
+<h3 id="134-文件管理"><a class="markdownIt-Anchor" href="#134-文件管理"></a> 1.3.4 文件管理</h3>
+<p>操作系统需要实现按名存取文件和目录，并向用户提供一条存取文件和目录的标准操作接口。除了基本的文件操作（如读写复制删除等）还需要实现文件的共享、保护和保密，保证文件的安全性和不被越权访问。</p>
+<h2 id="15-操作系统评价指标"><a class="markdownIt-Anchor" href="#15-操作系统评价指标"></a> 1.5 操作系统评价指标</h2>
+<ul>
+<li>吞吐量：系统在单位时间内处理信息的能力或可以处理的任务数量。是用于衡量系统性能的重要指标。操作系统合理分配和调度资源可以提高系统的吞吐量。</li>
+<li>响应能力：表现为系统从接收数据到输出结果的时间间隔长短，时间间隔越长说明响应能力越差。系统响应时间与用户数量和时间片的大小有关。用户数量越多响应时间越长，时间片越短响应时间越短。</li>
+<li>资源利用率：设备在单位时间内被利用的百分比。</li>
+<li>可移植性：改变硬件环境，操作系统仍能正常工作的能力。一般在新的硬件环境中需要改写或增加一些代码来使得操作系统能够在新的环境下工作，这个修改工作中的<font color=red>代码修改量</font>越少说明可移植性越好。</li>
+<li>可靠性：即系统发生错误的概率大小和操作系统发现、诊断和恢复系统故障能力的大小。错误率越小可靠性越高。</li>
+</ul>
+<h2 id="17-操作系统的逻辑结构"><a class="markdownIt-Anchor" href="#17-操作系统的逻辑结构"></a> 1.7 操作系统的逻辑结构</h2>
+<h3 id="171-整体式结构"><a class="markdownIt-Anchor" href="#171-整体式结构"></a> 1.7.1 整体式结构</h3>
+<p>整体式结构又称为模块化结构或宏内核结构，操作系统的常用设计模式和应用软件的基本设计模式。以模块为基本单位进行构建，系统中每一个过程都有明确的入口参数列表和返回值列表，大多数过程可以相互调用不受约束。如UNIX系统、Linux系统的单体内核。<br />
+优点：模块设计、编码和调试独立，模块之间可以自由调用<br />
+缺点：错误容易扩散，开发和维护困难，可伸缩性差</p>
+<h3 id="172-层次式结构"><a class="markdownIt-Anchor" href="#172-层次式结构"></a> 1.7.2 层次式结构</h3>
+<p>层次式结构将操作系统中所有功能模块按照调用次序分别排成若干层，确保各层之间只能单向依赖或单向调用。分层原则主要：</p>
+<ul>
+<li>硬件相关放在最底层</li>
+<li>与用户策略和交互有关的放在最顶层</li>
+<li>中间各层按照调用次序或消息传递顺序安排</li>
+<li>共性的和活跃的服务放在较低的层次</li>
+</ul>
+<p>优点：结构清晰、整体问题局部化、有利于维护扩充和移植。</p>
+<h3 id="173-微内核结构"><a class="markdownIt-Anchor" href="#173-微内核结构"></a> 1.7.3 微内核结构</h3>
+<p>微内核结构又称为客户-服务机结构，分为两个部分：微内核和核外服务器。微内核足够小，只提供最基本的OS核心功能和服务，核外服务器完成OS绝大部分功能，等待客户提出请求。如Harmony-OS、Windows-NT（分层结构+微内核）。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -172,39 +541,39 @@
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:25 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:25+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:25 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:25+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>2.6k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -328,7 +697,7 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -351,39 +720,39 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:13 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:13+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:13 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:13+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>2k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -495,7 +864,7 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -518,39 +887,39 @@ A正确。B错误，CS在CPU内部，存放的是微指令，按照微指令地�
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:09 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:09+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:09 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:09+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>5k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>5 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
             </span>
 
         </div>
@@ -740,7 +1109,7 @@ PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -763,39 +1132,39 @@ PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:06 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:06+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:06 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:06+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>1.7k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -964,7 +1333,7 @@ PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -987,39 +1356,39 @@ PPO：物理页偏移位数与虚拟页偏移相等，12位</p>
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:03 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:03+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:03 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:03+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>3.5k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>3 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
             </span>
 
         </div>
@@ -1249,7 +1618,7 @@ CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码�
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1272,39 +1641,39 @@ CC900000的符号为1，阶码为10011001=152。B0C00000的符号为1，阶码�
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:02:00 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:00+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:02:00 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:02:00+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>1.9k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -1400,7 +1769,7 @@ MIPS<sub>2</sub>=301.9</p>
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC6%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1423,39 +1792,39 @@ MIPS<sub>2</sub>=301.9</p>
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:01:45 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:01:45 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:45+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>4.1k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>4 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
             </span>
 
         </div>
@@ -1672,7 +2041,7 @@ CPU的主要功能：程序控制、操作控制、时序控制、异常控制�
       
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1695,39 +2064,39 @@ CPU的主要功能：程序控制、操作控制、时序控制、异常控制�
               <span class="post-meta-item-icon">
                 <i class="far fa-calendar"></i>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
+              <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="Created: 2023-03-03 00:01:40 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:40+08:00">2023-03-03</time>
+              <time title="创建时间：2023-03-03 00:01:40 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:40+08:00">2023-03-03</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
-              <span class="post-meta-item-text">In</span>
+              <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
                 </span>
-                  , 
+                  ，
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
                   <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
                 </span>
             </span>
 
           <br>
-            <span class="post-meta-item" title="Symbols count in article">
+            <span class="post-meta-item" title="本文字数">
               <span class="post-meta-item-icon">
                 <i class="far fa-file-word"></i>
               </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
+                <span class="post-meta-item-text">本文字数：</span>
               <span>1.7k</span>
             </span>
-            <span class="post-meta-item" title="Reading time">
+            <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -1817,397 +2186,10 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第4章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:01:37 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:37+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>4.6k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>4 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="41-存储器概述"><a class="markdownIt-Anchor" href="#41-存储器概述"></a> 4.1 存储器概述</h2>
-<p>存储器可以分为：</p>
-<ul>
-<li>随机存储器RAM，按照地址随机读写数据存储单元，且存取访问时间与存储单元的位置无关。</li>
-<li>顺序存储器SAM，存储单元中的内容只能按照顺序访问，且访问速度与存储单元的位置有关。</li>
-<li>直接存储器DAM，不必经过顺序搜索就能够在存储器中直接存取信息的存储器，兼有随机存储器和顺序存储器的访问特性。</li>
-<li>只读存储器ROM。</li>
-</ul>
-<h4 id="存储系统的层次结构"><a class="markdownIt-Anchor" href="#存储系统的层次结构"></a> 存储系统的层次结构</h4>
-<p>现实世界中，一个存储器的存储速度、存储容量和成本往往是相互矛盾的，因此需要多种不同类型的存储器。典型的存储系统是一个金字塔结构，从上到下依次为<mark>寄存器、高速缓存、主存、磁带、磁盘等</mark>。越往上访问速度越快，单位容量的成本越高，越往下存储容量越大。</p>
-<p>存储体系层次化结构的理论基础：时间局部性原理和空间局部性原理。</p>
-<h4 id="主存中数据的存放"><a class="markdownIt-Anchor" href="#主存中数据的存放"></a> 主存中数据的存放</h4>
-<ul>
-<li>存储字长：主存的一个存储单元能够存储的二进制位数。</li>
-<li>数据字长：计算机一次能处理的二进制数的位数。</li>
-<li>数据的边界对齐：在数据对齐的情况下，访问主存的次数相对于不对齐会减少一些，虽然浪费了一些空间，但是能够提升速度。以32位系统为例，双字数据的地址应该以8为倍数对齐，字数据地址应该以4为倍数对齐，以此类推。</li>
-<li>大小端存储：采用多字节方式访问主存时主存中的字节顺序。存储器的低字节单元中存放的是数据的高字节时，称为大端，反之称为小端。</li>
-</ul>
-<h2 id="42-半导体存储器"><a class="markdownIt-Anchor" href="#42-半导体存储器"></a> 4.2 半导体存储器</h2>
-<h3 id="421-静态mos存储器"><a class="markdownIt-Anchor" href="#421-静态mos存储器"></a> 4.2.1 静态MOS存储器</h3>
-<p>存储器以静态MOS存储元为基本单元构成的存储器称为静态MOS存储器（SRAM）。</p>
-<p><img src="https://img-blog.csdnimg.cn/d81df6d4e65d4db7b38b6124e0362f81.png" alt="" /></p>
-<h4 id="工作原理"><a class="markdownIt-Anchor" href="#工作原理"></a> 工作原理</h4>
-<ul>
-<li>要想获取该单元存储的数据是0还是1，需要看A点和B点的电位。当A点为高电平而B点为低电平时，存储1，反之存储0。当A点为高电位时，T<sub>2</sub>导通，T<sub>1</sub>断路。</li>
-<li>T<sub>3</sub>和T<sub>4</sub>为补充电荷使用。无论A还是B为高电平，这两个三极管一定导通，当A为高电平时，B接地，因此从T<sub>4</sub>过来的电荷都漏掉了，B点的电压还是0V，而A点则可以维持高电平。反之同理。</li>
-<li>读取：当X地址译码线与Y地址译码线均导通时，4个三极管均导通，A的电平输出到左边，B的电平输出到右边。</li>
-<li>写入：两个地址线导通后左边与右边一个输入高电平，一个输入低电平。设原来单元中存储1，现需要将其写为0，则需要向左边输入0V，右边输入高电平，这样放走了左边A的电荷之后，右边的T<sub>2</sub>就断路，B不再接地，其电荷量增加，导通T<sub>1</sub>使A的电荷完全被导走，以此达到新的稳态。注意这其中的步骤顺序。</li>
-</ul>
-<p>单译码结构：一维的线性结构，索引一个存储单元只需要一个地址线。索引2<sup>n</sup>地址空间需要2<sup>n</sup>条地址线。<br />
-双译码结构：二维的地址结构，索引一个单元需要两个地址线。索引2<sup>n</sup>地址空间需要2<sup>n/2+1</sup>条地址线。</p>
-<h3 id="422-动态mos存储器"><a class="markdownIt-Anchor" href="#422-动态mos存储器"></a> 4.2.2 动态MOS存储器</h3>
-<p>SRAM的不足之处有：晶体管数量较多，存储密度低，功耗大。<br />
-<img src="https://img-blog.csdnimg.cn/f7aa512bdb234f61aeb467eec7ffda55.png" alt="" /><br />
-<img src="https://img-blog.csdnimg.cn/5f21cadb698247aebf6be87ab01dccf8.png" alt="" /></p>
-<h4 id="工作原理-2"><a class="markdownIt-Anchor" href="#工作原理-2"></a> 工作原理</h4>
-<ul>
-<li>处于保持状态时，预充、两条译码线均为低电平，若此时A为高电平，B为低电平，则B接地，A上有大量电荷，因此电容C<sub>2</sub>带电，可以让A的高电平状态维持一段时间，但电荷还是会有流失，因此保持状态如果时间过长，其中的数据就会丢失。</li>
-<li>刷新状态：预充和一条译码线（X译码线）导通，进行充电。如果原来A上带有电荷，但由于泄露已经较为微弱。在导通X译码线和预充之后，A得到了直接的电荷补充，而B由于此时仍然接地，因此无法得到电荷。双地址结构的DRAM刷新是按行进行的。</li>
-<li>读数据：首先导通预充信号充电，使得左右两个C<sub>D</sub>充满电。若此时A为高电平，充电完成后先导通X地址译码线，这样左边C<sub>D</sub>会为C<sub>2</sub>充电，<mark>自身电荷量增加</mark>，而右边的C<sub>D</sub>将电荷部分转移到C<sub>1</sub>中，<mark>自身电荷量减少</mark>。然后导通Y地址译码线，左边输出的电平略高于V<sub>CC</sub>/2，右边输出的电平略低于V<sub>CC</sub>/2。</li>
-<li>写数据：首先导通Y地址译码线，并写入高电平和低电平，设向原来保存1的单元写入数据0，则右边输入高电平，左边输入低电平，因此右边C<sub>D</sub>带电荷。然后导通X地址译码线。先是C<sub>2</sub>上的电荷量大量减少，使得B不再接地，然后B接收到右边C<sub>D</sub>的电荷，让A接地。</li>
-</ul>
-<h4 id="dram的刷新"><a class="markdownIt-Anchor" href="#dram的刷新"></a> DRAM的刷新</h4>
-<ul>
-<li>最大刷新周期：信息存储到丢失之前的这段时间，两次刷新时间间隔不能超过最大刷新周期。</li>
-<li>刷新周期：存储器实际上完成两次刷新的之间的时间间隔。</li>
-<li>DRAM按行进行刷新，为减少刷新的周期，可以减少存储矩阵行数，增加列数。</li>
-<li>读操作也有刷新功能，但只能刷新一个单元。</li>
-</ul>
-<p>刷新的不同方式：</p>
-<ul>
-<li>集中刷新：将所有行在连续的一段时间内全部刷新完成。设刷新周期为2ms，2ms内一共可以进行4000次读写与保持操作，DRAM共256行，则集中刷新法是在前3744个读写周期内进行读写，而在后256个读写周期进行每一行的刷新。优点：读写操作期间不受刷新操作的影响，速度较快。缺点：存在较长时间无法进行访问的情况，“死区”。</li>
-<li>分散刷新：将存储周期（时间较短，1μs左右）分为两个部分，第一个部分用于读写，第二个部分用于刷新。优点：不存在死区。缺点：速度慢。</li>
-<li>异步刷新：将所有行的刷新平均分配到刷新周期之内，如刷新周期为2ms，共有256行，则将刷新周期分为256等份，每一个等份的前面所有存储周期用于读写，最后的一个存储周期用于刷新。</li>
-</ul>
-<h2 id="43-主存的组织和cpu的连接"><a class="markdownIt-Anchor" href="#43-主存的组织和cpu的连接"></a> 4.3 主存的组织和CPU的连接</h2>
-<h3 id="432-存储器的扩展"><a class="markdownIt-Anchor" href="#432-存储器的扩展"></a> 4.3.2 存储器的扩展</h3>
-<ul>
-<li>位扩展：又称为字长扩展或数据总线扩展，将所有存储芯片的地址线、读写控制线并联，将输出合并得到数据内容，可以理解为，如果一块芯片的一个单元只能保存一位信息，则第一块芯片只保存所有地址中的第一位信息，第二块芯片只保存所有地址的第二位信息，等等。</li>
-<li>字扩展：又称容量扩展或地址总线扩展，其不会增加数据的位宽，每一次寻址只会访问一块芯片，其他芯片没有被访问，输出也只是接受一个芯片的输出。将扩展出来的数据位线（地址的高位）连接到译码器来确定访问哪一块存储芯片。</li>
-<li>字位同时扩展：上面两种方式的结合。</li>
-</ul>
-<h2 id="45-高速缓冲存储器"><a class="markdownIt-Anchor" href="#45-高速缓冲存储器"></a> 4.5 高速缓冲存储器</h2>
-<p>cache：在CPU与主存之间添加一块小容量的快速的SRAM，以提升访问主存的性能。依据的原理是空间局部性。</p>
-<h3 id="453-cache的基本原理"><a class="markdownIt-Anchor" href="#453-cache的基本原理"></a> 4.5.3 cache的基本原理</h3>
-<p>CPU通过字节地址访问快速的cache，首先需要确定需要访问的数据是否在cache中。</p>
-<ul>
-<li>数据命中：数据在cache中。</li>
-<li>命中访问时间：当数据命中时数据的访问时间，包括查找时间和cache访问时间两部分。</li>
-<li>数据缺失：需要访问的数据不在cache中。需要将缺失的数据从主存调入到cache中才能访问数据。</li>
-<li>缺失补偿：数据缺失时的访问时间，包括数据查找时间、主存访问时间、cache访问时间。</li>
-<li>命中率：所有访问中成功命中的次数占总访问次数的比例。</li>
-<li>缺失率：1-命中率。</li>
-<li>访问效率：cache的命中访问时间与cache/主存系统的平均访问时间的比值。</li>
-</ul>
-<h3 id="454-cache读-写流程与关键技术"><a class="markdownIt-Anchor" href="#454-cache读-写流程与关键技术"></a> 4.5.4 cache读、写流程与关键技术</h3>
-<h4 id="读"><a class="markdownIt-Anchor" href="#读"></a> 读</h4>
-<p>读入时查找cache中是否有需要读取的数据，有则读取，没有则调入这一块数据后再读取。</p>
-<h4 id="写"><a class="markdownIt-Anchor" href="#写"></a> 写</h4>
-<p>写比读复杂一些。<br />
-首先查找目标地址处的数据是否保存在cache，如果有则写入数据到cache。这里有两种策略：<mark>写回策略和写穿策略</mark>，写回策略在将数据写入cache之后立即结束操作，会导致cache与主存中数据的不一致；写穿策略在cache中数据被修改后再将数据写入到主存中，速度较慢。<br />
-如果目标地址处的数据不在cache，则也有两种选择：一种是将数据直接写入到主存，另一种是将这一块地址的内容载入到cache后写入到cache，至于之后是否需要写入主存使用的就是写回策略和写穿策略两种策略了。</p>
-<h3 id="455-相联存储器"><a class="markdownIt-Anchor" href="#455-相联存储器"></a> 4.5.5 相联存储器</h3>
-<p>相联存储器可用于判断对应地址的数据是否保存在该存储器中，基本数单元是键值对，键是主存地址，值是主存地址下的数据。由于相联存储器可以进行所有键值对的并行查找，因此只需查找一次就可以确定一个键值对。</p>
-<p><img src="https://img-blog.csdnimg.cn/11f8cf36bbcf4f479515775306c6d33b.png" alt="" /></p>
-<h3 id="456-地址映射"><a class="markdownIt-Anchor" href="#456-地址映射"></a> 4.5.6 地址映射</h3>
-<p>地址映射即为将主存地址空间映射到cache的地址空间，将存放在主存的程序或数据载入到cache块的规则。</p>
-<ul>
-<li>全相联：各个主存块都可以映射到cache中的任意一个数据块。</li>
-<li>直接相联：各个主存块只能映射到cache的固定某一块。</li>
-<li>组相联：各个主存块只能映射到cache固定组中的任意块。</li>
-</ul>
-<h4 id="全相联映射"><a class="markdownIt-Anchor" href="#全相联映射"></a> 全相联映射</h4>
-<p>主存中每一个数据块都可以放置到cache中的任意一个数据块中，是一对多的映射关系。新的数据块可以载入到cache中任意一个空闲位置，只有cache满时才会进行数据块置换。</p>
-<p>在全相联映射中，主存地址被划分为两部分：块号和块内地址。如果一块的大小为1024字节，则块内地址共10位，高位为块号。在cache中会保存块号和主存中该块号下的数据内容。</p>
-<p>优点：cache利用率高，块冲突率低。缺点：淘汰算法复杂。适用于小容量的cache。</p>
-<h4 id="直接相联映射"><a class="markdownIt-Anchor" href="#直接相联映射"></a> 直接相联映射</h4>
-<p>在直接相联映射中，主存地址分为三部分：区号、区内块号、块内地址。其中区内块号为x，cache行数为y，则该块在cache中应该保存在第x行的位置。区内块号表示的数值应该与cache中的行数相同。</p>
-<p>优点：淘汰算法简单。缺点：利用率较低，块冲突率高。使用率大容量cache。</p>
-<h4 id="组相联映射"><a class="markdownIt-Anchor" href="#组相联映射"></a> 组相联映射</h4>
-<p>组相联映射将主存地址分为3部分：组号、组内块号、块内地址。cache中所有行分为若干组，设一组有m行，共n组，则主存地址组号为x时应该保存在cache中的第x mod n组，组内块号为y的地址处应该保存在cache中的保存该组号的组中的任意一行。</p>
-<h3 id="457-替换算法"><a class="markdownIt-Anchor" href="#457-替换算法"></a> 4.5.7 替换算法</h3>
-<ul>
-<li>先进先出算法</li>
-<li>最不经常使用算法：替换访问次数最少的cache</li>
-<li>近期最少使用算法：为每一行维持一个计数器，命中时计数器清零，否则加1，将计数器最大的行换出。</li>
-<li>随机替换算法</li>
-</ul>
-<h2 id="46-虚拟存储器"><a class="markdownIt-Anchor" href="#46-虚拟存储器"></a> 4.6 虚拟存储器</h2>
-<p>虚拟存储器处于主存-辅存存储层次，为了解决主存容量不足的问题，为程序设计者提供比主存空间大的编程空间。<br />
-虚拟存储器可以分为：页式、段式和段页式。<br />
-三种地址空间：虚拟地址空间、主存的地址空间、辅存地址空间。</p>
-<p>在虚拟存储系统中运行时，CPU以虚拟地址访问主存，使用存储管理部件<mark>MMU</mark>找到虚拟地址与物理地址的对应关系，并判断该虚拟地址对应的物理地址是否在主存中，如果在则将虚拟地址转化为物理地址，CPU直接访问主存单元；否则将包含这个字的一页或一段调入主存，并在MMU中填写相关的标记信息。</p>
-<h3 id="463-页式虚拟存储器"><a class="markdownIt-Anchor" href="#463-页式虚拟存储器"></a> 4.6.3 页式虚拟存储器</h3>
-<p>虚拟地址被划分为虚拟页号VPN和虚拟页偏移VPO两部分，同时物理地址按照相同的划分方式分为物理页号PPN（页框号）和物理页偏移PPO。</p>
-<p>页面命中时CPU硬件执行的步骤：</p>
-<ul>
-<li>CPU将虚拟地址传送给MMU。</li>
-<li>MMU用页表基址寄存器PTBR和虚页号生成页表项地址PTEA，通过这个页表项地址可以找到目标虚拟地址对应的物理地址值保存在什么位置。</li>
-<li>cache或主存向MMU返回页表项PTE。</li>
-<li>如果返回的PTE中有效位为1，则MMU利用返回的PTE构造物理地址PA，并利用构造出的物理地址PA访问cache或主存。</li>
-<li>cache或主存返回数据给CPU。</li>
-</ul>
-<p>缺页处理流程：前3步与上面相同</p>
-<ul>
-<li>PTE中有效位为0，所访问的页不在主存中，MMU触发异常调用内核的缺页中断处理程序。</li>
-<li>如果主存页满，需要根据算法确定换出哪一个页，如果换出的页的有效位为1，则需要将其换出到磁盘。</li>
-<li>缺页中断处理程序从磁盘中调入新的页，更新存储器中的页表项PTE。</li>
-<li>返回原来进行继续执行。</li>
-</ul>
-<p>如果存储系统中包含cache，则可以将部分页表的内容保存到cache中。</p>
-<p>转换旁路缓冲区：<mark>TLB</mark>，用于缓冲经常访问的页表项PTE，实质是一个小容量的cache，大多采用全相联或组相联形式以提高访问速度，且采用随机替换算法。通常<mark>称TLB中保存的表为快表，主存中保存的表称为慢表</mark>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-cn">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第3章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-03-03 00:01:34 / Modified: 00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:34+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="Symbols count in article">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">Symbols count in article: </span>
-              <span>2k</span>
-            </span>
-            <span class="post-meta-item" title="Reading time">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">Reading time &asymp;</span>
-              <span>2 mins.</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="31-计算机中的运算"><a class="markdownIt-Anchor" href="#31-计算机中的运算"></a> 3.1 计算机中的运算</h2>
-<p>注意移位运算中逻辑移位和算术移位的区别，算术移位不会修改符号位。</p>
-<h2 id="32-定点加减法运算"><a class="markdownIt-Anchor" href="#32-定点加减法运算"></a> 3.2 定点加减法运算</h2>
-<h3 id="321-补码加减法运算"><a class="markdownIt-Anchor" href="#321-补码加减法运算"></a> 3.2.1 补码加减法运算</h3>
-<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>+</mo><mo stretchy="false">[</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>=</mo><mo stretchy="false">[</mo><mi>x</mi><mo>+</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mspace></mspace><mspace width="1em"/><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333333333333333em"/><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">[x]_补+[y]_补=[x+y]_补 \pmod M
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:1em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">o</span><span class="mord mathrm">d</span></span></span><span class="mspace" style="margin-right:0.3333333333333333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span></span></p>
-<p>在以M为模时，两数的补码之和等于两数和的补码。</p>
-<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">[</mo><mi>x</mi><mo>−</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>=</mo><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>−</mo><mo stretchy="false">[</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>=</mo><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>+</mo><mo stretchy="false">[</mo><mo>−</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mspace></mspace><mspace width="1em"/><mo stretchy="false">(</mo><mrow><mi mathvariant="normal">m</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">d</mi></mrow><mspace width="0.3333333333333333em"/><mi>M</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">[x-y]_补=[x]_补-[y]_补=[x]_补+[-y]_补 \pmod M
-</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord">−</span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace allowbreak"></span><span class="mspace" style="margin-right:1em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord mathrm">m</span><span class="mord mathrm">o</span><span class="mord mathrm">d</span></span></span><span class="mspace" style="margin-right:0.3333333333333333em;"></span><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="mclose">)</span></span></span></span></span></p>
-<h3 id="322-溢出及检测"><a class="markdownIt-Anchor" href="#322-溢出及检测"></a> 3.2.2 溢出及检测</h3>
-<p>对于补码加法运算（减法可以转化为加法），溢出的检测方式有：</p>
-<ul>
-<li>当正数与正数相加得到负数，或负数与负数相加得到正数时，有溢出。当两个运算数符号不同时，一定不会发生溢出。</li>
-<li>根据运算过程中最高数据位的进位和符号位的进位来判断。当最高数据位的进位与符号位的进位不一致时发生溢出。考虑正数加正数的情况，如果结果为负数，说明最高数据位的进位为1，而符号位的进位为0，不一致。若为负数加负数得到正数，则符号位的进位为1，最高数据位的进位为0（否则得到的结果中符号位为1），不一致。</li>
-<li>使用变形补码，即使用两个二进制数表示数据的符号。正数符号以00表示，负数为11。在运算过程中如果符号位出现了01或10则说明发生了溢出。</li>
-<li>使用软件的方法判断</li>
-<li>对于无符号数的溢出，只需要看两者相加后有没有溢出的进位即可。</li>
-</ul>
-<h3 id="323-加减法的逻辑实现"><a class="markdownIt-Anchor" href="#323-加减法的逻辑实现"></a> 3.2.3 加减法的逻辑实现</h3>
-<h4 id="全加器"><a class="markdownIt-Anchor" href="#全加器"></a> 全加器</h4>
-<p>一位全加器需要接收两个操作数以及上一位的进位，输出该位的结果与下一位的进位。在设计过程中，如果需要使用减法，则将1与第二个操作数异或，然后进行加法操作。</p>
-<h4 id="多位串行加法器"><a class="markdownIt-Anchor" href="#多位串行加法器"></a> 多位串行加法器</h4>
-<p>将多个全加器串行在一起，上一位的进位传送到下一位的全加器中，多位串行全加器只能一位一位进行加法。</p>
-<p>注意如果需要同时实现加法与减法，则增加一个输入标识计算是加法还是减法，0为加法，1为减法。如果需要计算减法，就需要首先计算第二个操作数的相反数的补码。<font color=red>计算一个数相反数的补码的方法是：对这个数所有二进制位取反再加1。</font>因此减法标识位需要加到第一个全加器的进位中，然后让所有第二个操作数的位取反，即异或1。</p>
-<p>溢出检测方法：如果按照第一种溢出方法进行检测，将最高位输出结果与两个最高位输入进行检测，看是否满足正正得负或者负负得正的情况。如果按照第二种溢出方法检测则更加简单，只需要对最高位全加器的进位输出与次高位全加器的进位输出异或即可。</p>
-<p>缺点：串行进位，计算时间长。优化：并行计算，首先求出每一位进位的条件，然后用门电路连接输入与输出，这样能够实现仅依靠操作数输入而不需要前一位的进位就可以判断某一位是否会产生进位。</p>
-<h2 id="33-定点乘法运算"><a class="markdownIt-Anchor" href="#33-定点乘法运算"></a> 3.3 定点乘法运算</h2>
-<h3 id="331-原码一位乘法"><a class="markdownIt-Anchor" href="#331-原码一位乘法"></a> 3.3.1 原码一位乘法</h3>
-<p>二进制乘法的手工计算与十进制的乘法类似，都使用竖式计算。<br />
-缺点：</p>
-<ul>
-<li>需要多个输入的全加器
-<ul>
-<li>解决方式：基于全加器循环累加0或被乘数</li>
-</ul>
-</li>
-<li>需要长度足够的结果寄存器
-<ul>
-<li>解决方式：从部分积和乘数寄存器中获取结果</li>
-</ul>
-</li>
-<li>对应乘数的不同位，部分积的左移次数不同，且整个过程中总的移位次数较多。
-<ul>
-<li>解决方式：右移部分积</li>
-</ul>
-</li>
-</ul>
-<p>原码一位乘法流程：</p>
-<p><img src="https://img-blog.csdnimg.cn/b090c86b886e4223a9f9d0e4868df23f.png" alt="" /></p>
-<h3 id="332-补码一位乘法"><a class="markdownIt-Anchor" href="#332-补码一位乘法"></a> 3.3.2 补码一位乘法</h3>
-<p class='katex-block'><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mo stretchy="false">[</mo><mi>x</mi><mo>×</mo><mi>y</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>=</mo><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>×</mo><mn>0.</mn><msub><mi>y</mi><mn>1</mn></msub><msub><mi>y</mi><mn>2</mn></msub><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><msub><mi>y</mi><mi>n</mi></msub><mo>−</mo><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>×</mo><msub><mi>y</mi><mn>0</mn></msub><mspace linebreak="newline"></mspace><mo>=</mo><mo stretchy="false">[</mo><mi>x</mi><msub><mo stretchy="false">]</mo><mtext>补</mtext></msub><mo>×</mo><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>0</mn></mrow><mi>n</mi></munderover><mo stretchy="false">(</mo><msub><mi>y</mi><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>−</mo><msub><mi>y</mi><mi>i</mi></msub><mo stretchy="false">)</mo><msup><mn>2</mn><mrow><mo>−</mo><mi>i</mi></mrow></msup></mrow><annotation encoding="application/x-tex">[x×y]_补=[x]_补\times 0.y_1y_2...y_n-[x]_补\times y_0\\
-=[x]_补\times\sum_{i=0}^n(y_{i+1}-y_i)2^{-i}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8388800000000001em;vertical-align:-0.19444em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">0</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.36687em;vertical-align:0em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal">x</span><span class="mclose"><span class="mclose">]</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord cjk_fallback mtight">补</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:2.929066em;vertical-align:-1.277669em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6513970000000002em;"><span style="top:-1.872331em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.050005em;"><span class="pstrut" style="height:3.05em;"></span><span><span class="mop op-symbol large-op">∑</span></span></span><span style="top:-4.3000050000000005em;margin-left:0em;"><span class="pstrut" style="height:3.05em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:1.277669em;"><span></span></span></span></span></span><span class="mopen">(</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.124664em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.03588em;">y</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mclose">)</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.874664em;"><span style="top:-3.113em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mathnormal mtight">i</span></span></span></span></span></span></span></span></span></span></span></span></span></p>
-<p>由上面公式可推出运算规则：</p>
-<ul>
-<li>如果y<sub>n+1</sub>=y<sub>n</sub>，部分积加0，算数右移1位。</li>
-<li>如果y<sub>n</sub>y<sub>n+1</sub>=01，部分积加[x]<sub>补</sub>，算数右移1位。</li>
-<li>如果y<sub>n</sub>y<sub>n+1</sub>=10，部分积加[-x]<sub>补</sub>，算数右移1位。</li>
-<li>重复进行n+1步，最后一步不右移。</li>
-</ul>
-<p><font color=red>注意补码乘数在运算开始时符号位为1位，且后面要补一个0。</font></p>
-<h2 id="34-定点除法计算"><a class="markdownIt-Anchor" href="#34-定点除法计算"></a> 3.4 定点除法计算</h2>
-<h3 id="341-原码一位除法"><a class="markdownIt-Anchor" href="#341-原码一位除法"></a> 3.4.1 原码一位除法</h3>
-<h4 id="原码恢复余数除法"><a class="markdownIt-Anchor" href="#原码恢复余数除法"></a> 原码恢复余数除法</h4>
-<p>每一次需要尝试，如果不够减还需要重新加回去。<br />
-<img src="https://img-blog.csdnimg.cn/106b40cf74b9474cbf7a82e02a53d300.png" alt="" /></p>
-<h4 id="原码不恢复余数除法"><a class="markdownIt-Anchor" href="#原码不恢复余数除法"></a> 原码不恢复余数除法</h4>
-<p>当不够减时，下一次计算则是左移之后加，即加减交替。不够减或不够加商都上0，否则都上1。<br />
-<img src="https://img-blog.csdnimg.cn/f40cee7d60844426a5445105abe02082.png" alt="" /></p>
-<h2 id="35-浮点运算"><a class="markdownIt-Anchor" href="#35-浮点运算"></a> 3.5 浮点运算</h2>
-<h3 id="351-浮点加减法计算"><a class="markdownIt-Anchor" href="#351-浮点加减法计算"></a> 3.5.1 浮点加减法计算</h3>
-<h4 id="规格化浮点数"><a class="markdownIt-Anchor" href="#规格化浮点数"></a> 规格化浮点数</h4>
-<p>将一个浮点数按照指定的格式进行转换，规格化浮点数的尾数形式为00.1…或11.0…。如果是00.0…或11.1…这个形式，则需要进行左移，将尾数向左移动，每一次移动阶码-1，直到尾数为规范形式。当尾数为01或10开头时需要右移，阶码+1。</p>
-<h4 id="浮点数加减"><a class="markdownIt-Anchor" href="#浮点数加减"></a> 浮点数加减</h4>
-<ul>
-<li>对阶：求出两个数的阶码的差，然后右移阶码小的数的尾数并增加其阶码直到二者阶码相等。</li>
-<li>尾数加减</li>
-<li>结果规格化</li>
-<li>右移舍入规则：
-<ul>
-<li>0舍1入：如果右移出去的是1，则在最低位加1</li>
-<li>恒置1：只要1被移出就将最后一位置为1。</li>
-</ul>
-</li>
-<li>溢出处理：当阶码的尾数为01开头说明为尾数上溢，为10开头说明为下溢。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2251,10 +2233,10 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
 
       <ul class="sidebar-nav motion-element">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 
@@ -2273,15 +2255,15 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">151</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
         <span class="site-state-item-count">23</span>
-        <span class="site-state-item-name">categories</span></a>
+        <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
 </div>
@@ -2324,16 +2306,16 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-      <span class="post-meta-item-text">Symbols count total: </span>
-    <span title="Symbols count total">1.4m</span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.4m</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-      <span class="post-meta-item-text">Reading time total &asymp;</span>
-    <span title="Reading time total">20:37</span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21:13</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
 
         
@@ -2343,7 +2325,7 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
       <span class="post-meta-item-icon">
         <i class="fa fa-user"></i>
       </span>
-      <span class="site-uv" title="Total Visitors">
+      <span class="site-uv" title="总访客量">
         <span id="busuanzi_value_site_uv"></span>
       </span>
     </span>
@@ -2352,7 +2334,7 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
       <span class="post-meta-item-icon">
         <i class="fa fa-eye"></i>
       </span>
-      <span class="site-pv" title="Total Views">
+      <span class="site-pv" title="总访问量">
         <span id="busuanzi_value_site_pv"></span>
       </span>
     </span>
