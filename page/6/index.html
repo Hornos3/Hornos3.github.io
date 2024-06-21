@@ -150,6 +150,134 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第3章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:12:22 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:22+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-3-用户界面"><a class="markdownIt-Anchor" href="#chapter-3-用户界面"></a> Chapter 3 用户界面</h1>
+<h2 id="31-用户环境"><a class="markdownIt-Anchor" href="#31-用户环境"></a> 3.1 用户环境</h2>
+<p>用户环境指的是计算机用户工作的<font color=red>软件环境</font>，包括命令行环境、桌面环境、相关的用户使用手册。</p>
+<p><font color=red>用户环境的构造</font>指的是按照用户的要求和硬件特性，安装和配置好操作系统，为用户提供必要的操作命令或图形界面，并使其工作方式和交互方式合理高效，方便用户使用计算机完成相应的工作。</p>
+<h2 id="32-用户界面概念"><a class="markdownIt-Anchor" href="#32-用户界面概念"></a> 3.2 用户界面概念</h2>
+<p>用户界面（UI）是用户与操作系统内核进行交互和信息交换的媒介，其目的是让用户能够更加方便、高效、安全、可靠地操作计算机的软件和硬件，并完成预期的工作。用户界面通常分为<font color=red>操作界面和系统调用</font>。</p>
+<h2 id="33-操作命令"><a class="markdownIt-Anchor" href="#33-操作命令"></a> 3.3 操作命令</h2>
+<p>操作界面：用户可以通过操作界面直接或间接地控制自己的作业或获得操作系统提供的服务。操作界面包括<font color=red>操作命令、批处理命令和图形用户界面</font>三种典型形式。</p>
+<ul>
+<li>图形用户界面，GUI，包含窗口、图标、按钮等元素。</li>
+<li>操作命令，一般通过命令行完成，用户在控制台输入命令与操作系统交互。</li>
+<li>批处理与脚本程序，在控制台环境下自动处理一批命令，如执行windows批处理程序或linux shell脚本程序。</li>
+</ul>
+<p>shell是操作系统与用户交互的页面，其本身不执行命令，而仅仅是组织和管理命令，shell脚本是Shell上可执行命令序列的集合。</p>
+<p>Linux Bash有代码的自动补全功能（Tab键），Bash不区分变量类型，其中所有变量均为字符串，只有当变量中全为数字时其才为一个整数变量。</p>
+<p><font color=red>重定向与管道</font>：在Linux中，标准输入输出以文件形式存在，分别为0（标准输入）、1（标准输出）、2（标准错误）。命令的输入缺省来自于键盘（文件0），输出缺省到达控制台命令行（文件1、2）。通过重定向可以将输入输出定向到其他地方如文件中。</p>
+<ul>
+<li>&lt; 为输入重定向符号，将命令输入由键盘改为由其他文件等，相当于将文件中的内容输入到了控制台。</li>
+<li>&gt; 为输出重定向符号</li>
+<li>&gt;&gt; 符号也是输出重定向，与&gt;不同的是一个符号重定向到文件时会首先清空文件，而两个符号会在后面追加。</li>
+<li>2&gt;和2&gt;&gt;均为错误重定向，将命令的错误重定向到某个文件中。</li>
+<li>&amp;&gt;为输出与错误组合重定向，即将原来输出到文件1和2的内容均重定向到别的位置。</li>
+</ul>
+<p>管道：将一个程序的输出作为另一个程序的输入。管道操作符&quot;|&quot;。</p>
+<p>脚本（Script）通过类似程序的方式执行具有一定逻辑顺序的命令序列完成较复杂的功能和人机交互。脚本程序保存在文本文件中，是Shell命令语句的集合。脚本文件中所有命令按照顺序执行，凡是能够在shell中直接执行的命令，都可以写在脚本中，脚本中还可以使用一些shell中不能使用的命令。执行shell脚本需要可执行权限：chmod +x。<br />
+运行脚本程序的方法：</p>
+<ul>
+<li>直接运行（缺省版本的shell）</li>
+<li>使用某一个特定版本的shell运行脚本</li>
+<li>在脚本文件首行指定文件shell（<code>#!/bin/bash</code>）</li>
+</ul>
+<p>脚本文件中支持变量定义、流程控制、函数、调试方法。</p>
+<h2 id="34-系统调用"><a class="markdownIt-Anchor" href="#34-系统调用"></a> 3.4 系统调用</h2>
+<p>系统调用是操作系统内核为应用程序提供的服务，是应用程序与操作系统之间的接口。</p>
+<p>系统调用一般涉及核心资源或硬件的操作，运行于核态，在调用时产生中断，这种中断是自愿中断、软件中断、内部中断。</p>
+<p>系统调用的形式：通过访管指令SVC N，N即为系统调用编号，调用过程发生中断。执行该指令后CPU首先保护现场，然后由中断服务程序查找N号系统调用的入口地址，接着去执行这个系统调用，执行完之后恢复现场。在DOS系统中使用INT 21H进行系统调用（AH寄存器存放系统调用号，这里的INT指令就相当于SVC指令），Linux中为INT 80H（EAX存放系统调用号）。</p>
+<p>Linux系统调用的工作原理：</p>
+<ul>
+<li>应用程序使用隐式方式调用系统调用，这个系统调用将被编译器编译为含有INT 80H的代码。</li>
+<li>在内核system_call函数部分查找系统调用的入口地址。</li>
+<li>具体实现系统调用。</li>
+</ul>
+<p>系统调用处理函数指针表sys_call_table[]。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2038,154 +2166,6 @@ CPU的主要功能：程序控制、操作控制、时序控制、异常控制�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第5章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 00:01:40 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:40+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="51-指令系统概述"><a class="markdownIt-Anchor" href="#51-指令系统概述"></a> 5.1 指令系统概述</h2>
-<p>指令是用户使用计算机与计算机本身运行的基本功能单位。指令是计算机能够直接识别、执行的操作命令，是冯诺依曼结构计算机程序控制原理实现的载体。</p>
-<p>指令系统是一台计算机中所有机器指令的集合。</p>
-<h2 id="52-指令格式"><a class="markdownIt-Anchor" href="#52-指令格式"></a> 5.2 指令格式</h2>
-<h3 id="521-指令字长度"><a class="markdownIt-Anchor" href="#521-指令字长度"></a> 5.2.1 指令字长度</h3>
-<ul>
-<li><mark>指令字长</mark>：指令中包含的二进制位数</li>
-<li>计算机根据指令字长是否固定可以分为<mark>定长和变长指令系统</mark>
-<ul>
-<li>定长指令系统的指令长度固定，结构简单，有利于CPU取指令、译码和指令顺序寻址，但平均指令长度较长，冗余状态较多，不容易扩展。</li>
-<li>变长指令系统的指令长度可变，结构灵活，冗余状态较少，平均指令长度较短，但取指令和译码有很多不便。</li>
-</ul>
-</li>
-</ul>
-<h2 id="522-指令地址码"><a class="markdownIt-Anchor" href="#522-指令地址码"></a> 5.2.2 指令地址码</h2>
-<p>根据指令中地址码字段的个数可将指令分为：</p>
-<ul>
-<li>三地址指令——A<sub>3</sub>←(A<sub>1</sub>)OP(A<sub>2</sub>)</li>
-<li>双地址指令——A<sub>1</sub>←(A<sub>1</sub>)OP(A<sub>2</sub>)</li>
-<li>单地址指令——A<sub>1</sub>←OP(A<sub>1</sub>)，AC←(AC)OP(A<sub>1</sub>)</li>
-<li>零地址指令</li>
-</ul>
-<p>按照指令中操作数的物理位置分类可以分为：</p>
-<ul>
-<li>存储器-存储器型</li>
-<li>寄存器-寄存器型</li>
-<li>寄存器-存储器型</li>
-</ul>
-<p>根据指令的功能可以分为：</p>
-<ul>
-<li>传送指令</li>
-<li>定点算数运算指令</li>
-<li>位运算指令</li>
-<li>控制转移指令</li>
-</ul>
-<p>指令格式：操作码字段+寻址方式+地址码字段<br />
-操作码字段的位数与支持的最大指令数有关，对于定长操作码而言，最大指令数m与操作码字段长n满足n≥log<sub>2</sub>m。对于变长操作码，可以向不用的地址码字段进行扩展。寻址方式字段的位数与支持的寻址方式种类有关。地址码字段的作用及影响与位数和寻址方式有关。</p>
-<h2 id="53-寻址方式"><a class="markdownIt-Anchor" href="#53-寻址方式"></a> 5.3 寻址方式</h2>
-<p>指令的寻址方式只有顺序寻址和跳跃寻址两种。</p>
-<h3 id="531-指令寻址方式"><a class="markdownIt-Anchor" href="#531-指令寻址方式"></a> 5.3.1 指令寻址方式</h3>
-<h4 id="顺序寻址方式"><a class="markdownIt-Anchor" href="#顺序寻址方式"></a> 顺序寻址方式</h4>
-<p>程序的指令序列在主存顺序存放，执行时从第一条指令开始逐条取出并执行，这种程序的顺序执行过程被称为顺序寻址方式。<br />
-CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每一次执行一条指令PC加1并指出下一条指令的地址，直到程序结束。</p>
-<h4 id="跳跃寻址方式"><a class="markdownIt-Anchor" href="#跳跃寻址方式"></a> 跳跃寻址方式</h4>
-<p>程序出现分支或转移时会改变程序的执行顺序，此时下条指令的地址不一定通过PC+1获得。</p>
-<h3 id="532-操作数寻址方式"><a class="markdownIt-Anchor" href="#532-操作数寻址方式"></a> 5.3.2 操作数寻址方式</h3>
-<ul>
-<li>立即数寻址：地址码字段就是操作数本身。如MOV RAX, 200H中的200H。取指操作将数据和指令一并读入CPU内部的寄存器，指令执行速度快，便于程序设计，但数据大小受到字段的位数限制。</li>
-<li>寄存器寻址：操作数在CPU内部寄存器中。如MOV RAX, RBX。操作数在寄存器中，指令执行速度快，但能访问的数据大小一般与计算机字长有关，地址字段的位数与计算机通用寄存器数量相关。</li>
-<li>直接寻址：操作数在主存储器中，地址码字段给出操作数在内存中的地址。如MOV RAX, [4000H]。提供了访问主存的操作，获得数据需要访问主存，因此指令的执行速度较慢，地址字段的位数决定了访存的空间大小。</li>
-<li>间接寻址：地址码字段给出操作数主存地址的地址。即需要进行两次寻址，相当于二重指针。解决了直接寻址方式下字段的位数限制访存范围大小的问题，但需要访问主存两次，指令执行速度慢。</li>
-<li>寄存器间接寻址：地址码字段给出寄存器编号。如MOV RAX, [RBX]，需要首先访问寄存器获取寄存器的值，然后根据该值到主存中访存。其解决了直接寻址方式下地址字段的位数限制访存范围大小的问题，且获得数据只需要访问一次主存。</li>
-<li>相对寻址：将程序计数器PC中的内容加上指令中的形式地址，形成操作数的有效地址。如JMP指令。该寻址方式可节省指令中的地址位数，便于程序在内存中成块移动，注意PC的改变对计算有效地址的影响，有效地址值应该为当前指令的地址+偏移量+<mark>当前指令的长度</mark>。</li>
-<li>基址寻址：指定基址寄存器，与本指令地址无关。如MOV RAX, [RBP+10H]。使用基址寄存器可以访问更大的主存空间，对某一程序而言，<mark>基址值设定后不变</mark>，故要访问不同数据需要修改偏移量的值。</li>
-<li>变址寻址：指定一个变址寄存器，与本指令地址无关。因此首先需要根据寄存器编号找到寄存器，再将寄存器值与偏移相加获得有效地址，之后访存。如MOV RAX, [RSI+10H]。</li>
-</ul>
-<h2 id="55-指令格式设计"><a class="markdownIt-Anchor" href="#55-指令格式设计"></a> 5.5 指令格式设计</h2>
-<ul>
-<li>根据指令数量的要求及是否支持操作码扩展，确定操作码字段的位数</li>
-<li>根据对操作数的要求确定地址码字段的个数</li>
-<li>根据寻址方式的要求，为每个地址码字段确定寻址方式字段位数</li>
-<li>确定采用定长指令还是变长指令</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2255,14 +2235,14 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-count">154</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">23</span>
+        <span class="site-state-item-count">24</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -2313,7 +2293,7 @@ CPU通过设置<mark>程序计数器</mark>对指令顺序号进行计数。每�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">21:13</span>
+    <span title="站点阅读时长">21:31</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
