@@ -181,7 +181,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-03 09:56:21" itemprop="dateModified" datetime="2024-07-03T09:56:21+08:00">2024-07-03</time>
+                <time title="修改时间：2024-07-03 12:50:57" itemprop="dateModified" datetime="2024-07-03T12:50:57+08:00">2024-07-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -210,7 +210,7 @@
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>13 分钟</span>
+              <span>14 分钟</span>
             </span>
 
         </div>
@@ -222,7 +222,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>近几天，OpenSSH爆出了一个非常严重的安全漏洞，该漏洞可导致未授权的root权限任意代码执行，即 Unauthorized root RCE。该漏洞主要影响版本为 [8.5p1, 9.8p1)。下面对该漏洞进行简要分析。</p>
+          <p>近几天，OpenSSH 爆出了一个非常严重的安全漏洞，该漏洞可导致未授权的root权限任意代码执行，即 Unauthorized root RCE。部分媒体评估称，该漏洞预计将影响超过 1400 万台使用含有该漏洞的计算机设备，其中以 Linux 发行版为主。该漏洞主要影响版本为 [8.5p1, 9.8p1)，在 9.8p1 版本中 OpenSSH 将其修复，可通过 OpenSSH release notes 查看。这个漏洞的影响是毁灭性的，它可以在基于 glibc 的 Linux 系统上远程利用，获得未经授权的Root级别代码执行。更令人担忧的是，sshd以完全特权运行，且未沙箱化，这使得攻击面更加严峻。目前，针对搭载 Glibc 的 32 位 Linux 发行版的漏洞 PoC 已经发布，根据漏洞发现者披露，该漏洞在 64 位 Linux 中很可能也可以进行利用，对于 MacOS 与 Windows 也有一定的潜在风险。</p>
+<p>下面对该漏洞进行简要分析。</p>
 <p>分析使用的OpenSSH版本：9.7p1</p>
 <p>参考资料：<a target="_blank" rel="noopener" href="https://www.qualys.com/2024/07/01/cve-2024-6387/regresshion.txt">资料</a></p>
 <h1 id="1-漏洞成因"><a class="markdownIt-Anchor" href="#1-漏洞成因"></a> 1. 漏洞成因</h1>
@@ -267,7 +268,7 @@
 <p>Glibc 的内存分配主要通过 <code>_int_malloc</code> 函数实现，释放则主要通过 <code>_int_free</code> 实现。在<a href="elixir.bootlin.com">网址</a>中可以找到所有版本的 Glibc 源码，感兴趣的读者可自行查看。下面介绍与本漏洞相关的一些内存分配特性：</p>
 <p>在内存分配过程中，Glibc 首先会从 tcache、fastbin、small bin 中查找，如果没有找到合适的 chunk，则会遍历 unsorted bin 进行查找。unsorted bin 中可保存任意大小的较大的 chunk，遍历过程中，如果发现不等于分配需求的 chunk，会根据其大小将其转移到合适的 small bin/large bin 中。当 unsorted bin 遍历完毕后，如果还是没有找到合适的 chunk，则会尝试在 large bins 中寻找可用的大 chunk 并拆分之。这个拆分操作需要满足多个前提条件，这里不是重点。拆分完成后，剩余的 chunk 将会保存为 last remainder，该 chunk 将被放在 unsorted bin 的开头位置，它将在下一次遍历 unsorted bin 时优先被考虑分配。需要注意的是，<font color=red><strong>remainder chunk 是在其拆分完成后设置其 size 字段的。</strong></font>在 remainder chunk 被切分出来后，但没有设置 size 前，对 size 字段进行修改，即可实际上控制这个 chunk 的大小，可以让这个 chunk 与后面的 chunk 重叠。在 size 字段被正确修改前立即将该 chunk 分配出去，即可完成对堆内存的破坏。</p>
 <p><img src="CVE-2024-6387-%E5%88%86%E6%9E%90/2.png" alt="" /></p>
-<p>为了保证其他的内存分配操作不会破坏所需的堆内存布局，客户端可以通过多次发送公钥数据包将 <code>tcache</code> 填满，为了提升利用的成功率，在公钥文件不大于256KB的情况下，可以生成27个上图的 large-small holes 结构，其中 chunk 的大小有微小区别。</p>
+<p>为了保证其他的内存分配操作不会破坏所需的堆内存布局，客户端可以通过多次发送公钥数据包填充 <code>tcache</code>，为了提升利用的成功率，在公钥文件不大于256KB的情况下，可以生成27个上图的 large-small holes 结构。</p>
 <h1 id="3-poc"><a class="markdownIt-Anchor" href="#3-poc"></a> 3. POC</h1>
 <p>POC 来源：<a target="_blank" rel="noopener" href="https://github.com/lflare/cve-2024-6387-poc">github</a></p>
 <p>下面分析POC中的关键代码逻辑。通过下面的分析可以帮助读者彻底了解该漏洞的利用方式、</p>
@@ -307,7 +308,9 @@
 <p>从上面的结构定义来看，我们需要的 <code>__fct</code> 函数指针经过多层结构包装。为了让提前写入的指针能够完整地构建调用链，攻击者可以选择将 <code>_codecvt</code> 写成 Glibc 的 bins 的地址，这样实际就是让 Glibc 将我们释放的 chunk 的前面一小部分看做 <code>_IO_iconv_t</code> 结构，接下去如法炮制，在已经释放的 chunk 中完成精心构造，即可让代码最终执行我们伪造的 <code>__fct</code> 函数指针，完成任意代码执行。</p>
 <h1 id="4-相关挑战"><a class="markdownIt-Anchor" href="#4-相关挑战"></a> 4. 相关挑战</h1>
 <p>该漏洞的利用较为困难，这主要是因为猜测 ASLR 与时间窗口竞争叠加的结果。</p>
-<p>地址空间布局随机化（Address Space Layout Randomization）是一种常用的程序运行时保护方式，多次执行时，同一个段会映射到不同的内存地址。但 glibc 在32位下实际上只会映射到 0xb7400000 或 0xb7200000，因此实现 FSOP 还是有可能的。但是时间竞争窗口较小，导致总体成功率依然极低（实验室环境下6~8小时尝试平均10000次才能成功）。在64位强化 ASLR 中，通过猜测 glibc 加载地址进行攻击的利用方式就更加无法实现了。</p>
+<p>地址空间布局随机化（Address Space Layout Randomization）是一种常用的程序运行时保护方式，多次执行时，同一个段会映射到不同的内存地址。但 glibc 在32位下实际上只会映射到 0xb7400000 或 0xb7200000，因此实现 FSOP 还是有可能的。但是时间竞争窗口较小，导致总体成功率依然极低（实验室环境下6~8小时尝试平均10000次才能成功）。在 64 位强化 ASLR 中，通过猜测 glibc 加载地址进行攻击的利用方式就更加无法实现了，需要通过其他的方式完成漏洞利用。</p>
+<h1 id="5-总结"><a class="markdownIt-Anchor" href="#5-总结"></a> 5. 总结</h1>
+<p>CVE-2024-6387 是一个高危的未授权任意代码远程执行漏洞，虽然目前的攻击方式较为复杂，攻击成功所需时间较长，但其危害仍不容忽视。建议升级 OpenSSH 至 9.8v1 及更高版本，或通过防火墙等方式缓解风险。</p>
 
       
     </div>
