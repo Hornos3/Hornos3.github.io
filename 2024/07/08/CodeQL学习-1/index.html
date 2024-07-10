@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="最近接触了一些漏洞挖掘比赛，在大神的引导下接触了CodeQL，这个常用的代码审计工具。与其他代码审计工具不同，它自己定义了一种语言，用于获取代码审计结果，这也使得该工具具有一定的学习成本。下面，我们就来学习一下该工具的使用。 实际上，我们可以将CodeQL语言看成Java语言与SQL语言的结合。CodeQL需要获取一个工程的构建命令，并在工程构建之时构建整个工程代码的抽象语法树（AST）。这个AS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CodeQL学习 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="最近接触了一些漏洞挖掘比赛，在大神的引导下接触了CodeQL，这个常用的代码审计工具。与其他代码审计工具不同，它自己定义了一种语言，用于获取代码审计结果，这也使得该工具具有一定的学习成本。下面，我们就来学习一下该工具的使用。 实际上，我们可以将CodeQL语言看成Java语言与SQL语言的结合。CodeQL需要获取一个工程的构建命令，并在工程构建之时构建整个工程代码的抽象语法树（AST）。这个AS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/2.png">
+<meta property="article:published_time" content="2024-07-08T12:09:04.000Z">
+<meta property="article:modified_time" content="2024-07-10T12:45:09.255Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CodeQL学习 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/07/08/CodeQL%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CodeQL学习 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-07-08 20:09:04" itemprop="dateCreated datePublished" datetime="2024-07-08T20:09:04+08:00">2024-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-07-10 20:45:09" itemprop="dateModified" datetime="2024-07-10T20:45:09+08:00">2024-07-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>最近接触了一些漏洞挖掘比赛，在大神的引导下接触了CodeQL，这个常用的代码审计工具。与其他代码审计工具不同，它自己定义了一种语言，用于获取代码审计结果，这也使得该工具具有一定的学习成本。下面，我们就来学习一下该工具的使用。</p>
+<p>实际上，我们可以将CodeQL语言看成Java语言与SQL语言的结合。CodeQL需要获取一个工程的构建命令，并在工程构建之时构建整个工程代码的抽象语法树（AST）。这个AST可以看做一个数据库，其中包含了工程中的所有代码逻辑，而CodeQL语言则可以对数据库进行筛选与查找，以完成对代码特定部分的审计。如我们需要获取工程中使用了哪些加密算法，工程中是否存在某种特定漏洞，都可以使用CodeQL语言定义匹配模式。</p>
+<p>下面，我们就通过实例与代码结合的方式对CodeQL的语法进行学习。</p>
+<h1 id="a-环境搭建与基础操作"><a class="markdownIt-Anchor" href="#a-环境搭建与基础操作"></a> A. 环境搭建与基础操作</h1>
+<h2 id="a1-codeql环境安装"><a class="markdownIt-Anchor" href="#a1-codeql环境安装"></a> A.1 CodeQL环境安装</h2>
+<p>VSCode对CodeQL的支持较好，这里选择以VSCode为基础搭建环境。</p>
+<p>系统环境：Linux Mint</p>
+<p>我们需要下载两个东西，一个是CodeQL-cli，用于编译CodeQL规则，是闭源的。第二个是第三方仓库，其中定义了很多实用的CodeQL类，后面会用到。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">wget https://github.com/github/codeql-cli-binaries/releases/download/v2.17.6/codeql-linux64.zip</span><br><span class="line">git clone https://github.com/Semmle/ql</span><br></pre></td></tr></table></figure>
+<p>这里的第二条命令可能会执行失败，这可能是因为该仓库较大，可以尝试使用下面的命令完成clone：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git clone https://github.com/Semmle/ql --depth 1</span><br><span class="line">cd ql/</span><br><span class="line">git fetch --unshallow</span><br></pre></td></tr></table></figure>
+<p>随后，将第一个闭源的文件解压后的目录加入<code>PATH</code>中，使用<code>source</code>命令更新后，即可使用<code>codeql</code>命令。但实际上我们基本不需要在命令行中使用该命令，而是多在VSCode中完成相关配置。</p>
+<h2 id="a2-创建数据库"><a class="markdownIt-Anchor" href="#a2-创建数据库"></a> A.2 创建数据库</h2>
+<p>下面是使用<code>codeql</code>命令创建工程数据库的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codeql database create &lt;database_dir&gt; --language=&quot;&lt;lang&gt;&quot; --command=&quot;&lt;build_command&gt;&quot; --source-root=&lt;source_root&gt;</span><br></pre></td></tr></table></figure>
+<p>其中<code>database_dir</code>即为数据库的目录，<code>lang</code>为需要审计的语言，<code>build_command</code>为构建命令，<code>source_root</code>为工程的根目录。这里目录与命令中的目录最好使用绝对路径。</p>
+<h2 id="a3-vscode插件"><a class="markdownIt-Anchor" href="#a3-vscode插件"></a> A.3 VSCode插件</h2>
+<p>在VSCode插件界面中，搜索CodeQL后安装。</p>
+<p>随后打开 “首选项 &gt; 设置”，搜索CodeQL，修改 “Code QL &gt; Cli: Executable Path” 为codeql可执行文件的路径。即完成了CodeQL插件的配置。</p>
+<h1 id="b-codeql-语法"><a class="markdownIt-Anchor" href="#b-codeql-语法"></a> B. CodeQL 语法</h1>
+<h2 id="b1-基本查询"><a class="markdownIt-Anchor" href="#b1-基本查询"></a> B.1 基本查询</h2>
+<p>一个CodeQL脚本执行后，最终应该输出一个表格，其中保存有所有匹配该脚本中定义的模式的工程代码元素。</p>
+<p>首先，我们以一个demo工程作为示例。该工程中只有1个<code>main.c</code>文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="type">char</span>* names[] = &#123;</span><br><span class="line">    <span class="string">&quot;Hornos&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Colin&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Alex&quot;</span>,</span><br><span class="line">    <span class="string">&quot;Torvalds&quot;</span>,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> idx;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;idx);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, names[idx % <span class="number">4</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用上面的数据库生成命令为该工程生成一个数据库，构建命令为<code>gcc main.c -o test</code>。当最后输出Successfully created database at …时，即完成了数据库构建。</p>
+<p>随后，我们需要在指定目录下编写CodeQL脚本，否则CodeQL将无法找到实用类。对于C/C++文件，应该在第三方仓库根目录下 /cpp/ql/examples 进行编写。</p>
+<h3 id="example-01"><a class="markdownIt-Anchor" href="#example-01"></a> Example 01</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">from Include include</span><br><span class="line">select include</span><br></pre></td></tr></table></figure>
+<p>上面是一个简单的CodeQL脚本，用于获取工程中包含的所有头文件。这里的头文件是递归获取的。</p>
+<ul>
+<li><code>import cpp</code>：导入cpp，这是一个qll文件，位于/cpp/ql/examples/lib中，包含了很多实用的cpp模块。</li>
+<li><code>from Include include</code>：定义筛选对象，这里的<code>Include</code>是一个类，其中定义了与C/C++头文件有关的属性等，<code>include</code>为对象名。</li>
+<li><code>select include</code>：选择所有数据库中的<code>Include</code>对象并输出。</li>
+</ul>
+<p>编写完上面的脚本后，直接点击右上角的启动即可开始运行脚本。运行结果如下图所示。</p>
+<p><img src="1.png" alt="" /></p>
+<p>实际上，这里的输出是调用了<code>Include</code>类中的<code>toString</code>方法。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// ql/cpp/ql/lib/semmle/code/cpp/include.qll, line 19</span><br><span class="line"></span><br><span class="line">class Include extends PreprocessorDirective, @ppd_include &#123;</span><br><span class="line">  override string toString() &#123; result = &quot;#include &quot; + this.getIncludeText() &#125;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>考虑到不同语言的语法结构可能有很大不同，因此对于不同的语言，第三方仓库中定义有不同的工具类，因此需要进行某种语言的审计时，最好先对该语言定义的一些模块与类进行了解。</p>
+<h2 id="b2-条件查询"><a class="markdownIt-Anchor" href="#b2-条件查询"></a> B.2 条件查询</h2>
+<p>如果需要在查询语句中添加一些限制条件，可以在from之后，select之前添加限制条件。</p>
+<h3 id="example-02"><a class="markdownIt-Anchor" href="#example-02"></a> Example 02</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where literal.toString().length() &gt;= 4</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>在上面的脚本中，Literal为字符串字面量类，如果没有where语句，则将获取所有的字符串字面量。这里where语句限制只选择长度不小于4的字符串字面量。最终输出结果就是我们所定义的4个字符串。</p>
+<p>注意：CodeQL的字符串类属于内置数据类型，相关方法与Java基本相同，方法名都一样。CodeQL的内置数据类型有：boolean、float、int、string、date。另外单等于号既可以表示等于又可以表示赋值，放在条件判断中表示等于，其他则表示赋值。</p>
+<h2 id="b3-predicate谓词"><a class="markdownIt-Anchor" href="#b3-predicate谓词"></a> B.3 predicate谓词</h2>
+<p>当条件查询中的条件较为复杂时，可以通过使用predicate谓词将条件进行包装，这样可以提升脚本文件的模块化水平与可读性。</p>
+<p>如上面的Example 02可以改成相同语义的下面这个脚本：</p>
+<h3 id="example-03"><a class="markdownIt-Anchor" href="#example-03"></a> Example 03</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">predicate enough_string_length(Literal literal) &#123;</span><br><span class="line">    literal.toString().length() &gt;= 4</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where enough_string_length(literal)</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>predicate关键字可以看做定义返回布尔类型的函数。在函数体内部，默认以最后一条语句的结果作为返回值。</p>
+<h2 id="b4-函数定义"><a class="markdownIt-Anchor" href="#b4-函数定义"></a> B.4 函数定义</h2>
+<p>CodeQL的函数定义与Java类似，不同的是，CodeQL以内部变量result作为返回值，不使用return关键字。</p>
+<h3 id="example-04"><a class="markdownIt-Anchor" href="#example-04"></a> Example 04</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">predicate enough_string_length(Literal literal) &#123;</span><br><span class="line">    literal.toString().length() &gt;= 4</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">string long_string_upper(Literal literal) &#123;</span><br><span class="line">    result = literal.toString().toUpperCase()</span><br><span class="line">    and literal.toString().length() &gt;= 5</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where enough_string_length(literal)</span><br><span class="line">select literal, long_string_upper(literal)</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，由于CodeQL不是专用于常规代码逻辑的语言，因此CodeQL基本没有实现代码的流程控制，在关键字中不存在通用编程语言中常见的<code>while</code>、<code>for</code>等。因此在脚本中，函数实际上也是predicate谓词的一种形式。在Example 03中，定义的谓词没有result作为返回值，因此被称为<strong>无返回值谓词</strong>。而在Example 04中，定义了一个返回值为string的谓词，称为<strong>有返回值谓词</strong>。需要注意的是，有返回值谓词不一定只能返回某个值，它还能附加上一些限制条件，如这里的<code>and literal.toString().length() &gt;= 5</code>就对传入的参数进行了限制。</p>
+<p>无返回值谓词只能放在<code>where</code>关键字之后，而有返回值谓词可以放在<code>where</code>和<code>select</code>之后，均在作为返回值类型使用的同时针对内部限制条件进行筛选；如这里的长度限制就会筛选掉一个长度为4的字符串<code>Alex</code>，输出结果如下。</p>
+<p><img src="2.png" alt="" /></p>
+<p>可以看到，输出中最后一列的列名为<code>[1]</code>。如果需要修改这里，可以在<code>long_string_upper(literal)</code>后面添加<code>as ...</code>指定列名。</p>
+<h2 id="b5-类定义与类继承"><a class="markdownIt-Anchor" href="#b5-类定义与类继承"></a> B.5 类定义与类继承</h2>
+<p>CodeQL还可以定义类，类可以定义继承关系。</p>
+<p>在类中可定义同名谓词，即直接以类名作为谓词使用。</p>
+<h3 id="example-05"><a class="markdownIt-Anchor" href="#example-05"></a> Example 05</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">class EnoughLength extends Literal &#123;</span><br><span class="line">    EnoughLength() &#123;</span><br><span class="line">        this.toString().length() &gt;= 4</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where literal instanceof EnoughLength</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>上面的例子是谓词的第三种写法，即包装在类内部。对于CodeQL中的类继承关系，可以理解为：子类是满足某些条件的父类的子集，这里的“某些条件”定义在子类的构造函数中。如这里即定义了<code>Literal</code>的子类，要求字面量长度不小于4。</p>
+<p>注意：下面的写法是错误的：</p>
+<h3 id="example-06-wrong"><a class="markdownIt-Anchor" href="#example-06-wrong"></a> Example 06 (WRONG)</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">class EnoughLength extends string &#123;</span><br><span class="line">    EnoughLength() &#123;</span><br><span class="line">        this.length() &gt;= 4</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where literal.toString() instanceof EnoughLength</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>报错发生于EnoughLength构造函数中：The characteristic predicate for ‘test::EnoughLength’ does not bind ‘this’ to a value.</p>
+<p>这个报错刚出现时，我非常困惑，询问了多个GPT也没有获得满意的结果。折腾了好一阵子之后，最终还是在CodeQL官方文档中找到了答案（还是要多看文档啊）：CodeQL在处理谓词时需要确保处理对象是一个有限集，这样才能够在有限时间内完成处理。对于上面的例子，由于string字符串类型是一个无限集，其长度可以为任意长度，因此CodeQL无法处理。相同的报错也会发生在尝试继承int、double等其他基本类型中，虽然int和double实际上在计算机中表示时本质上是有限集，但在数学上是无限集，因此当做无限集看待。</p>
+<p>有一种情况例外：</p>
+<h3 id="example-07"><a class="markdownIt-Anchor" href="#example-07"></a> Example 07</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">class EnoughLength extends string &#123;</span><br><span class="line">    EnoughLength() &#123;</span><br><span class="line">        this in [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在这个示例中，<code>this</code>已经被明确为一个指定集合，子类的范围已经明确，不需要确定父类范围。这种写法是正确的。</p>
+<p>那么，如果非要针对无限集定义predicate，应该如何处理呢？答案是——注解<code>bindingset[]</code>。这是一种annotation注解，可以将谓词中的参数显式绑定到有限集，只需要添加一行代码，就可以让example 06通过编译：</p>
+<h3 id="example-08"><a class="markdownIt-Anchor" href="#example-08"></a> Example 08</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line"></span><br><span class="line">bindingset[this]</span><br><span class="line">class EnoughLength extends string &#123;</span><br><span class="line">    EnoughLength() &#123;</span><br><span class="line">        this.length() &gt;= 4</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where literal.toString() instanceof EnoughLength</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>在上例中，我们通过<code>bindingset</code>注解将类自身绑定到有限集中，这个有限集取决于使用该类的代码。如这里是<code>literal.toString()</code>，即相当于将类<code>EnoughLength</code>首先绑定到由所有<code>literal</code>调用<code>toString()</code>方法获取的有限集中。这样实际处理的就不是无限集了。</p>
+<p>需要注意的是，在文档中提到，<code>bindingset</code>可以针对多个参数使用，有两种书写形式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">bindingset[x] bindingset[y]</span><br><span class="line">bindingset[x, y]</span><br></pre></td></tr></table></figure>
+<p>对于第一种，它的含义是：只需要x和y的其中之一被绑定，则认定x与y均被绑定（两个绑定的指定相互独立）。对于一个有两个参数的谓词，如果只指定x绑定，则含义为：当x被绑定时，认为x和y都被绑定。</p>
+<p>而对于第二种，它的含义是：x与y必须都被绑定。这种书写形式多用于带返回值的谓词中。</p>
+<h3 id="example-09"><a class="markdownIt-Anchor" href="#example-09"></a> Example 09</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">bindingset[x] bindingset[y]</span><br><span class="line">predicate plusOne(int x, int y) &#123;</span><br><span class="line">  x + 1 = y</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from int x, int y</span><br><span class="line">where y = 42 and plusOne(x, y)</span><br><span class="line">select x, y</span><br></pre></td></tr></table></figure>
+<p>上例为CodeQL文档中的一个示例。这个示例是正确的。将<code>bindingset[x]</code>删除后依然正确，但删除<code>bindingset[y]</code>则错误。原因是where限制条件中只限制了y到一个有限集{42}，却没有限制x。CodeQL在这种情况下能够求出x的值（41）并输出。</p>
+<h2 id="b6-模块"><a class="markdownIt-Anchor" href="#b6-模块"></a> B.6 模块</h2>
+<p>除了类之外，CodeQL还有更加高层次的一个代码结构——模块。根据CodeQL文档，模块分为几种：</p>
+<ul>
+<li>文件模块：每个ql与qll后缀的文件都会隐式生成一个模块。
+<ul>
+<li>库模块：qll文件的模块。</li>
+<li>查询模块：ql文件的模块。</li>
+</ul>
+</li>
+<li>显式模块：使用module关键字显式声明的模块。
+<ul>
+<li>参数化模块：除了使用module显式声明外，还使用<code>&lt;&gt;</code>指定谓词参数的模块，相当于带有谓词泛型的模块。</li>
+</ul>
+</li>
+</ul>
+<h3 id="example-10"><a class="markdownIt-Anchor" href="#example-10"></a> Example 10</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import mymodule</span><br><span class="line"></span><br><span class="line">module mymodule &#123;</span><br><span class="line">    class EnoughLenLiteral extends Literal &#123;</span><br><span class="line">        EnoughLenLiteral() &#123;</span><br><span class="line">            this.toString().length() &gt;= 4</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where literal instanceof EnoughLenLiteral</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>如上例所示，在模块中，可以定义类、谓词等，需要使用模块时，需要首先进行导入，即使该模块在当前文件中定义也需要导入。</p>
+<h3 id="example-11"><a class="markdownIt-Anchor" href="#example-11"></a> Example 11</h3>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import MyModule</span><br><span class="line"></span><br><span class="line">bindingset[x]</span><br><span class="line">signature predicate mysig(int x);</span><br><span class="line"></span><br><span class="line">module MyModuleTemplate&lt;mysig/1 limit&gt;&#123;</span><br><span class="line">    predicate enough_string_length(Literal literal) &#123;</span><br><span class="line">        limit(literal.toString().length())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">bindingset[x]</span><br><span class="line">predicate morethan3(int x) &#123; x &gt; 3 &#125;</span><br><span class="line"></span><br><span class="line">module MyModule = MyModuleTemplate&lt;morethan3/1&gt;;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where MyModule::enough_string_length(literal)</span><br><span class="line">select literal</span><br></pre></td></tr></table></figure>
+<p>上例展示了带有谓词参数的模块定义与实例化。<code>MyModuleTemplate</code>是我们定义的模块泛型，包含1个泛型谓词<code>limit</code>，谓词格式为<code>mysig</code>格式。这是一个谓词signature签名，在CodeQL中，signature可用于指定谓词类型，如这里的<code>signature</code>调用即定义了一个谓词格式，它具有1个<code>int</code>类型的参数、没有返回值、且参数被绑定。在泛型模块定义时，需要指定每个泛型谓词的参数个数，即<code>mysig</code>后面的<code>/1</code>，表示该泛型谓词有1个参数。在泛型模块之内，可以直接调用模块谓词。关于<code>signature</code>关键字的使用在后面将详细说明。</p>
+<p>由于泛型模块内存在未确定的谓词，因此需要使用泛型模块前，首先需要指定泛型类型以将其实例化。这里的<code>MyModule</code>即为模块泛型<code>MyModuleTemplate</code>的实例化结果，它使用<code>morethan3</code>这个谓词作为泛型参数传递。</p>
+<h2 id="b7-模块实现"><a class="markdownIt-Anchor" href="#b7-模块实现"></a> B.7 模块实现</h2>
+<p>在CodeQL中，可以使用<code>signature</code>关键字定义一个模块签名，可以看做是一个模块接口，其他模块可以通过使用<code>implements</code>接口实现该模块。一旦要实现某个模块，必须在该模块中实现模块签名中除使用<code>default</code>修饰的所有内容，包括数据类型、类、谓词等。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import MyModule</span><br><span class="line"></span><br><span class="line">signature module MyModuleTemplate&#123;</span><br><span class="line">    predicate enough_string_length(Literal literal);</span><br><span class="line">    default string description() &#123; result = &quot;Default description&quot; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module MyModule implements MyModuleTemplate &#123;</span><br><span class="line">    predicate enough_string_length(Literal literal) &#123;</span><br><span class="line">        literal.toString().length() &gt; 3</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where MyModule::enough_string_length(literal)</span><br><span class="line">select literal, MyModule::description()</span><br></pre></td></tr></table></figure>
+<p>在上例中，我们定义了一个模块签名<code>MyModuleTemplate</code>，其中定义了一个谓词，在模块签名中的谓词不需要使用<code>signature</code>，会默认将其看做谓词签名。下面还定义了一个<code>default</code>修饰的谓词，这个谓词可以选择不实现，这样实例化模块中会直接使用该谓词。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/02/CVE-2024-6387-%E5%88%86%E6%9E%90/" rel="prev" title="CVE-2024-6387 分析">
+      <i class="fa fa-chevron-left"></i> CVE-2024-6387 分析
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text"> A. 环境搭建与基础操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a1-codeql%E7%8E%AF%E5%A2%83%E5%AE%89%E8%A3%85"><span class="nav-number">1.1.</span> <span class="nav-text"> A.1 CodeQL环境安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a2-%E5%88%9B%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">1.2.</span> <span class="nav-text"> A.2 创建数据库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a3-vscode%E6%8F%92%E4%BB%B6"><span class="nav-number">1.3.</span> <span class="nav-text"> A.3 VSCode插件</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#b-codeql-%E8%AF%AD%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text"> B. CodeQL 语法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#b1-%E5%9F%BA%E6%9C%AC%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.1.</span> <span class="nav-text"> B.1 基本查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-01"><span class="nav-number">2.1.1.</span> <span class="nav-text"> Example 01</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b2-%E6%9D%A1%E4%BB%B6%E6%9F%A5%E8%AF%A2"><span class="nav-number">2.2.</span> <span class="nav-text"> B.2 条件查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-02"><span class="nav-number">2.2.1.</span> <span class="nav-text"> Example 02</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b3-predicate%E8%B0%93%E8%AF%8D"><span class="nav-number">2.3.</span> <span class="nav-text"> B.3 predicate谓词</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-03"><span class="nav-number">2.3.1.</span> <span class="nav-text"> Example 03</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b4-%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89"><span class="nav-number">2.4.</span> <span class="nav-text"> B.4 函数定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-04"><span class="nav-number">2.4.1.</span> <span class="nav-text"> Example 04</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b5-%E7%B1%BB%E5%AE%9A%E4%B9%89%E4%B8%8E%E7%B1%BB%E7%BB%A7%E6%89%BF"><span class="nav-number">2.5.</span> <span class="nav-text"> B.5 类定义与类继承</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-05"><span class="nav-number">2.5.1.</span> <span class="nav-text"> Example 05</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-06-wrong"><span class="nav-number">2.5.2.</span> <span class="nav-text"> Example 06 (WRONG)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-07"><span class="nav-number">2.5.3.</span> <span class="nav-text"> Example 07</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-08"><span class="nav-number">2.5.4.</span> <span class="nav-text"> Example 08</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-09"><span class="nav-number">2.5.5.</span> <span class="nav-text"> Example 09</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b6-%E6%A8%A1%E5%9D%97"><span class="nav-number">2.6.</span> <span class="nav-text"> B.6 模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#example-10"><span class="nav-number">2.6.1.</span> <span class="nav-text"> Example 10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#example-11"><span class="nav-number">2.6.2.</span> <span class="nav-text"> Example 11</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b7-%E6%A8%A1%E5%9D%97%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.7.</span> <span class="nav-text"> B.7 模块实现</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">157</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.4m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">21:53</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
