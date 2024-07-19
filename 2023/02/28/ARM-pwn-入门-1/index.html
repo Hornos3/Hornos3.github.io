@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。 ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）  1. 寄">
+  <meta name="description" content="最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。 ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）  A. 寄">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ARM pwn 入门 (1)">
 <meta property="og:url" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/index.html">
 <meta property="og:site_name" content="CoLin&#39;s BLOG">
-<meta property="og:description" content="最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。 ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）  1. 寄">
+<meta property="og:description" content="最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。 ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）  A. 寄">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/1.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/2.png">
 <meta property="og:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/3.png">
 <meta property="article:published_time" content="2023-02-28T14:00:00.000Z">
-<meta property="article:modified_time" content="2023-03-01T03:30:18.087Z">
+<meta property="article:modified_time" content="2024-07-19T02:28:34.688Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hornos3.github.com/2023/02/28/ARM-pwn-%E5%85%A5%E9%97%A8-1/1.png">
@@ -189,7 +189,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-01 11:30:18" itemprop="dateModified" datetime="2023-03-01T11:30:18+08:00">2023-03-01</time>
+                <time title="修改时间：2024-07-19 10:28:34" itemprop="dateModified" datetime="2024-07-19T10:28:34+08:00">2024-07-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -239,7 +239,7 @@
       
         <p>最近笔者刚刚加入了一个项目组，需要用到ARM架构的东西，和ARM pwn也有一定关系，因此一不做二不休，决定开始学习ARM pwn，顺便熟悉项目前置知识，一举两得。</p>
 <p>ARM与x86分属不同架构，指令集不同，需要从头开始学习，本文从寄存器、指令方面对x86-64和ARM架构下的汇编语言做比较与学习。（配图选自清华大学出版社《ARM Cortex-M3与Cortex-M4权威指南》，侵删）</p>
-<h2 id="1-寄存器"><a class="markdownIt-Anchor" href="#1-寄存器"></a> 1. 寄存器</h2>
+<h1 id="a-寄存器"><a class="markdownIt-Anchor" href="#a-寄存器"></a> A. 寄存器</h1>
 <p>寄存器是汇编语言的核心，在x86-64系统中，最为常见的寄存器有以下这些：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">64位：</span><br><span class="line">rax, rbx, rcx, rdx</span><br><span class="line">rsi, rdi, rsp, rbp, rip</span><br><span class="line">r8, r9, r10, r11, r12, r13, r14, r15</span><br><span class="line">32位：</span><br><span class="line">eax, ebx, ecx, edx</span><br><span class="line">esi, edi, esp, ebp, eip</span><br><span class="line">r8d, r9d, r10d, r11d, r12d, r13d, r14d, r15d</span><br></pre></td></tr></table></figure>
 <p>在大多数程序中，这17个寄存器是最为常用的寄存器，其中<code>rax, rbx, rcx, rdx, rsi, rdi, rsp, rbp, rip</code>有专门的作用，但其中的<code>rax, rbx, rcx, rdx, rsi, rdi</code>功能相对更加灵活，不像<code>rsp</code>只能用于表示栈顶地址，<code>rbp</code>只能用于表示栈帧地址，<code>rip</code>只能用于表示当前指令地址等。另外的8个寄存器则是通用寄存器，想用来干嘛就干嘛。</p>
@@ -265,9 +265,9 @@
 <p><img src="3.png" alt="" /><br />
 其中具体的细节阐述较为繁琐，不是本文的重点，略过。</p>
 <p>另外，在x86-64架构和ARM架构中都有很多的浮点数寄存器，用于进行浮点数计算。在ARM架构中，浮点数寄存器有32个32位寄存器<code>S0~S31</code>，其中可以两两组合访问为<code>D0~D15</code>，如<code>S0</code>和<code>S1</code>组合为<code>D0</code>。</p>
-<h1 id="2-指令集"><a class="markdownIt-Anchor" href="#2-指令集"></a> 2. 指令集</h1>
+<h1 id="b-指令集"><a class="markdownIt-Anchor" href="#b-指令集"></a> B. 指令集</h1>
 <p>ARM的指令集和x86-64有一些相似之处，但也有一些不同，需要注意的是，ARM的立即数前面需要加上#标识，如#0x12345678。下面的指令均为32位系统下的指令。</p>
-<h2 id="a-寄存器传送数据"><a class="markdownIt-Anchor" href="#a-寄存器传送数据"></a> A. 寄存器传送数据</h2>
+<h2 id="b1-寄存器传送数据"><a class="markdownIt-Anchor" href="#b1-寄存器传送数据"></a> B.1 寄存器传送数据</h2>
 <p>与x86相同，ARM使用<code>MOV</code>系列指令进行寄存器与寄存器（立即数）之间的数据传送：</p>
 <ul>
 <li><strong><code>MOV/MOVS reg1, &lt;reg2/imm8&gt;</code></strong>：赋值<code>reg1</code>为<code>reg2/imm8</code></li>
@@ -278,7 +278,7 @@
 </ul>
 <p>备注：<br />
 ① 这里的指令并不是一条真正的指令，而是一条伪指令。ARM汇编器会将字符数据汇总组成一个称为 <strong>“文字池”</strong> 的数据块，与x86-64不同，后者如果需要实现将立即数赋值到寄存器，会直接将立即数写死到指令中。这里的<code>LDR</code>指令实际是做了寻址操作，将文字池地址中的数据赋值到寄存器中。如果需要将32位立即数赋值到32位寄存器，可以使用这条指令，也可以将<code>MOVW</code>和<code>MOVT</code>指令配合使用分别赋值前16位和后16位。</p>
-<h2 id="b-存储器传送数据"><a class="markdownIt-Anchor" href="#b-存储器传送数据"></a> B. 存储器传送数据</h2>
+<h2 id="b2-存储器传送数据"><a class="markdownIt-Anchor" href="#b2-存储器传送数据"></a> B.2 存储器传送数据</h2>
 <p>不同于x86使用mov指令可实现寄存器、立即数和内存空间的数据交换，ARM使用单独的指令集进行寄存器和内存空间的数据交换，其中基址可以选择任意一个通用寄存器或PC寄存器，变址也可以使用任意一个通用寄存器，较x86更加灵活：</p>
 <ul>
 <li><strong><code>LDRB/LDRH/LDR reg1, [&lt;reg2/PC&gt;, &lt;imm32&gt;]&lt;!&gt;</code></strong>：赋值8/16/32位<code>reg2+imm32</code>地址的数据到<code>reg1</code>，如果指令后面有叹号，表示指令执行后<code>reg2</code>值更新为<code>reg2+imm32</code>，有叹号可等同于 <strong><code>LDRB/LDRH/LDR reg1, [&lt;reg2&gt;], &lt;imm32&gt;</code></strong>，这种形式称为<strong>后序指令</strong>。</li>
@@ -293,13 +293,13 @@
 <li><strong><code>STMIA/STMDB reg1&lt;!&gt;, &lt;reg-list&gt;</code></strong>：向<code>reg1</code>地址存入寄存器组中的多个字。如果<code>reg1</code>后有叹号，则在保存值后自动增加（<code>STMIA</code>）或减少（<code>STMDB</code>）<code>reg1</code>。</li>
 </ul>
 <p>注意：后序指令不能使用PC寻址。</p>
-<h2 id="c-入栈出栈"><a class="markdownIt-Anchor" href="#c-入栈出栈"></a> C. 入栈出栈</h2>
+<h2 id="b3-入栈出栈"><a class="markdownIt-Anchor" href="#b3-入栈出栈"></a> B.3 入栈出栈</h2>
 <p>虽然ARM与x86都使用push和pop指令进行入栈和出栈，但ARM可以实现一条指令多次出入栈。</p>
 <ul>
 <li><strong><code>PUSH &lt;reg-list&gt;</code></strong>：将寄存器组中的寄存器值依次入栈，<code>reg-list</code>中可以有PC、LR寄存器。</li>
 <li><strong><code>POP &lt;reg-list&gt;</code></strong>：将出栈的值依次存入寄存器组中的寄存器，<code>reg-list</code>中可以有PC、LR寄存器。</li>
 </ul>
-<h2 id="d-算术运算"><a class="markdownIt-Anchor" href="#d-算术运算"></a> D. 算术运算</h2>
+<h2 id="b4-算术运算"><a class="markdownIt-Anchor" href="#b4-算术运算"></a> B.4 算术运算</h2>
 <p>不同于x86指令的大多数算术运算使用两个寄存器，ARM指令的算数运算指令通常包含3个寄存器，实现运算后的自由赋值而不是x86中必须赋值给目标寄存器且目标寄存器必须参与运算。</p>
 <ul>
 <li><strong><code>ADD/SUB reg1, &lt;reg2&gt;, &lt;reg3/imm32&gt;</code></strong>：计算<code>&lt;reg2&gt;(+/-)&lt;reg3/imm32&gt;</code>将结果保存到<code>reg3</code></li>
@@ -312,24 +312,24 @@
 <li><strong><code>MLA reg1, &lt;reg2&gt;, reg3, &lt;reg4-32&gt;</code></strong>：计算<code>reg1=&lt;reg2&gt;*reg3+&lt;reg4-32&gt;</code></li>
 <li><strong><code>MLS reg1, &lt;reg2&gt;, reg3, &lt;reg4-32&gt;</code></strong>：计算<code>reg1=-&lt;reg2&gt;*reg3+&lt;reg4-32&gt;</code></li>
 </ul>
-<h2 id="e-逻辑运算"><a class="markdownIt-Anchor" href="#e-逻辑运算"></a> E. 逻辑运算</h2>
+<h2 id="b5-逻辑运算"><a class="markdownIt-Anchor" href="#b5-逻辑运算"></a> B.5 逻辑运算</h2>
 <p>ARM支持x86格式的逻辑运算以及3运算符的逻辑运算。</p>
 <ul>
 <li><strong><code>AND/ORR/BIC/EOR reg1, &lt;reg2&gt;&#123;, &lt;reg3/imm32&gt;&#125;</code></strong>：如果<code>reg3/imm</code>存在，则表示<code>reg1=&lt;reg2&gt;(&amp;/|/&amp;~/^)&lt;reg3/imm32&gt;</code>，否则表示<code>reg1=reg1(&amp;/|/&amp;~/^)&lt;reg2&gt;</code>（与/或/与非/异或）</li>
 <li><strong><code>ORN reg1, &lt;reg2&gt;, &lt;reg3/imm32&gt;</code></strong>：表示<code>reg1=&lt;reg2&gt;|~&lt;reg3/imm32&gt;</code>（或非）</li>
 </ul>
-<h2 id="f-移位运算"><a class="markdownIt-Anchor" href="#f-移位运算"></a> F. 移位运算</h2>
+<h2 id="b6-移位运算"><a class="markdownIt-Anchor" href="#b6-移位运算"></a> B.6 移位运算</h2>
 <ul>
 <li><strong><code>ASR/LSL/LSR reg1, &lt;reg2&gt;&#123;, &lt;reg3/imm32&gt;&#125;</code></strong>：如果<code>reg3/imm</code>存在，则表示<code>reg1=&lt;reg2&gt;(&gt;&gt;/&lt;&lt;)&lt;reg3/imm32&gt;</code>，否则表示<code>reg1=reg1(&gt;&gt;/&lt;&lt;)&lt;reg2&gt;</code>（算数右移、逻辑左移、逻辑右移）</li>
 <li><strong><code>ROR reg1, &lt;reg2&gt;&#123;, reg3&#125;</code></strong>：如果<code>reg3</code>存在，则表示<code>reg1=&lt;reg2&gt;(&gt;&gt;)reg3</code>，否则表示<code>reg1=reg1(&gt;&gt;)&lt;reg2&gt;</code>（循环右移）</li>
 </ul>
-<h2 id="g-符号扩展"><a class="markdownIt-Anchor" href="#g-符号扩展"></a> G. 符号扩展</h2>
+<h2 id="b7-符号扩展"><a class="markdownIt-Anchor" href="#b7-符号扩展"></a> B.7 符号扩展</h2>
 <p>对应于x86中的movsx和movzx指令。</p>
 <ul>
 <li><strong><code>SXTB/SXTH reg1, &lt;reg2&gt;&#123;, ROR &lt;imm&gt;&#125;</code></strong>：右移<code>&lt;imm&gt;</code>位后有符号扩展<code>&lt;reg2&gt;</code>的低8/16位并赋值给<code>reg1</code></li>
 <li><strong><code>UXTB/UXTH reg1, &lt;reg2&gt;&#123;, ROR &lt;imm&gt;&#125;</code></strong>：右移<code>&lt;imm&gt;</code>位后无符号扩展<code>&lt;reg2&gt;</code>的低8/16位并赋值给<code>reg1</code></li>
 </ul>
-<h2 id="h-数据反转"><a class="markdownIt-Anchor" href="#h-数据反转"></a> H. 数据反转</h2>
+<h2 id="b8-数据反转"><a class="markdownIt-Anchor" href="#b8-数据反转"></a> B.8 数据反转</h2>
 <p>将寄存器中的值按字节进行反转。</p>
 <ul>
 <li><strong><code>REV reg1, reg2</code></strong>：将<code>reg2</code>中的4字节数据按字节反转后赋值给<code>reg1</code>（<code>reg2</code>值不变），原先第0，1，2，3字节的内容被换到了第3，2，1，0字节。</li>
@@ -337,7 +337,7 @@
 <li><strong><code>REVSH reg1, reg2</code></strong>：将<code>reg2</code>中的低2字节反转后有符号扩展赋值给<code>reg1</code></li>
 <li><strong><code>REVH reg1, reg2</code></strong>：<code>REV</code>指令的16位表示，只反转低2字节。</li>
 </ul>
-<h2 id="i-位域操作"><a class="markdownIt-Anchor" href="#i-位域操作"></a> I. 位域操作</h2>
+<h2 id="b9-位域操作"><a class="markdownIt-Anchor" href="#b9-位域操作"></a> B.9 位域操作</h2>
 <p>位域操作允许机器指令对寄存器中的特定位进行处理，在x86中好像是也有这样的指令，只是使用频率太低。</p>
 <ul>
 <li><strong><code>BFD reg1, #lsb, #width</code></strong>：将<code>reg1</code>中从第<code>lsb</code>位开始的连续<code>width</code>位清零。</li>
@@ -346,7 +346,7 @@
 <li><strong><code>RBIT reg1, reg2</code></strong>：反转<code>reg2</code>寄存器中的所有位并赋值给<code>reg1</code>。</li>
 <li><strong><code>SBFX/UBFX reg1, reg2, #lsb, #width</code></strong>：取<code>reg2</code>中从第<code>lsb</code>位开始的连续<code>width</code>位并有/无符号扩展，赋值给<code>reg1</code>。</li>
 </ul>
-<h2 id="j-比较和测试指令"><a class="markdownIt-Anchor" href="#j-比较和测试指令"></a> J. 比较和测试指令</h2>
+<h2 id="b10-比较和测试指令"><a class="markdownIt-Anchor" href="#b10-比较和测试指令"></a> B.10 比较和测试指令</h2>
 <p>与x86使用<code>cmp</code>指令和<code>test</code>指令相似，ARM也有关于比较和测试的指令，且实现原理基本相同。</p>
 <ul>
 <li><strong><code>CMP reg1, reg2/imm</code></strong>：比较两个寄存器或寄存器与立即数，更新标志位APSR。</li>
@@ -354,7 +354,7 @@
 <li><strong><code>TST reg1, reg2/imm</code></strong>：参照x86的<code>test</code>指令，相与测试，更新N（负数位）和Z（零）标志</li>
 <li><strong><code>TEQ reg1, reg2/imm</code></strong>：异或测试，更新N和Z标志</li>
 </ul>
-<h2 id="k-跳转指令"><a class="markdownIt-Anchor" href="#k-跳转指令"></a> K. 跳转指令</h2>
+<h2 id="b11-跳转指令"><a class="markdownIt-Anchor" href="#b11-跳转指令"></a> B.11 跳转指令</h2>
 <ul>
 <li><strong><code>B/B.W &lt;label&gt;</code></strong>：无条件跳转到指定位置，<code>B.W</code>跳转范围更大。</li>
 <li><strong><code>BX reg</code></strong>：寄存器跳转。</li>
@@ -456,7 +456,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text"> 1. 寄存器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-number"></span> <span class="nav-text"> 2. 指令集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a-%E5%AF%84%E5%AD%98%E5%99%A8%E4%BC%A0%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">1.</span> <span class="nav-text"> A. 寄存器传送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b-%E5%AD%98%E5%82%A8%E5%99%A8%E4%BC%A0%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">2.</span> <span class="nav-text"> B. 存储器传送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-%E5%85%A5%E6%A0%88%E5%87%BA%E6%A0%88"><span class="nav-number">3.</span> <span class="nav-text"> C. 入栈出栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d-%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97"><span class="nav-number">4.</span> <span class="nav-text"> D. 算术运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#e-%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97"><span class="nav-number">5.</span> <span class="nav-text"> E. 逻辑运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#f-%E7%A7%BB%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="nav-number">6.</span> <span class="nav-text"> F. 移位运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#g-%E7%AC%A6%E5%8F%B7%E6%89%A9%E5%B1%95"><span class="nav-number">7.</span> <span class="nav-text"> G. 符号扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#h-%E6%95%B0%E6%8D%AE%E5%8F%8D%E8%BD%AC"><span class="nav-number">8.</span> <span class="nav-text"> H. 数据反转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#i-%E4%BD%8D%E5%9F%9F%E6%93%8D%E4%BD%9C"><span class="nav-number">9.</span> <span class="nav-text"> I. 位域操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#j-%E6%AF%94%E8%BE%83%E5%92%8C%E6%B5%8B%E8%AF%95%E6%8C%87%E4%BB%A4"><span class="nav-number">10.</span> <span class="nav-text"> J. 比较和测试指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#k-%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">11.</span> <span class="nav-text"> K. 跳转指令</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-%E5%AF%84%E5%AD%98%E5%99%A8"><span class="nav-number">1.</span> <span class="nav-text"> A. 寄存器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#b-%E6%8C%87%E4%BB%A4%E9%9B%86"><span class="nav-number">2.</span> <span class="nav-text"> B. 指令集</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#b1-%E5%AF%84%E5%AD%98%E5%99%A8%E4%BC%A0%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">2.1.</span> <span class="nav-text"> B.1 寄存器传送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b2-%E5%AD%98%E5%82%A8%E5%99%A8%E4%BC%A0%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">2.2.</span> <span class="nav-text"> B.2 存储器传送数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b3-%E5%85%A5%E6%A0%88%E5%87%BA%E6%A0%88"><span class="nav-number">2.3.</span> <span class="nav-text"> B.3 入栈出栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b4-%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97"><span class="nav-number">2.4.</span> <span class="nav-text"> B.4 算术运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b5-%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97"><span class="nav-number">2.5.</span> <span class="nav-text"> B.5 逻辑运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b6-%E7%A7%BB%E4%BD%8D%E8%BF%90%E7%AE%97"><span class="nav-number">2.6.</span> <span class="nav-text"> B.6 移位运算</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b7-%E7%AC%A6%E5%8F%B7%E6%89%A9%E5%B1%95"><span class="nav-number">2.7.</span> <span class="nav-text"> B.7 符号扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b8-%E6%95%B0%E6%8D%AE%E5%8F%8D%E8%BD%AC"><span class="nav-number">2.8.</span> <span class="nav-text"> B.8 数据反转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b9-%E4%BD%8D%E5%9F%9F%E6%93%8D%E4%BD%9C"><span class="nav-number">2.9.</span> <span class="nav-text"> B.9 位域操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b10-%E6%AF%94%E8%BE%83%E5%92%8C%E6%B5%8B%E8%AF%95%E6%8C%87%E4%BB%A4"><span class="nav-number">2.10.</span> <span class="nav-text"> B.10 比较和测试指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b11-%E8%B7%B3%E8%BD%AC%E6%8C%87%E4%BB%A4"><span class="nav-number">2.11.</span> <span class="nav-text"> B.11 跳转指令</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

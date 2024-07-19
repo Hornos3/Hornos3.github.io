@@ -31,7 +31,7 @@
 <meta property="og:image" content="http://hornos3.github.com/2024/04/03/buuctf-reverse-write-ups-2/if_branch_obfuscation.png">
 <meta property="og:image" content="http://hornos3.github.com/2024/04/03/buuctf-reverse-write-ups-2/multiple_cond.png">
 <meta property="article:published_time" content="2024-04-02T16:37:11.000Z">
-<meta property="article:modified_time" content="2024-05-30T00:53:42.621Z">
+<meta property="article:modified_time" content="2024-07-19T08:13:15.168Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hornos3.github.com/2024/04/03/buuctf-reverse-write-ups-2/state_var_const_data_flow.png">
@@ -189,7 +189,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-05-30 08:53:42" itemprop="dateModified" datetime="2024-05-30T08:53:42+08:00">2024-05-30</time>
+                <time title="修改时间：2024-07-19 16:13:15" itemprop="dateModified" datetime="2024-07-19T16:13:15+08:00">2024-07-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -279,17 +279,17 @@
 <h2 id="状态变量更新"><a class="markdownIt-Anchor" href="#状态变量更新"></a> 状态变量更新</h2>
 <p>除了获取上面的常量与基本块的对应关系外，我们还需要获取状态变量的更新位置，有了这两个信息，我们就可以将控制流串联起来，才能够对控制流进行优化。</p>
 <p>在程序中，状态变量的更新可能会经历多个VarNode的中转，因此脚本中应该通过递归的方式进行更新的查找。具体而言，我们通过状态变量的MULTIEQUAL指令能够获取到所有直接复制值到状态变量的VarNode，这里笔者称为“上家”。但是上家可能并不是常数，而是寄存器值、内存值等，那么此时就还需要寻找这些值的“上家”，直到找到将常数赋值给VarNode的p-code为止。</p>
-<p><img src="./state_var_const_data_flow.png" alt="" /></p>
+<p><img src="state_var_const_data_flow.png" alt="" /></p>
 <h2 id="还原控制流"><a class="markdownIt-Anchor" href="#还原控制流"></a> 还原控制流</h2>
 <p>基于上面获取的两组信息，我们即可完成对控制流的还原。但在此之前，我们还需要搞清楚还原的具体方法。</p>
 <p>要了解如何还原，首先就需要弄清楚如何混淆。</p>
 <p>如果需要将原代码逻辑的一个基本块拆分为多个基本块，则混淆后，每个基本块都应该有一个状态变量的赋值，并需要通过直接跳转回到主分配器，之后通过状态变量的值决定下一个要执行的基本块。</p>
 <p>而如果原代码中包含if条件分支，则在处理上有几种可能性，如下图所示。将分支条件成立或不成立时的目标基本块替换为添加状态变量赋值的基本块，带有真正逻辑的基本块在随后回到主分配器后跳转。简而言之，就是要让if条件满足于不满足时状态变量的值不同。</p>
-<p><img src="./if_branch_obfuscation.png" alt="" /></p>
+<p><img src="if_branch_obfuscation.png" alt="" /></p>
 <p>通过上面的分析，我们就可以将需要处理的基本块分为2种看待。第一种是无条件跳转，即原代码逻辑没有分支；第二种是有条件跳转，即原代码逻辑有分支。</p>
 <p>对于无条件跳转，此类基本块一定带有状态变量的更新，只有这样才能在下一次到达分配器时跳转到其他的基本块。如果该基本块A中包含将状态变量赋值为a的指令，那么下一个基本块的执行条件就是状态变量为a，找到一个基本块，其判断状态变量为a时跳转到基本块B，则可判定B为A的后继。</p>
 <p>对于有条件跳转，我们需要确认条件满足时和不满足时，下一次判断状态变量的值时状态变量的值是多少。因此不能仅仅看有条件跳转的基本块A，还应该看到这个块引出的两个目标基本块Atrue和Afalse。如果引出的基本块B（Atrue或Afalse）没有对状态变量重新赋值，那么该路径使用的状态变量即为A中赋的值，否则如果重新赋值了，那么后续判断使用的可能就是这个新赋的值。当然有的时候B后面接着的基本块还有可能进行重新赋值，就比如原代码逻辑中存在<code>&quot;if&quot;-&quot;else if&quot;-&quot;else&quot;</code>的条件分支时，OLLVM可能就会将三个基本块赋3个值。对于此类代码逻辑，我们则必须递归进行处理，确定所有分支的目标基本块才能进行后续的修复操作。但经过笔者观察发现，对于此类代码逻辑，OLLVM更倾向于全部拆开，产生两个左边的执行流结构，而不会产生右边的结构。</p>
-<p><img src="./multiple_cond.png" alt="" /></p>
+<p><img src="multiple_cond.png" alt="" /></p>
 <p>综上所述，我们在还原控制流前需要保存的链接信息包含<strong>若干个二元组</strong>和<strong>若干个三元组</strong>。二元组用于保存无条件分支基本块及其后继，三元组用于保存有条件分支基本块及其两个后继。</p>
 <h2 id="程序修复"><a class="markdownIt-Anchor" href="#程序修复"></a> 程序修复</h2>
 <p>下面介绍的程序修复方案只考虑x86-64架构。</p>
@@ -336,7 +336,7 @@ Thank you.</p>
 <p>解混淆后：</p>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">0040101e 41  0f  9c  c1    SETL       R9B</span><br><span class="line">00401022 45  08  c8       OR         R8B ,R9B</span><br><span class="line">00401025 41  f6  c0  01    TEST       R8B ,0x1</span><br><span class="line">00401029 75  0c           JNZ        LAB_00401037</span><br><span class="line">0040102b 66  e9  86  02    JMP        LAB_004012b5</span><br><span class="line">0040102f ff              ??         FFh</span><br><span class="line">00401030 ff              ??         FFh</span><br><span class="line">00401031 ff              ??         FFh</span><br><span class="line">00401032 e9  ac  02       JMP        LAB_004012e3</span><br><span class="line">         00  00</span><br></pre></td></tr></table></figure>
 <p>由于<code>jnz</code>条件已知，因此只需要将其修改为<code>nop</code>（条件不满足）或<code>jmp</code>（条件满足）即可。</p>
-<p>最终的脚本：<a href="OllvmSolver.java">脚本</a></p>
+<p>最终的脚本：<a href="OllvmSolver.java">脚本链接</a></p>
 
     </div>
 
