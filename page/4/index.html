@@ -150,6 +150,520 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC10%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC10%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第10章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:45:15 / 修改时间：09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:45:15+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>15k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>13 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-10-漏洞利用"><a class="markdownIt-Anchor" href="#chapter-10-漏洞利用"></a> Chapter 10 漏洞利用</h1>
+<h2 id="100-概念"><a class="markdownIt-Anchor" href="#100-概念"></a> 10.0 概念</h2>
+<h3 id="安全事件与软件漏洞"><a class="markdownIt-Anchor" href="#安全事件与软件漏洞"></a> 安全事件与软件漏洞</h3>
+<ul>
+<li>安全事件：攻击者在给定时间段内，利用漏洞或其他攻击手段在攻击对象中注入并触发恶意代码，产生拒绝服务、信息泄露、信息窃取、目标控制等后果的过程。</li>
+<li>漏洞：系统设计、实现或操作管理中存在的缺陷或弱点，能被利用而违背系统的安全策略。</li>
+</ul>
+<h3 id="漏洞分类与标准"><a class="markdownIt-Anchor" href="#漏洞分类与标准"></a> 漏洞分类与标准</h3>
+<p>按照漏洞威胁可分为：</p>
+<ul>
+<li>提权漏洞</li>
+<li>获权漏洞</li>
+<li>拒绝服务漏洞</li>
+<li>恶意软件植入漏洞</li>
+<li>数据丢失或泄露漏洞</li>
+</ul>
+<p>按照漏洞成因可分为：</p>
+<ul>
+<li>输入验证漏洞</li>
+<li>访问验证漏洞</li>
+<li>竞态漏洞（竞争条件漏洞）</li>
+<li>意外情况处理漏洞</li>
+<li>设计漏洞</li>
+<li>配置漏洞</li>
+<li>环境漏洞</li>
+</ul>
+<p>按照漏洞的严重性可分为：</p>
+<ul>
+<li>A 类漏洞（高）：威胁性最大的漏洞，往往由较差的系统管理或错误设置造成。</li>
+<li>B 类漏洞（中）：较为严重的漏洞，例如允许本地用户获得增加的和未授权的访问。</li>
+<li>C 类漏洞（低）：严重性不是很大的漏洞，例如允许拒绝服务的漏洞。</li>
+</ul>
+<p>按照攻击被利用的方式可分为：</p>
+<ul>
+<li>本地攻击漏洞</li>
+<li>远程主动攻击漏洞</li>
+<li>远程被动攻击漏洞</li>
+</ul>
+<p>重要网站：</p>
+<ul>
+<li>CVE：漏洞暴露平台</li>
+<li>CNVD：国家互联网应急中心</li>
+<li>CNNVD：国家信息安全测评中心</li>
+</ul>
+<h3 id="漏洞利用对系统的威胁"><a class="markdownIt-Anchor" href="#漏洞利用对系统的威胁"></a> 漏洞利用对系统的威胁</h3>
+<ul>
+<li>非法获取访问权限（获权）
+<ul>
+<li>未经授权使用资源，如打印、读取、写、执行文件等</li>
+</ul>
+</li>
+<li>权限提升（提权）
+<ul>
+<li>用户账号由低权限提升到高权限</li>
+</ul>
+</li>
+<li>拒绝服务
+<ul>
+<li>使计算机软件或系统无法正常工作、无法提供正常服务</li>
+<li>本地拒绝服务：运行在本地的程序无法正常工作；远程拒绝服务：发送特定网络数据报文使提供服务的程序异常或退出</li>
+</ul>
+</li>
+<li>恶意软件植入
+<ul>
+<li>主动植入：利用正常功能或漏洞将恶意代码植入到目标之中，无需用户干预</li>
+<li>被动植入：将恶意代码植入时需要用户配合操作（木马、病毒等）</li>
+</ul>
+</li>
+<li>数据丢失或泄露
+<ul>
+<li>由于对文件访问权限设置错误导致数据被非法读取。如读取密码</li>
+<li>没有充分验证用户输入导致数据被非法读取。如Web相关漏洞</li>
+<li>系统漏洞，如DNS域传送漏洞</li>
+</ul>
+</li>
+</ul>
+<h3 id="漏洞产生原因"><a class="markdownIt-Anchor" href="#漏洞产生原因"></a> 漏洞产生原因</h3>
+<p>逻辑错误、缺陷、社工、策略失误等，可以分为技术因素和非技术因素（大多为人为因素）</p>
+<ul>
+<li>技术错误：即上文提到的按漏洞成因分类的7种</li>
+<li>非技术错误：缺乏规范导致维护困难、缺乏测试与维护、开发团队不稳定、缺乏进度控制等</li>
+</ul>
+<h3 id="漏洞利用方式"><a class="markdownIt-Anchor" href="#漏洞利用方式"></a> 漏洞利用方式</h3>
+<ul>
+<li>本地攻击模式：攻击者进入目标系统具有一定权限后进行的攻击。如内网渗透等</li>
+<li>远程主动攻击模式：攻击者以网络连接发现目标漏洞后进行攻击</li>
+<li>远程被动攻击模式：攻击者向目标发送网页、文档等点击后触发漏洞</li>
+</ul>
+<h3 id="font-colorblue软件漏洞生命周期font"><a class="markdownIt-Anchor" href="#font-colorblue软件漏洞生命周期font"></a> <font color=blue>软件漏洞生命周期</font></h3>
+<ul>
+<li>漏洞挖掘</li>
+<li>漏洞重现</li>
+<li>漏洞诊断</li>
+<li>漏洞修复</li>
+<li>补丁测试</li>
+<li>补丁推送</li>
+</ul>
+<p>（攻击者在其中任何一个时候都能够对系统造成损失）</p>
+<h3 id="典型软件漏洞"><a class="markdownIt-Anchor" href="#典型软件漏洞"></a> 典型软件漏洞</h3>
+<ul>
+<li>缓冲区溢出：在下面会具体说明</li>
+<li>注入攻击：如SQL注入、系统命令注入、脚本注入等，多为对用户的输入检查不严格导致。</li>
+<li>跨站漏洞：跨站脚本攻击（XSS），攻击者将恶意脚本代码嵌入到Web页面中，用户打开后执行其中的代码触发漏洞或获取网站权限。（被动攻击）</li>
+<li>权限漏洞：访问控制机制上存在的漏洞。如Linux Kernel Pwn即利用Linux内核模块实现用户权限到root权限的提升。</li>
+</ul>
+<h2 id="101-栈缓冲区溢出"><a class="markdownIt-Anchor" href="#101-栈缓冲区溢出"></a> 10.1 栈缓冲区溢出</h2>
+<p>一、栈</p>
+<ul>
+<li>栈是一段连续的地址空间，是一个后进先出的数据结构，由高地址向低地址增长。</li>
+<li>每一个线程都有一个自己的栈，提供一个暂时存放数据的地方。</li>
+<li>push将esp下压，pop将ebp上抬</li>
+<li>esp指向栈顶，ebp指向栈帧底部。</li>
+</ul>
+<p><font color=red>注意：栈地址空间中保存的是程序执行时使用的局部变量，在main函数或其他函数中定义的变量均保存在栈中。代码中的字符串常量（如printf(“Hello world”)）定义于rdata段，初始化的全局变量定义于data段，未初始化的全局变量定义于bss段。</font></p>
+<p><strong>栈中包含：</strong></p>
+<ul>
+<li>函数参数</li>
+<li>函数返回地址</li>
+<li>ebp的值</li>
+<li>一些通用寄存器的值</li>
+<li>当前执行的函数的局部变量</li>
+</ul>
+<p><font color=blue>函数调用过程：</font></p>
+<ol>
+<li>call指令执行之前，程序首先将函数需要的参数逐一push进栈中。（有几种不同的参数压入顺序）</li>
+<li>执行call指令跳转eip到函数开头。call指令将eip压入栈中。</li>
+<li>函数开头一般会执行指令push ebp; mov ebp, esp，保存前一个栈帧的地址。</li>
+<li>之后esp可能会根据该函数中定义的所有局部变量需要占用的空间进行自减，以保证esp和ebp之间能够有充足的空间保存局部变量。</li>
+<li>开始执行函数功能，函数调用过程结束。</li>
+</ol>
+<p><strong>函数调用类型：（32位）</strong></p>
+<ul>
+<li>__cdecl：C调用规则，在后面的参数首先进入堆栈，参数返回后<strong>调用者</strong>负责清除堆栈，因此这种调用常会产生较大的可执行程序</li>
+<li>__stdcall：标准调用，在后面的参数首先进入堆栈，<strong>被调用</strong>的函数返回前自行清理堆栈，生成的代码比cdecl小</li>
+<li>__fastcall：将函数列表前两个参数放入寄存器，其他函数压栈，后面的参数首先进入堆栈，<strong>被调用者</strong>清理堆栈</li>
+<li>Pascal：基本不用，前面的参数首先进入堆栈，不支持可变参数的函数调用</li>
+</ul>
+<p><font color=blue>函数返回过程：</font></p>
+<ol>
+<li>esp上抬到达ebp的位置，局部变量不作处理全部放弃，也不会将这段内存清零。</li>
+<li>ebp找到父函数栈帧的底部（函数调用时已经保存在ebp指向的内存空间）并上抬（pop ebp）。</li>
+<li>retn返回，返回到父函数call指令之后一条指令。</li>
+</ol>
+<p><img src="https://img-blog.csdnimg.cn/88b8159a0b974dec9837f74f697df1eb.png" alt="" /></p>
+<p>二、栈溢出</p>
+<p>特点：</p>
+<ul>
+<li>缓冲区在栈中分配</li>
+<li>拷贝的数据过长且没有进行检查</li>
+<li>覆盖了栈中的一些重要数据，如ebp、返回地址、某些关键局部变量等</li>
+</ul>
+<p>产生原因：</p>
+<ul>
+<li>C语言中有大量没有溢出保护的函数，如*scanf系列、*printf系列、gets函数、strcpy函数、strcat函数等（注：read函数理论上可以读取零字节，因此较strcpy等函数具有更高的危险性）</li>
+<li>程序员缺乏安全意识</li>
+</ul>
+<p>shellcode和payload</p>
+<ul>
+<li>shellcode是能完成一种特殊任务的自包含的二进制代码，根据不同的任务可能是发出一条系统调用或是进行高权限操作。</li>
+<li>payload：shellcode以及实现跳转到shellcode的那部分填充代码的统称。</li>
+</ul>
+<p><strong>栈溢出shellcode的NSR模式：</strong></p>
+<ul>
+<li>S——shellcode，首先写入栈的低地址处</li>
+<li>R——return address，返回地址，通常写入jmp esp的地址，在S之上</li>
+<li>N——nops，无效指令，在R之上</li>
+</ul>
+<p>注意：NSR模式构造的shellcode很可能会失败，原因多种多样。有时jmp esp后栈中的内容会被修改，导致shellcode执行失败。此时可以利用SEH进行攻击。</p>
+<p><strong>什么是SEH？</strong><br />
+结构化异常处理（StructuredExceptionHandling，SEH）是Windows操作系统处理程序错误或异常的技术。SEH是Windows操作系统的一种系统机制，与特定的程序设计语言无关。SEH的注册结构体只能作为局部变量<strong>存在于当前线程的调用栈</strong>，如果一旦结构体的地址不在当前调用栈的范围中，则在进行异常分发时，将不会进入该函数。即我们<strong>可以通过栈溢出修改SEH中函数指针的值</strong>。SEH是基于线程的一种处理机制，且依赖于栈进行存储和查找，所以被称作是基于栈帧的异常处理机制。有关于其具体实现与功能需要对windows异常处理机制有更加深入的了解，考试不做要求。</p>
+<p>fs:[0]指向SEH的初始地址，通过获取该地址以确定溢出的长度，这个长度必须确定以保证能够正确覆盖关键函数指针。将指针覆盖为类似于jmp esp指令的地址，即可执行shellcode。</p>
+<p><strong>shellcode的特点</strong>：</p>
+<ul>
+<li>长度受限（不是所有），具体问题具体分析。</li>
+<li>不能使用特定字符，如’\x00’（read函数是唯一能够接收’\x00’的函数）</li>
+<li>API函数自搜索和重定位能力</li>
+<li>一定的兼容性（很难，windows和linux的内存空间和内核排布很不一样）</li>
+</ul>
+<h3 id="练习题"><a class="markdownIt-Anchor" href="#练习题"></a> 练习题</h3>
+<p><strong>1.</strong> 分析如下代码片段，回答下列问题。（25分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">bool</span> <span class="title function_">guess</span><span class="params">()</span>&#123;</span><br><span class="line">	FILE* fd = open(<span class="string">&#x27;/etc/urandom&#x27;</span>, <span class="string">&#x27;r&#x27;</span>);</span><br><span class="line">	<span class="type">int</span> answer = <span class="number">0</span>;</span><br><span class="line">	read(fd, (<span class="type">char</span>*)(&amp;answer), <span class="number">4</span>);</span><br><span class="line">	<span class="type">char</span> buffer[<span class="number">0x10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="comment">// 此时answer是一个随机数，不可预测</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Guess a number that I&#x27;m thinking...&quot;</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;You can input something first...&quot;</span>);</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, buffer);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Now guess...&quot;</span>);</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;guess);</span><br><span class="line">	<span class="keyword">if</span>(guess == answer)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Congratulations!&quot;</span>);</span><br><span class="line">		system(<span class="string">&quot;calc.exe&quot;</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Guess incorrect, no calc!!!&quot;</span>);</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> True;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注：①本函数中先定义的随机变量在栈中的地址在后定义的随机变量之上。②数字a的ASCII码为0x30+a，大写字母的ASCII码为0x40+字母序号（A为0，B为1，…，Z为25），小写字母的ASCII码为0x60+字母序号</p>
+<p>(1) 简述该函数的执行流程，说明弹出计算器所需的条件。（4分）<br />
+(2) 本函数中存在什么漏洞？（3分）<br />
+(3) 当第一个输入为’12345678901234567890abcdefABCDEF\n’时，answer的值为_________（填16进制，2分），返回地址的值为_________（填16进制，2分），那么第二个输入为_________（3分）时可以成功弹出计算器。弹出计算器之后，这个程序很有可能会______________________(2分），原因是_______________________（2分）。<br />
+(4) 请写出改进方案，修复这个漏洞使计算器不那么容易被弹出。（7分）</p>
+<p>答案：<br />
+(1) 本程序产生了一个随机数，之后可以在buffer中写入字符串，然后输入一个数字，如果这个数字与随机数相等，则弹出计算器。弹出计算器的条件是猜的数字与随机数相等。<br />
+(2) 栈溢出漏洞<br />
+(3) 0x30393837；0x42416665；809056311；崩溃；返回地址可能无效<br />
+(4) 将<code>scanf(&quot;%s&quot;, buffer);</code>修改为<code>scanf(&quot;%16s&quot;, buffer);</code></p>
+<p><strong>2.</strong> 分析如下代码片段，回答下列问题：（30分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">void</span> (*exec)(<span class="type">const</span> <span class="type">char</span>*) = <span class="literal">NULL</span>;</span><br><span class="line">	<span class="type">void</span> (*func)(<span class="type">const</span> <span class="type">char</span>*) = system;</span><br><span class="line">	<span class="type">char</span> buffer[<span class="number">16</span>];</span><br><span class="line">	gets(buffer);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, buffer);</span><br><span class="line">	<span class="keyword">if</span>(exec != <span class="literal">NULL</span>)</span><br><span class="line">		exec(buffer);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注：①通过反汇编找到vuln函数的起始地址为0x405678。②本函数中先定义的随机变量在栈中的地址在后定义的随机变量之上。</p>
+<p>(1) 简述该函数的执行流程。（4分）<br />
+(2) 通过反汇编可以得到该函数的汇编代码，已知前几条语句如下，请填写前两空，第三空填写的数值x一定有______________。（3分）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">push ebp</span><br><span class="line">mov ___, ___</span><br><span class="line">sub esp, ___</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>(3) 当输入长度为________时，程序会______________________________，从而获得system函数在内存中的地址。（4分）<br />
+(4) 如果这个函数只被调用了一次，能否仅通过这个函数弹出计算器？_____ 。为什么？__________________________________ 。（4分）<br />
+(5) 第一次函数调用时，你输入了第(3)题长度的payload，printf函数只显示了你输入的内容，可能的原因是_____________________________。（4分）在函数下一次调用时，你应该如何获取system函数的地址？__________________________________。（4分）<br />
+(6) 通过第一次函数调用的漏洞利用，获取到system函数的地址为0x7FAD8341，在该函数第二次被调用时，能否利用漏洞弹出计算器？若能，写出一个有效的输入并简述函数执行流程；若不能，说明理由。如果system函数的地址为0x7FAD8300呢？（7分）</p>
+<p>答案：<br />
+(1) 函数首先接收任意长度的输入，然后检查exec函数指针是否为空，若不为空则执行到exec处。<br />
+(2) ebp；esp；x&gt;=24<br />
+(3) 16；在printf输出时将system函数的地址接在输入后面输出<br />
+(4) 不能；无法控制exec的值，system的地址也不知道因此无法修改返回地址<br />
+(5) system函数地址最低位为空字节；尝试输入17、18、19字节数据，直至能够输出system函数的高位地址<br />
+(6) 能。输入为calc.exe（后接12字节空格）\x41\x83\xAD\x7F；不能，会截断。</p>
+<h2 id="102-堆缓冲区溢出与格式化字符串漏洞"><a class="markdownIt-Anchor" href="#102-堆缓冲区溢出与格式化字符串漏洞"></a> 10.2 堆缓冲区溢出与格式化字符串漏洞</h2>
+<p>一、堆</p>
+<ul>
+<li>堆是存放程序中请求操作系统分配给自己的内存段，其大小不固定，可以进行动态扩大与缩小。操作系统中采用动态链表管理，其内存不一定连续。</li>
+<li>每一个<strong>进程</strong>都有一个自己的堆（区别栈是每一个<strong>线程</strong>有一个）</li>
+<li>使用malloc系列函数（malloc、calloc、realloc等）/new/mmap等函数分配堆空间；使用free/delete/unmap等函数释放堆空间。（调用的系统函数基本上相同）</li>
+</ul>
+<p><font color=red>注意：两个程序动态申请的堆空间地址完全有可能相同。要搞清楚虚拟地址和物理地址的区别，程序中直接操作的是虚拟内存地址，由操作系统从物理地址中映射而来，并非物理内存地址。但两个程序分配的堆地址的<strong>物理地址也有可能相同</strong>。两个程序可以交错使用这块内存。</font></p>
+<p><strong>结构</strong>：堆表和堆块。</p>
+<ul>
+<li>堆表：位于堆空间起始位置，用于索引堆区中所有堆块的重要信息。在windows堆管理机制中，将堆表分为两种：快表（Lookaside）和空表（FreeList）。
+<ul>
+<li>空表：共128项的数组，每个数组是一个双向链表头，除索引0的链表外每个链表中存放相同大小的堆块。其中<strong>索引为x的链表存放大小为8x的空闲堆块，因此1~127共可以存放8~1016字节的堆块。（32位）索引为0的链表存放大小大于等于1024的堆块，按照从小到大的顺序排列</strong>。在实际分配内存流程中，为防止堆空间的碎片化，会对相邻的均处于空表中的堆块进行合并与重新排列。</li>
+<li>快表：共128项的数组，采用单向链表存储，其中的堆块不合并且<strong>每一个链表最多存放4个堆块。其中索引为1~127的链表存放的堆块大小与空表相同。</strong></li>
+</ul>
+</li>
+<li>堆块：一块块分离的，碎片化的地址空间，由块首和块身构成。
+<ul>
+<li>块首：头部几个字节，用于标识自身信息（大小，使用情况等）</li>
+<li>块身：数据存储区域，紧跟块首，内存分配得到的地址<strong>指向块身的头部。<strong>在堆块被释放时，块身的前8个字节用于存放堆表中</strong>双向链表的向前指针Flink和向后指针Blink。</strong></li>
+</ul>
+</li>
+<li>HEAP区总体结构：
+<ul>
+<li>hHeap：HEAP的总体管理结构，句柄</li>
+<li>双指针区：定位分配内存、释放内存的位置，存放一些成对出现的指针</li>
+<li>用户分配内存区</li>
+</ul>
+</li>
+</ul>
+<p><strong>堆管理相关寄存器：</strong></p>
+<ul>
+<li>eax：一般代码中用作返回值</li>
+<li>ecx：一般代码中用作计数器</li>
+<li>mov [ecx], eax; mov [eax+4], ecx</li>
+</ul>
+<p><strong><font color=red>堆块关键操作：</font></strong></p>
+<ul>
+<li>申请堆块时的脱链操作：即双向链表的脱链操作，汇编指令为mov [ecx], eax; mov [eax+4], ecx</li>
+<li>释放堆块时的入链操作：根据设计思想，应首先判断前后是否能进行堆块合并，若进行合并则需要进行脱链操作，再将合并后的堆块放入指定的链表中。</li>
+</ul>
+<p>二、堆溢出</p>
+<p><strong>利用思路1：</strong></p>
+<ul>
+<li>使用mov [ecx], eax; mov [eax+4], ecx完成对任意地址的控制。</li>
+<li>使用[esi+0x4C]指向下一个空闲堆块头部结构</li>
+<li>当有不能处理的异常发生时，系统调用UnhandledExceptionFilter函数，其实就是call [0x77EC044c]，即执行0x77EC044c指向的异常处理程序。因此修改此处地址即可。</li>
+<li><strong>随着防护措施的改进，上述思路在当前windows系统中已基本不可用。</strong></li>
+</ul>
+<p><strong>利用思路2：堆喷射</strong></p>
+<ul>
+<li>向堆中注入大量数据，使数据填满特定内存地址空间，当栈溢出时可以引导EIP到堆的空间。其中填充的数据是大量重复的nop指令，如果之后eip能够指向这段nop指令，就能够一直执行到后面的shellcode。这段nop充当类似“滑梯/滑板”的作用。</li>
+<li>目前依然流行,常见于解释JavaScript的浏览器和PDF解释器</li>
+<li>申请大量内存时。堆很有可能覆盖到0x0A0A0A0A（162M）、0x0C0C0C0C（192M）、0x0D0D0D0D（208M）<br />
+传统的堆喷射使用JavaScript分配内存，根据堆喷射的思想，都是用同样一个指令覆盖一大片内存地址。在每块分配到的内存最后都附加shellcode。这个指令应相当于Nops的作用，且该指令指向的地址正好应落在覆盖的这片大的内存地址中。<br />
+指令0C0C对应汇编代码为or al, 0C，对寄存器影响最小，可以起到Nops的作用。如果将eip指向0x0C0C0C0C这个地址（产生异常时可能可以实现），就会在这片内存中不断执行下去直到shellcode为止。</li>
+<li>优点：
+<ul>
+<li>增加缓冲区溢出攻击的成功率</li>
+<li>覆盖地址可以简单使用类NOP指令覆盖</li>
+<li>可用于堆栈溢出攻击，用slidecode覆盖堆栈返回地址</li>
+</ul>
+</li>
+<li>缺点：
+<ul>
+<li>会导致被攻击进程内存占用暴增，容易被发现</li>
+<li>不能用于主动攻击，一般通过栈溢出利用或其他漏洞进行协同攻击</li>
+<li>如果目的地址被shellcode覆盖，则shellcode执行会失败，因此不能保证一定成功</li>
+</ul>
+</li>
+<li>检测与防范：
+<ul>
+<li>发现应用程序的内存大量增加，检测堆上的数据，看是否包含大量slidecode</li>
+<li>浏览器的脚本解释器开始重复申请堆的时候，监控模块记录堆的大小、内容和数量，如果重复堆请求到达阈值或者覆盖指定地址则立即阻止脚本执行。</li>
+<li>对于一些利用脚本进行攻击的情况，可以通过hook脚本引擎，分析脚本代码，根据一些堆喷射常见特征检测是否受到攻击</li>
+<li>开启DEP</li>
+</ul>
+</li>
+</ul>
+<p><strong>利用思路3：Use After Free</strong></p>
+<ul>
+<li>当一块堆空间被释放，对这段内存空间进行操作即称为UAF。</li>
+<li>由于windows内存空间中被释放的堆块的块身中存放有两个指针，通过UAF可以对这两个指针进行修改以破坏堆表的双向链表结构。</li>
+</ul>
+<p>三、格式化字符串漏洞</p>
+<ul>
+<li>适用于printf函数系列。</li>
+<li>产生原因：
+<ul>
+<li>printf的不定长参数个数，且没有进行检查。</li>
+<li>printf的%n能够对一段地址空间的值进行修改。（<strong>其功能是将前面已经打印出的字符个数赋给对应的地址</strong>）</li>
+</ul>
+</li>
+<li>通过静态扫描容易发现。</li>
+</ul>
+<h3 id="模拟题"><a class="markdownIt-Anchor" href="#模拟题"></a> 模拟题</h3>
+<p><strong>3.</strong> 分析如下代码片段，回答下列问题：（24分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">char</span> of[<span class="number">0x10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="type">char</span> buf1[<span class="number">0x100</span>] = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%p&quot;</span>, buf1);</span><br><span class="line">	<span class="type">char</span> buf2[<span class="number">0x100</span>] = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="number">0x100</span>);</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>, buf1);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, buf1);</span><br><span class="line">	gets(of);</span><br><span class="line">	<span class="built_in">free</span>(buf2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注：①本函数中先定义的随机变量在栈中的地址在后定义的随机变量之上。②执行函数发现，函数的第一个输出为0x1030000，第二个堆块紧邻第一个堆块且在第一个堆块之上。</p>
+<p>(1) 本函数存在2个漏洞，分别是____________________________（2分）。<br />
+(2) 本题能否直接在栈上写入shellcode？____ ，原因是__________________________。（4分）<br />
+(3) 本题能否直接在buf1中写入shellcode？____ ，原因是__________________________。（4分）<br />
+(4) 本题能够直接在buf2中写入shellcode，前面的地址填充无效地址？____ ，原因是___________________________。（4分）<br />
+(5) 由第(2)题和第(3)题，你认为第一个输入应该输入__________________，这样可以__________________________。之后第二个输入应为____________________________________，这样可以防止___________________，由此可以_______________________。（10分）</p>
+<p>答案：<br />
+(1) 栈溢出漏洞、堆溢出漏洞<br />
+(2) 不能，不知道jmp esp或栈的地址<br />
+(3) 不能，buf1的地址后两字节均为空字节且buf的大小只有0x100。无法将返回地址覆盖为buf1中的任何地址（地址的第二个字节一定为\x00），会导致截断<br />
+(4) 不能，这样会破坏buf2堆块的头部结构，在free时会产生错误<br />
+(5) 0x100字节的垃圾数据，通过printf获取buf2堆块的块首信息；vuln函数的起始地址；函数异常退出；再次输入并在第二次调用时在buf2中溢出shellcode【出题漏洞：第一次申请的buf2和第二次不一样，块首信息可能不同】</p>
+<h2 id="103-整数溢出与其他漏洞"><a class="markdownIt-Anchor" href="#103-整数溢出与其他漏洞"></a> 10.3 整数溢出与其他漏洞</h2>
+<p>一、整数溢出</p>
+<p>在程序计算过程中，有时会因为计算数值问题导致计算结果不正确。如计算int整型的0x12345678 × 0x87654321，这会导致溢出。有时这种溢出会导致严重的后果，如输入字符串长度时若不加检查输入负数，会导致过量读或过量写漏洞等。</p>
+<p><strong>防范方式</strong>：</p>
+<ul>
+<li>整数安全意识：形成关于特殊数据输入的意识，比如之前先确定最大和最小输入，使用合适的数据类型。</li>
+<li>避免隐患运算直接操作：尽量避免对两个正数相加或相乘之后，再取结果比较。</li>
+<li>越界判断：在使用变量申请内存，或者作为数组下标时，注意对越界的监测。</li>
+<li>代码审计、安全检测</li>
+</ul>
+<h3 id="模拟题-2"><a class="markdownIt-Anchor" href="#模拟题-2"></a> 模拟题</h3>
+<p><strong>4.</strong>  分析如下代码片段，回答下列问题：（34分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="type">char</span> buf[<span class="number">0x50</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">	<span class="type">int</span> len = <span class="number">0x50</span>;</span><br><span class="line">	<span class="type">char</span> alphabet[<span class="number">0x20</span>];</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">26</span>; i++)</span><br><span class="line">		alphabet[i] = <span class="string">&#x27;A&#x27;</span> + i;</span><br><span class="line">	read(<span class="built_in">stdin</span>, buf, len);	<span class="comment">// 最多只能读取0x50个字节</span></span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">0x50</span>; i++)</span><br><span class="line">		buf[i] &amp;= <span class="number">0xDF</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; buf[i]!=<span class="string">&#x27;\n&#x27;</span>&amp;&amp;buf[i]!=<span class="string">&#x27;\0&#x27;</span>; i++)&#123;</span><br><span class="line">		<span class="type">int</span> temp = buf[i] - <span class="number">0x40</span>;</span><br><span class="line">		temp += <span class="number">3</span>;</span><br><span class="line">		<span class="keyword">if</span>(temp &gt;= <span class="number">26</span>)</span><br><span class="line">			temp -= <span class="number">26</span>;</span><br><span class="line">		buf[i] = alphabet[temp];</span><br><span class="line">	&#125;</span><br><span class="line">	system(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(1) <code>buf[i] &amp;= 0xDF</code>的作用是____________________，这段代码实现的功能是______________________________________________________。（6分）<br />
+(2) 本题的漏洞产生的原因是_____________________________，要想执行calc.exe，首先需要解决的问题是____________________________。由于___________（填功能）的执行在___________（填功能）之前，因此可以事先______________________，这样缓冲区在读取到变量alphabet的_________（填’高地址一端’或’低地址一端’）时就能够____________________。从而将______（填一个可打印字符）成功写入system命令字符串的缓冲区buf中（参考ASCII码值：0x2B=‘+’; 0x2E=‘.’; 0x31=‘1’; 0x41=‘A’）（16分）<br />
+(3) 除了(2)的漏洞外，如果输入字符的ASCII码大于______的ASCII码，就会造成溢出，读取到alphabet高地址位置的值。如果alphabet的首地址为0x6000，那么想要让buf中存放该函数的返回地址，应该输入ASCII码为_____________________（填4个16进制数）的字符。（6分）<br />
+(4) 简述本题代码的漏洞修补方案，写出修改后的代码。（6分）</p>
+<h2 id="104-漏洞利用与发现"><a class="markdownIt-Anchor" href="#104-漏洞利用与发现"></a> 10.4 漏洞利用与发现</h2>
+<h3 id="1-漏洞利用"><a class="markdownIt-Anchor" href="#1-漏洞利用"></a> 1. 漏洞利用</h3>
+<p>漏洞研究包含漏洞挖掘、漏洞分析、漏洞利用与漏洞防御四个方面。</p>
+<p>漏洞的来源：黑客自行挖掘出来的漏洞，还未修复（被称为零日漏洞，即0-day漏洞）、从公开发布的POC或黑客交换漏洞得到（此类漏洞为0-day漏洞或1-day漏洞）、从已经发布的漏洞公告和漏洞补丁中获取的漏洞（又被称为n-day漏洞）。</p>
+<p>漏洞利用的条件：用户没有打补丁或更新安全工具、管理员没有打补丁或更新安全工具、存在脏数据渗透路径</p>
+<p><strong>Exploit的结构</strong></p>
+<ul>
+<li>Exploit：利用漏洞实现shellcode植入和触发的过程</li>
+<li>Exploit ≈ Payload + Shellcode</li>
+<li>payload是针对于特定漏洞设计的用于触发漏洞的部分，与漏洞本身紧密相关，而shellcode与漏洞本身无关，只是一段可任意执行的代码。</li>
+</ul>
+<p><strong>漏洞利用的目标：</strong></p>
+<ul>
+<li>修改内存变量 （邻接变量）</li>
+<li>修改代码逻辑（代码的任意跳转）</li>
+<li>修改函数的返回地址</li>
+<li>修改函数指针(C++)[虚函数]（虚函数用于C++函数重载）</li>
+<li>修改异常处理函数指针（SEH,VEH,UEF,TEH）</li>
+<li>修改线程同步的函数指针</li>
+</ul>
+<p><strong>漏洞利用的过程：</strong></p>
+<ul>
+<li>定位漏洞点：利用静态分析和动态调试确定漏洞机理，如堆溢出、栈溢出、整数溢出的数据结构，影响的范围</li>
+<li>按照利用要求，编写Shellcode</li>
+<li>溢出，覆盖代码指针，使得Shellcode获得可执行权</li>
+</ul>
+<h3 id="2-ret2libc-rop"><a class="markdownIt-Anchor" href="#2-ret2libc-rop"></a> 2. Ret2Libc + ROP</h3>
+<p>这是一种将返回地址修改到dll文件代码段的漏洞利用方式，可以不使用shellcode就能够执行指定功能。特点是向dll借代码而不是自己写shellcode，也可以通过这种利用方式完善payload。其中ROP返回到的地址可能不是函数的起始地址，而是函数中某一个位置的地址。</p>
+<h4 id="ret2libc-virtualprotect"><a class="markdownIt-Anchor" href="#ret2libc-virtualprotect"></a> Ret2Libc -&gt; VirtualProtect</h4>
+<p>在dll文件中有一个VirtualProtect函数可以用于关闭栈不可执行保护（NX），从而可以在栈上写入shellcode并执行。首先使用Ret2Libc将执行VirtualProtect函数，传入合适的参数。返回后转到jmp esp的地址，即可执行shellcode。</p>
+<h4 id="ret2libc的防护措施ascii-armoring"><a class="markdownIt-Anchor" href="#ret2libc的防护措施ascii-armoring"></a> Ret2Libc的防护措施：ASCII armoring</h4>
+<p>将所有库函数的起始地址都包含一个零字节，使得无法完整溢出。<br />
+恶意代码对抗措施：Ret2plt</p>
+<ul>
+<li>Linux ELF文件中大多数有一个.plt节，其中存放一系列jmp指令跳转到所有需要引用的库函数。因此可以将返回地址写到.plt节中跳转到需要的库函数中。.plt节的深入原理与Linux的间接跳转原理有关，不要求掌握。</li>
+</ul>
+<h3 id="练习题-2"><a class="markdownIt-Anchor" href="#练习题-2"></a> 练习题</h3>
+<p><strong>5.</strong> 分析如下代码片段，回答下列问题：（29分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> key[<span class="number">10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">(<span class="type">void</span>)(*func(<span class="type">void</span>)) = <span class="literal">NULL</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">vuln</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;Please input length: &quot;</span>);</span><br><span class="line">	<span class="type">char</span> buf[<span class="number">0x40</span>];</span><br><span class="line">	<span class="type">int</span> len = <span class="number">0</span>;</span><br><span class="line">	<span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;len);</span><br><span class="line">	<span class="keyword">if</span>(len &gt; <span class="number">8</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;You greedy man!&quot;</span>);</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	read(<span class="built_in">stdin</span>, buf, (<span class="type">unsigned</span> <span class="type">int</span>)len);	<span class="comment">// 读取len长度输入</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">foo1</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> a, <span class="type">unsigned</span> <span class="type">int</span> b, <span class="type">unsigned</span> <span class="type">int</span> c)</span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(a != <span class="number">0x12345678</span> || b != <span class="number">0x87654321</span> || c != <span class="number">0xdeadbeef</span>)&#123;</span><br><span class="line">		<span class="built_in">printf</span>(<span class="string">&quot;Argument error!&quot;</span>);</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">strcpy</span>(key, <span class="string">&quot;calc.exe&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">foo2</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="comment">// 下面这一部分函数的功能是：检查eax=0x12345678且ebx=0x87654321</span></span><br><span class="line">	<span class="comment">// 如果不是则调用exit函数退出程序。</span></span><br><span class="line">	__asm__(<span class="string">&quot;cmp eax, 12345678h&quot;</span></span><br><span class="line">			<span class="string">&quot;jnz ex&quot;</span></span><br><span class="line">			<span class="string">&quot;cmp ebx, 87654321h&quot;</span></span><br><span class="line">			<span class="string">&quot;jnz ex&quot;</span></span><br><span class="line">			<span class="string">&quot;jmp foo2proc&quot;</span>);</span><br><span class="line">	ex:</span><br><span class="line">		<span class="built_in">exit</span>(<span class="number">0</span>);</span><br><span class="line">	<span class="comment">/////////////////////////////////////</span></span><br><span class="line">	foo2proc:</span><br><span class="line">		func = system;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(0x1000)</span><br><span class="line">	pop eax</span><br><span class="line">	ret</span><br><span class="line">(0x1010)</span><br><span class="line">	xor ebx, eax</span><br><span class="line">	ret</span><br><span class="line">(0x1020)</span><br><span class="line">	mov ebx, 0cafebabeh</span><br><span class="line">	ret</span><br><span class="line">(0x1030)</span><br><span class="line">	add esp, 0ch</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+<p>(1) 要想在全局变量key中保存字符串’calc.exe’，需要满足的条件是________________________________________；要想在全局变量func中保存函数指针system，需要满足的条件是___________________________；（4分）<br />
+(2) 本题的栈溢出需要通过_______漏洞触发，在vuln函数输入len为_________，可以绕过检查，从而能够写入很长的字符串。输入字符串的第________（填16进制数）位能够覆盖vuln函数返回地址。（6分）<br />
+(3) 设vuln函数的返回地址在栈中保存的位置为0x100，那么如果需要在全局变量key中保存字符串’calc.exe’，需要将这个地方覆盖为_______________，这个函数的第一个参数应该写在__________________（填’0x104’或’0x108’）的位置，原因是____________________________。（6分）<br />
+(4) 如果想在全局变量func中保存函数指针system，在调用foo2函数之前需要首先使用0x1000和0x1010的两段代码碎片，这种漏洞利用方式被称为__________。（2分）<br />
+(5) 写出read函数执行时你的完整输入，格式：每行按&quot;地址：值&quot;格式书写，如&quot;0x100：0x12345678&quot;。已知函数的返回地址为0x100，foo1函数的起始地址为0x4013AB，foo2函数的起始地址为0x402880，全局变量key的地址为0x602040，func的地址为0x602050，可以写入任意字节（含零字节），提示：你需要首先计算输入的起始地址然后再开始书写。（8分）<br />
+(6) 修复这个漏洞最简单的修改方法是______________________。（3分）</p>
+<p>答案：<br />
+(1) 调用foo1函数且参数从左到右的值依次应为0x12345678、0x87654321、0xdeadbeef；调用foo2函数且调用时eax的值应为0x12345678，ebx的值应为0x87654321<br />
+(2) 整型溢出漏洞；负数；0x48~0x4b<br />
+(3) foo1函数起始地址（或foo1函数中strcpy语句的起始地址）；0x108；0x104应为foo1函数的返回地址<br />
+(4) ROP<br />
+(5)</p>
+<ul>
+<li>0xbc~0xff：垃圾数据</li>
+<li>0x100~0x103：0x1020</li>
+<li>0x104~0x107：0x1000</li>
+<li>0x108~0x10b：0x4D9BF99F（0x4D9BF99F XOR 0xcafebabe = 0x87654321）</li>
+<li>0x10b~0x10f：0x1010</li>
+<li>0x110~0x113：0x1000</li>
+<li>0x114~0x117：0x12345678</li>
+<li>0x118~0x11b：0x402880（foo2函数起始地址）</li>
+<li>0x11c~0x11f：0x4013AB（foo1函数起始地址）</li>
+<li>0x120~0x123：0x1030（思考这里将返回地址设为0x1030的作用是什么）</li>
+<li>0x124~0x127：0x12345678</li>
+<li>0x128~0x12b：0x87654321</li>
+<li>0x12c~0x12f：0xdeadbeef</li>
+<li>0x130~0x133：0x602050</li>
+<li>0x134~0x137：0xdeadbeef</li>
+<li>0x138~0x13b：0x602040</li>
+</ul>
+<p>(6) if判断条件加上对负数的判断</p>
+<p><strong>6.</strong> Ret2csu是Linux平台下一种经典的ROP利用方法，它利用了每一个linux系统中可执行文件都存在的函数__libc_csu_init函数。下面是该函数的一个片段，分析如下代码片段，回答下列问题：（20分）（注：考试中不会出64位机器的题目，这里仅做练习，必要信息都会给出）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">loc_401A50:					; 下面是每一条指令的地址</span><br><span class="line">mov     rdx, r13			; 0x401A50</span><br><span class="line">mov     rsi, r15			; 0x401A53</span><br><span class="line">mov     rdi, rbp			; 0x401A56</span><br><span class="line">call    ds:[r12+rbx*8]		; 0x401A58</span><br><span class="line">add     rbx, 1				; 0x401A5C</span><br><span class="line">cmp     r14, rbx			; 0x401A60</span><br><span class="line">jnz     short loc_401A50	; 0x401A63</span><br><span class="line">add     rsp, 8				; 0x401A65</span><br><span class="line">pop     rbx					; 0x401A69</span><br><span class="line">pop     rbp					; 0x401A6A</span><br><span class="line">pop     r12					; 0x401A6B</span><br><span class="line">pop     r13 				; 0x401A6D</span><br><span class="line">pop     r14					; 0x401A6F</span><br><span class="line">pop     r15					; 0x401A71</span><br><span class="line">retn						; 0x401A73</span><br></pre></td></tr></table></figure>
+<p>(1) 经过检查机器码发现，pop r15指令占2字节，其高1字节可表示另一条指令：pop rdi。同样pop r14指令的高1字节可表示pop rsi指令。在上述汇编代码中，将rip改为___________可以执行pop rsi，改为__________可以执行pop rdi。（4分）<br />
+(2) 这段代码中有一个比较判断，当使用call指令执行代码之后，如果不再需要call调用，应该跳过这个判断，需要满足_________________。（3分）<br />
+(3) 在64位Linux系统中，函数调用的前6个参数分别存放在rdi，rsi，rdx，rcx，r8，r9寄存器中。若要调用某函数，其前三个参数需要是0x12345678，0x87654321，0xdeadbeef，在ROP覆盖返回地址时，可以将返回地址修改为________________，可连续设置多个寄存器的值为自己设定的任意值。（3分）<br />
+(4) 设此时某关键函数foo的地址保存在0x602020处，请写出ROP的内容以执行&quot;foo(0x12345678，0x87654321，0xdeadbeef)&quot;（从返回地址开始写，返回地址保存在栈中的地址为0x100000）（10分）<br />
+格式示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0x100000: 0x1234567887654321</span><br><span class="line">0x100008: 0xdeadbeefdeadbeef</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>答案：<br />
+(1) 0x401A70；0x401A72<br />
+(2) r14==rbx+1<br />
+(3) 0x401A69<br />
+(4)</p>
+<ul>
+<li>0x100000~0x100007：0x401A69</li>
+<li>0x100008~0x10000f：0（rbx）</li>
+<li>0x100010~0x100017：0x12345678（rbp）</li>
+<li>0x100018~0x10001f：0x602020（r12）</li>
+<li>0x100020~0x100027：0xdeadbeef（r13）</li>
+<li>0x100028~0x10002f：1（r14）</li>
+<li>0x100030~0x100037：0x87654321（r15）</li>
+<li>0x100038~0x10003f：0x401A50</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC9%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1989,389 +2503,6 @@ LBA实际上就是给每一个扇区进行编号，使得通过编号能够唯�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/" class="post-title-link" itemprop="url">编译原理——第5章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 09:32:06 / 修改时间：09:44:02" itemprop="dateCreated datePublished" datetime="2023-03-03T09:32:06+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">编译原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>10k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-5-语法制导翻译技术与中间代码生成"><a class="markdownIt-Anchor" href="#chapter-5-语法制导翻译技术与中间代码生成"></a> Chapter 5 语法制导翻译技术与中间代码生成</h1>
-<h2 id="51-概述"><a class="markdownIt-Anchor" href="#51-概述"></a> 5.1 概述</h2>
-<p>对语法分析后的语法单位进行，首先编译程序审查每个语法结构的静态语义，如果静态语义正确，再生成中间代码，也有的编译程序不生成中间代码直接生成实际的目标代码。</p>
-<h2 id="52-属性文法"><a class="markdownIt-Anchor" href="#52-属性文法"></a> 5.2 属性文法</h2>
-<p>属性文法：带有属性的文法，每一个文法符号都有对应的属性值代表其实际意义。属性分为<font color=red>继承属性和综合属性</font>两种。</p>
-<p><font color=blue>非终结符可以有继承属性和综合属性，而终结符只可能有综合属性。</font></p>
-<ul>
-<li>综合属性：指自下而上的属性，即在一个文法中，左式非终结符的属性值根据右式语句中符号的属性确定。</li>
-<li>继承属性：指自上而下的属性，即在一个文法中，右式非终结符的属性值根据左式非终结符的属性决定。</li>
-</ul>
-<p>属性文法：一种<mark>上下文无关文法</mark>，除此之外还有一系列语义规则，为文法的每一个规则配备的计算属性的规则，称为语义规则，含属性计算、静态语义检查、符号表操作、代码生成等。</p>
-<p><font color=red>由上面的定义可知，文法产生式的左式非终结符的综合属性和右式非终结符的继承属性一定需要一个语义规则定义出来，否则将无法从现有规则中推导出这些语义。</font></p>
-<h2 id="53-语法制导翻译概述"><a class="markdownIt-Anchor" href="#53-语法制导翻译概述"></a> 5.3 语法制导翻译概述</h2>
-<p><font color=ff0000, size=5>相关概念</font><br />
-<font color=blue>依赖图</font>：一棵语法树中属性示例之间的信息流，它和语法树的形状相同，箭头自下而上指向。</p>
-<p><font color=blue>S-属性文法：仅含有综合属性的属性文法。</font></p>
-<p><font color=blue>L-属性文法：在产生式<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>→</mo><msub><mi>X</mi><mn>1</mn></msub><msub><mi>X</mi><mn>2</mn></msub><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><msub><mi>X</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">A\rightarrow X_1X_2...X_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>中属性可以为继承属性也可以为综合属性且右侧某符号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">X_j</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>的继承属性仅依赖于其左边<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>X</mi><mn>1</mn></msub><msub><mi>X</mi><mn>2</mn></msub><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">.</mi><msub><mi>X</mi><mrow><mi>j</mi><mo>−</mo><mn>1</mn></mrow></msub></mrow><annotation encoding="application/x-tex">X_1X_2...X_{j-1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mord">.</span><span class="mord">.</span><span class="mord">.</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">X</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.07847em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.05724em;">j</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>某些符号的属性或<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span></span></span></span>的继承属性的文法。它是S-属性文法的超集。</font></p>
-<p><font color=ff0000, size=5>文法表示方法</font><br />
-与文法符号相关的属性和规则使用大括号括起来，插入在产生式右部的任何位置，它显式给出了计算的顺序。</p>
-<p>如<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>→</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>+</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo stretchy="false">{</mo><mi>E</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>+</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">E\rightarrow E^{(1)}+E^{(2)}\{E.\operatorname{val}=E^{(1)}.\operatorname{val}+E^{(2)}.\operatorname{val}\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.138em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mopen">{</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.138em;vertical-align:-0.25em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mclose">}</span></span></span></span></p>
-<p>根据语法树进行语义分析时，只需进行先根遍历逐一计算即可。</p>
-<p><font color=ff0000, size=5>语法树遍历</font><br />
-对于继承属性，由于子节点的继承属性值由其父节点决定，直接由上而下进行计算即可。</p>
-<p>对于综合属性，由于父节点的综合属性值由其子节点决定，需要由下而上进行计算。</p>
-<p>由于S-属性文法不存在继承属性，因此直接由下而上遍历一次即可，计算同时也可以分析语法。对于L-属性文法，由于<mark>产生式右式偏后面的符号不会影响偏前面的符号的值</mark>，而由上而下规约在一个产生式中是以从左到右的顺序进行。因此<mark>每一次遍历到的符号的属性值无论是继承属性还是综合属性都可以由前面已经遍历过的符号的值决定</mark>，因此只需要由上而下进行分析即可。</p>
-<p>注意：S-属性文法的自下而上分析需要使用栈，除文法分析使用到的状态栈和文法符号栈之外还需要一个语义值栈。<font color=red>由于S-属性文法使用LL文法的分析方式进行分析，因此不能产生无限左递归，需要参考LL文法的左递归消除方式消除文法的左递归。</font></p>
-<p><mark>例：（第五章作业第1题）给定文法G[S]: S→L.L | L，L→ LB | B， B→ 0 | 1，设计一个S-属性文法将该文法描述的二进制数转换成十进制数，比如10.11翻译之后得到2.75。（提示：设计综合属性分别表示值以及二进制数的位数）</mark><br />
-解答：<br />
-原文法：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false">[</mo><mi>S</mi><mo stretchy="false">]</mo><mo>:</mo><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi>L</mi><mi mathvariant="normal">∣</mi><mi>L</mi><mspace linebreak="newline"></mspace><mi>L</mi><mo>→</mo><mi>L</mi><mi>B</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>0</mn><mi mathvariant="normal">∣</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">G[S]:  
-\\  S→L.L | L\\L→ LB | B\\B→ 0 | 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mord mathnormal">L</span><span class="mord">∣</span><span class="mord mathnormal">L</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mord">∣</span><span class="mord">1</span></span></span></span><br />
-设计非终结符的两个属性：十进制值（val）和位数（bits）<br />
-容易得到文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>→</mo><mn>0</mn><mi mathvariant="normal">∣</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">B\rightarrow 0|1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mord">∣</span><span class="mord">1</span></span></span></span>的语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi mathvariant="normal">Lex.digit</mi><mo>⁡</mo><mo separator="true">,</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">B.\operatorname{val}=\operatorname{Lex.digit},B.\operatorname{bits}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mop"><span class="mord mathrm">L</span><span class="mord mathrm">e</span><span class="mord mathrm">x</span><span class="mord mathrm">.</span><span class="mord mathrm">d</span><span class="mord mathrm">i</span><span class="mord mathrm" style="margin-right:0.01389em;">g</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>→</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">L\rightarrow B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，可得其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">L.\operatorname{val}=B.\operatorname{val},L.\operatorname{bits}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi>B</mi></mrow><annotation encoding="application/x-tex">L^{(1)}\rightarrow L^{(2)}B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，不考虑值有可能成为小数，其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>×</mo><mn>2</mn><mo>+</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">L^{(1)}.\operatorname{val}=L^{(2)}\times2+B.\operatorname{val},L.\operatorname{bits}=L^{(1)}.\operatorname{bits}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>→</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">S\rightarrow L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span>，语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow><annotation encoding="application/x-tex">S.\operatorname{val}=L.\operatorname{val},S.\operatorname{bits}=L.\operatorname{bits}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S\rightarrow L^{(1)}.L^{(2)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span>，其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>+</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S.\operatorname{val}=L^{(1)}.\operatorname{val}+L^{(2)}.\operatorname{val}\times2^{-L^{(2)}.\operatorname{bits}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1230299999999998em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0396999999999998em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9667142857142857em;"><span style="top:-2.966714285714285em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5357142857142856em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mtight">.</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">b</span><span class="mord mathrm mtight">i</span><span class="mord mathrm mtight">t</span><span class="mord mathrm mtight">s</span></span></span></span></span></span></span></span></span></span></span></span></span>，由此得到<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span></span></span>表示的十进制数。<br />
-则设计出来的S-属性文法为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false">[</mo><mi>S</mi><mo stretchy="false">]</mo><mo>:</mo><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>:</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>+</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow></msup><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><mi>L</mi><mo>:</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mspace linebreak="newline"></mspace><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi>B</mi><mo>:</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>×</mo><mn>2</mn><mo>+</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>+</mo><mn>1</mn><mspace linebreak="newline"></mspace><mi>L</mi><mo>→</mo><mi>B</mi><mo>:</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>0</mn><mo>:</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mn>0</mn><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>1</mn><mo>:</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">G[S]:  
-\\S→L^{(1)}.L^{(2)}:S.\operatorname{val}=L^{(1)}.\operatorname{val}+L^{(2)}.\operatorname{val}\times2^{-L^{(2)}.\operatorname{bits}}  
-\\S→L:S.\operatorname{val}=L.\operatorname{val},S.\operatorname{bits}=L.\operatorname{bits}  
-\\L^{(1)}→ L^{(2)}B:L^{(1)}.\operatorname{val}=L^{(2)}\times2+B.\operatorname{val},L.\operatorname{bits}=L^{(1)}.\operatorname{bits}+1  
-\\L→B:L.\operatorname{val}=B.\operatorname{val},L.\operatorname{bits}=1  
-\\B→ 0:B.\operatorname{val}=0  
-\\B→1:B.\operatorname{val}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1230299999999998em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0396999999999998em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9667142857142857em;"><span style="top:-2.966714285714285em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5357142857142856em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mtight">.</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">b</span><span class="mord mathrm mtight">i</span><span class="mord mathrm mtight">t</span><span class="mord mathrm mtight">s</span></span></span></span></span></span></span></span></span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord">1</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></p>
-<p>原文法：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false">[</mo><mi>S</mi><mo stretchy="false">]</mo><mo>:</mo><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi>L</mi><mi mathvariant="normal">∣</mi><mi>L</mi><mspace linebreak="newline"></mspace><mi>L</mi><mo>→</mo><mi>L</mi><mi>B</mi><mi mathvariant="normal">∣</mi><mi>B</mi><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>0</mn><mi mathvariant="normal">∣</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">G[S]:
-\\S→L.L | L\\L→ LB | B\\B→ 0 | 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mord mathnormal">L</span><span class="mord">∣</span><span class="mord mathnormal">L</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">L</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mord">∣</span><span class="mord">1</span></span></span></span><br />
-设计非终结符的两个属性：十进制值（val）和位数（bits）<br />
-容易得到文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mo>→</mo><mn>0</mn><mi mathvariant="normal">∣</mi><mn>1</mn></mrow><annotation encoding="application/x-tex">B\rightarrow 0|1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">0</span><span class="mord">∣</span><span class="mord">1</span></span></span></span>的语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi mathvariant="normal">Lex.digit</mi><mo>⁡</mo><mo separator="true">,</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">B.\operatorname{val}=\operatorname{Lex.digit},B.\operatorname{bits}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mop"><span class="mord mathrm">L</span><span class="mord mathrm">e</span><span class="mord mathrm">x</span><span class="mord mathrm">.</span><span class="mord mathrm">d</span><span class="mord mathrm">i</span><span class="mord mathrm" style="margin-right:0.01389em;">g</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mo>→</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">L\rightarrow B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，可得其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">L.\operatorname{val}=B.\operatorname{val},L.\operatorname{bits}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi>B</mi></mrow><annotation encoding="application/x-tex">L^{(1)}\rightarrow L^{(2)}B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，不考虑值有可能成为小数，其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>×</mo><mn>2</mn><mo>+</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">L^{(1)}.\operatorname{val}=L^{(2)}\times2+B.\operatorname{val},L.\operatorname{bits}=L^{(1)}.\operatorname{bits}+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord">1</span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>→</mo><mi>L</mi></mrow><annotation encoding="application/x-tex">S\rightarrow L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span></span></span></span>，语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow><annotation encoding="application/x-tex">S.\operatorname{val}=L.\operatorname{val},S.\operatorname{bits}=L.\operatorname{bits}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span></span></span></span><br />
-对于文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S\rightarrow L^{(1)}.L^{(2)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span>，其语义规则为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>+</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S.\operatorname{val}=L^{(1)}.\operatorname{val}+L^{(2)}.\operatorname{val}\times2^{-L^{(2)}.\operatorname{bits}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1230299999999998em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0396999999999998em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9667142857142857em;"><span style="top:-2.966714285714285em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5357142857142856em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mtight">.</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">b</span><span class="mord mathrm mtight">i</span><span class="mord mathrm mtight">t</span><span class="mord mathrm mtight">s</span></span></span></span></span></span></span></span></span></span></span></span></span>，由此得到<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi></mrow><annotation encoding="application/x-tex">S</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span></span></span></span>表示的十进制数。<br />
-则设计出来的S-属性文法为：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>G</mi><mo stretchy="false">[</mo><mi>S</mi><mo stretchy="false">]</mo><mo>:</mo><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>:</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>+</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>×</mo><msup><mn>2</mn><mrow><mo>−</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo></mrow></msup><mspace linebreak="newline"></mspace><mi>S</mi><mo>→</mo><mi>L</mi><mo>:</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>S</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mspace linebreak="newline"></mspace><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>→</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mi>B</mi><mo>:</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup><mo>×</mo><mn>2</mn><mo>+</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><msup><mi>L</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>+</mo><mn>1</mn><mspace linebreak="newline"></mspace><mi>L</mi><mo>→</mo><mi>B</mi><mo>:</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo separator="true">,</mo><mi>L</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">bits</mi><mo>⁡</mo><mo>=</mo><mn>1</mn><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>0</mn><mo>:</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mn>0</mn><mspace linebreak="newline"></mspace><mi>B</mi><mo>→</mo><mn>1</mn><mo>:</mo><mi>B</mi><mi mathvariant="normal">.</mi><mi mathvariant="normal">val</mi><mo>⁡</mo><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">G[S]:
-\\S→L^{(1)}.L^{(2)}:S.\operatorname{val}=L^{(1)}.\operatorname{val}+L^{(2)}.\operatorname{val}\times2^{-L^{(2)}.\operatorname{bits}}
-\\S→L:S.\operatorname{val}=L.\operatorname{val},S.\operatorname{bits}=L.\operatorname{bits}
-\\L^{(1)}→ L^{(2)}B:L^{(1)}.\operatorname{val}=L^{(2)}\times2+B.\operatorname{val},L.\operatorname{bits}=L^{(1)}.\operatorname{bits}+1
-\\L→B:L.\operatorname{val}=B.\operatorname{val},L.\operatorname{bits}=1
-\\B→ 0:B.\operatorname{val}=0
-\\B→1:B.\operatorname{val}=1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">G</span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mclose">]</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.1230299999999998em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">×</span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0396999999999998em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight"><span class="mord mathnormal mtight">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.9667142857142857em;"><span style="top:-2.966714285714285em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5357142857142856em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mtight">.</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mop mtight"><span class="mord mathrm mtight">b</span><span class="mord mathrm mtight">i</span><span class="mord mathrm mtight">t</span><span class="mord mathrm mtight">s</span></span></span></span></span></span></span></span></span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">2</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.9713299999999999em;vertical-align:-0.08333em;"></span><span class="mord"><span class="mord mathnormal">L</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord">+</span><span class="mord">1</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">L</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">b</span><span class="mord mathrm">i</span><span class="mord mathrm">t</span><span class="mord mathrm">s</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span></span><span class="mspace newline"></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">:</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mord">.</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm" style="margin-right:0.01389em;">v</span><span class="mord mathrm">a</span><span class="mord mathrm">l</span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></p>
-<h2 id="54-中间语言"><a class="markdownIt-Anchor" href="#54-中间语言"></a> 5.4 中间语言</h2>
-<h3 id="541-逆波兰式"><a class="markdownIt-Anchor" href="#541-逆波兰式"></a> 5.4.1 逆波兰式</h3>
-<p>逆波兰式又称为后缀式，不存在因为运算符优先级问题而产生的冲突。<br />
-逆波兰式的计算较为简单，只需要使用一个栈即可完成计算。</p>
-<h3 id="542-三元式和树形表示"><a class="markdownIt-Anchor" href="#542-三元式和树形表示"></a> 5.4.2 三元式和树形表示</h3>
-<p><font color=red>三元式：(op, arg1, arg2)</font>，其中op为运算符，arg1和arg2分别为操作数。<br />
-特点：</p>
-<ul>
-<li>三元式出来的顺序和语法成分的计值顺序相一致。其运算结果由每一个三元式之前的序号指示（称为指示器）</li>
-<li>三元式之间的联系是通过指示器实现的。</li>
-</ul>
-<p><font color=red>间接三元式：为减少三元式在优化时的顺序改动，需要增加一个间接码表，以这种方式进行处理的称为间接三元式。</font>间接三元式的理解也不难，对于传统三元式，如果需要转换的表达式中出现了重复的计算，那么就会出现重复的三元式，在优化时为了消除重复，势必会修改一些三元式的序号名，这样就需要修改所有引用的序号名。为了避免这种情况发生，干脆将所有三元式放入一个类似于三元式池的地方，实际的计算顺序只使用序号表示（保存在间接码表之中），这样在优化时只需要修改间接码表即可，而不需要对三元式进行直接的修改。</p>
-<p><font color=red>树形表示：三元式的另一种表示形式，即将三元式的计算以树形结构进行表示，类似于语法树。</font></p>
-<h3 id="543-四元式"><a class="markdownIt-Anchor" href="#543-四元式"></a> 5.4.3 四元式</h3>
-<p><font color=red>四元式：(op, arg1, arg2, result)</font><br />
-特点：</p>
-<ul>
-<li>出现的顺序和语法成分的计值顺序相一致。</li>
-<li>易于调整和变动四元式，不会出现三元式的问题。</li>
-<li>便于优化处理。</li>
-</ul>
-<p><font color=red>三地址代码：result=arg1 op arg2</font></p>
-<h2 id="55-自上而下语法制导翻译"><a class="markdownIt-Anchor" href="#55-自上而下语法制导翻译"></a> 5.5 自上而下语法制导翻译</h2>
-<h3 id="551-简单算数表达式和赋值语句的翻译"><a class="markdownIt-Anchor" href="#551-简单算数表达式和赋值语句的翻译"></a> 5.5.1 简单算数表达式和赋值语句的翻译</h3>
-<p><font color=red>简单算数表达式和赋值语句到四元式的翻译步骤：</font></p>
-<ul>
-<li>分析文法特点。</li>
-<li>设置一系列语义变量，定义语义过程、语义函数。</li>
-<li>修改文法，写出每一规则式的语义子程序。</li>
-<li>扩充LR分析栈，构造LR分析表。</li>
-</ul>
-<p>一般需要定义下列函数：</p>
-<ul>
-<li>newtemp函数：产生一个新的变量名，一般会送入符号表中。</li>
-<li>emit函数：根据一个三地址代码产生一个四元式，并填入四元式表中。</li>
-<li>lookup函数：传入一个变量名，判断这个变量名是否在符号表中，如果在则返回其指针，否则返回NULL。</li>
-<li>语义变量place：表示存放该非终结符的变量名在符号表中的入口地址或临时变量名的整数码（可以参与运算）。</li>
-</ul>
-<p>书中第119页给出了对加法和乘法的文法的语法制导翻译。注意右边的函数中引号的作用是将运算符引用起来，并没有其他的意思。</p>
-<h3 id="552-布尔表达式的翻译"><a class="markdownIt-Anchor" href="#552-布尔表达式的翻译"></a> 5.5.2 布尔表达式的翻译</h3>
-<p>布尔表达式用于计算逻辑值，可作为控制语句的条件式。在翻译时仿照算数表达式进行计值。考虑到布尔表达式中有短路情况存在，因此还需要一定的控制流，转移到某个位置表示其求值结果。</p>
-<p>布尔表达式的文法：<br />
-<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>→</mo><mi>E</mi><mo>∧</mo><mi>E</mi><mi mathvariant="normal">∣</mi><mi>E</mi><mo>∨</mo><mi>E</mi><mi mathvariant="normal">∣</mi><mi mathvariant="normal">¬</mi><mi>E</mi><mi mathvariant="normal">∣</mi><mo stretchy="false">(</mo><mi>E</mi><mo stretchy="false">)</mo><mi mathvariant="normal">∣</mi><mi>i</mi><mi mathvariant="normal">rop</mi><mo>⁡</mo><mi>i</mi><mi mathvariant="normal">∣</mi><mi>i</mi></mrow><annotation encoding="application/x-tex">E\rightarrow E\land E|E\vee E|\lnot E|(E)|i \operatorname{rop}i|i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mord">∣</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∨</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mord">∣</span><span class="mord">¬</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mord">∣</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mclose">)</span><span class="mord">∣</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">r</span><span class="mord mathrm">o</span><span class="mord mathrm">p</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">i</span><span class="mord">∣</span><span class="mord mathnormal">i</span></span></span></span></p>
-<p>较为固定的翻译方法：</p>
-<ul>
-<li>对于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∨</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A\vee B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∨</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，可翻译为：if A then true else B</li>
-<li>对于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>∧</mo><mi>B</mi></mrow><annotation encoding="application/x-tex">A\land B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span>，可翻译为：if A then B else false</li>
-<li>对于<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">¬</mi><mi>A</mi></mrow><annotation encoding="application/x-tex">\lnot A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord">¬</span><span class="mord mathnormal">A</span></span></span></span>，可翻译为：if A then false else true</li>
-<li>在书本第121页</li>
-</ul>
-<p>还需要定义下面的控制流转换四元式：</p>
-<ul>
-<li>if E goto L<sub>1</sub>：如果E为真，则跳转到L<sub>1</sub>。</li>
-<li>if E<sup>(1)</sup> rop E<sup>(2)</sup> goto L<sub>1</sub>：如果E<sup>(1)</sup> rop E<sup>(2)</sup>，则跳转到L<sub>1</sub>。</li>
-<li>goto L<sub>2</sub>：无条件跳转到L<sub>2</sub>。</li>
-</ul>
-<p>定义了上面的四元式后，将布尔表达式转换为四元式的过程就类似于将C语言中的条件判断式转换为汇编语言。</p>
-<p><font color=red>转换的相关技巧：</font>由于条件判断和赋值不能在一个四元式中进行，因此如果需要翻译包含有E<sup>(1)</sup> rop E<sup>(2)</sup>的布尔表达式，需要进行一定的转换。转换方式如下：</p>
-<ul>
-<li>if E<sup>(1)</sup> rop E<sup>(2)</sup> goto L<sub>2</sub></li>
-<li>L<sub>1</sub>: t<sub>1</sub>=0</li>
-<li>goto L<sub>3</sub></li>
-<li>L<sub>2</sub>: t<sub>1</sub>=1</li>
-<li>L<sub>3</sub>: …</li>
-</ul>
-<p>注意：if四元式的跳转是向距离自己较远的一条赋值语句跳转，而距离自己较近的赋值语句需要通过无条件跳转最终到达其他四元式。实际上这也是编译器处理布尔表达式条件跳转时常用的方法。在不考虑使用控制流优化的情况下，上述方法已经完全够用。</p>
-<p><font color=red>控制语句中布尔表达式的翻译</font><br />
-对于控制语句而言，存在一个短路现象。两个表达式相与，第一个为假则整个语句一定为假；两个表达式相或，第一个为真则整个语句一定为真。因此利用此特性简化对布尔表达式求值的判断。</p>
-<p>真出口、假出口：布尔表达式为真/假时控制流向的转移目标</p>
-<p><font color=red>为规范化针对短路现象的优化，定义以下三个非终结符属性和两个函数：</font></p>
-<ul>
-<li>tr：记录表达式E所对应的四元式需要回填真出口的四元式的地址所构成的链。</li>
-<li>fa：记录表达式E所对应的四元式需要回填假出口的四元式的地址所都成的链。</li>
-<li>code：记录表达式E所对应第一条四元式的序号。</li>
-<li>merg(p<sub>1</sub>, p<sub>2</sub>)：链接函数，用于链接真链或假链。其对应的情况是二者相与前者为假或二者相或前者为真的情况，即不需要判断第二个表达式的真假。如在二者相或表达式中，最后一条语句为E.tr=merg(E<sup>(1)</sup>.tr, E<sup>(2)</sup>.tr)，这是在让第二个表达式为真时跳转到第一个表达式为真时需要执行的跳转四元式。并且将两个表达式相或作为整体指明其为真时应该执行的四元式的编号，赋值给E。需要注意的是：相或时真出口应该是第一个表达式的真出口，因为第一个表达式为真时会直接从真出口出去。<font color=red>该函数实际上就是合并两条链，并返回链首。</font></li>
-<li>bp(p, t)：回填函数，用于回填真链与假链。其对应的情况是二者相与前者为真或二者相或前者为假的情况，即需要判断第二个表达式的真假。如在二者相或表达式中，第一条语句即为bp(E<sup>(1)</sup>.fa, E<sup>(2)</sup>.code)，指的是让表达式1为假时跳转到表达式2。在二者相与表达式中，则对应为bp(E<sup>(1)</sup>.tr, E<sup>(2)</sup>.code)。<font color=red>该函数实际上就是将一条链上链接的所有四元式的第四个字段都填写为一个值。</font></li>
-</ul>
-<p><font color=red>翻译过程理解：</font></p>
-<ul>
-<li>两者相或：回填是将<font color=blue>表达式1的假出口设置为表达式2</font>，链接是将<font color=blue>表达式2的真出口设置为表达式1的真出口，同时将表达式整体的真出口设置为<mark>表达式2</mark>的真出口</font>，最后将表达式整体的假出口设置为表达式2的假出口。</li>
-<li>两者相与：回填是将<font color=blue>表达式1的真出口设置为表达式2</font>，链接是将<font color=blue>表达式2的假出口设置为表达式1的假出口，同时将表达式整体的假出口设置为<mark>表达式2</mark>的假出口</font>，最后将表达式整体的真出口设置为表达式2的真出口。</li>
-</ul>
-<p><mark>例：翻译布尔表达式<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mn>1</mn></msub><mo>∨</mo><msub><mi>E</mi><mn>2</mn></msub><mo>∧</mo><msub><mi>E</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">E_1\lor E_2\land E_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∨</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></mark><br />
-分析：首先列出四元式：</p>
-<blockquote>
-<p>100: if E<sub>1</sub> goto ?<br />
-101: goto ?<br />
-102: if E<sub>2</sub> goto ?<br />
-103: goto ?<br />
-104: if E<sub>3</sub> goto ?<br />
-105: goto ?</p>
-</blockquote>
-<p>然后按照语法树顺序进行句子的翻译（语法树略）<br />
-根据算符优先级，应该首先翻译<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mn>2</mn></msub><mo>∧</mo><msub><mi>E</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">E_2\land E_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，使用规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>E</mi><mo>→</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mo>∧</mo><msup><mi>E</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">E\rightarrow E^{(1)}\land E^{(2)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∧</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span><br />
-<em>第一条语句：</em> bp(E<sup>(1)</sup>.tr, E<sup>(2)</sup>.code)，执行后：</p>
-<blockquote>
-<p>100: if E<sub>1</sub> goto ?<br />
-101: goto ?<br />
-102: if E<sub>2</sub> goto 104<br />
-103: goto ?<br />
-104: if E<sub>3</sub> goto ?<br />
-105: goto ?</p>
-</blockquote>
-<p><em>第二条语句：</em> E.code=E<sup>(1)</sup>.code，执行后，E.code=102<br />
-<em>第三条语句：</em> E.tr=E<sup>(2)</sup>.tr，执行后，E.tr=104<br />
-<em>第四条语句：</em> E.fa=merg(E<sup>(1)</sup>.fa, E<sup>(2)</sup>.fa)，执行后，E.fa=105</p>
-<blockquote>
-<p>100: if E<sub>1</sub> goto ?<br />
-101: goto ?<br />
-102: if E<sub>2</sub> goto 104<br />
-103: goto 105<br />
-104: if E<sub>3</sub> goto ?<br />
-105: goto ?</p>
-</blockquote>
-<p>然后翻译或语句：<br />
-<em>第一条语句：</em> bp(E<sup>(1)</sup>.fa, E<sup>(2)</sup>.code)，执行后：</p>
-<blockquote>
-<p>100: if E<sub>1</sub> goto ?<br />
-101: goto 102<br />
-102: if E<sub>2</sub> goto 104<br />
-103: goto 105<br />
-104: if E<sub>3</sub> goto ?<br />
-105: goto ?</p>
-</blockquote>
-<p><em>第二条语句：</em> E.code=E<sup>(1)</sup>.code，执行后，E.code=100<br />
-<em>第三条语句：</em> E.fa=E<sup>(2)</sup>.fa，执行后，E.tr=105<br />
-<em>第四条语句：</em> E.fa=merg(E<sup>(1)</sup>.tr, E<sup>(2)</sup>.tr)，执行后，E.fa=104</p>
-<blockquote>
-<p>100: if E<sub>1</sub> goto ?		// 真出口<br />
-101: goto 102<br />
-102: if E<sub>2</sub> goto 104<br />
-103: goto ?		// 假出口<br />
-104: if E<sub>3</sub> goto 100<br />
-105: goto 103</p>
-</blockquote>
-<h3 id="553-控制语句的翻译"><a class="markdownIt-Anchor" href="#553-控制语句的翻译"></a> 5.5.3 控制语句的翻译</h3>
-<p><font color=ff0000, size=5>if语句和if-else语句的翻译</font></p>
-<p>对于if语句和if-else语句，由于可能存在嵌套现象，因此在文法规则<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mo>→</mo><mi mathvariant="normal">if</mi><mo>⁡</mo><mi>E</mi><mi mathvariant="normal">then</mi><mo>⁡</mo><msup><mi>S</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup><mi mathvariant="normal">else</mi><mo>⁡</mo><msup><mi>S</mi><mrow><mo stretchy="false">(</mo><mn>2</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">S\rightarrow \operatorname{if} E \operatorname{then} S^{(1)} \operatorname{else} S^{(2)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">→</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mop"><span class="mord mathrm">i</span><span class="mord mathrm" style="margin-right:0.07778em;">f</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal" style="margin-right:0.05764em;">E</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">t</span><span class="mord mathrm">h</span><span class="mord mathrm">e</span><span class="mord mathrm">n</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop"><span class="mord mathrm">e</span><span class="mord mathrm">l</span><span class="mord mathrm">s</span><span class="mord mathrm">e</span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">2</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span>中，E也有可能是控制语句，在S<sup>(2)</sup>没有分析完之前，S<sup>(1)</sup>执行完之后跳转到哪里实际上是不知道的，而内部的嵌套语句也是如此。因此定义一个语义变量chain记忆所有待填信息的四元式链，便于在翻译完成后回填。</p>
-<p>将原有文法扩展为：<br />
-S→if E then M S<br />
-S→if E then M S N else M S<br />
-M→ε<br />
-N→ε</p>
-<p>语法规则定义如下：</p>
-<p><img src="https://img-blog.csdnimg.cn/131a396bc41b49e2bd7ae32cb795b51c.png" alt="" /></p>
-<p>以此规则尝试翻译下列语句：<br />
-if(A) then (if(B) then C else D) else E</p>
-<p>首先列出四元式（也要按照文法分析顺序进行）：</p>
-<blockquote>
-<p>100: if A goto ?<br />
-101: goto ?<br />
-102: if B goto ?<br />
-103: goto ?<br />
-104: C<br />
-105: goto ?<br />
-106: D<br />
-107: E<br />
-108: goto ?</p>
-</blockquote>
-<p>其中102~106为内部if-else语句翻译出来的四元式。</p>
-<p>首先肯定是翻译内部的if-else语句：<br />
-<em>第一条语句：</em> bp(<a target="_blank" rel="noopener" href="http://B.tr">B.tr</a>, M.s)</p>
-<blockquote>
-<p>100: if A goto ?<br />
-101: goto ?<br />
-102: if B goto 104<br />
-103: goto ?<br />
-104: C<br />
-105: goto ?<br />
-106: D<br />
-107: E<br />
-108: goto ?</p>
-</blockquote>
-<p><em>第二条语句：</em> bp(B.fa, M<sup>(1)</sup>.s)</p>
-<blockquote>
-<p>100: if A goto ?<br />
-101: goto ?<br />
-102: if B goto 104<br />
-103: goto 106<br />
-104: C<br />
-105: goto ?<br />
-106: D<br />
-107: E<br />
-108: goto ?</p>
-</blockquote>
-<p><em>第三条语句：</em> tmp=merg(C.chain, N.s)（修改了N.s）<br />
-<em>第四条语句：</em> B.chain=merg(tmp, D.chain)（让B.chain链接到了C.chain和D.chain）</p>
-<p>然后翻译外层的if-else语句：<br />
-<em>第一条语句：</em> bp(<a target="_blank" rel="noopener" href="http://A.tr">A.tr</a>, M.s)</p>
-<blockquote>
-<p>100: if A goto 102<br />
-101: goto ?<br />
-102: if B goto 104<br />
-103: goto 106<br />
-104: C<br />
-105: goto ?<br />
-106: D<br />
-107: E<br />
-108: goto ?</p>
-</blockquote>
-<p><em>第二条语句：</em> bp(A.fa, M<sup>(1)</sup>.s)</p>
-<blockquote>
-<p>100: if A goto 102<br />
-101: goto 107<br />
-102: if B goto 104<br />
-103: goto 106<br />
-104: C<br />
-105: goto ?<br />
-106: D<br />
-107: E<br />
-108: goto ?</p>
-</blockquote>
-<p><em>第三条语句：</em> tmp=merg(X.chain, N.s)（修改了N.s）<br />
-<em>第四条语句：</em> A.chain=merg(tmp, E.chain)（让A.chain链接到了X.chain和E.chain）</p>
-<p>从上面的例子可以看出，对于if-else语句的分析是由内而外的。关键在于内部不能确定的跳转到底是哪些。定义chain的目的正是为了记录这些不能确定的四元式。</p>
-<h3 id="554-循环语句的翻译"><a class="markdownIt-Anchor" href="#554-循环语句的翻译"></a> 5.5.4 循环语句的翻译</h3>
-<p><font color=ff0000, size=5>while语句的翻译</font><br />
-同样进行扩展：<br />
-(1) S→while E do M S<sup>(1)</sup><br />
-(2) M→ε</p>
-<p>相较于if-else语句要简单些，在内部四元式执行完成之后无条件跳转到开头的判断即可。</p>
-<p><img src="https://img-blog.csdnimg.cn/c00a817e76574d4183ce5f9b4bf16425.png" alt="" /></p>
-<h3 id="555-简单说明语句的翻译"><a class="markdownIt-Anchor" href="#555-简单说明语句的翻译"></a> 5.5.5 简单说明语句的翻译</h3>
-<p>定义函数FILL：将名字id和属性A登记在符号表中。<br />
-定义语义变量ATT：该非终结符的属性。</p>
-<p><img src="https://img-blog.csdnimg.cn/1790d43888764cadaa653657d87e8923.png" alt="" /></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2441,7 +2572,7 @@ if(A) then (if(B) then C else D) else E</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">157</span>
+          <span class="site-state-item-count">158</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

