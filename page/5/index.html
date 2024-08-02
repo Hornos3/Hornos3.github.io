@@ -150,6 +150,183 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第1章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:44:08 / 修改时间：09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:08+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-1-软件安全概述"><a class="markdownIt-Anchor" href="#chapter-1-软件安全概述"></a> Chapter 1 软件安全概述</h1>
+<h2 id="11-概念"><a class="markdownIt-Anchor" href="#11-概念"></a> 1.1 概念</h2>
+<p>网络空间有两个子空间：代码空间和数据空间</p>
+<p>Safety和Security的区别：Safety强调相对于环境的安全，而Security强调相对于其他人的安全。</p>
+<h2 id="12-任何软件都是不安全的"><a class="markdownIt-Anchor" href="#12-任何软件都是不安全的"></a> 1.2 任何软件都是不安全的</h2>
+<p><strong>软件测试无法绝对保证软件安全性的原因</strong>：软件规模的增加、开发进度的要求提升使得开发人员难以考虑到所有的安全问题。通常测试案例构成的空间巨大，无法全部进行测试，只能抽取其中的一小部分进行测试。</p>
+<p>为尽量减少软件安全问题，一方面应该在开发时开发者尽量多考虑，另一方面也需要一定的测试工作。<strong>几乎所有的软件都是带着安全隐患投入运行。任何软件都是不安全的。</strong></p>
+<h2 id="13-软件不安全的外部表现"><a class="markdownIt-Anchor" href="#13-软件不安全的外部表现"></a> 1.3 软件不安全的外部表现</h2>
+<ul>
+<li>软件运行时不稳定，产生错误输出、异常现象、直接崩溃</li>
+<li>敌方利用各种手段进行攻击，窃取信息破坏系统等</li>
+</ul>
+<p>通常这类软件安全问题的存在需要软件开发方投入大量人力和资金进行软件的维护工作。</p>
+<h2 id="14-软件安全问题产生原因"><a class="markdownIt-Anchor" href="#14-软件安全问题产生原因"></a> 1.4 软件安全问题产生原因</h2>
+<p>安全隐患可分为<strong>错误和缺陷</strong>两类。错误是软件开发过程中出现的问题，如线程处理不当等，容易发现与修复；缺陷产生于设计阶段，在代码中实例化且难以发现。</p>
+<p><strong>从开发者的角度看软件不安全的原因：</strong></p>
+<ul>
+<li>软件生产没有严格遵守软件工程流程。在设计之初没有对软件的功能进行完整的考虑，随意改动软件需求规格说明书等。</li>
+<li>大多数商业软件的结构复杂，使得维护软件困难。</li>
+<li>没有采用科学编码方案，可能产生由编码不一致引起的问题。如乱码等</li>
+<li>测试不到位，没有覆盖所有可能的用户输入类型等</li>
+</ul>
+<p><strong>从软件工程客观角度看软件不安全的原因：</strong></p>
+<ul>
+<li>软件复杂性和工程进度的平衡：工程进度仅按照软件规模进行适度延长，很多问题来不及解决。</li>
+<li>安全问题的不可预见性：仅通过对运行状态的简单假设无法覆盖所有运行情况。</li>
+<li>软件需求的变动：在变动过程中对安全问题的忽略。</li>
+<li>软件组件之间交互的不可预见性：与客户自行安装的第三方组件可能有不兼容的问题。</li>
+</ul>
+<h2 id="15-软件安全防护手段"><a class="markdownIt-Anchor" href="#15-软件安全防护手段"></a> 1.5 软件安全防护手段</h2>
+<ul>
+<li>安全设计与开发
+<ul>
+<li>将安全思想融入到软件开发管理流程之中，在开发阶段就尽可能减少漏洞和缺陷的存在。</li>
+<li>优秀范例：微软的SDL-IT（信息技术安全开发生命周期流程）</li>
+</ul>
+</li>
+<li>保障运行环境
+<ul>
+<li>保证软件自身的运行环境，加强系统自身的数据完整性校验</li>
+<li>含软件完整性校验和系统完整性校验。软件完整性校验指安全软件安装时对系统的重要文件进行校验并保存校验值。系统完整性校验则从更加底层的方面校验。</li>
+</ul>
+</li>
+<li>加强软件自身行为认证
+<ul>
+<li>确保软件自身总是向着预期的方式运行。</li>
+</ul>
+</li>
+<li>恶意软件检测与查杀
+<ul>
+<li>反病毒软件的安装与使用</li>
+</ul>
+</li>
+<li>黑客攻击防护
+<ul>
+<li>防火墙、IDS、IPS、EMET（基于主机的漏洞攻击阻断技术）</li>
+</ul>
+</li>
+<li>系统还原
+<ul>
+<li>将关键系统文件进行镜像备份，因此可以在受到攻击时能够还原到原来的状态。如Ghost还原软件</li>
+</ul>
+</li>
+<li>虚拟隔离
+<ul>
+<li>在虚拟机中进行风险较大的操作，防止风险转移到主机上。</li>
+<li>沙箱技术：可用于隔离风险行为与分析恶意软件</li>
+</ul>
+</li>
+</ul>
+<hr />
+<p><strong>练习题</strong>：<br />
+<strong>1.</strong> 阅读下面的代码，回答下列问题：（23分）</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这个函数的功能是对输入进行移位加密。如输入为helloworld</span></span><br><span class="line"><span class="comment">// 将其竖着写，每一列写3个字符，再逐行拼接，得到密文为hlodeorlwl</span></span><br><span class="line"><span class="comment">// hlod</span></span><br><span class="line"><span class="comment">// eor</span></span><br><span class="line"><span class="comment">// lwl</span></span><br><span class="line"><span class="type">char</span>* <span class="title function_">foo</span><span class="params">(<span class="type">char</span>* plaintext)</span>&#123;</span><br><span class="line">	<span class="type">int</span> size = <span class="built_in">strlen</span>(plaintext);</span><br><span class="line">	<span class="type">char</span>* cipher = (<span class="type">char</span>*)<span class="built_in">malloc</span>(size);</span><br><span class="line">	<span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;<span class="number">3</span>; i++)&#123;</span><br><span class="line">		<span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;size / <span class="number">3</span>; j++)</span><br><span class="line">			cipher[index++] = plaintext[j*<span class="number">3</span>+i];</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> cipher;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(1) 本函数使用了malloc库函数，但是没有__________________，这可能会导致________________________。另外，函数也没有检查__________________。（6分）<br />
+(2) 当输入的字符串_____________________时，函数的输出可能会出错，原因是___________________________________________________。（5分）<br />
+(3) 除了上面提到的问题之外，这个函数还存在什么问题？（4分）<br />
+(4) 请对上述第(1)问和第(2)问提到的问题进行修复，写出完整代码。（8分）</p>
+<p>答案：<br />
+(1) 检查是否分配成功；程序尝试访问空指针导致崩溃；输入字符串指针plaintext是否为空<br />
+(2) 长度不是3的倍数；在for循环中内循环次数为size/3，结果是一个整数，总的遍历次数为(size / 3)*3 &lt; size，导致最后的两个字符无法被加密，从而结果错误<br />
+(3) 该函数不能加密中文字符串，因为中文字符至少占2字节，程序逐字节进行移位会导致中文字符被拆分，从而出现乱码。<br />
+(4) 具体代码略，注意当明文长度不是3的倍数时的处理方式。</p>
+<p><strong>解题技巧</strong>：常见的安全隐患</p>
+<ol>
+<li>malloc没有检查是否成功分配</li>
+<li>缓冲区溢出</li>
+<li>整数溢出</li>
+<li>没有释放空间（不是所有情况）</li>
+<li>线程死锁（考的少）</li>
+<li>逻辑错误（需要对代码进行具体分析</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC5%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3000,368 +3177,6 @@ D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要�
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC8%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第8章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 09:12:38 / 修改时间：09:26:23" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:38+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>4.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>4 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-8-设备管理"><a class="markdownIt-Anchor" href="#chapter-8-设备管理"></a> Chapter 8 设备管理</h1>
-<h2 id="81-设备管理概念"><a class="markdownIt-Anchor" href="#81-设备管理概念"></a> 8.1 设备管理概念</h2>
-<p>设备：计算机中除了CPU和内存外其他设备一般统称为外部设备<br />
-设备分类：</p>
-<ul>
-<li>按照交互对象分类：
-<ul>
-<li>人机交互设备，如显示设备、键盘、鼠标、打印机</li>
-<li>与CPU等交互的设备：磁盘、磁带、传感器、控制器</li>
-<li>计算机间的交互设备：网卡、调制解调器</li>
-</ul>
-</li>
-<li>按照交互方向分类
-<ul>
-<li>输入设备，如键盘、扫描仪</li>
-<li>输出设备，如显示设备、打印机</li>
-<li>双向设备：输入/输出，如硬盘、软盘、网卡</li>
-<li>存储型设备：硬盘、软盘、光盘、U盘</li>
-</ul>
-</li>
-<li>按数据传输速率分类：
-<ul>
-<li>低速设备：一般速度在1KB/s以下的设备，如键盘</li>
-<li>中速设备：1KB/s到1MB/s之间的设备，如打印机</li>
-<li>高速设备，超过1MB/s的设备</li>
-</ul>
-</li>
-<li>按照信息组织特征分类
-<ul>
-<li>字符设备：传输的基本单位是字符，如键盘、串口</li>
-<li>块设备：设备存储和传输的基本单位，基本是存储型设备</li>
-<li>网络设备：采用socket套接字接口访问，在全局具有唯一的名字，如eth0</li>
-</ul>
-</li>
-</ul>
-<h4 id="设备管理的功能"><a class="markdownIt-Anchor" href="#设备管理的功能"></a> 设备管理的功能</h4>
-<p>设备管理的目标：</p>
-<ul>
-<li>提高设备的利用率</li>
-<li>提高设备的读写效率</li>
-<li>提高CPU与设备并行速度</li>
-<li>为用户提供统一接口</li>
-<li>实现设备对用户透明</li>
-</ul>
-<p>设备管理功能</p>
-<ul>
-<li>状态跟踪</li>
-<li>设备分配</li>
-<li>设备映射</li>
-<li>设备控制/设备驱动</li>
-<li>缓冲区管理</li>
-</ul>
-<h4 id="设备控制块dcb"><a class="markdownIt-Anchor" href="#设备控制块dcb"></a> 设备控制块（DCB）</h4>
-<p>记录设备的基本属性、状态、操作接口以及进程与设备之间的交互信息等。包含设备名、设备属性、命令转换表（记录设备相关的I/O函数例程地址，不具备相应功能的设备在其例程地址上可以填-1）等。</p>
-<h4 id="设备分配"><a class="markdownIt-Anchor" href="#设备分配"></a> 设备分配</h4>
-<p>需要按照一定策略安全地分配和管理各种设备。</p>
-<ul>
-<li>按照相应分配算法把设备分配给请求该设备的进程，并把未分配到设备的进程放入设备等待队列。</li>
-</ul>
-<h4 id="设备映射"><a class="markdownIt-Anchor" href="#设备映射"></a> 设备映射</h4>
-<p>设备具有一个逻辑名，用户可以为设备起一个友好名便于使用。<br />
-在Windows上通过加前缀\.\可访问设备，在Linux上所有设备均处于/dev/文件夹中，通过访问文件的方式访问设备即可。<br />
-设备物理名是I/O系统中实际安装的设备，可以为ID或字符串或主/次设备号。设备映射就是逻辑设备到物理设备的转换。<font color=red>用户使用逻辑设备的统一接口去访问设备，而无需考虑物理设备复杂的内部构成</font>。</p>
-<h4 id="设备驱动"><a class="markdownIt-Anchor" href="#设备驱动"></a> 设备驱动</h4>
-<ul>
-<li>对物理设备进行控制，实现I/O操作</li>
-<li>将应用服务请求转换为I/O指令</li>
-<li>向用户提供统一的设备使用接口，<font color=red>将外设作为特别文件处理</font></li>
-</ul>
-<p>设备驱动程序的特点：</p>
-<ul>
-<li>介于应用程序与设备I/O操作命令之间</li>
-<li>设备驱动程序与硬件密切相关</li>
-<li>每一类设备都要配置特定的驱动程序</li>
-<li>驱动程序一般由设备厂商根据操作系统要求编写</li>
-</ul>
-<h4 id="io缓冲区管理"><a class="markdownIt-Anchor" href="#io缓冲区管理"></a> I/O缓冲区管理</h4>
-<p>设备可以开辟和管理I/O缓冲区，可以提高读写效率。</p>
-<h2 id="82-缓冲技术"><a class="markdownIt-Anchor" href="#82-缓冲技术"></a> 8.2 缓冲技术</h2>
-<p>缓冲区的作用：</p>
-<ul>
-<li>连接不同传输速度的设备。一般情况下CPU的处理速度比设备快很多，<font color=red>在进程空间和设备存储空间之间添加一块内存作为缓冲区将二者进行连接</font>。</li>
-<li>协调数据记录大小的不一致，如果两个设备或设备与CPU之间记录的大小不一致，则可以通过添加缓冲区暂存避免丢失较大的数据记录。如网络消息的包和帧。</li>
-<li>正确执行应用程序的语义拷贝。如写入时能够保证写入的数据是调用时刻的数据。如果没有缓冲区，应用程序等待内核写完之后再返回，速度可能比较慢，实时性差。因此加入缓冲区，首先将数据写到缓冲区之后，进程立即返回，不影响进程的执行，之后才由内核将缓冲区写入到磁盘，这能够确保事后拷贝的数据是正确版本。</li>
-<li>提高CPU和外设之间的并发性。提高并行程度、吞吐量和设备的利用率。</li>
-</ul>
-<h4 id="四种缓冲形式"><a class="markdownIt-Anchor" href="#四种缓冲形式"></a> 四种缓冲形式</h4>
-<ul>
-<li>Cache高速缓冲存储器</li>
-<li>设备内部缓冲区（外部设备或I/O接口内部的缓冲区）</li>
-<li>内存缓冲区（内存开辟，应用广泛，使用灵活，可以提前读/延后写）</li>
-<li>辅存缓冲区（开辟在辅存上）</li>
-</ul>
-<h4 id="常用的缓冲技术"><a class="markdownIt-Anchor" href="#常用的缓冲技术"></a> 常用的缓冲技术</h4>
-<ul>
-<li>单缓冲（一个缓冲区，读和写互斥）</li>
-<li>双缓冲（两个缓冲区）</li>
-<li>环形缓冲（多个缓冲区，让首尾两个单元在逻辑上相连，有起始指针pStart、输入指针pWrite和输出指针pRead）</li>
-<li>缓冲池（多个缓冲区，可供多个进程共享，提高缓冲区的利用率减少内存浪费）</li>
-</ul>
-<h4 id="提前读和延后写技术"><a class="markdownIt-Anchor" href="#提前读和延后写技术"></a> 提前读和延后写技术</h4>
-<ul>
-<li>该技术针对磁盘类的块设备</li>
-<li>可以提高进程与设备之间的数据传输效率</li>
-<li>可以减少访问目标设备次数，提高设备访问的效率</li>
-</ul>
-<p><font color=red>提前读</font>：进程需要从外设读取的数据事先已经被读取到了缓冲区中（需要读取几个字节时将一整块数据全部读取），不需要继续启动外设执行读取操作。</p>
-<p><font color=red>延后写</font>：进程需要向外设写入数据，缓冲区首先将这些数据缓存起来，延迟到特定事件发生或足够时间后再启动外设，完成数据真正写入，即几次写入一次完成。</p>
-<h4 id="linux缓冲机制"><a class="markdownIt-Anchor" href="#linux缓冲机制"></a> Linux缓冲机制</h4>
-<ul>
-<li>设置内存高速缓冲区
-<ul>
-<li>高速缓冲区被划分为缓冲块。每一个缓冲块与一个磁盘块对应，每一个缓冲块用一个叫缓冲头buffer_head的结构体描述，其中包含数据区指针、块号、设备号等</li>
-</ul>
-</li>
-<li>缓冲块中保存最近访问磁盘的数据</li>
-</ul>
-<h2 id="83-设备分配"><a class="markdownIt-Anchor" href="#83-设备分配"></a> 8.3 设备分配</h2>
-<p>设备分配被分为独享设备、共享设备和虚拟设备。</p>
-<ul>
-<li>独享设备：不可抢占设备，每一次只供一个进程使用，如键盘、打印机等</li>
-<li>共享设备：可抢占设备，允许多个作业或进行同时使用，如存储设备，随时申请随时可得</li>
-<li>虚拟设备：借助虚拟技术，在共享设备上模拟独占设备</li>
-</ul>
-<p>设备分配方法：</p>
-<ul>
-<li>独享分配，进程使用设备前首先申请，申请成功后开始使用，直到使用完之后释放。如果设备已经被占用，则进程会被阻塞。</li>
-<li>共享分配，进程申请使用共享设备时操作系统能够立即分配共享设备的一块空间，不会让进程阻塞。共享分配使得进程使用设备十分简单和高效，随时申请，随时可得。</li>
-<li>虚拟分配，在一类物理设备上模拟另一类物理设备的技术，通常借助辅存部分区域模拟独占设备，将独占设备转化为共享设备。用来模拟独占设备的<mark>辅存区域</mark>称为虚拟设备，其中有输入井和输出井模拟输入输出设备的辅存区域。</li>
-</ul>
-<p>虚拟分配过程：</p>
-<ul>
-<li>当进程需要与独占设备交换信息时，采用虚拟技术将与该独占设备所对应的虚拟设备分配给它。首先采用共享分配为进程分配虚拟独占设备，然后将虚拟设备与指定的独占设备关联。</li>
-<li>进程运行过程中直接与虚拟设备进行交互，传输速度快。</li>
-</ul>
-<h4 id="spooling系统simultaneous-peripheral-operations-online"><a class="markdownIt-Anchor" href="#spooling系统simultaneous-peripheral-operations-online"></a> SPOOLing系统（Simultaneous Peripheral Operations Online）</h4>
-<ul>
-<li>是虚拟技术和虚拟分配的实现</li>
-<li>外部设备同时联机操作</li>
-<li>假脱机输入/输出</li>
-</ul>
-<p>输入井和输出井是磁盘上开辟的两个存储区域。输入缓冲区是内存中开辟的存储区域。输入缓冲区暂存到输入数据，再传送到输入井；输出缓冲区暂存输出数据，以后再传送到输出设备。</p>
-<p>软件有：</p>
-<ul>
-<li>
-<p>预输入程序，控制信息从独占设备输入到辅存</p>
-</li>
-<li>
-<p>预输入表，从哪一台设备输入，存放在输入井的位置</p>
-</li>
-<li>
-<p>缓输出程序，控制信息从辅存输出到独占设备</p>
-</li>
-<li>
-<p>缓输出表，输出信息在输出井的位置，从哪台设备输出</p>
-</li>
-<li>
-<p>井管理程序，控制用户程序和辅存之间的信息交换</p>
-</li>
-<li>
-<p>预输入进程，模拟脱机输入的卫星机，将用户要求的数据从输入设备通过输入缓冲区传送输入井，当用户进程需要数据时直接从输入井读入所需数据。</p>
-</li>
-<li>
-<p>缓输出进程模拟脱机输出的卫星机，用户进程将输出数据从内存先传送到输出井，当输出设备空闲时将输出井的内容输出到输出设备中。</p>
-</li>
-<li>
-<p>任务执行前，预先将程序和数据输入到输入井中</p>
-</li>
-<li>
-<p>任务运行时，使用数据时从输入井中取出</p>
-</li>
-<li>
-<p>任务运行时，输出数据时将数据写入输出井</p>
-</li>
-<li>
-<p>任务运行完，外设空闲时输出全部数据和信息</p>
-</li>
-</ul>
-<h4 id="spooling优点"><a class="markdownIt-Anchor" href="#spooling优点"></a> SPOOLing优点：</h4>
-<p>提高了I/O速度，将独占设备改造为了共享设备（实现了虚拟设备功能）</p>
-<h2 id="84-io控制"><a class="markdownIt-Anchor" href="#84-io控制"></a> 8.4 I/O控制</h2>
-<h3 id="无条件传送方式"><a class="markdownIt-Anchor" href="#无条件传送方式"></a> 无条件传送方式</h3>
-<p>工作过程：</p>
-<ul>
-<li>进程I/O时无需查询外设状态，直接进行。</li>
-<li>主要用于外设时钟固定且已知的场合。</li>
-<li>当程序执行I/O指令时，外设必定已经为传送数据做好了准备。</li>
-</ul>
-<h3 id="查询方式"><a class="markdownIt-Anchor" href="#查询方式"></a> 查询方式</h3>
-<ul>
-<li>在传送数据之前，CPU先对外设状态进行检测，知道外设准备好才开始传输，否则将一直检测等待。</li>
-<li>I/O操作由程序发起并等待完成，每一次读写必须通过CPU。</li>
-</ul>
-<h3 id="中断方式"><a class="markdownIt-Anchor" href="#中断方式"></a> 中断方式</h3>
-<ul>
-<li>外设数据准备好或准备好接收时，产生中断信号</li>
-<li>CPU收到中断信号之后，停止当前工作，处理该中断，完成数据传输</li>
-<li>CPU处理完成后继续原来的工作</li>
-<li>缺点是降低CPU效率，适合少量数据低速传输</li>
-</ul>
-<h3 id="通道方式"><a class="markdownIt-Anchor" href="#通道方式"></a> 通道方式</h3>
-<ul>
-<li>通道是用来控制外设和内存数据传输的专门部件</li>
-<li>通道有独立的指令系统，既能够受控于CPU又能独立于CPU</li>
-<li>I/O处理机</li>
-</ul>
-<h3 id="dma直接内存访问方式"><a class="markdownIt-Anchor" href="#dma直接内存访问方式"></a> DMA（直接内存访问）方式</h3>
-<ul>
-<li>Direct Memory Access</li>
-<li>外设和内存之间直接进行数据交换，不需要CPU干预。</li>
-<li>只有数据传送开始（初始化）和结束时（反初始化）需要CPU参与，传输过程不需要CPU参与。</li>
-<li>DMA控制器：DMAC，可以代替CPU控制内存和设备之间成块的数据交换，在微机中广泛采用。</li>
-<li>局限性：不能完全脱离CPU（传送方向、内存地址、数据长度由CPU控制），每一台设备需要一个DMAC（设备较多时不经济）</li>
-</ul>
-<h3 id="io控制特点"><a class="markdownIt-Anchor" href="#io控制特点"></a> I/O控制特点</h3>
-<ul>
-<li>在应用层为用户提供I/O接口，对设备的控制和操作则由内核I/O子系统来实施</li>
-<li>每个通用设备类型都通过一组标准函数（及接口）来访问。具体的差别被I/O子系统中的内核模块（内核驱动程序）所封装，设备驱动程序层的作用是为内核I/O子系统隐藏设备控制器之间的差异，将I/O子系统与硬件分离，简化了操作系统开发人员的任务，也有利于设备的设计和制造。</li>
-</ul>
-<h3 id="控制io核心模块的方式"><a class="markdownIt-Anchor" href="#控制io核心模块的方式"></a> 控制I/O核心模块的方式</h3>
-<ul>
-<li>以设备驱动进程的方式
-<ul>
-<li>为每一类设备设置一个设备驱动进程，当有I/O请求到来时该进程被唤醒进行设备驱动工作。当没有I/O请求时该进程睡眠，否则由I/O控制模块的接口程序负责解释用户的I/O系统调用，将其转换为I/O控制模块认识的命令形式后将I/O请求发送给对应的设备驱动进程。</li>
-</ul>
-</li>
-<li>将设备与文件一样对待
-<ul>
-<li>使用文件系统的系统调用命令进行设备的读写。</li>
-</ul>
-</li>
-</ul>
-<h2 id="85-设备驱动程序"><a class="markdownIt-Anchor" href="#85-设备驱动程序"></a> 8.5 设备驱动程序</h2>
-<h3 id="851-linux模块"><a class="markdownIt-Anchor" href="#851-linux模块"></a> 8.5.1 Linux模块</h3>
-<p>LKM：可加载的内核模块，是一种未经连接的可执行代码，可以动态地加载或卸载模块，经过连接可称为内核的一部分。设备驱动可以通过模块的方式添加到内核。</p>
-<p>Linux设备的分类：</p>
-<ul>
-<li>字符设备：
-<ul>
-<li>以字节为单位进行I/O操作</li>
-<li>字符设备中的缓存是否可有可无</li>
-<li>不支持随机访问</li>
-<li>如串口设备</li>
-</ul>
-</li>
-<li>块设备
-<ul>
-<li>存取通过buffer、cache进行</li>
-<li>可以进行随机访问</li>
-<li>如IDE硬盘设备</li>
-<li>支持可安装文件系统</li>
-</ul>
-</li>
-<li>网络设备
-<ul>
-<li>通过BSD套接口访问（SOCKET）</li>
-</ul>
-</li>
-</ul>
-<p>用户态和内核态</p>
-<ul>
-<li>Linux的两种运行方式：内核态、用户态</li>
-<li>驱动程序工作在内核态</li>
-<li>应用程序和驱动程序之间传送数据函数：
-<ul>
-<li>get_user</li>
-<li>put_user</li>
-<li>copy_from_user</li>
-<li>copy_to_user</li>
-</ul>
-</li>
-</ul>
-<h4 id="主设备号和次设备号"><a class="markdownIt-Anchor" href="#主设备号和次设备号"></a> 主设备号和次设备号</h4>
-<ul>
-<li>主设备号：表示设备种类，表示驱动程序，范围为1-255，支持动态分配主设备号</li>
-<li>次设备号：标识同一个设备驱动程序的不同硬件设备</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -3431,14 +3246,14 @@ D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">158</span>
+          <span class="site-state-item-count">159</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -3489,7 +3304,7 @@ D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:02</span>
+    <span title="站点阅读时长">22:07</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>

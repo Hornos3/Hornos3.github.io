@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Unicorn 是一个常用的模拟执行框架，能够方便地完成常用 OS 二进制文件的模拟执行。它不仅能够应用于 CTF 解题，在学术界也是重要的基础工具。目前，Unicorn 的最晚发行版本发行于2022年末，目前似乎已经停止维护，但它是多个功能更加全面的模拟器（如 qiling ）的基础。因此有必要进行学习。 下面，我们通过几个代码示例学习 Unicorn Python API 的使用。  1. H">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unicorn 学习">
+<meta property="og:url" content="http://hornos3.github.com/2024/08/02/Unicorn-%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Unicorn 是一个常用的模拟执行框架，能够方便地完成常用 OS 二进制文件的模拟执行。它不仅能够应用于 CTF 解题，在学术界也是重要的基础工具。目前，Unicorn 的最晚发行版本发行于2022年末，目前似乎已经停止维护，但它是多个功能更加全面的模拟器（如 qiling ）的基础。因此有必要进行学习。 下面，我们通过几个代码示例学习 Unicorn Python API 的使用。  1. H">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-02T00:57:23.000Z">
+<meta property="article:modified_time" content="2024-08-02T07:16:14.682Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/08/02/Unicorn-%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Unicorn 学习 | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/08/02/Unicorn-%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Unicorn 学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-08-02 08:57:23 / 修改时间：15:16:14" itemprop="dateCreated datePublished" datetime="2024-08-02T08:57:23+08:00">2024-08-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Unicorn 是一个常用的模拟执行框架，能够方便地完成常用 OS 二进制文件的模拟执行。它不仅能够应用于 CTF 解题，在学术界也是重要的基础工具。目前，Unicorn 的最晚发行版本发行于2022年末，目前似乎已经停止维护，但它是多个功能更加全面的模拟器（如 qiling ）的基础。因此有必要进行学习。</p>
+<p>下面，我们通过几个代码示例学习 Unicorn Python API 的使用。</p>
+<h1 id="1-hello-unicorn"><a class="markdownIt-Anchor" href="#1-hello-unicorn"></a> 1. Hello-Unicorn</h1>
+<p>这个示例来自官方文档。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unicorn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> unicorn.x86_const <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># code to be emulated</span></span><br><span class="line">X86_CODE32 = <span class="string">b&quot;\x41\x4a&quot;</span>    <span class="comment"># INC ecx; DEC edx</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># memory address where emulation starts</span></span><br><span class="line">ADDRESS = <span class="number">0x1000000</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Emulate i386 code&quot;</span>)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="comment"># Initialize emulator in X86-32bit mode</span></span><br><span class="line">    mu = Uc(UC_ARCH_X86, UC_MODE_32)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># map 2MB memory for this emulation</span></span><br><span class="line">    mu.mem_map(ADDRESS, <span class="number">2</span> * <span class="number">1024</span> * <span class="number">1024</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># write machine code to be emulated to memory</span></span><br><span class="line">    mu.mem_write(ADDRESS, X86_CODE32)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># initialize machine registers</span></span><br><span class="line">    mu.reg_write(UC_X86_REG_ECX, <span class="number">0x1234</span>)</span><br><span class="line">    mu.reg_write(UC_X86_REG_EDX, <span class="number">0x7890</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># emulate code in infinite time &amp; unlimited instructions</span></span><br><span class="line">    mu.emu_start(ADDRESS, ADDRESS + <span class="built_in">len</span>(X86_CODE32))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># now print out some registers</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Emulation done. Below is the CPU context&quot;</span>)</span><br><span class="line"></span><br><span class="line">    r_ecx = mu.reg_read(UC_X86_REG_ECX)</span><br><span class="line">    r_edx = mu.reg_read(UC_X86_REG_EDX)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;&gt;&gt;&gt; ECX = 0x<span class="subst">&#123;r_ecx:x&#125;</span>&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;&gt;&gt;&gt; EDX = 0x<span class="subst">&#123;r_edx:x&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">except</span> UcError <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;ERROR: %s&quot;</span> % e)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>from unicorn.x86_const import *</code>：在 unicorn 中定义有针对不同架构的枚举定义文件，其中为该架构的所有寄存器、指令赋予一个整数值便于表示。后面的<code>UC_X86_REG_ECX</code>即为引用 x86_const.py 中的常量。</li>
+<li><code>Uc(UC_ARCH_X86, UC_MODE_32)</code>：实例化一个模拟器对象，这个类的构造函数只有 2 个参数，没有其他任何可选参数。只需要指定架构和运行模式即可。这里是以 x86 架构，32 位模式构建一个模拟器。</li>
+<li><code>mem_map(ADDRESS, 2 * 1024 * 1024)</code>：为一个对象映射一块新的内存空间。这个方法有3个参数，分别为地址、长度、权限（默认为 RWX ）。</li>
+<li><code>mem_write(ADDRESS, X86_CODE32)</code>：在一个地址处写入内容。</li>
+<li><code>reg_write(UC_X86_REG_ECX, 0x1234)</code>：为一个寄存器写入值。</li>
+<li><code>emu_start(ADDRESS, ADDRESS + len(X86_CODE32))</code>：开始执行模拟器，该方法有 4 个参数，分别为开始地址、结束地址、超时（默认为0）、指令数量（默认为0，为0时将执行所有可执行的指令）。</li>
+<li><code>reg_read(UC_X86_REG_ECX)</code>：读取寄存器<code>ecx</code>的值。</li>
+</ul>
+<p>由于 Unicorn 仅实现了最为基础的模拟仿真功能，因此它具备轻量级的优势，API 规范很少，理解起来较为简单。</p>
+<h1 id="2-instruction-hooks"><a class="markdownIt-Anchor" href="#2-instruction-hooks"></a> 2. Instruction-Hooks</h1>
+<p>这个示例选自Unicorn仓库内的测试代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unicorn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> unicorn.x86_const <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">X86_CODE64_SYSCALL = <span class="string">b&#x27;\x0f\x05&#x27;</span> <span class="comment"># SYSCALL</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># memory address where emulation starts</span></span><br><span class="line">ADDRESS = <span class="number">0x1000000</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Emulate x86_64 code with &#x27;syscall&#x27; instruction&quot;</span>)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="comment"># Initialize emulator in X86-64bit mode</span></span><br><span class="line">    mu = Uc(UC_ARCH_X86, UC_MODE_64)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># map 2MB memory for this emulation</span></span><br><span class="line">    mu.mem_map(ADDRESS, <span class="number">2</span> * <span class="number">1024</span> * <span class="number">1024</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># write machine code to be emulated to memory</span></span><br><span class="line">    mu.mem_write(ADDRESS, X86_CODE64_SYSCALL)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">hook_syscall</span>(<span class="params">mu, user_data</span>):</span><br><span class="line">        rax = mu.reg_read(UC_X86_REG_RAX)</span><br><span class="line">        <span class="keyword">if</span> rax == <span class="number">0x100</span>:</span><br><span class="line">            mu.reg_write(UC_X86_REG_RAX, <span class="number">0x200</span>)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&#x27;ERROR: was not expecting rax=%d in syscall&#x27;</span> % rax)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># hook interrupts for syscall</span></span><br><span class="line">    mu.hook_add(UC_HOOK_INSN, hook_syscall, <span class="literal">None</span>, <span class="number">1</span>, <span class="number">0</span>, UC_X86_INS_SYSCALL)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># syscall handler is expecting rax=0x100</span></span><br><span class="line">    mu.reg_write(UC_X86_REG_RAX, <span class="number">0x100</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># emulate machine code in infinite time</span></span><br><span class="line">        mu.emu_start(ADDRESS, ADDRESS + <span class="built_in">len</span>(X86_CODE64_SYSCALL))</span><br><span class="line">    <span class="keyword">except</span> UcError <span class="keyword">as</span> e:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;ERROR: %s&quot;</span> % e)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># now print out some registers</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Emulation done. Below is the CPU context&quot;</span>)</span><br><span class="line"></span><br><span class="line">    rax = mu.reg_read(UC_X86_REG_RAX)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;&gt;&gt;&gt; RAX = 0x<span class="subst">&#123;rax:x&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">except</span> UcError <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;ERROR: %s&quot;</span> % e)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>hook_add(UC_HOOK_INSN, hook_syscall, None, 1, 0, UC_X86_INS_SYSCALL)</code>：在执行过程中添加 hook。参数列表：
+<ul>
+<li><code>htype</code>：hook 类型。Unicorn 可以对很多程序行为添加 Hook，包括指定指令、指定基本块、指定内存行为等。可以在 unicorn_const.py 中查看所有<code>UC_HOOK</code>开头的常数定义。</li>
+<li><code>callback</code>：回调函数，即 hook 函数。</li>
+<li><code>user_data</code>：用于回调函数的所有参数。</li>
+<li><code>begin</code>：Hook 能够触发的开始 PC。</li>
+<li><code>end</code>：Hook 能够触发的结束 PC。</li>
+<li><code>arg1</code>/<code>arg2</code>：与 Hook 相关的参数，如对于<code>UC_HOOK_INSN</code>，则只需要<code>arg1</code>指定特定的指令类型。</li>
+</ul>
+</li>
+</ul>
+<h1 id="3-snapshot"><a class="markdownIt-Anchor" href="#3-snapshot"></a> 3. Snapshot</h1>
+<p>这个示例选自Unicorn仓库内的测试代码。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> unicorn <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> unicorn.x86_const <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Save/restore CPU context in opaque blob&quot;</span>)</span><br><span class="line">address = <span class="number">0</span></span><br><span class="line">code = <span class="string">b&#x27;\x40&#x27;</span>  <span class="comment"># inc eax</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    <span class="comment"># Initialize emulator</span></span><br><span class="line">    mu = Uc(UC_ARCH_X86, UC_MODE_32)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># map 8KB memory for this emulation</span></span><br><span class="line">    mu.mem_map(address, <span class="number">8</span> * <span class="number">1024</span>, UC_PROT_ALL)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># write machine code to be emulated to memory</span></span><br><span class="line">    mu.mem_write(address, code)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># set eax to 1</span></span><br><span class="line">    mu.reg_write(UC_X86_REG_EAX, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Running emulation for the first time&quot;</span>)</span><br><span class="line">    mu.emu_start(address, address+<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Emulation done. Below is the CPU context&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; EAX = 0x%x&quot;</span> %(mu.reg_read(UC_X86_REG_EAX)))</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Saving CPU context&quot;</span>)</span><br><span class="line">    saved_context = mu.context_save()</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Pickling CPU context&quot;</span>)</span><br><span class="line">    pickled_saved_context = pickle.dumps(saved_context)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Running emulation for the second time&quot;</span>)</span><br><span class="line">    mu.emu_start(address, address+<span class="number">1</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Emulation done. Below is the CPU context&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; EAX = 0x%x&quot;</span> %(mu.reg_read(UC_X86_REG_EAX)))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Unpickling CPU context&quot;</span>)</span><br><span class="line">    saved_context = pickle.loads(pickled_saved_context)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; Modifying some register.&quot;</span>)</span><br><span class="line">    saved_context.reg_write(UC_X86_REG_EAX, <span class="number">0xc8c8</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; CPU context restored. Below is the CPU context&quot;</span>)</span><br><span class="line">    mu.context_restore(saved_context)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&gt;&gt;&gt; EAX = 0x%x&quot;</span> %(mu.reg_read(UC_X86_REG_EAX)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">except</span> UcError <span class="keyword">as</span> e:</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;ERROR: %s&quot;</span> % e)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>context_save</code>：保存当前位置的所有上下文信息，这里使用<code>pickle</code>库是为了将保存的内容进行序列化。</li>
+<li><code>context_restore</code>：将上下文信息载入到当前执行环境中。本示例表明上下文信息可以在不同次执行中相互使用。</li>
+</ul>
+<h1 id="4-其他-api"><a class="markdownIt-Anchor" href="#4-其他-api"></a> 4. 其他 API</h1>
+<ul>
+<li><code>mem_protect</code>：设置某段地址的访问权限。参数有地址、长度、权限类型。</li>
+<li><code>hook_del</code>：删除某个 Hook。</li>
+<li><code>mem_regions</code>：返回当前模拟器的内存状态，返回的是一个生成器，每次调用<code>next</code>后获取一个内存区域的地址、长度与权限。</li>
+<li><code>ctl_xxx</code>：一系列方法，用于获取/设置一些配置，如内存、架构等。</li>
+<li><code>mmio_map</code>：映射一块用于 IO 的内存空间。包含 6 个参数：
+<ul>
+<li><code>address</code>：起始地址</li>
+<li><code>size</code>：大小</li>
+<li><code>read_cb</code>：用于读的回调函数</li>
+<li><code>user_data_read</code>：传递给读回调函数的用户自定义数据</li>
+<li><code>write_cb</code>：用于写的回调函数</li>
+<li><code>user_data_write</code>：传递给写回调函数的用户自定义数据</li>
+</ul>
+</li>
+<li><code>query</code>：查询引擎内部状态，只有 1 个参数表示查询的对象，可查询架构、处理器模式、超时时间、内存页大小，使用<code>UC_QUERY_xxx</code>形式传入</li>
+</ul>
+<p>可以看出，Unicorn 轻量到甚至没有实现自行加载 ELF 文件的 API，更多地是用于调试。在实际使用中，它不如以其为基础的更为成熟的仿真工具好用。</p>
+<p>下面是一位 Android 大神的 blog，其中包含了开发基于 Unicorn 的简易调试器与 Android so 库的加载器：<a target="_blank" rel="noopener" href="https://bbs.kanxue.com/thread-253868.htm">链接</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/07/19/Ghidra%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8C%97/" rel="prev" title="Ghidra使用指北">
+      <i class="fa fa-chevron-left"></i> Ghidra使用指北
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-hello-unicorn"><span class="nav-number">1.</span> <span class="nav-text"> 1. Hello-Unicorn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-instruction-hooks"><span class="nav-number">2.</span> <span class="nav-text"> 2. Instruction-Hooks</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-snapshot"><span class="nav-number">3.</span> <span class="nav-text"> 3. Snapshot</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-%E5%85%B6%E4%BB%96-api"><span class="nav-number">4.</span> <span class="nav-text"> 4. 其他 API</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">159</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:07</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
