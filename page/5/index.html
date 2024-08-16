@@ -150,6 +150,484 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC3%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第3章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:44:29 / 修改时间：09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:29+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>3.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>3 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-3-恶意代码及其分类"><a class="markdownIt-Anchor" href="#chapter-3-恶意代码及其分类"></a> Chapter 3 恶意代码及其分类</h1>
+<h2 id="31-定义"><a class="markdownIt-Anchor" href="#31-定义"></a> 3.1 定义</h2>
+<p>恶意代码，指为达到恶意目的而专门设计的程序或代码<br />
+<strong>注意</strong>：正常的软件也会引发安全问题，但大多数情况下都并非是作者有意为之。<br />
+<strong>分类</strong>：病毒、蠕虫、木马、后门、Rootkit、流氓软件、僵尸、Exploit等。</p>
+<p><strong>练习题</strong><br />
+<strong>1.</strong> 某公司开发了一款社交软件，为了在该软件产生bug时能够更加及时反馈信息，该公司在这款软件中设计了一个后门，并同时开发另一款配套软件用于将bug信息（程序产生bug时的内存状态等）上报至该公司的服务器。软件的后门就是为这个配套软件准备的。这款配套软件______（填是或不是）恶意代码，理由是________________。某黑客组织通过逆向分析发现了这款社交软件的漏洞并编写程序用于远程控制计算机，这个程序_______（填是或不是）恶意代码。</p>
+<p>答案：不是；该配套软件的目的并非恶意；是</p>
+<h2 id="32-功能"><a class="markdownIt-Anchor" href="#32-功能"></a> 3.2 功能</h2>
+<h3 id="恶意代码的攻击目的"><a class="markdownIt-Anchor" href="#恶意代码的攻击目的"></a> 恶意代码的攻击目的：</h3>
+<ul>
+<li>恶作剧，炫耀自己的技术（如熊猫烧香病毒）</li>
+<li>经济利益（如WannaCry病毒）</li>
+<li>商业竞争</li>
+<li>政治目的</li>
+<li>军事目的等</li>
+</ul>
+<p><strong>练习题</strong><br />
+<strong>2.</strong> 上世纪末，美国在塞尔维亚进行军事行动时轰炸我南联盟大使馆，令无数国人愤慨。消息传出，中国红客联盟应声出动，对美国政府网站发动了DDoS攻击，并成功在政府网页上贴上了中国国旗的图片。这个过程中涉及的恶意代码的攻击目的是_________________。</p>
+<p>答案：政治目的</p>
+<h3 id="攻击目标"><a class="markdownIt-Anchor" href="#攻击目标"></a> 攻击目标：</h3>
+<ul>
+<li>个人计算机</li>
+<li>服务器</li>
+<li>移动智能终端（如手机平板等）</li>
+<li>智能设备（如车联网、智能家居、手环等）</li>
+<li>通信设备（路由器、交换机等）</li>
+<li>安全设备等（如防火墙、IDS、IPS、VDS等）
+<ul>
+<li>IDS：intrusion detection system，入侵检测系统，是一种对网络传输进行即时监视，在发现可疑传输时发出警报或者采取主动反应措施的网络安全设备。</li>
+<li>IPS：Intrusion Prevention System，入侵防御系统，能够监视网络或网络设备的网络资料传输行为的计算机网络安全设备，能够及时的中断、调整或隔离一些不正常或是具有伤害性的网络资料传输行为。</li>
+<li>VDS：Virus Detection System，病毒检测系统，能够对网络传输中的数据进行计算机病毒相关检测的设备型产品形态的总称。</li>
+</ul>
+</li>
+</ul>
+<h3 id="攻击目标范围"><a class="markdownIt-Anchor" href="#攻击目标范围"></a> 攻击目标范围：</h3>
+<ul>
+<li>定点攻击（指定邮件、域名、IP、QQ等，或服务器列表等）</li>
+<li>群体攻击（如可传播的病毒、木马、蠕虫，钓鱼攻击等）</li>
+</ul>
+<p><strong>练习题</strong><br />
+<strong>3.</strong> 某黑客组织攻破了某公司的服务器，获取了其产品所有用户的用户名与密码信息。由于很多人习惯在多个平台的账户使用同一个密码，黑客于是拿着这些密码在QQ、网易等平台上尝试登录这些用户的其他账户，这被称为撞库攻击。这种攻击属于___________（填“定点攻击”或“群体攻击”）</p>
+<p>答案：定点攻击<br />
+<strong>注意</strong>：定点攻击和群体攻击的区分<strong>不是通过攻击的个体数量来区分，而是通过被攻击的个体是否能够被提前确定来区分</strong>。群体攻击中，无论是会传播的病毒木马还是钓鱼攻击，黑客在病毒、木马等被制作出来时不知道被攻击的对象是谁。</p>
+<h3 id="恶意代码的攻击功能"><a class="markdownIt-Anchor" href="#恶意代码的攻击功能"></a> 恶意代码的攻击功能：</h3>
+<ul>
+<li>获取数据
+<ul>
+<li>静态数据，如文件、数据库数据等</li>
+<li>动态数据，如口令、内存、计算机网络流量、通信网络数据、可移动存储介质、隔离电脑等</li>
+</ul>
+</li>
+<li>破坏系统
+<ul>
+<li>删除或修改数据</li>
+<li>破坏系统服务，如通用Web服务系统、数据库系统、特定行业服务系统（如工控系统）</li>
+<li>破坏支撑设备，如网络设备，线路等</li>
+</ul>
+</li>
+<li>动态控制与渗透拓展攻击路径等
+<ul>
+<li>中间系统</li>
+<li>相关人员</li>
+</ul>
+</li>
+</ul>
+<p><strong>静态数据和动态数据的区别</strong>：静态数据是指在运行过程中主要作为控制或参考用的数据,它们在很长的一段时间内不会变化，一般不随运行而变。动态数据包括所有在运行中发生变化的数据以及在运行中需要输入、输出的数据及在联机操作中要改变的数据。（来源：百度百科）</p>
+<h2 id="33-恶意代码的分类"><a class="markdownIt-Anchor" href="#33-恶意代码的分类"></a> 3.3 恶意代码的分类</h2>
+<h3 id="1计算机病毒"><a class="markdownIt-Anchor" href="#1计算机病毒"></a> 1.计算机病毒</h3>
+<p>一组<strong>能够进行自我传播</strong>、<strong>需要用户干预</strong>来触发执行的破坏性程序或代码。</p>
+<p>例：CIH（破坏BIOS系统）、熊猫烧香等</p>
+<h3 id="2-网络蠕虫"><a class="markdownIt-Anchor" href="#2-网络蠕虫"></a> 2. 网络蠕虫</h3>
+<p>一组<strong>能够进行自我传播</strong>、<strong>不需要用户干预</strong>即可触发执行的破坏性程序或代码。</p>
+<p>例：SQL蠕虫王、震网病毒（攻击工控系统）、Stuxnet等</p>
+<p><font color=red>病毒和蠕虫最大的区别就是是否需要用户干预才能执行。“计算机蠕虫可以独立运行，并能把自身的一个包含所有功能的版本传播到另外的计算机上”，“计算机病毒是一段代码，能把自身加到其他程序包括操作系统上；它不能独立运行，需要由它的宿主程序运行来激活它”，可以将二者与生物界的蠕虫和病毒联系起来理解。</font></p>
+<h3 id="3-木马特洛伊木马"><a class="markdownIt-Anchor" href="#3-木马特洛伊木马"></a> 3. 木马（特洛伊木马）</h3>
+<p>是指一类<strong>看起来具有正常功能</strong>，但实际上隐藏着很多用户不希望功能的程序。通常由控制端和被控制端两端组成。</p>
+<p>例：灰鸽子（能够监控摄像头、桌面、键盘输入等）、冰河等</p>
+<p><font color=red>木马和前两种恶意代码的主要区别在于表面的伪装能力。实际上破坏的能力与前两种相当。百度百科给出的定义是：木马病毒是指<strong>隐藏在正常程序中</strong>的一段具有特殊功能的恶意代码，是具备破坏和删除文件、发送密码、记录键盘和攻击Dos等特殊功能的后门程序。</font></p>
+<h3 id="4-后门"><a class="markdownIt-Anchor" href="#4-后门"></a> 4. 后门</h3>
+<p>使得攻击者可以对系统进行非授权访问的一类程序。</p>
+<p>例：Bits、WinEggDrop、Tini等</p>
+<p><font color=red>木马和后门的区别在于隐蔽性和欺骗性上。后门存在本来就是要隐藏自身，便于攻击者随时访问；而木马有时甚至会诱惑用户去运行某些程序。</font></p>
+<h3 id="5rootkit"><a class="markdownIt-Anchor" href="#5rootkit"></a> 5.RootKit</h3>
+<p>通过修改现有的操作系统软件，使攻击者获得访问权并隐藏在计算机中的程序。</p>
+<p>例：RootKit、Hkdef、ByShell等</p>
+<h3 id="6-僵尸程序恶意网页拒绝服务程序黑客工具广告软件间谍软件等其他恶意代码"><a class="markdownIt-Anchor" href="#6-僵尸程序恶意网页拒绝服务程序黑客工具广告软件间谍软件等其他恶意代码"></a> 6. 僵尸程序，恶意网页，拒绝服务程序，黑客工具，广告软件，间谍软件等其他恶意代码</h3>
+<ul>
+<li>僵尸程序：是指恶意控制功能的程序代码，能够自动执行预定义的功能、可以被预定义的命令控制</li>
+<li>间谍软件：以主动收集用户个人信息、相关机密文件或隐私数据为主，搜集到的数据会主动传送到指定服务器。</li>
+<li>广告软件：未经用户允许，下载并安装或与其他软件捆绑通过弹出式广告或以其他形式进行商业广告宣传的程序。</li>
+<li>流氓软件：具有一定的实用价值但具备电脑病毒和黑客软件的部分特征的软件（特别是难以卸载），处在合法软件和电脑病毒之间的灰色地带。</li>
+<li>Exploit：精心设计的用于利用特定漏洞以对目标系统进行控制的程序。</li>
+<li>黑客工具：各类直接或间接用于网络和主机渗透的软件，如各类扫描器、后门植入工具、密码嗅探器、权限提升工具等</li>
+</ul>
+<p><font color=red>注意诸如黑客工具、广告软件等也属于恶意代码。很多广告软件强行向用户推送广告，以此来获得收益，在用户眼中算是可见的比较“流氓”的一种行为。而黑客工具也是恶意代码的原因是其“恶意”的对象可能不是本机而是被攻击的对象。要注意广告软件和流氓软件的区别：流氓软件——虽然流氓，但你还是需要，即存在一定价值；广告软件：可能没有价值，而且还随便下东西弹窗。<font></p>
+<p><strong>练习题</strong><br />
+<strong>4.</strong> 根据下列对于恶意代码的描述，判断其属于哪种恶意代码：<br />
+(1) 某同学将U盘插入学校工程实训中心的电脑后，发现U盘中所有文件夹后标注文件类型为“exe可执行文件”，点击后电脑中关键数据被窃取。__________<br />
+(2) 某人在手机上通过QQ邮箱下载apk文件并安装后，QQ号被盗。__________<br />
+(3) 专门用于向指定IP地址发动DDoS攻击的程序__________<br />
+(4) 各大高校频频爆出的“O泡果奶事件”中涉及的程序__________<br />
+(5) 能够在后台下载各类广告游戏软件的某款盗版软件__________<br />
+(6) 某人打开电脑后发现鼠标与键盘无法控制电脑，似乎有人远程控制电脑进行各种违法操作。经过紧急处理后发现有一个恶意代码程序将自身设置为开机自启动。__________<br />
+(7) 某公司企业员工运行某个常用程序后发现服务器突然遭受大量DDoS攻击，电脑中弹出索要钱财的对话框。__________<br />
+(8) 某同学在靶场攻击服务器靶机的某个含有漏洞的服务时专门编写的程序__________<br />
+(9) 由某国政府开发的用于窃听电脑语音通话的软件__________</p>
+<p>答案：木马、木马、黑客工具、木马、广告软件、蠕虫、病毒、Exploit、间谍软件</p>
+<h2 id="34-相关法律条文"><a class="markdownIt-Anchor" href="#34-相关法律条文"></a> 3.4 相关法律条文</h2>
+<p>第二百八十五条 违反国家规定，侵入国家事务、国防建设、尖端科学技术领域的计算机信息系统的，处三年以下有期徒刑或者拘役。</p>
+<p>第二百八十六条 违反国家规定，对计算机信息系统功能进行删除、修改、增加、干扰，造成计算机信息系统不能正常运行，后果严重的，<strong>处五年以下有期徒刑或者拘役；后果特别严重的，处五年以上有期徒刑。</strong></p>
+<p>违反国家规定，对计算机信息系统中存储、处理或者传输的数据和应用程序进行删除、修改、增加的操作，后果严重的，依照前款的规定处罚。</p>
+<p>故意制作、传播计算机病毒等破坏性程序，影响计算机系统正常运行，后果严重的，依照第一款的规定处罚。</p>
+<p>刑法修正案（七）：在刑法第二百八十五条中增加两款作为第二款、第三款：“违反国家规定，侵入前款规定以外的计算机信息系统或者采用其他技术手段，获取该计算机信息系统中存储、处理或者传输的数据，或者对该计算机信息系统实施非法控制，<strong>情节严重的，处三年以下有期徒刑或者拘役，并处或者单处罚金；情节特别严重的，处三年以上七年以下有期徒刑，并处罚金。</strong></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/" class="post-title-link" itemprop="url">软件安全——第2章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:44:11 / 修改时间：09:47:34" itemprop="dateCreated datePublished" datetime="2023-03-03T09:44:11+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">软件安全</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.9k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="chapter-2-软件安全基础知识"><a class="markdownIt-Anchor" href="#chapter-2-软件安全基础知识"></a> Chapter 2 软件安全基础知识</h1>
+<h2 id="21-系统引导与控制权"><a class="markdownIt-Anchor" href="#21-系统引导与控制权"></a> 2.1 系统引导与控制权</h2>
+<h3 id="bios"><a class="markdownIt-Anchor" href="#bios"></a> BIOS</h3>
+<p>Basic Input &amp; Output System：基本输入输出系统，存储在主板BIOS Flash或ROM芯片中，其为计算机提供最为底层和直接的硬件设置和控制。</p>
+<p><strong>在启动计算机时，BIOS会进行自检工作</strong>：检测系统中的一些关键设备是否存在以及是否能够正常工作，进行初始化并将控制权交给后续引导程序</p>
+<ul>
+<li><strong>显卡及其他相关设备</strong>初始化</li>
+<li>显示<strong>系统BIOS启动画面</strong>，含系统BIOS版本号、类型、序列号等</li>
+<li>检测<strong>CPU</strong>类型和工作频率，内存容量，将结果显示在屏幕之上</li>
+<li>检测系统中安装的一些<strong>标准硬件设备和即插即用设备</strong>（硬盘、光盘、软驱、串并行接口等）</li>
+<li>根据用户指定顺序从硬盘/软盘/光驱启动，若从硬盘启动，则将控制权交由硬盘主引导程序。</li>
+</ul>
+<h3 id="mbr"><a class="markdownIt-Anchor" href="#mbr"></a> MBR</h3>
+<p>Master Boot Record：硬盘主引导程序，位于硬盘的<strong>第一个扇区</strong>。</p>
+<ul>
+<li>用于从主分区表中定位活动分区</li>
+<li>装载活动分区的引导程序，并移交控制权</li>
+</ul>
+<h3 id="dbr"><a class="markdownIt-Anchor" href="#dbr"></a> DBR</h3>
+<p>DOS Boot Record（OBR/PBR）：活动分区引导程序，位于分区的<strong>第一个扇区</strong>。</p>
+<ul>
+<li>用于加载操作系统引导程序，准备将控制权移交给操作系统。Windows XP的NTLDR和Windows 10的bootmgr</li>
+</ul>
+<h3 id="操作系统引导"><a class="markdownIt-Anchor" href="#操作系统引导"></a> 操作系统引导</h3>
+<ul>
+<li>将处理器以<strong>16位内存模式扩展为32（64）位内存模式</strong></li>
+<li>启动小型文件系统驱动，以<strong>识别FAT32和NTFS系统</strong></li>
+<li>读取<strong>boot.ini</strong>，进行多操作系统选择（或hiberfil.sys恢复休眠）</li>
+<li><strong>检测和配置硬件</strong>（NT或XP系统，则运行：-NTDETECT.COM，将硬件信息提交给NTLDR，写入HKEY_LOCAL_MACHINE中Hardware中）</li>
+</ul>
+<h3 id="系统内核加载"><a class="markdownIt-Anchor" href="#系统内核加载"></a> 系统内核加载</h3>
+<ul>
+<li>NTLDR加载<strong>内核程序</strong>NTOSKRNL.EXE以及硬件抽象层HAL.dll等</li>
+<li>读取并加载HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet下面指定的<strong>驱动程序</strong></li>
+<li>NTLDR将把<strong>控制权传递</strong>给NTOSKRNL.EXE，至此引导过程结束</li>
+</ul>
+<h3 id="windows系统装载"><a class="markdownIt-Anchor" href="#windows系统装载"></a> Windows系统装载</h3>
+<ul>
+<li>创建系统环境变量</li>
+<li>启动<strong>win32.sys</strong>（windows子系统内核模式）</li>
+<li>启动<strong>csrss.exe</strong>（windows子系统用户模式）</li>
+<li>启动winlogon.exe等一系列程序，显示图标等</li>
+<li>启动需要自启动的windows服务</li>
+<li>启动本地安全认证Lsass.exe</li>
+<li>显示登录界面等</li>
+<li>登录后启动当前用户环境下的自启动程序</li>
+<li>用户自行触发执行各种应用程序</li>
+</ul>
+<h3 id="font-colorred恶意代码获取控制权的方式font"><a class="markdownIt-Anchor" href="#font-colorred恶意代码获取控制权的方式font"></a> <font color=red>恶意代码获取控制权的方式</font></h3>
+<ul>
+<li>在计算机系统引导阶段获取控制权</li>
+<li>在操作系统启动阶段获取控制权</li>
+<li>在用户应用程序执行阶段获取控制权</li>
+</ul>
+<h2 id="22-80x86处理器工作模式"><a class="markdownIt-Anchor" href="#22-80x86处理器工作模式"></a> 2.2 80x86处理器工作模式</h2>
+<p>实地址模式、保护模式、虚拟8086模式<br />
+其中除保护模式外均为向下兼容8086处理器而设计。</p>
+<h3 id="实地址模式"><a class="markdownIt-Anchor" href="#实地址模式"></a> 实地址模式</h3>
+<ul>
+<li>80x86处理器于复位和加电时使用</li>
+<li>寻址方式：段地址+偏移地址，可寻址2<sup>20</sup>=1MB空间</li>
+<li>不能进行内存分页管理</li>
+<li>没有优先级的定义，所有指令均在ring0状态工作</li>
+<li><strong>如何切换到保护模式</strong>：在实地址模式下初始化控制寄存器，GDTR、LDTR等管理寄存器以及页表，之后置位CR0寄存器的保护模式使能位（第0位）</li>
+</ul>
+<h3 id="保护模式"><a class="markdownIt-Anchor" href="#保护模式"></a> 保护模式</h3>
+<ul>
+<li>80x86的常态工作模式</li>
+<li>32位的处理器支持32位寻址，可寻址空间：4GB</li>
+<li>支持内存分页机制，能够支持虚拟内存</li>
+<li>支持优先级机制，能够进行任务环境隔离</li>
+<li><strong>如何切换到实模式</strong>：修改CR0寄存器的保护模式使能位即可</li>
+</ul>
+<h3 id="虚拟8086模式"><a class="markdownIt-Anchor" href="#虚拟8086模式"></a> 虚拟8086模式</h3>
+<ul>
+<li>在保护模式下兼容80x86模式</li>
+<li><strong>作为任务在保护模式下运行</strong>，相当于开启了一个8086模式的虚拟机</li>
+<li>能够使用内存分页机制为每一个虚拟8086模式任务分配1MB的内存</li>
+</ul>
+<h2 id="23-windows内存结构和管理"><a class="markdownIt-Anchor" href="#23-windows内存结构和管理"></a> 2.3 Windows内存结构和管理</h2>
+<h3 id="dos实模式内存管理"><a class="markdownIt-Anchor" href="#dos实模式内存管理"></a> DOS实模式内存管理</h3>
+<p><img src="https://img-blog.csdnimg.cn/4b547698ae2e4b68b97695849fea12c1.png" alt="" /></p>
+<h3 id="windows虚拟地址空间布局"><a class="markdownIt-Anchor" href="#windows虚拟地址空间布局"></a> Windows虚拟地址空间布局</h3>
+<p>windows的32位系统共4GB内存中用户空间和内核空间各占2GB，其中用户空间在低地址处（Linux用户空间为3GB）</p>
+<h3 id="windows程序在内存中的映像"><a class="markdownIt-Anchor" href="#windows程序在内存中的映像"></a> Windows程序在内存中的映像</h3>
+<p><img src="https://img-blog.csdnimg.cn/4c7b91f5faea4978b30f165b8e2212f8.png" alt="" /></p>
+<h3 id="cpu特权级别与内存访问"><a class="markdownIt-Anchor" href="#cpu特权级别与内存访问"></a> CPU特权级别与内存访问</h3>
+<p>操作系统将处理器存取模式划分为用户模式（ring3）和内核模式（ring0）。用户应用程序仅能访问用户区地址，内核程序可以访问所有内存地址、硬件，使用所有处理器指令。</p>
+<h3 id="用户区内存的内容"><a class="markdownIt-Anchor" href="#用户区内存的内容"></a> 用户区内存的内容</h3>
+<ul>
+<li>应用程序代码</li>
+<li>dll文件代码</li>
+<li>全局变量</li>
+<li>线程栈</li>
+</ul>
+<p><font color=red>不同程序的内存相互隔离，能够从一个程序影响另一个程序很难。</font></p>
+<h3 id="内核区内存的内容"><a class="markdownIt-Anchor" href="#内核区内存的内容"></a> 内核区内存的内容</h3>
+<p>内核区数据为所有进程共享，含操作系统内核、线程调度、内存管理、文件系统、网络系统等支持代码。用户态代码无法访问。</p>
+<h3 id="font-colorred虚拟地址和物理地址的转换font"><a class="markdownIt-Anchor" href="#font-colorred虚拟地址和物理地址的转换font"></a> <font color=red>虚拟地址和物理地址的转换</font></h3>
+<p>x86 windows使用<font color=red>二级页表</font>的方式进行转换，可将虚拟地址转译为物理地址。<br />
+32位地址由：<strong>页目录索引（最高10位）、页表索引（中间10位）、字节索引（最低12位）<strong>构成。x86系统中默认分页大小为4KB，故页内字节索引为</strong>最低12位</strong>。<br />
+页目录基地址通过<strong>CR3寄存器</strong>获取，通过页目录索引找到页目录项（<strong>PDE</strong>），转到相应的页表索引。页目录是一个长度为1024的数组。【注意：页目录中存放的是每一个页表的起始地址，页表的存放可能是离散的】<br />
+在页表中通过页表索引找到页表项（<strong>PTE</strong>），指向虚拟地址所映射的物理地址。每个页表也是一个长度为1024的数组。【页表中存放的就是物理地址】<br />
+再加上字节索引，就能够映射到具体的物理地址中的某一个字节。<br />
+存放PDE和PTE的地址称为页帧号（<strong>PFN</strong>）<br />
+<img src="https://img-blog.csdnimg.cn/72b8e16c4efc4bfabf00912aeb5766b0.png" alt="" /></p>
+<h3 id="font-colorred思考题font"><a class="markdownIt-Anchor" href="#font-colorred思考题font"></a> <font color=red>思考题</font></h3>
+<ol>
+<li>windows编程时malloc实际上能支持的内存大小不大于2GB，因为用户能够分配的空间只有2GB，但这2GB中还包含代码、其他数据、控制信息等，因此这2GB无法全部被分配。</li>
+<li>不断增加物理内存，不能增加malloc分配的最大内存大小，因为机器字长的限制，每个程序的内存大小均为4GB，与物理地址的大小无关。</li>
+<li>增加物理内存能够让系统运行更加流畅，因为减少了换页的次数。（换页：<strong>在物理内存空间紧张时，操作系统会将目前访问次数不多或正在挂起的进程的内存空间暂时转移到外存中，以提升当前正在运行进程的速度。</strong>）</li>
+</ol>
+<h2 id="24-磁盘的物理和逻辑结构"><a class="markdownIt-Anchor" href="#24-磁盘的物理和逻辑结构"></a> 2.4 磁盘的物理和逻辑结构</h2>
+<h3 id="物理结构"><a class="markdownIt-Anchor" href="#物理结构"></a> 物理结构</h3>
+<p>硬盘：控制代码的静态存储仓库，内含<strong>系统引导代码</strong>和用户存储的各类代码和数据等。同时硬盘也是恶意代码争夺控制权的中心</p>
+<p><strong>外部结构</strong>：接口（电源接口+数据接口）、硬盘控制电路、固定面板</p>
+<ul>
+<li>接口：PATA并行接口、SATA串行接口，并行接口传输速度比串行慢</li>
+<li>固定面板：保证盘片和机构的稳定运行，包括产品基本信息，如版号、生产日期等<br />
+<strong>内部结构</strong>：盘片、磁头、盘片主轴、控制电机、磁头控制器、数据转换器。</li>
+</ul>
+<h3 id="逻辑结构"><a class="markdownIt-Anchor" href="#逻辑结构"></a> 逻辑结构</h3>
+<p><strong>寻址方式</strong>：</p>
+<ul>
+<li><strong>CHS寻址</strong>：柱面、磁头、扇区。<img src="https://img-blog.csdnimg.cn/3fe7d4c98db14f8e988bca22dd7dcdc5.png" alt="" />
+<ul>
+<li>磁头有256个，柱面（磁道）有1024环，扇区有63个，每扇区存储512字节数据，故可以寻址最多8064MB空间。</li>
+</ul>
+</li>
+<li>对于老式硬盘而言，每个磁道的扇区数量相等，这样位于外圈的磁道会产生空间浪费，相比内圈的磁道存储密度低得多。因此当前硬盘采用等密度结构，寻址方式采用<strong>线性逻辑块寻址</strong>：以扇区为单位进行<strong>线性寻址</strong>（有地址翻译器使两种寻址方式能够兼容）</li>
+</ul>
+<p>CHS寻址与线性寻址（LBA）的转换关系<br />
+LBA实际上就是给每一个扇区进行编号，使得通过编号能够唯一确定一个扇区的位置。转换时扇区为最小单位，其上为磁头，最高为柱面。相邻扇区的LBA之差为1，相同扇区、相邻磁头的LBA之差为63；相同扇区、相同磁头、相邻柱面的LBA之差为63*255。</p>
+<p><strong>硬盘的分区结构</strong></p>
+<ul>
+<li><font color=red>MBR分区</font>
+<ul>
+<li>主引导扇区：位于柱面0，磁头0，扇区1（第一个扇区），这个扇区中包含：
+<ul>
+<li>MBR引导程序：前446字节</li>
+<li>DPT（硬盘分区表）：之后64字节</li>
+<li>结束标志：最后两个字节“55AA”</li>
+</ul>
+</li>
+<li>基本分区</li>
+<li>扩展分区</li>
+</ul>
+</li>
+<li>GPT分区
+<ul>
+<li>描述各个分区的基本信息：分区开始位置、总的扇区数、分区类型等，每个分区信息占16字节</li>
+</ul>
+</li>
+</ul>
+<h2 id="25-fat32文件系统"><a class="markdownIt-Anchor" href="#25-fat32文件系统"></a> 2.5 FAT32文件系统</h2>
+<p>FAT32文件系统由三个部分组成：引导扇区、FAT、数据存储区（以簇为单位，每一簇含多个扇区，存储目录项和文件数据）</p>
+<h3 id="簇"><a class="markdownIt-Anchor" href="#簇"></a> 簇</h3>
+<p>将磁盘空间以一定数目（2的整数次方）的扇区为单位进行划分，这样的单位即为簇。是文件空间分配的最小单位。</p>
+<p><strong>簇既不能太大，也不能太小。如果太大，存储很小的文件时也需要一整个簇，浪费空间；如果太小，则容易产生磁盘碎片。</strong></p>
+<h3 id="fat表"><a class="markdownIt-Anchor" href="#fat表"></a> FAT表</h3>
+<p>文件分配表：在FAT文件系统中用于磁盘数据索引和定位而引进的一种单向链表式结构。</p>
+<p>FAT表存储所有簇的占用情况，若表项的值为0，则说明这个簇处于空闲状态。</p>
+<p>对于FAT32文件系统，32位共可表示4GB大小的簇号空间。</p>
+<h3 id="簇链"><a class="markdownIt-Anchor" href="#簇链"></a> 簇链</h3>
+<p>一个文件占用簇号形成的单向链表。</p>
+<p>在文件占用簇对应簇号的FAT项下填写下一个簇的簇号即可实现。若为最后一个簇，则填“0xFFFFFF0F”</p>
+<h3 id="文件的存储过程"><a class="markdownIt-Anchor" href="#文件的存储过程"></a> 文件的存储过程</h3>
+<ul>
+<li>定位足够的空闲簇</li>
+<li>创建文件目录（<strong>文件目录：记录系统中所有文件的名字及其存放地址的目录表，可以理解为需要另外记录下文件的首簇</strong>）</li>
+<li>FAT中构建簇链</li>
+<li>写入文件数据</li>
+</ul>
+<h3 id="被删除文件如何恢复"><a class="markdownIt-Anchor" href="#被删除文件如何恢复"></a> 被删除文件如何恢复</h3>
+<ul>
+<li>文件删除并非将簇中的文件内容全部销毁，而是将文件名首字节修改为E5后删除FAT表项与簇链，实际内容还在，但文件系统已无法索引。</li>
+<li>即使通过文件恢复程序将删除文件恢复，也不可能得到文件名的第一个字节。</li>
+<li>若要彻底删除文件，需要将原来文件占有的簇重新覆写，有时需要覆写几次才能够实现真正删除。</li>
+</ul>
+<h2 id="26-pe文件格式"><a class="markdownIt-Anchor" href="#26-pe文件格式"></a> 2.6 PE文件格式</h2>
+<p>参见第4章</p>
+<p>VA = Image Base + RVA</p>
+<h2 id="27-elf文件格式"><a class="markdownIt-Anchor" href="#27-elf文件格式"></a> 2.7 ELF文件格式</h2>
+<p>elf文件是Linux可执行文件，含可执行文件、动态链接库文件.so等。</p>
+<p>有段头部表用于将不同段映射到内存中的不同地址。</p>
+<p>代码段有：.init、.text、.rodata等，均为只读。其中.rodata存储在C代码中直接定义的数据，如printf(“Hello”)中的字符串&quot;Hello&quot;即存储在.rodata中，不可修改。<br />
+数据段有：.data、.bss等，其中.data存放已经初始化的全局变量和静态变量，.bss存放未初始化的。<br />
+此外还有如.symtab、.debug、.line等不加载到存储器的符号表和调试信息。</p>
+<hr />
+<p><strong>练习题</strong><br />
+<strong>1.</strong> 某程序内存中页目录索引为0x3f的值为0x74465000；则在_______到_______范围内的虚拟内存需要通过0x74465000指向的页表来查找其对应的物理地址；已知0x74465AB8地址处DWORD的值为0x83BF4000，那么物理地址为0x83BF4212对应的虚拟地址为_______（6分）</p>
+<p>分析：虚拟地址最高10位对应的是页目录的索引，故最高10位应为0x3f，对应的虚拟内存地址应该为<code>0x0FC00000~0x0FFFFFFF</code>共0x400000字节的空间（一个页4KB，即0x1000，这里是0x400（1024）页）。（0x74465AB8-0x74465000）/4=0x2AE，则其对应的应该是<code>0x0FC00000+0x2AE*0x1000~0x0FC00000+0x2AF*0x1000-1</code>的地址空间，即<code>0x0FEAE000~0x0FEAEFFF</code>这4KB空间，对应的应该是物理地址<code>0x83BF4000~0x83BF4FFF</code>，故物理地址为0x83BF4212在内存中的映射应该为0x0FEAE212。</p>
+<p><strong>2.</strong> 在一个FAT文件系统中，一个簇的大小为4KB。现在向该文件系统中存入若干个大小在4~16KB之间的文件，每个文件的大小在这个范围内呈均匀分布。当存入文件足够多时，求该FAT文件系统中被浪费的空间占被占用的所有簇的总空间的比例。（4分）</p>
+<p>分析：由于文件大小可能为4~16KB中的任何数，因此其大小在4~8KB的概率为1/3，8~12KB的概率为1/3，12~16KB的概率为1/3。即一个文件需要分配2、3、4个簇的概率均为1/3，对于每一个文件，其最后一个簇中被浪费的空间的期望值应该为簇大小的一半，即1KB，故分配2、3、4个簇时空间利用率的期望值分别为3/4，5/6，7/8。因此总的空间利用率期望值为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><mn>3</mn></mfrac><mo>×</mo><mo stretchy="false">(</mo><mfrac><mn>3</mn><mn>4</mn></mfrac><mo>+</mo><mfrac><mn>5</mn><mn>6</mn></mfrac><mo>+</mo><mfrac><mn>7</mn><mn>8</mn></mfrac><mo stretchy="false">)</mo><mo>=</mo><mfrac><mn>59</mn><mn>72</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{1}{3}\times(\frac{3}{4}+\frac{5}{6}+\frac{7}{8})=\frac{59}{72}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mopen">(</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">4</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">6</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">8</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">5</span><span class="mord mtight">9</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，被浪费的空间占总占用空间的<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>13</mn><mn>72</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{13}{72}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.190108em;vertical-align:-0.345em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">7</span><span class="mord mtight">2</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">3</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，超过1/6。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%BD%AF%E4%BB%B6%E5%AE%89%E5%85%A8%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2796,391 +3274,10 @@ if(A) then (if(B) then C else D) else E</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4-6%E7%AB%A0%E4%B9%A0%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4-6%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">操作系统原理——第4~6章习题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 09:12:58 / 修改时间：09:16:17" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:58+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="第4-6章习题详解"><a class="markdownIt-Anchor" href="#第4-6章习题详解"></a> 第4-6章习题详解</h1>
-<h2 id="1"><a class="markdownIt-Anchor" href="#1"></a> 1.</h2>
-<p>A：进程的运行全过程不可重现，正确，进程在运行过程中由于可能需要与其他进程之间进行互动产生影响，无法准确模拟出该进程在执行过程中不断变化的计算机环境。<br />
-B：一个程序只能生成一个进程，错误，一个程序可以生成多个进程，且这些进程可能可以同时运行。<br />
-C：进程具有异步性，正确。<font color=red>进程的四大特征分别是动态性、并发性、异步性、独立性</font>。<br />
-D：多个并发进程共享CPU，正确。一台计算机一个时刻可能会有很多进程同时进行，进程之间需要共享CPU以保证运行。</p>
-<h2 id="2"><a class="markdownIt-Anchor" href="#2"></a> 2.</h2>
-<p>A：单CPU的系统处于运行态的进程可能有多个，错误，单CPU系统中任何一个时刻只能有一个进程获得CPU资源，因此处于运行态的进程在一个时刻只能有1个，但操作系统可以通过CPU分时让用户误以为有多个进程在同时运行。<br />
-B：进程在整个生存期间会根据不同条件转换状态，正确，当进程继续执行需要的条件不满足时，会从运行状态转向阻塞状态，当条件满足时又会转到就绪状态，就绪状态的进程通过获取CPU资源成为运行状态。<br />
-C：阻塞态的进程即使给它CPU也无法运行，正确，进程处于阻塞态说明该进程的运行条件不满足，即使有CPU资源也无法运行。<br />
-D：处于就绪态的进程都在等待CPU，正确，处于就绪态的进程只需要CPU资源即可运行。</p>
-<h2 id="3"><a class="markdownIt-Anchor" href="#3"></a> 3.</h2>
-<p>A：PCB是进程存在的标志，正确，一个PCB标识一个进程，不可能存在没有PCB的进程。<br />
-B：Linux定义PCB的结构是task_struct，正确，task_struct是Linux系统的进程控制块。<br />
-C：进程生存期间PCB中变量的值一直不变，错误，PCB中可能发生改变的变量有且不仅限于：nice值、运行状态、counter值等。<br />
-D：创建进程的时候创建PCB数据结构，正确。</p>
-<h2 id="4"><a class="markdownIt-Anchor" href="#4"></a> 4.</h2>
-<p>A：进程生存期间都受操作系统控制，正确。进程的整个生存过程中所有状态改变等都受到操作系统的调度。<br />
-B：进程控制采用原语实现，正确。进程控制是一个不可中断的操作，无论是上锁加信号量还是状态转换都应该使用原语实现。<br />
-C：进程被唤醒的条件与进程被阻塞的条件一致，正确。进程因为什么条件不满足被阻塞，就会因为这个条件被满足而被唤醒。<br />
-D：进程被撤销时操作系统收回其占用资源，但不释放相应的PCB。错误，进程被撤销时即刻释放PCB，<font color=red>注意Linux中的exit函数并没有立即撤销该进程，而是让该进程变为僵尸状态，等待父进程的wait函数收集信息，因此exit函数执行后wait函数能够获得已经结束进程的退出码与该选项陈述并不冲突</font>。</p>
-<h2 id="5"><a class="markdownIt-Anchor" href="#5"></a> 5.</h2>
-<p>D：应用程序的初始化，错误，应用程序的初始化过程中应该只有一个线程在工作，不需要多线程。需要多线程的场景有：<font color=red>需要多个功能并发的地方、需要改善窗口交互性的地方、需要改善程序结构的地方、涉及多核CPU应用的地方</font>。</p>
-<h2 id="6"><a class="markdownIt-Anchor" href="#6"></a> 6.</h2>
-<p>A：临界资源是一个共享变量，正确，临界资源指的是多个进程共享使用的资源，<font color=red>这里的资源对于一个进程而言只能够使用变量进行访问</font>。无论这个变量本身是共享的，还是这个变量对应的资源是共享的，这里统一理解为共享变量。<br />
-B：临界区是程序中的某个片段，正确，程序在临界区访问临界资源。<br />
-C：临界区中含有对临界资源的存取操作，正确。<br />
-D：线程内定义的变量可以是临界资源，错误，临界资源指的是<font color=red>被多个进程竞争访问的</font>具有逻辑排他性的资源，在线程中定义的变量只对本进程可见，而其他进程不可见。</p>
-<h2 id="7"><a class="markdownIt-Anchor" href="#7"></a> 7.</h2>
-<p>A：临界区不允许两个或多个进程同时进入。正确，注意临界区是用来访问临界资源的，而临界资源是互斥的，因此临界区不能有多个进程同时进入是没有问题的。<font color=red>因此使用信号量控制的代码段严格意义上说不能算是临界区</font>。<br />
-B：有限等待原则要求程序员将临界区设置的大一些，错误，应该是小一些，临界区小一些可以让进程处于临界区的时间减少，有利于进程运行。<br />
-C：让权等待可以让系统工作效率更高。正确，让权等待实际上是进程主动放弃CPU资源，这样可以让其他进程使用一段时间的CPU资源，实现虚假的多进程同时运行。<br />
-D：同一个线程可以设置不同的临界区。正确，同一个线程内设置不同的临界区可以用于处理不同的资源问题。</p>
-<h2 id="8"><a class="markdownIt-Anchor" href="#8"></a> 8.</h2>
-<p>A：锁机制设置一个标志表示临界区是否可用。正确，通过设置一个布尔类型的标志可以实现一个简易的锁。<br />
-B：锁机制只能解决进程互斥的问题。正确，锁机制只能与临界区搭配使用，解决资源互斥的问题。<br />
-C：锁机制满足忙则等待和空闲让进的原则。正确，当锁被激活时，满足忙则等待原则，锁空闲时满足空闲让进的原则。<br />
-D：锁机制满足有限等待和让权等待的原则。错误，锁机制不满足让权等待的原则，即进程不会主动让操作系统回收它使用资源的权利，只有进程自己解锁退出临界区才能让其他进程进入临界区。</p>
-<h2 id="9"><a class="markdownIt-Anchor" href="#9"></a> 9.</h2>
-<p>A：P-V操作是比锁机制更灵活的同步机制。正确，P-V操作不仅可以实现锁的功能（初始化时将信号量的值设置为1即可实现锁的功能），还能实现锁不能实现的功能，即控制最多有几个进程访问某个资源。<br />
-B：P-V操作可以用于控制进程之间的同步和互斥。正确。<br />
-C：P-V操作用来对信号灯和进程进行控制。正确，P-V可以用于控制信号灯，其作用类似于信号灯，如服务区场景，当服务区前面等待的车辆数量大于某个阈值时将信号灯设置为红灯，让车辆进入其他服务区，等待车辆数量较少时设置为绿灯。<br />
-D：P操作和V操作都可以使信号量加1。错误，P操作会使信号量-1，而V操作会使信号量+1。</p>
-<h2 id="10"><a class="markdownIt-Anchor" href="#10"></a> 10.</h2>
-<p>A：P操作可能会阻塞调用进程。正确，P操作的步骤是：信号量-1，如果信号量值小于0则将自身进程加入到信号量进程等待队列，如果大于等于0则继续执行。<br />
-B：V操作会把信号量+1。正确，V操作的步骤是：信号量+1，如果信号量值小于等于0则从队列中激活一个进程的运行，如果大于0则继续执行。<br />
-C：P操作可以唤醒一个进程。错误，P操作只能阻塞当前进程。<br />
-D：P操作和V操作在所有并发进程中成对出现。正确，对于一个信号量，在不同进程的代码中不可能只有P操作或只有V操作。</p>
-<h2 id="11"><a class="markdownIt-Anchor" href="#11"></a> 11.</h2>
-<p>A：一般在关键操作之前执行V操作。错误，一般在关键操作之后执行V操作释放资源。<br />
-B：一般在关键操作之后执行P操作。错误，一般在关键操作之前执行P操作锁定资源。<br />
-C：信号量S的定义可以随意定义。错误，信号量S在初始定义时不能定义为一个非正值，且具体值由资源本身决定。<br />
-D：信号量S的初值设置不正确可能导致进程并发过程出错。正确，如果将信号量设置为负数，则所有有关进程可能都将阻塞。</p>
-<h2 id="12"><a class="markdownIt-Anchor" href="#12"></a> 12.</h2>
-<p>A：fork函数具有两个返回值。正确，fork函数在父进程和子进程中具有不同的返回值。<br />
-B：wait函数会阻塞进程直到其一个子进程结束未知。正确，wait函数只有在一个子进程结束时才会返回。<br />
-C：exit函数可以在进程结束的时候传递参数给父进程。正确，exit函数在进程结束前的一瞬间将参数传递给父进程。<br />
-D：sleep函数会唤醒一个进程。错误，sleep函数用于将一个进程阻塞固定时间。</p>
-<h2 id="13"><a class="markdownIt-Anchor" href="#13"></a> 13.</h2>
-<p>A：资源数量不够不一定产生死锁。正确，死锁发生需要4个条件：<font color=red>互斥条件、不剥夺条件、部分分配条件、环路条件</font>。<br />
-B：每个死锁的进程一定在等待某个资源。正确，死锁的进程处于阻塞状态，阻塞状态就是在等待某个资源而阻塞。<br />
-C：每个死锁的进程一定持有某个资源。正确，死锁的进程一定持有资源，而参与死锁的进程中至少有两个进程持有资源。<font color=red>注意以下场景：进程1需要资源A，占用资源B，进程2需要资源B，占用资源A，二者死锁，此时进程3需要资源A，也会被阻塞，此时进程3不占有任何资源，但认为其并未参与死锁，可以说进程3因为死锁而被阻塞，但不能说它参与了死锁，因为死锁不是因为进程3引起的</font>。<br />
-D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要五个哲学家都不是只拿一根筷子就不会发生死锁。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC9%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC9%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第9章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 09:12:41 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:41+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-9-文件系统"><a class="markdownIt-Anchor" href="#chapter-9-文件系统"></a> Chapter 9 文件系统</h1>
-<h2 id="91-文件系统概念"><a class="markdownIt-Anchor" href="#91-文件系统概念"></a> 9.1 文件系统概念</h2>
-<p>文件是信息存放形式，由若干信息项有序组成。<br />
-文件具有唯一文件名。<br />
-用户通过读写指针存取文件的信息项。</p>
-<p>按照文件用途可以将文件分为系统文件、库文件和用户文件。<br />
-按照文件操作权限可以将文件分为只读文件、只写文件、可执行文件、可读可写文件、不保护文件。<br />
-按照文件存储时间可以将文件分为永久文件和临时文件。<br />
-按照文件性质可以将文件分为普通文件、目录文件和设备文件。</p>
-<p>文件系统是管理文件的机构，负责文件的创建、撤销、读写、修改、复制和存取控制等，这方便用户以文件名来存取文件。还负责管理文件存储设备的空间和存取，可以高效利用存储空间和高效存取文件。</p>
-<h2 id="92-文件逻辑结构与存取方式"><a class="markdownIt-Anchor" href="#92-文件逻辑结构与存取方式"></a> 9.2 文件逻辑结构与存取方式</h2>
-<ul>
-<li>记录式文件：按照记录读写文件
-<ul>
-<li>信息项是记录，一个记录中包含有若干成员。</li>
-<li>分为定长记录文件和非定长记录文件。文件头部需要保存记录数量和记录长度等说明信息</li>
-<li>记录式文件较浪费存储空间</li>
-</ul>
-</li>
-<li>流式文件：按照字节读写文件
-<ul>
-<li>信息项是字节。</li>
-<li>文件长度就是字节的数量，在现代操作系统中所有文件均为流式文件，由应用程序根据特定的文件格式（协议）去解释和处理文件。</li>
-</ul>
-</li>
-</ul>
-<p>文件存取方式可以采用两种方式：顺序存取和随机存取。</p>
-<ul>
-<li>顺序存取：从前到后的顺序依次对文件信息项进行读写，直到定位到目标信息位置。</li>
-<li>随机存取：直接定位到文件目标信息项进行读写，适合流式文件或定长记录文件。</li>
-</ul>
-<h4 id="存储介质"><a class="markdownIt-Anchor" href="#存储介质"></a> 存储介质</h4>
-<ul>
-<li>一盘磁带、一个磁盘组或一张软盘都成为<font color=red>一卷</font>，卷是存储介质的物理单位。</li>
-<li><font color=red>块</font>是存储介质上连续信息所构成的一个区域，也叫做物理记录。
-<ul>
-<li>块是内存和外存进行信息交换的物理单位，每一次总是交换一块或整数块信息。</li>
-<li>块大小要考虑用户使用方式、数据传输效率和存储设备等因素。</li>
-</ul>
-</li>
-<li>文件存储结构密切地依赖于存储设备的物理特性，存储设备的特性也决定了文件的存取方法。</li>
-</ul>
-<h4 id="顺序存储设备"><a class="markdownIt-Anchor" href="#顺序存储设备"></a> 顺序存储设备</h4>
-<p>顺序存储设备严格依赖信息物理位置进行定位和读/写的存储设备，<font color=red>只有在前面的物理块被存取访问过之后，才能存取后续的物理块的内容</font>。如磁带机。按照顺序存取方式访问时速度比较高，而随机方式或按键存取方式效率不高。</p>
-<p>优点：存储容量大，稳定可靠，文件卷可拆卸，便于保存和块长变化范围较大等，被广泛用于保存档案文件的存储介质。</p>
-<h4 id="随机存储设备"><a class="markdownIt-Anchor" href="#随机存储设备"></a> 随机存储设备</h4>
-<p>随机存储设备允许文件系统<font color=red>直接存取对应存储介质上的任意物理块</font>。磁盘机是一种典型随机存储设备，存取任何一个物理块所需时间几乎不依赖于此信息的位置。这是一种高速、大容量、旋转型的存储设备，将信息记录在盘片上，每一个盘片都有正反两面，若干张盘片可以组成一个盘组。</p>
-<h4 id="驱动机构"><a class="markdownIt-Anchor" href="#驱动机构"></a> 驱动机构</h4>
-<ul>
-<li>
-<p>固定磁头型：磁头不可移动，每一个磁道上设置一个磁头，优点是速度快，但结构复杂，目前使用较少</p>
-</li>
-<li>
-<p>可移动磁头型：每一个盘面有一个读写磁头，所有读写磁头被固定在唯一移动臂，读写磁头按照从上到下的次序从0开始编号，称为<font color=red>磁头号</font>。每一个盘面有很多磁道，从0开始按照由外向里的次序顺序编号称为<font color=red>磁道号</font>，不同盘面上具有相同编号的磁道在一个柱面上，把盘面上的磁道号称为<font color=red>柱面号</font>。所有的磁头都在一个柱面上，<font color=red>每一次只有其中的一个磁头可以进行读写操作</font>。</p>
-</li>
-<li>
-<p>在磁盘初始化时每一个盘面划分为相等数量的扇区，按照磁盘旋转的方向从1开始给各个扇区编号，称为<font color=red>扇区号</font>。</p>
-</li>
-<li>
-<p>每一个扇区各个磁道均可存放相等数量字符，称为块。块是信息读写的最小单位。</p>
-</li>
-<li>
-<p>一个具有<font color=red>正反两个盘面的盘片，有2个磁头</font>。</p>
-</li>
-<li>
-<p>需要确定一个块的位置需要给出3个参数：<font color=red>柱面号、磁头号、扇区号</font>。实际上相当于柱面坐标系中的r、z、θ。</p>
-</li>
-</ul>
-<p>若扇区数量s，磁头数量t，则第i个柱面、第j个磁头、第k个扇区的块号<font color=red><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi><mo>=</mo><mo stretchy="false">(</mo><mi>i</mi><mo>×</mo><mi>t</mi><mo>+</mo><mi>j</mi><mo stretchy="false">)</mo><mo>×</mo><mi>s</mi><mo>+</mo><mo stretchy="false">(</mo><mi>k</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">b=(i\times t+j)\times s+(k-1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathnormal">b</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal">i</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69841em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">t</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.05724em;">j</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.03148em;">k</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span></span></span></span></font>，即索引从小到大依次为：扇区、磁头、柱面。也可以根据块号确定该块在磁盘中的位置。第P块在磁盘上的位置为：<font color=red>柱面号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mi>P</mi><mi mathvariant="normal">/</mi><mo stretchy="false">(</mo><mi>s</mi><mo>×</mo><mi>t</mi><mo stretchy="false">)</mo><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[P/(s×t)]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">/</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mclose">]</span></span></span></span>，磁头号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">[</mo><mo stretchy="false">(</mo><mi>P</mi><mi mathvariant="normal">%</mi><mo stretchy="false">(</mo><mi>s</mi><mo>×</mo><mi>t</mi><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mi>s</mi><mo stretchy="false">]</mo></mrow><annotation encoding="application/x-tex">[(P\%(s×t))/s]</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">[</span><span class="mopen">(</span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">%</span><span class="mopen">(</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal">t</span><span class="mclose">)</span><span class="mclose">)</span><span class="mord">/</span><span class="mord mathnormal">s</span><span class="mclose">]</span></span></span></span>，扇区号<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi mathvariant="normal">%</mi><mi>s</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">P\%s+1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.08333em;"></span><span class="mord mathnormal" style="margin-right:0.13889em;">P</span><span class="mord">%</span><span class="mord mathnormal">s</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span></font>。</p>
-<p>存储介质的容量逐渐增大，且有些像磁带一样可以随时更换，因此也可以作为保存档案，成为一种高速、大容量、可以拆卸的海量存储器。</p>
-<h2 id="93-文件的物理结构"><a class="markdownIt-Anchor" href="#93-文件的物理结构"></a> 9.3 文件的物理结构</h2>
-<p>文件的物理结构类型有连续文件、串联文件、索引文件3种。</p>
-<h3 id="连续文件"><a class="markdownIt-Anchor" href="#连续文件"></a> 连续文件</h3>
-<p><font color=red>文件存放于连续的存储块中</font>。文件目录记录文件长度（块数）和第一个存储块号。<br />
-优点：支持顺序存取和随机存取，顺序存取速度快。<br />
-缺点：文件不易动态增加，预留空间容易造成浪费，造成外部碎片。</p>
-<h3 id="串联文件"><a class="markdownIt-Anchor" href="#串联文件"></a> 串联文件</h3>
-<p>串联文件存放于离散存储块中，<font color=red>每一个存储块包含一个链接指针记录下一块的位置。</font><br />
-优点：可以显著消除存储碎片，创建文件时无需知道文件长度，文件动态增加时可以动态分配存储块，支持文件增删改等操作。<br />
-缺点：适合顺序访问模式（随机访问效率极低），如果某一个链接指针损坏，文件后面将无法访问。FAT文件系统就是使用这种形式保存文件。</p>
-<h3 id="索引文件"><a class="markdownIt-Anchor" href="#索引文件"></a> 索引文件</h3>
-<p>文件存放于不连续存储块中，<font color=red>系统建立索引表记录文件逻辑块和存储块的对应关系</font>。索引文件=索引表+数据区。文件目录记录文件名和对应的索引表。</p>
-<p>索引表的组织——多级索引。</p>
-<ul>
-<li>直接索引</li>
-<li>一级间接索引：文件目录项中有一组表项，其内容登记第一级索引表块的块号</li>
-<li>二级间接索引</li>
-</ul>
-<p>优点：读取索引文件需要索引表，支持顺序存取和随机存取，支持文件动态增长、插入、删除等要求。<br />
-缺点：索引表占据额外空间。</p>
-<p>其中ext文件系统就采用索引文件方式。</p>
-<h2 id="94-磁盘空间存储管理"><a class="markdownIt-Anchor" href="#94-磁盘空间存储管理"></a> 9.4 磁盘空间存储管理</h2>
-<h3 id="空闲文件目录"><a class="markdownIt-Anchor" href="#空闲文件目录"></a> 空闲文件目录</h3>
-<p>将连续空闲区组成的特殊文件称为<font color=red>空闲文件</font>。存储设备上的所有空闲文件就代表了存储设备上的全部空闲空间。<br />
-<font color=red>空闲文件目录</font>是为空闲文件建立的目录，记录空闲文件的首个存储块号和存储块数量。</p>
-<h3 id="空闲块链"><a class="markdownIt-Anchor" href="#空闲块链"></a> 空闲块链</h3>
-<p>把所有空闲存储块使用链表存储在一起，当<font color=red>申请空闲块时从链表头部取空闲块，回收时将块加载链表尾部</font>。</p>
-<h3 id="位示图"><a class="markdownIt-Anchor" href="#位示图"></a> 位示图</h3>
-<p>内存中划出一块区域，<font color=red>每一位对应存储块使用情况</font>（占用或空闲），空闲时对应位为1，否则为0。<br />
-根据磁盘总块数决定位示图中有多少个字。</p>
-<h3 id="成组链接法"><a class="markdownIt-Anchor" href="#成组链接法"></a> 成组链接法</h3>
-<p>把空闲块分为<font color=red>若干组</font>，每一组第一个空闲块登记下一组空闲块的块号的空闲块数。在UNIX系统中100个空闲块为1组，余下不足100块的块号和块数登记在一个专用块中。<br />
-分配：将专用块读取到存储器，当需要分配空闲块时，直接在内存中找到哪些块是空闲的，每分配一块空闲块数-1。把一组中第一个空闲块分配前将登记在该块中的下一组块号即块数保存到专用块中。当一组空闲块被分配完后把专用块内容读取到内存储器。<br />
-回收：归还一块登记后将当前块数+1即可。如果当前组已经满100块将内存中的内容写到归还的那一块，作为新组中的第一块。</p>
-<h2 id="95-文件目录"><a class="markdownIt-Anchor" href="#95-文件目录"></a> 9.5 文件目录</h2>
-<p>文件目录功能：实现“按名存取”：用户向系统提供文件名，就能够找到指定文件</p>
-<p>目录文件：文件目录可以看做一个特殊文件。</p>
-<p>文件目录项：描述文件的基本信息、使用信息和存取控制信息的数据结构</p>
-<ul>
-<li>基本信息：文件名、存储位置等</li>
-<li>使用信息：属性、大小、建立时间、修改时间</li>
-<li>存取控制信息</li>
-</ul>
-<p>目录结构</p>
-<ul>
-<li>单级目录
-<ul>
-<li>最简单的目录结构，这种组织形式下全部文件都登记在同一个目录中。便于简单和实现，但查找速度慢，不允许重名和文件共享。</li>
-</ul>
-</li>
-<li>二级目录
-<ul>
-<li>第一级称为主目录，第二级目录称为用户目录，即每一个用户有一个子目录，可以解决文件重名的问题，不同用户可以使用相同的名字。</li>
-</ul>
-</li>
-<li>多级目录（树形目录）
-<ul>
-<li>二级目录结构的扩充，目录结构是倒置的树，根节点为主目录（根目录）</li>
-</ul>
-</li>
-</ul>
-<p>文件全名：从根目录到文件为止整个通路上面所有目录、子目录和文件的名字用&quot;/&quot;顺序连接构成的字符串称为文件全名。路径名分为绝对路径名和相对路径名。</p>
-<p>文件属性：指定文件的类型、操作特性和存取保护等信息。一般保存在文件的目录中。</p>
-<p>文件操作：创建、写、读、文件定位、删除、截短、属性设置和读取<br />
-目录操作：创建、删除</p>
-<p>对于文件的访问系统首先需要检查访问权限（文件保护）：读写执行、追加、修改等</p>
-<h2 id="96-linux索引文件inode"><a class="markdownIt-Anchor" href="#96-linux索引文件inode"></a> 9.6 Linux索引文件/inode</h2>
-<p>索引文件=索引结点inode+若干数据块<br />
-索引结点inode：有一个指针指向数据块，指示文件的存储位置</p>
-<p>创建文件时需要分配1个索引结点inode和1个数据块，数据块记录文件的内容。如果文件增长太大，则为该文件分配更多的数据块，分配更多的索引表。<br />
-创建目录与文件相同，分配1个索引结点inode和1个数据块，如果目录中的文件太多，则为该目录存放更多的数据块。</p>
-<p>虚拟文件系统（VFS）：覆盖在逻辑文件系统之上面向操作系统的接口层，对于每一个逻辑文件系统的实现细节进行抽象，使得不同的文件系统在Linux核心以及其他进程看来都相同。</p>
-<ul>
-<li>索引结点（inode）包含一个文件的所有信息</li>
-<li>超级块描述物理文件系统的信息，每一个物理文件系统都有自己的超级块，建立文件系统时需要创建该超级块，卸载文件系统删除超级块</li>
-<li>目录项为文件名与结点的对应位置</li>
-<li>文件对象表示进程已经打开的文件</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3246,7 +3343,7 @@ D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">159</span>
+          <span class="site-state-item-count">161</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -3304,7 +3401,7 @@ D：五个哲学家并发就餐的场景一定会发生死锁。错误，只要�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:07</span>
+    <span title="站点阅读时长">22:29</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>

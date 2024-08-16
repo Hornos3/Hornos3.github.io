@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Reverse for panic! 在Rust中，panic!宏一般在程序发生无法恢复的错误后。下面将简单分析panic!的执行流程。 123fn main() &amp;#123;    panic!(&quot;This is a panic&quot;);&amp;#125; 输出结果： 123456789101112thread &amp;#x27;main&amp;#x27; panicked at src&#x2F;mai">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rust逆向学习 (8)">
+<meta property="og:url" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="Reverse for panic! 在Rust中，panic!宏一般在程序发生无法恢复的错误后。下面将简单分析panic!的执行流程。 123fn main() &amp;#123;    panic!(&quot;This is a panic&quot;);&amp;#125; 输出结果： 123456789101112thread &amp;#x27;main&amp;#x27; panicked at src&#x2F;mai">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/4.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/5.png">
+<meta property="article:published_time" content="2024-08-16T01:53:02.000Z">
+<meta property="article:modified_time" content="2024-08-16T12:30:35.049Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Rust逆向学习 (8) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rust逆向学习 (8)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-08-16 09:53:02 / 修改时间：20:30:35" itemprop="dateCreated datePublished" datetime="2024-08-16T09:53:02+08:00">2024-08-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Rust%E9%80%86%E5%90%91%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">Rust逆向系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="reverse-for-panic"><a class="markdownIt-Anchor" href="#reverse-for-panic"></a> Reverse for <code>panic!</code></h1>
+<p>在Rust中，<code>panic!</code>宏一般在程序发生无法恢复的错误后。下面将简单分析<code>panic!</code>的执行流程。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="built_in">panic!</span>(<span class="string">&quot;This is a panic&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">thread &#x27;main&#x27; panicked at src/main.rs:2:5:</span><br><span class="line">This is a panic</span><br><span class="line">stack backtrace:</span><br><span class="line">   0: rust_begin_unwind</span><br><span class="line">             at /rustc/3f5fd8dd41153bc5fdca9427e9e05be2c767ba23/library/std/src/panicking.rs:652:5</span><br><span class="line">   1: core::panicking::panic_fmt</span><br><span class="line">             at /rustc/3f5fd8dd41153bc5fdca9427e9e05be2c767ba23/library/core/src/panicking.rs:72:14</span><br><span class="line">   2: lab_01::main</span><br><span class="line">             at ./src/main.rs:2:5</span><br><span class="line">   3: core::ops::function::FnOnce::call_once</span><br><span class="line">             at /rustc/3f5fd8dd41153bc5fdca9427e9e05be2c767ba23/library/core/src/ops/function.rs:250:5</span><br><span class="line">note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.</span><br></pre></td></tr></table></figure>
+<p>下面是主函数的逆向：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">example::main::h6a0467faef132dda:</span><br><span class="line">        push    rax</span><br><span class="line">        lea     rdi, [rip + .L__unnamed_8]</span><br><span class="line">        lea     rdx, [rip + .L__unnamed_9]</span><br><span class="line">        mov     rax, qword ptr [rip + std::panicking::begin_panic::h98e090bdb7d9058a@GOTPCREL]</span><br><span class="line">        mov     esi, 15</span><br><span class="line">        call    rax</span><br><span class="line">        </span><br><span class="line">.L__unnamed_8:</span><br><span class="line">        .ascii  &quot;This is a panic&quot;</span><br><span class="line">        </span><br><span class="line">.L__unnamed_12:</span><br><span class="line">        .ascii  &quot;/app/example.rs&quot;</span><br><span class="line"></span><br><span class="line">.L__unnamed_9:</span><br><span class="line">        .quad   .L__unnamed_12</span><br><span class="line">        .asciz  &quot;\017\000\000\000\000\000\000\000\n\000\000\000\005\000\000&quot;</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>panic!</code>宏实际上调用的是<code>std::panicking::begin_panic</code>，调用的参数一共有3个，前2个用于表示传入的字符串切片，而第3个则无法直接通过内容猜测功能。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">std::panicking::begin_panic::h98e090bdb7d9058a:</span><br><span class="line">        sub     rsp, 40</span><br><span class="line">        mov     qword ptr [rsp + 32], rdx</span><br><span class="line">        mov     rax, qword ptr [rsp + 32]</span><br><span class="line">        mov     qword ptr [rsp + 8], rdi</span><br><span class="line">        mov     qword ptr [rsp + 16], rsi</span><br><span class="line">        mov     qword ptr [rsp + 24], rax</span><br><span class="line">        mov     rax, qword ptr [rip + std::sys_common::backtrace::__rust_end_short_backtrace::h09ebf2ec8a3c7498@GOTPCREL]</span><br><span class="line">        lea     rdi, [rsp + 8]</span><br><span class="line">        call    rax</span><br><span class="line">        </span><br><span class="line">std::sys_common::backtrace::__rust_end_short_backtrace::h09ebf2ec8a3c7498:</span><br><span class="line">        push    rax</span><br><span class="line">        mov     rax, qword ptr [rip + std::panicking::begin_panic::&#123;&#123;closure&#125;&#125;::hc0962f7734eef2e0@GOTPCREL]</span><br><span class="line">        call    rax</span><br><span class="line">        ud2</span><br><span class="line">        </span><br><span class="line">std::panicking::begin_panic::&#123;&#123;closure&#125;&#125;::hc0962f7734eef2e0:</span><br><span class="line">        sub     rsp, 56</span><br><span class="line">        mov     rcx, qword ptr [rdi]</span><br><span class="line">        mov     rax, qword ptr [rdi + 8]</span><br><span class="line">        mov     qword ptr [rsp + 24], rcx</span><br><span class="line">        mov     qword ptr [rsp + 32], rax</span><br><span class="line">        mov     rcx, qword ptr [rsp + 24]</span><br><span class="line">        mov     rax, qword ptr [rsp + 32]</span><br><span class="line">        mov     qword ptr [rsp + 8], rcx</span><br><span class="line">        mov     qword ptr [rsp + 16], rax</span><br><span class="line">        mov     rcx, qword ptr [rdi + 16]</span><br><span class="line">        lea     rsi, [rip + .L__unnamed_1]</span><br><span class="line">        mov     rax, qword ptr [rip + std::panicking::rust_panic_with_hook::h51af00bcb4660c4e@GOTPCREL]</span><br><span class="line">        xor     r9d, r9d</span><br><span class="line">        mov     edx, r9d</span><br><span class="line">        lea     rdi, [rsp + 8]</span><br><span class="line">        mov     r8d, 1</span><br><span class="line">        call    rax</span><br><span class="line">        jmp     .LBB3_3</span><br><span class="line">.LBB3_1:</span><br><span class="line">        mov     rdi, qword ptr [rsp + 40]</span><br><span class="line">        call    _Unwind_Resume@PLT</span><br><span class="line">        mov     rcx, rax</span><br><span class="line">        mov     eax, edx</span><br><span class="line">        mov     qword ptr [rsp + 40], rcx</span><br><span class="line">        mov     dword ptr [rsp + 48], eax</span><br><span class="line">        jmp     .LBB3_1</span><br><span class="line">.LBB3_3:</span><br><span class="line">        ud2</span><br></pre></td></tr></table></figure>
+<p>上面展示了前面的几个函数调用链，最终可以看到Rust调用了<code>rust_panic_with_hook</code>。通过堆栈回溯我们可以知道，回溯工作是在<code>rust_begin_unwind</code>中完成的。为了理解Rust是如何获取panic处的文件名、代码行数等信息的，我们需要首先了解有关堆栈回溯的相关技术，该部分内容可跳转至<a target="_blank" rel="noopener" href="https://blog.csdn.net/pwl999/article/details/107569603">资料</a>进行了解。需要注意的是，通过DWARF信息实现的堆栈回溯没有包含源代码目录以及行数的相关信息，这部分信息是在<code>.debug_line</code>中保存的。</p>
+<h1 id="reverse-for-resultt-e"><a class="markdownIt-Anchor" href="#reverse-for-resultt-e"></a> Reverse for <code>Result&lt;T, E&gt;</code></h1>
+<p><code>Result&lt;T, E&gt;</code>是Rust中一个非常重要的枚举类型，通常作为返回值使用，自带标识函数调用成功与否的信息。</p>
+<p>我们分析下面的Rust程序：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::fs::File;</span><br><span class="line"><span class="keyword">use</span> std::io::&#123;ErrorKind, Read&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = <span class="keyword">match</span> f &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(file) =&gt; file,</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(error) =&gt; <span class="keyword">match</span> error.<span class="title function_ invoke__">kind</span>() &#123;</span><br><span class="line">            ErrorKind::NotFound =&gt; <span class="keyword">match</span> File::<span class="title function_ invoke__">create</span>(<span class="string">&quot;hello.txt&quot;</span>) &#123;</span><br><span class="line">                <span class="title function_ invoke__">Ok</span>(fc) =&gt; fc,</span><br><span class="line">                <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;Problem creating the file: &#123;:?&#125;&quot;</span>, e),</span><br><span class="line">            &#125;,</span><br><span class="line">            other_error =&gt; <span class="built_in">panic!</span>(<span class="string">&quot;Problem opening the file: &#123;:?&#125;&quot;</span>, other_error),</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">file_content</span> = <span class="type">Vec</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    <span class="keyword">match</span> f.<span class="title function_ invoke__">read</span>(&amp;<span class="keyword">mut</span> file_content) &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(_) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;File length: &#123;&#125;&quot;</span>, file_content.<span class="title function_ invoke__">len</span>()),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(_) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Error while reading.&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="1.png" alt="" /></p>
+<p>首先可以明显地看到位于41行<code>File::open</code>的函数调用，第一个参数为返回值<code>Result</code>的指针，第二个参数则为传入的字符串切片。</p>
+<p><img src="2.png" alt="" /></p>
+<p>下面是一个大的判断语句，判断条件<code>gap0</code>实际上就是<code>Result</code>实例的索引值。观察代码可以发现，if条件成立后应该执行的是错误分支，否则执行正确分支。因此可以得出：<code>Result</code>索引值为1表示错误，0表示正确。</p>
+<p>我们首先查看一下错误分支。在源代码中，我们还针对错误的具体类型使用<code>match</code>语句进行分支。错误类型属于<code>Error</code>结构，其中调用了<code>kind</code>函数获取错误类型。第48行中<code>&amp;v3.gap0[8]</code>实际上就是<code>Error</code>实例的地址，位于<code>Result</code>枚举索引值的正后方，可以直接解引用获取<code>ErrorKind</code>枚举实例。</p>
+<p>第51行直接将枚举实例作为条件进行判断。下面是<code>ErrorKind</code>的部分Rust源码：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]</span></span><br><span class="line"><span class="meta">#[stable(feature = <span class="string">&quot;rust1&quot;</span>, since = <span class="string">&quot;1.0.0&quot;</span>)]</span></span><br><span class="line"><span class="meta">#[allow(deprecated)]</span></span><br><span class="line"><span class="meta">#[non_exhaustive]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">enum</span> <span class="title class_">ErrorKind</span> &#123;</span><br><span class="line">    <span class="comment">/// An entity was not found, often a file.</span></span><br><span class="line">    <span class="meta">#[stable(feature = <span class="string">&quot;rust1&quot;</span>, since = <span class="string">&quot;1.0.0&quot;</span>)]</span></span><br><span class="line">    NotFound,</span><br><span class="line">    </span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>NotFound</code>是第一个，索引值应该为0。而if的判断条件是不为0，因此这部分分支对应的是other_error部分，这从后面的字符串输出也可以看出。在第61行的<code>core::fmt::Arguments::new_v1::h6c1ad96880db1e98</code>函数调用中第2个参数就是<code>&quot;Problem opening the file: &quot;</code>的字符串切片。</p>
+<p>随后，第64行调用了<code>std::fs::File::create</code>创建文件，创建的结果保存在<code>v7</code>中，后面的if语句是在文件创建失败时进入，进一步验证了<code>Result</code>索引值为1代表错误的结论。</p>
+<p><img src="3.png" alt="" /></p>
+<p>在循环外，第91行即为调用<code>Vec::new()</code>创建<code>Vec</code>实例，下面的第92行调用了<code>deref</code>函数获取了<code>Vec</code>的切片。在源代码中并没有<code>deref</code>函数的直接调用，但由于<code>read</code>函数传入的参数实际上是<code>&amp;mut [u8]</code>而不是<code>Vec</code>，因此需要隐式调用<code>deref</code>。这里的第95行<code>read</code>参数解析失败，通过汇编代码可知其参数类型。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">.text:000000000000AC96 48 8D BC 24 28 01 00 00       lea     rdi, [rsp+258h+var_130]         ; retstr</span><br><span class="line">.text:000000000000AC9E E8 7D E3 FF FF                call    _ZN75_$LT$alloc__vec__Vec$LT$T$C$A$GT$$u20$as$u20$core__ops__deref__DerefMut$GT$9deref_mut17he73084c4a09ff985E ; _$LT$alloc..vec..Vec$LT$T$C$A$GT$$u20$as$u20$core..ops..deref..DerefMut$GT$::deref_mut::he73084c4a09ff985</span><br><span class="line">.text:000000000000AC9E</span><br><span class="line">.text:000000000000ACA3 48 89 54 24 18                mov     [rsp+258h+var_240], rdx</span><br><span class="line">.text:000000000000ACA8 48 89 44 24 20                mov     [rsp+258h+var_238], rax</span><br><span class="line">.text:000000000000ACAD EB 25                         jmp     short loc_ACD4</span><br><span class="line"></span><br><span class="line">.text:000000000000ACD4                               loc_ACD4:                               ; CODE XREF: lab_01::main::h059b97d6df6a6864+1ED↑j</span><br><span class="line">.text:000000000000ACD4 48 8B 54 24 18                mov     rdx, [rsp+258h+var_240]</span><br><span class="line">.text:000000000000ACD9 48 8B 74 24 20                mov     rsi, [rsp+258h+var_238]</span><br><span class="line">.text:000000000000ACDE 48 8D 05 7B 71 01 00          lea     rax, _ZN47_$LT$std__fs__File$u20$as$u20$std__io__Read$GT$4read17hae1516f05988cce4E ; _$LT$std..fs..File$u20$as$u20$std..io..Read$GT$::read::hae1516f05988cce4</span><br><span class="line">.text:000000000000ACE5 48 8D 7C 24 44                lea     rdi, [rsp+258h+var_214]</span><br><span class="line">.text:000000000000ACEA FF D0                         call    rax ; _$LT$std..fs..File$u20$as$u20$std..io..Read$GT$::read::hae1516f05988cce4 ; _$LT$std..fs..File$u20$as$u20$std..io..Read$GT$::read::hae1516f05988cce4</span><br><span class="line">.text:000000000000ACEA</span><br><span class="line">.text:000000000000ACEC 48 89 54 24 08                mov     [rsp+258h+var_250], rdx</span><br><span class="line">.text:000000000000ACF1 48 89 44 24 10                mov     [rsp+258h+var_248], rax</span><br><span class="line">.text:000000000000ACF6 EB 00                         jmp     short $+2</span><br></pre></td></tr></table></figure>
+<p>下面的if判断则是针对<code>read</code>函数返回值<code>Result</code>，条件成立代表错误。</p>
+<h1 id="reverse-for-operator"><a class="markdownIt-Anchor" href="#reverse-for-operator"></a> Reverse for Operator <code>?</code></h1>
+<p>在Rust中，<code>?</code>运算符能够简化错误传递的流程，使得源代码更加简练和优雅。理论上，<code>?</code>只起到了简化源代码书写的作用，下面进行验证。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::io;</span><br><span class="line"><span class="keyword">use</span> std::io::Read;</span><br><span class="line"><span class="keyword">use</span> std::fs::File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">read_username_from_file</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">String</span>, io::Error&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = <span class="keyword">match</span> f &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(file) =&gt; file,</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="keyword">return</span> <span class="title function_ invoke__">Err</span>(e),</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">match</span> f.<span class="title function_ invoke__">read_to_string</span>(&amp;<span class="keyword">mut</span> s) &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(_) =&gt; <span class="title function_ invoke__">Ok</span>(s),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(e) =&gt; <span class="title function_ invoke__">Err</span>(e),</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">read_username_from_file</span>()&#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(s) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(_) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Error!&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> std::io;</span><br><span class="line"><span class="keyword">use</span> std::io::Read;</span><br><span class="line"><span class="keyword">use</span> std::fs::File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">read_username_from_file</span>() <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;<span class="type">String</span>, io::Error&gt; &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">f</span> = File::<span class="title function_ invoke__">open</span>(<span class="string">&quot;hello.txt&quot;</span>)?;</span><br><span class="line">    <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">s</span> = <span class="type">String</span>::<span class="title function_ invoke__">new</span>();</span><br><span class="line">    f.<span class="title function_ invoke__">read_to_string</span>(&amp;<span class="keyword">mut</span> s)?;</span><br><span class="line">    <span class="title function_ invoke__">Ok</span>(s)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">fn</span> <span class="title function_">main</span>() &#123;</span><br><span class="line">    <span class="keyword">match</span> <span class="title function_ invoke__">read_username_from_file</span>()&#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(s) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;&#123;&#125;&quot;</span>, s),</span><br><span class="line">        <span class="title function_ invoke__">Err</span>(_) =&gt; <span class="built_in">println!</span>(<span class="string">&quot;Error!&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面两段代码的功能是完全相同的，只是后面一个使用了<code>?</code>运算符。</p>
+<p><img src="4.png" alt="" /></p>
+<p><img src="5.png" alt="" /></p>
+<p>上面是两段代码<code>read_username_from_file</code>的反汇编界面。对于不使用<code>?</code>运算符的源代码，其内容比较好理解。而<code>?</code>运算符实际上是利用了<code>Result</code>实现了<code>std::ops::Try</code>这个Trait的特点：</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[unstable(feature = <span class="string">&quot;try_trait_v2&quot;</span>, issue = <span class="string">&quot;84277&quot;</span>)]</span></span><br><span class="line"><span class="keyword">impl</span>&lt;T, E&gt; ops::Try <span class="keyword">for</span> <span class="title class_">Result</span>&lt;T, E&gt; &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Output</span> = T;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Residual</span> = <span class="type">Result</span>&lt;convert::Infallible, E&gt;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[inline]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_output</span>(output: <span class="keyword">Self</span>::Output) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(output)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[inline]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">branch</span>(<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> ControlFlow&lt;<span class="keyword">Self</span>::Residual, <span class="keyword">Self</span>::Output&gt; &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Ok</span>(v) =&gt; ControlFlow::<span class="title function_ invoke__">Continue</span>(v),</span><br><span class="line">            <span class="title function_ invoke__">Err</span>(e) =&gt; ControlFlow::<span class="title function_ invoke__">Break</span>(<span class="title function_ invoke__">Err</span>(e)),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在第22行，Rust调用了<code>_&lt;core::result::Result&lt;T, E&gt; as core::ops::try_trait::Try&gt;::branch</code>，从上面的实现源码可以看到<code>branch</code>通过<code>match</code>控制执行流。又因为如果结果为<code>Ok</code>时返回的是<code>Self::Residual</code>实例，后续要使用<code>Result</code>真正包装的实例还需要调用反汇编窗口26行的<code>_&lt;core::result::Result&lt;T, F&gt; as core::ops::try_trait::FromResidual&lt;core..result..Result&lt;core::convert::Infallible, E&gt;&gt;&gt;::from_residual</code>获取。</p>
+<h1 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h1>
+<p>本文简单分析了<code>panic!</code>以及<code>Result</code>。</p>
+<ul>
+<li><code>panic!</code>内部使用了x86的stack unwinding技术，可完成堆栈的回溯。另外通过<code>.debug_line</code>节可定位具体的行数。</li>
+<li><code>Result&lt;T, E&gt;</code>索引值为0表示<code>Ok</code>，1则表示<code>Err</code>。</li>
+<li><code>?</code>标识符由于使用了<code>std::ops::Try</code> Trait的函数，因此只能用于实现了这个Trait的结构，<code>Result</code>就是其一，还有<code>Option&lt;T&gt;</code>也实现了该Trait。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/02/qiling-%E5%AD%A6%E4%B9%A0-1/" rel="prev" title="qiling 学习 (1)">
+      <i class="fa fa-chevron-left"></i> qiling 学习 (1)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#reverse-for-panic"><span class="nav-number">1.</span> <span class="nav-text"> Reverse for panic!</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reverse-for-resultt-e"><span class="nav-number">2.</span> <span class="nav-text"> Reverse for Result&lt;T, E&gt;</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#reverse-for-operator"><span class="nav-number">3.</span> <span class="nav-text"> Reverse for Operator ?</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:29</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

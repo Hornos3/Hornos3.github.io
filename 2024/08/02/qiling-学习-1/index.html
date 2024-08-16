@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="qiling 是一个基于 Unicorn 开发的二进制文件仿真工具，与 Unicorn 不同，qiling 的功能更加完善更加易用。下面将对该 Python 库的主要 API 进行总结与学习。  A. 类 Qiling 这是 qiling 模拟器主类，将完成仿真的大部分主要操作。  A.1 构造方法 1234567891011121314151617181920212223def __init__">
+<meta property="og:type" content="article">
+<meta property="og:title" content="qiling 学习 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2024/08/02/qiling-%E5%AD%A6%E4%B9%A0-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="qiling 是一个基于 Unicorn 开发的二进制文件仿真工具，与 Unicorn 不同，qiling 的功能更加完善更加易用。下面将对该 Python 库的主要 API 进行总结与学习。  A. 类 Qiling 这是 qiling 模拟器主类，将完成仿真的大部分主要操作。  A.1 构造方法 1234567891011121314151617181920212223def __init__">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-02T07:23:52.000Z">
+<meta property="article:modified_time" content="2024-08-06T07:31:07.350Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/08/02/qiling-%E5%AD%A6%E4%B9%A0-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>qiling 学习 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/08/02/qiling-%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          qiling 学习 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-08-02 15:23:52" itemprop="dateCreated datePublished" datetime="2024-08-02T15:23:52+08:00">2024-08-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-08-06 15:31:07" itemprop="dateModified" datetime="2024-08-06T15:31:07+08:00">2024-08-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>16k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>15 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>qiling 是一个基于 Unicorn 开发的二进制文件仿真工具，与 Unicorn 不同，qiling 的功能更加完善更加易用。下面将对该 Python 库的主要 API 进行总结与学习。</p>
+<h1 id="a-类-qiling"><a class="markdownIt-Anchor" href="#a-类-qiling"></a> A. 类 <code>Qiling</code></h1>
+<p>这是 qiling 模拟器主类，将完成仿真的大部分主要操作。</p>
+<h2 id="a1-构造方法"><a class="markdownIt-Anchor" href="#a1-构造方法"></a> A.1 构造方法</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params"></span></span><br><span class="line"><span class="params">        self,</span></span><br><span class="line"><span class="params">        argv: <span class="type">Sequence</span>[<span class="built_in">str</span>] = [],</span></span><br><span class="line"><span class="params">        rootfs: <span class="built_in">str</span> = <span class="string">r&#x27;.&#x27;</span>,</span></span><br><span class="line"><span class="params">        env: MutableMapping[AnyStr, AnyStr] = &#123;&#125;,</span></span><br><span class="line"><span class="params">        code: <span class="type">Optional</span>[<span class="built_in">bytes</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        ostype: <span class="type">Optional</span>[QL_OS] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        archtype: <span class="type">Optional</span>[QL_ARCH] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        verbose: QL_VERBOSE = QL_VERBOSE.DEFAULT,</span></span><br><span class="line"><span class="params">        profile: <span class="type">Optional</span>[<span class="type">Union</span>[<span class="built_in">str</span>, Mapping]] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        console: <span class="built_in">bool</span> = <span class="literal">True</span>,</span></span><br><span class="line"><span class="params">        log_file: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        log_override: <span class="type">Optional</span>[<span class="string">&#x27;Logger&#x27;</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        log_plain: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        multithread: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        <span class="built_in">filter</span>: <span class="type">Optional</span>[<span class="built_in">str</span>] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        stop: QL_STOP = QL_STOP.NONE,</span></span><br><span class="line"><span class="params">        *,</span></span><br><span class="line"><span class="params">        endian: <span class="type">Optional</span>[QL_ENDIAN] = <span class="literal">None</span>,</span></span><br><span class="line"><span class="params">        thumb: <span class="built_in">bool</span> = <span class="literal">False</span>,</span></span><br><span class="line"><span class="params">        libcache: <span class="built_in">bool</span> = <span class="literal">False</span></span></span><br><span class="line"><span class="params"></span>):</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure>
+<p>一些常用参数的含义：</p>
+<ul>
+<li><code>argv</code>：命令的具体内容，对于控制台的命令，需要以空格分开并保存在列表中。如要执行<code>/bin/cat flag.txt</code>则需要传入<code>['/bin/cat', 'flag.txt']</code>。</li>
+<li><code>rootfs</code>：本次模拟的根目录，默认为当前目录。</li>
+<li><code>env</code>：环境变量，传入字典即可。</li>
+<li><code>code</code>：自定义代码，不能和<code>argv</code>同时指定，这个参数主要是用于执行机器码字节序列。</li>
+<li><code>ostype</code>：操作系统，传入<code>QL_OS</code>类型。</li>
+<li><code>archtype</code>：处理器架构，传入<code>QL_ARCH</code>类型。</li>
+<li><code>verbose</code>：输出信息的详细程度，如调试级别会比默认级别输出更多信息。传入<code>QL_VERBOSE</code>类型。</li>
+<li><code>profile</code>：配置项，可以保存在文件中传入文件名，也可以传入字典。</li>
+<li><code>console</code>：是否运行在终端，将输出内容显示在终端。</li>
+<li><code>log_file</code>：日志的输出文件。</li>
+<li><code>log_plain</code>：是否输出去除颜色的日志内容，当日志被保存到文件中时常用。</li>
+<li><code>multithread</code>：是否使用多线程。</li>
+<li><code>filter</code>：根据正则表达式筛选指定日志输出。</li>
+<li><code>endian</code>：端序。</li>
+<li><code>thumb</code>：模拟 ARM 架构时是否为 thumb 模式。</li>
+</ul>
+<p>这里与程序运行过程中关系最大的参数之一就是<code>profile</code>，我们可以在这里定义堆栈的地址、mmap的输出地址、网络配置等，<code>profile</code>参数如果为文件名，后缀应为<code>.ql</code>，文件实际格式为<code>yaml</code>。下面是默认的 Linux 配置文件：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">CODE</span>]</span><br><span class="line"><span class="comment"># ram_size 0xa00000 is 10MB</span></span><br><span class="line"><span class="string">ram_size</span> <span class="string">=</span> <span class="number">0xa00000</span></span><br><span class="line"><span class="string">entry_point</span> <span class="string">=</span> <span class="number">0x1000000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[<span class="string">OS64</span>]</span><br><span class="line"><span class="string">stack_address</span> <span class="string">=</span> <span class="number">0x7ffffffd0000</span></span><br><span class="line"><span class="string">stack_size</span> <span class="string">=</span> <span class="number">0x30000</span></span><br><span class="line"><span class="string">load_address</span> <span class="string">=</span> <span class="number">0x555555554000</span></span><br><span class="line"><span class="string">interp_address</span> <span class="string">=</span> <span class="number">0x7ffff7dd5000</span></span><br><span class="line"><span class="string">mmap_address</span> <span class="string">=</span> <span class="number">0x7fffb7dd6000</span></span><br><span class="line"><span class="string">vsyscall_address</span> <span class="string">=</span> <span class="number">0xffffffffff600000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[<span class="string">OS32</span>]</span><br><span class="line"><span class="string">stack_address</span> <span class="string">=</span> <span class="number">0x7ff0d000</span></span><br><span class="line"><span class="string">stack_size</span> <span class="string">=</span> <span class="number">0x30000</span></span><br><span class="line"><span class="string">load_address</span> <span class="string">=</span> <span class="number">0x56555000</span></span><br><span class="line"><span class="string">interp_address</span> <span class="string">=</span> <span class="number">0x047ba000</span></span><br><span class="line"><span class="string">mmap_address</span> <span class="string">=</span> <span class="number">0x90000000</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[<span class="string">KERNEL</span>]</span><br><span class="line"><span class="string">uid</span> <span class="string">=</span> <span class="number">1000</span></span><br><span class="line"><span class="string">gid</span> <span class="string">=</span> <span class="number">1000</span></span><br><span class="line"><span class="string">pid</span> <span class="string">=</span> <span class="number">1996</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[<span class="string">MISC</span>]</span><br><span class="line"><span class="string">current_path</span> <span class="string">=</span> <span class="string">/</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">[<span class="string">NETWORK</span>]</span><br><span class="line"><span class="comment"># override the ifr_name field in ifreq structures to match the hosts network interface name.</span></span><br><span class="line"><span class="comment"># that fixes certain socket ioctl errors where the requested interface name does not match the</span></span><br><span class="line"><span class="comment"># one on the host. comment out to avoid override</span></span><br><span class="line"><span class="string">ifrname_override</span> <span class="string">=</span> <span class="string">eth0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># To use IPv6 or not, to avoid binary double bind. ipv6 and ipv4 bind the same port at the same time</span></span><br><span class="line"><span class="string">bindtolocalhost</span> <span class="string">=</span> <span class="literal">True</span></span><br><span class="line"><span class="comment"># Bind to localhost</span></span><br><span class="line"><span class="string">ipv6</span> <span class="string">=</span> <span class="literal">False</span></span><br></pre></td></tr></table></figure>
+<p>非常令人不解的是，官方文档并没有详细给出 profile 配置文件中包含哪些有效的项。翻遍了整个互联网，居然没有人对 qiling 配置文件的所有选项进行总结，要想知道某个配置的名字，只能参考现有的 .ql 文件，外加直接搜索 qiling 源代码中的相关用法。加载中需要使用的项在仓库的<code>loader</code>目录下不同格式的二进制文件加载过程代码中可以找到，下面简单总结一下查到的所有配置文件项列表（可能不全）：</p>
+<h2 id="a2-profile-配置文件项"><a class="markdownIt-Anchor" href="#a2-profile-配置文件项"></a> A.2. profile 配置文件项</h2>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br></pre></td><td class="code"><pre><span class="line">所有格式通用：（os/os.py、os/posix/posix.py）</span><br><span class="line">[CODE]（Qiling构造函数需传入code参数）</span><br><span class="line">    entry_point: 程序入口点</span><br><span class="line">    ram_size: RAM的大小</span><br><span class="line">[MISC]</span><br><span class="line">    current_path: 当前路径（OS类型需要为支持POSIX的，包括Linux、FreeBSD、QNX、macOS、Windows、DOS）</span><br><span class="line">[KERNEL]</span><br><span class="line">    uid: uid号和euid号</span><br><span class="line">    gid: gid号和egid号</span><br><span class="line">    pid: pid号</span><br><span class="line">[NETWORK]</span><br><span class="line">    ipv6: 布尔值，是否支持ipv6</span><br><span class="line">    bindtolocalhost: 布尔值，是否绑定到本机IP</span><br><span class="line">    ifrname_override: 主机网络设备映射</span><br><span class="line"></span><br><span class="line">BLOB：（无操作系统的Bare Metal二进制文件）</span><br><span class="line">[CODE]</span><br><span class="line">    heap_size: 堆空间大小</span><br><span class="line"></span><br><span class="line">DOS：</span><br><span class="line">[COM]</span><br><span class="line">    start_cs: 初始CS值（要求后缀名为.DOS_COM）</span><br><span class="line">    start_ip: 初始IP值（要求后缀名为.DOS_COM）</span><br><span class="line">    start_sp: 初始SP值（要求后缀名为.DOS_COM）</span><br><span class="line">    stack_size: 栈大小</span><br><span class="line">[KERNEL]</span><br><span class="line">    ticks_per_second: 时钟频率</span><br><span class="line"></span><br><span class="line">ELF:</span><br><span class="line">[OS&#123;字长bit数&#125;]</span><br><span class="line">    stack_address: 栈地址</span><br><span class="line">    stack_size: 栈大小</span><br><span class="line">    load_address: 加载地址（需要为重定向文件）</span><br><span class="line">    interp_address: Linux加载器地址</span><br><span class="line">    mmap_address: mmap返回的地址</span><br><span class="line">    vsyscall_address: vsyscall地址（需要为OS64）</span><br><span class="line"></span><br><span class="line">MacOS:</span><br><span class="line">[OS64]</span><br><span class="line">    stack_address: 栈地址</span><br><span class="line">    stack_size: 栈大小</span><br><span class="line">    vmmap_trap_address: vmmap内存映射地址</span><br><span class="line">    heap_address: 堆地址</span><br><span class="line">    heap_size: 堆大小</span><br><span class="line">    mmap_address: mmap返回的地址</span><br><span class="line">[LOADER]</span><br><span class="line">    slide</span><br><span class="line">    dyld_slide</span><br><span class="line">    </span><br><span class="line">MCU:</span><br><span class="line">    无</span><br><span class="line"></span><br><span class="line">PE:</span><br><span class="line">[HARDWARE]</span><br><span class="line">    number_processors: 处理器数量</span><br><span class="line">[SYSTEM]</span><br><span class="line">    productType: 产品类型</span><br><span class="line">    majorVersion: 大版本号</span><br><span class="line">    minorVersion: 小版本号</span><br><span class="line">    VER_SERVICEPACKMAJOR: 系统包大版本</span><br><span class="line">    language: 系统语言（调用Windows SDK API）</span><br><span class="line">    permission: 权限</span><br><span class="line">[OS&#123;字长bit数&#125;]</span><br><span class="line">    KI_USER_SHARED_DATA：内核用户共享数据地址</span><br><span class="line">    stack_address: 栈地址</span><br><span class="line">    stack_size: 栈大小</span><br><span class="line">    image_address: 程序的加载地址</span><br><span class="line">    dll_address: 系统等DLL文件加载地址</span><br><span class="line">    entry_point: 程序入口</span><br><span class="line">[VOLUME]</span><br><span class="line">    name: 卷名</span><br><span class="line">    serial_number: 卷序列号</span><br><span class="line">    type: 卷类型</span><br><span class="line">    sectors_per_cluster: 每个簇的分区数量</span><br><span class="line">    bytes_per_sector: 每个分区包含的字节数量</span><br><span class="line">    number_of_free_clusters: 可用簇数量</span><br><span class="line">    number_of_clusters: 簇总数</span><br><span class="line">[PATH]</span><br><span class="line">    systemdrive: 系统驱动</span><br><span class="line">    ???: 其他任意Windows环境变量</span><br><span class="line">[USER]</span><br><span class="line">    language: 用户语言（Windows SDK API）</span><br><span class="line">[NETWORK]</span><br><span class="line">    dns_response_ip: DNS服务器IP</span><br><span class="line">[PROCESSES]</span><br><span class="line">    csrss.exe: csrss.exe的pid</span><br><span class="line">[KERNEL]</span><br><span class="line">    parent_pid: 父进程pid</span><br><span class="line">[REGISTRY]</span><br><span class="line">    ???: 任意注册表项</span><br><span class="line"></span><br><span class="line">PE_UEFI:</span><br><span class="line">[DXE]</span><br><span class="line">    heap_address: 堆地址</span><br><span class="line">    heap_size: 堆大小</span><br><span class="line">    stack_address: 栈地址</span><br><span class="line">    stack_size: 栈大小</span><br><span class="line">    image_address: EFI文件的加载地址</span><br><span class="line">[SMM]</span><br><span class="line">    smram_size: SMM执行模式下的SMRAM大小</span><br><span class="line">    smram_base: SMM执行模式下的SMRAM基址</span><br><span class="line">    heap_address: SMM堆地址</span><br><span class="line">    heap_size: SMM堆大小</span><br><span class="line">    image_address: SMM加载基地址</span><br><span class="line">[LOADED_IMAGE_PROTOCOL]</span><br><span class="line">    Guid: 加载的image的guid</span><br><span class="line">[HOB_LIST]</span><br><span class="line">    Guid: Hand-Off Block，用于数据交接块的guid</span><br></pre></td></tr></table></figure>
+<p>下面，我们尝试模拟一下 Linux 系统的 ASLR 保护机制加载一个 ELF 文件，并在 main 函数开头暂停，输出该 ELF 文件的内存布局情况。</p>
+<h2 id="a3-第一次试运行"><a class="markdownIt-Anchor" href="#a3-第一次试运行"></a> A.3 第一次试运行</h2>
+<p>在第一次运行的过程中，发现了一些问题，下面逐一进行解决。</p>
+<p>测试代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">   <span class="built_in">puts</span>(<span class="string">&quot;Hello, Qiling !!!&quot;</span>);</span><br><span class="line">   <span class="built_in">puts</span>(<span class="string">&quot;Greetings from CoLin&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了模拟 ASLR 内存保护，我们需要对 libc 的加载地址、ELF 的加载地址以及堆栈的地址进行一定程度的随机化。由于 ASLR 要求每一次执行的内存地址都不同，因此我们不能将配置文件写死在 ql 文件之中，只能动态生成到字典中。</p>
+<p>而对于 Qiling 类构造函数的参数，需要注意<code>rootfs</code>选项。这里一定要将根目录设置为 ‘/’，如果设置为默认值，那么 qiling 将无法找到加载 ELF 的 <a target="_blank" rel="noopener" href="http://ld.so">ld.so</a> 文件以及 <a target="_blank" rel="noopener" href="http://libc.so">libc.so</a> 文件。</p>
+<p>随后，开启执行发现，Qiling 没有完成一些较新的 Linux 系统调用实现。笔者的 libc 版本为 2.35，在加载器加载时会调用 334 号系统调用，而 Qiling 没有实现这个系统调用的替代，因此导致该系统调用无法正常运行，加载器判定 libc 版本不够。因此下面改为静态编译后运行。</p>
+<p>脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> qiling.const</span><br><span class="line"><span class="keyword">import</span> qiling</span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback</span>(<span class="params">ql: qiling.Qiling</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>.join(ql.mem.get_formatted_mapinfo()))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    profile = &#123;</span><br><span class="line">        <span class="string">&quot;OS64&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 0x5500_0000_0000 ~ 0x56ff_ffff_f000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] = <span class="number">0x8000_0000_0000</span> - <span class="number">0x30000</span> - (randint(<span class="number">0</span>, <span class="number">0x8000_0000</span>) &lt;&lt; <span class="number">12</span>)</span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_size&#x27;</span>] = <span class="number">0x30000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;mmap_address&#x27;</span>] = profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] - <span class="number">0x1000_0000</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;profile: &quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> key, value <span class="keyword">in</span> profile[<span class="string">&#x27;OS64&#x27;</span>].items():</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(key, <span class="built_in">hex</span>(value)))</span><br><span class="line"></span><br><span class="line">    elf = ELF(<span class="string">&#x27;./hello_qiling&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    emu = qiling.Qiling(</span><br><span class="line">        argv=[<span class="string">&#x27;./hello_qiling&#x27;</span>],</span><br><span class="line">        rootfs=<span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        ostype=qiling.const.QL_OS.LINUX,</span><br><span class="line">        archtype=qiling.const.QL_ARCH.X8664,</span><br><span class="line">        profile=profile,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="built_in">hex</span>(elf.symbols[<span class="string">&#x27;main&#x27;</span>]))</span><br><span class="line">    emu.hook_address(callback, elf.symbols[<span class="string">&#x27;main&#x27;</span>])</span><br><span class="line">    emu.run()</span><br></pre></td></tr></table></figure>
+<p>这里<code>hook_address</code>即在<code>main</code>函数首地址添加 hook。回调函数的第一个参数一定要为 Qiling 对象。<code>ql.mem.get_formatted_mapinfo</code>用于获取工整的内存映射信息字符串。</p>
+<p>输出结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">profile: </span><br><span class="line">stack_address: 0x7c76907a4000</span><br><span class="line">stack_size: 0x30000</span><br><span class="line">mmap_address: 0x7c76807a4000</span><br><span class="line">[*] &#x27;/home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br><span class="line">0x401775</span><br><span class="line">Start                End                  Perm    Label          Image</span><br><span class="line">000000000000030000 - 000000000000031000   rwx     [GDT]          </span><br><span class="line">000000000000400000 - 000000000000401000   r--     hello_qiling   /home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling</span><br><span class="line">000000000000401000 - 000000000000498000   r-x     hello_qiling   /home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling</span><br><span class="line">000000000000498000 - 0000000000004c1000   r--     hello_qiling   /home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling</span><br><span class="line">0000000000004c1000 - 0000000000004c5000   r--     hello_qiling   /home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling</span><br><span class="line">0000000000004c5000 - 0000000000004cd000   rw-     hello_qiling   /home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling</span><br><span class="line">0000000000004cd000 - 0000000000004cf000   rwx     [hook_mem]     </span><br><span class="line">0000000000004cf000 - 0000000000004d0000   rwx     [brk]          </span><br><span class="line">0000000000004d0000 - 0000000000004f1000   rwx     [brk]          </span><br><span class="line">0000007c76907a4000 - 0000007c76907d4000   rwx     [stack]        </span><br><span class="line">00ffffffffff600000 - 00ffffffffff601000   rwx     [vsyscall]     </span><br><span class="line">Hello, Qiling !!!</span><br><span class="line">Greetings from CoLin</span><br><span class="line">[=] 	arch_prctl(code = 0x3001, addr = 0x7c76907d3e00) = -0x1 (EPERM)</span><br><span class="line">[=] 	brk(inp = 0x0) = 0x4cf000</span><br><span class="line">[=] 	brk(inp = 0x4cfdc0) = 0x4d0000</span><br><span class="line">[=] 	arch_prctl(code = 0x1002, addr = 0x4cf3c0) = 0x0</span><br><span class="line">[=] 	set_tid_address(tidptr = 0x4cf690) = 0x2419</span><br><span class="line">[=] 	set_robust_list(head_ptr = 0x4cf6a0, head_len = 0x18) = 0x0</span><br><span class="line">[!] 	0x44ac4f: syscall ql_syscall_rseq number = 0x14e(334) not implemented</span><br><span class="line">[=] 	uname(buf = 0x7c76907d3b90) = 0x0</span><br><span class="line">[=] 	prlimit64(pid = 0x0, res = 0x3, new_limit = 0x0, old_limit = 0x7c76907d3d10) = 0x0</span><br><span class="line">[=] 	readlink(pathname = 0x4aea98, buf = 0x7c76907d2c50, bufsize = 0x1000) = 0x48</span><br><span class="line">[=] 	getrandom(buf = 0x4cc1f0, buflen = 0x8, flags = 0x1) = 0x8</span><br><span class="line">[=] 	brk(inp = 0x4f1000) = 0x4f1000</span><br><span class="line">[=] 	mprotect(start = 0x4c1000, mlen = 0x4000, prot = 0x1) = 0x0</span><br><span class="line">[=] 	newfstatat(dirfd = 0x1, path = 0x4af37d, buf_ptr = 0x7c76907d3b00, flags = 0x1000) = -0x1 (EPERM)</span><br><span class="line">[=] 	write(fd = 0x1, buf = 0x4d0500, count = 0x27) = 0x27</span><br><span class="line">[=] 	exit_group(code = 0x0) = ?</span><br></pre></td></tr></table></figure>
+<p>对于静态编译的程序，其 ELF 加载地址是固定的，但我们对栈地址完成了随机化处理。</p>
+<h2 id="a4-hooks"><a class="markdownIt-Anchor" href="#a4-hooks"></a> A.4 Hooks</h2>
+<p>Qiling 支持多种程序 Hook，包括内存读写访问、基本块、代码片段、特定指令（只支持 syscall、in、out 等少数几种系统相关指令，Qiling 的一大缺点）。下面使用上面的静态编译程序进行测试，脚本如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> qiling.const</span><br><span class="line"><span class="keyword">import</span> qiling.core_hooks_types</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback_address</span>(<span class="params">ql: qiling.Qiling</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;*** Address Hook Callback Function ***&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback_code</span>(<span class="params">ql: qiling.Qiling, address: <span class="built_in">int</span>, inst_size: <span class="built_in">int</span></span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;*** Code Hook Callback Function: at <span class="subst">&#123;address:#x&#125;</span>, instruction size = <span class="subst">&#123;inst_size&#125;</span> ***&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback_basicblock</span>(<span class="params">ql: qiling.Qiling, address: <span class="built_in">int</span>, inst_size: <span class="built_in">int</span></span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;*** Basic Block Hook Callback Function: at <span class="subst">&#123;address:#x&#125;</span>, instruction size = <span class="subst">&#123;inst_size&#125;</span> ***&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback_memoryFetch</span>(<span class="params">ql: qiling.Qiling, access_type: <span class="built_in">int</span>, address: <span class="built_in">int</span>, memory_size: <span class="built_in">int</span>, value: <span class="built_in">int</span></span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;*** Memory Fetch Hook Callback Function: at <span class="subst">&#123;address:#x&#125;</span>, memory size = <span class="subst">&#123;memory_size&#125;</span> ***&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    profile = &#123;</span><br><span class="line">        <span class="string">&quot;OS64&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 0x5500_0000_0000 ~ 0x56ff_ffff_f000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] = <span class="number">0x8000_0000_0000</span> - <span class="number">0x30000</span> - (randint(<span class="number">0</span>, <span class="number">0x8000_0000</span>) &lt;&lt; <span class="number">12</span>)</span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_size&#x27;</span>] = <span class="number">0x30000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;mmap_address&#x27;</span>] = profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] - <span class="number">0x1000_0000</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;profile: &quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> key, value <span class="keyword">in</span> profile[<span class="string">&#x27;OS64&#x27;</span>].items():</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(key, <span class="built_in">hex</span>(value)))</span><br><span class="line"></span><br><span class="line">    elf = ELF(<span class="string">&#x27;./hello_qiling&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    emu = qiling.Qiling(</span><br><span class="line">        argv=[<span class="string">&#x27;./hello_qiling&#x27;</span>],</span><br><span class="line">        rootfs=<span class="string">&#x27;/&#x27;</span>,</span><br><span class="line">        ostype=qiling.const.QL_OS.LINUX,</span><br><span class="line">        archtype=qiling.const.QL_ARCH.X8664,</span><br><span class="line">        profile=profile,</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    hooks: <span class="built_in">list</span>[qiling.core_hooks_types.HookRet] = [</span><br><span class="line">        emu.hook_address(callback_address, elf.symbols[<span class="string">&#x27;main&#x27;</span>]),</span><br><span class="line">        emu.hook_code(callback_code, begin=elf.symbols[<span class="string">&#x27;main&#x27;</span>] + <span class="number">4</span>, end=elf.symbols[<span class="string">&#x27;main&#x27;</span>] + <span class="number">8</span>),</span><br><span class="line">        emu.hook_block(callback_basicblock, begin=elf.symbols[<span class="string">&#x27;main&#x27;</span>] + <span class="number">0x17</span>, end=elf.symbols[<span class="string">&#x27;main&#x27;</span>] + <span class="number">0x26</span>),</span><br><span class="line">        emu.hook_mem_read(callback_memoryFetch, begin=<span class="number">0x498016</span>, end=<span class="number">0x49802b</span>)</span><br><span class="line">    ]</span><br><span class="line">    emu.run()</span><br></pre></td></tr></table></figure>
+<p>这里的<code>hook_code</code>相当于给某个范围内的所有指令前添加 Hook，在不传入<code>begin</code>和<code>end</code>参数的情况下，默认是在整个内存空间操作，即对所有指令添加 Hook。<code>hook_block</code>则是在某个范围内对新找到的基本块添加 Hook。不同的 Hook 的回调函数的参数不太一样，对于内存访问 Hook，其参数包含访问类型、访问地址、访问大小、写入（如果访问为写入操作）的值。当然在创建 Hook 时也可以为回调函数添加其他的参数。</p>
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">profile: </span><br><span class="line">stack_address: 0x784745fb3000</span><br><span class="line">stack_size: 0x30000</span><br><span class="line">mmap_address: 0x784735fb3000</span><br><span class="line">[*] &#x27;/home/colin/Desktop/misc/CTF-playground/qiling/qiling_learn/hello_qiling&#x27;</span><br><span class="line">    Arch:     amd64-64-little</span><br><span class="line">    RELRO:    Partial RELRO</span><br><span class="line">    Stack:    Canary found</span><br><span class="line">    NX:       NX enabled</span><br><span class="line">    PIE:      No PIE (0x400000)</span><br><span class="line">[=] 	arch_prctl(code = 0x3001, addr = 0x784745fe2e00) = -0x1 (EPERM)</span><br><span class="line">[=] 	brk(inp = 0x0) = 0x4cf000</span><br><span class="line">[=] 	brk(inp = 0x4cfdc0) = 0x4d0000</span><br><span class="line">[=] 	arch_prctl(code = 0x1002, addr = 0x4cf3c0) = 0x0</span><br><span class="line">[=] 	set_tid_address(tidptr = 0x4cf690) = 0x4b1c</span><br><span class="line">[=] 	set_robust_list(head_ptr = 0x4cf6a0, head_len = 0x18) = 0x0</span><br><span class="line">[!] 	0x44ac4f: syscall ql_syscall_rseq number = 0x14e(334) not implemented</span><br><span class="line">[=] 	uname(buf = 0x784745fe2b90) = 0x0</span><br><span class="line">[=] 	prlimit64(pid = 0x0, res = 0x3, new_limit = 0x0, old_limit = 0x784745fe2d10) = 0x0</span><br><span class="line">[=] 	readlink(pathname = 0x4aea98, buf = 0x784745fe1c50, bufsize = 0x1000) = 0x48</span><br><span class="line">[=] 	getrandom(buf = 0x4cc1f0, buflen = 0x8, flags = 0x1) = 0x8</span><br><span class="line">[=] 	brk(inp = 0x4f1000) = 0x4f1000</span><br><span class="line">[=] 	mprotect(start = 0x4c1000, mlen = 0x4000, prot = 0x1) = 0x0</span><br><span class="line">[=] 	newfstatat(dirfd = 0x1, path = 0x4af37d, buf_ptr = 0x784745fe2b00, flags = 0x1000) = -0x1 (EPERM)</span><br><span class="line">[=] 	write(fd = 0x1, buf = 0x4d0500, count = 0x27) = 0x27</span><br><span class="line">[=] 	exit_group(code = 0x0) = ?</span><br><span class="line">*** Address Hook Callback Function ***</span><br><span class="line">*** Code Hook Callback Function: at 0x401779, instruction size = 1 ***</span><br><span class="line">*** Code Hook Callback Function: at 0x40177a, instruction size = 3 ***</span><br><span class="line">*** Code Hook Callback Function: at 0x40177d, instruction size = 7 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498010, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498018, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498020, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498028, memory size = 8 ***</span><br><span class="line">*** Basic Block Hook Callback Function: at 0x40178c, instruction size = 15 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498016, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x49801e, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498020, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498028, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498016, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x49801e, memory size = 8 ***</span><br><span class="line">*** Memory Fetch Hook Callback Function: at 0x498026, memory size = 4 ***</span><br><span class="line">*** Basic Block Hook Callback Function: at 0x40179b, instruction size = 7 ***</span><br><span class="line">Hello, Qiling !!!</span><br><span class="line">Greetings from CoLin</span><br></pre></td></tr></table></figure>
+<h2 id="a5-runtime-关键数据"><a class="markdownIt-Anchor" href="#a5-runtime-关键数据"></a> A.5 runtime 关键数据</h2>
+<p>runtime 数据包括寄存器值、内存值等。在 pwndbg 中，每一次程序执行中断后都会显示当前 RIP 前后的汇编代码、寄存器值以及堆栈内容。在 qiling 中，这些同样可以实现。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> qiling</span><br><span class="line"><span class="keyword">import</span> qiling.core_hooks_types</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context.arch = <span class="string">&quot;amd64&quot;</span></span><br><span class="line">watch_regs = [<span class="string">&#x27;rax&#x27;</span>, <span class="string">&#x27;rbx&#x27;</span>, <span class="string">&#x27;rcx&#x27;</span>, <span class="string">&#x27;rdx&#x27;</span>, <span class="string">&#x27;rsi&#x27;</span>, <span class="string">&#x27;rdi&#x27;</span>, <span class="string">&#x27;rsp&#x27;</span>, <span class="string">&#x27;rbp&#x27;</span>,</span><br><span class="line">              <span class="string">&#x27;r8&#x27;</span>, <span class="string">&#x27;r9&#x27;</span>, <span class="string">&#x27;r10&#x27;</span>, <span class="string">&#x27;r11&#x27;</span>, <span class="string">&#x27;r12&#x27;</span>, <span class="string">&#x27;r13&#x27;</span>, <span class="string">&#x27;r14&#x27;</span>, <span class="string">&#x27;r15&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback_code</span>(<span class="params">ql: qiling.Qiling, address: <span class="built_in">int</span>, inst_size: <span class="built_in">int</span></span>):</span><br><span class="line">    current_instruction = ql.mem.read(address, inst_size)</span><br><span class="line">    assembly = <span class="built_in">repr</span>(<span class="built_in">next</span>(ql.arch.disassembler.disasm(current_instruction, <span class="number">0</span>)))</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;address:#x&#125;</span>: <span class="subst">&#123;assembly&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;*** REGISTERS ***&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> reg <span class="keyword">in</span> watch_regs:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;reg&#125;</span>\t<span class="subst">&#123;ql.arch.regs.read(reg):16x&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;*** STACK ***&quot;</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>):</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;ql.arch.regs.read(<span class="string">&#x27;rsp&#x27;</span>) + i * <span class="number">8</span>:x&#125;</span>\t<span class="subst">&#123;ql.arch.stack_read(i * <span class="number">8</span>):16x&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">input</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    profile = &#123;</span><br><span class="line">        <span class="string">&quot;OS64&quot;</span>: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 0x5500_0000_0000 ~ 0x56ff_ffff_f000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] = <span class="number">0x8000_0000_0000</span> - <span class="number">0x30000</span> - (randint(<span class="number">0</span>, <span class="number">0x8000_0000</span>) &lt;&lt; <span class="number">12</span>)</span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_size&#x27;</span>] = <span class="number">0x30000</span></span><br><span class="line">    profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;mmap_address&#x27;</span>] = profile[<span class="string">&#x27;OS64&#x27;</span>][<span class="string">&#x27;stack_address&#x27;</span>] - <span class="number">0x1000_0000</span></span><br><span class="line"></span><br><span class="line">    emu = qiling.Qiling(</span><br><span class="line">        argv=[<span class="string">&#x27;./hello_qiling&#x27;</span>],</span><br><span class="line">        profile=profile</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    hook: qiling.core_hooks_types.HookRet = emu.hook_code(callback_code)</span><br><span class="line">    emu.run()</span><br></pre></td></tr></table></figure>
+<p>如上脚本所示，这里的<code>hook_code</code>仅传入了回调函数参数，这使得程序在每执行一条汇编指令后都会调用一次回调函数。在回调函数中，可以通过<code>ql.mem_read</code>方法读取内存中的任意地址处的任意长度值（write 即为写入），返回值为字节数组（bytearray）。在 qiling 中提供了调用 capstone 库进行反汇编的 API：<code>ql.arch.disassembler.disasm</code>，第一个参数为字节数组，第二个参数为偏移量。</p>
+<p>对于寄存器值，可以直接通过<code>ql.arch.regs.read</code>传入寄存器名获取寄存器的值（write 即为写入）。如果需要查询当前架构的所有寄存器，可以通过<code>ql.arch.regs.register_mapping</code>获取。</p>
+<p>对于堆栈，qiling 也特别设计了 API 便于操作。<code>ql.arch.stack_read</code>用于读取以<code>rsp</code>为基地址的任意偏移量的堆栈值（读取 4/8 字节，取决于字长）。<code>stack_write</code>为写入指定偏移处，<code>stack_push</code>和<code>stack_pop</code>即为直接修改<code>rsp</code>的值，在程序执行外完成 push 和 pop 操作。</p>
+<p>部分输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">0x40166f: &lt;CsInsn 0x0 [67e8db130000]: call 0x13e1&gt;</span><br><span class="line">*** REGISTERS ***</span><br><span class="line">rax	               0</span><br><span class="line">rbx	               0</span><br><span class="line">rcx	               0</span><br><span class="line">rdx	    7f69841ede78</span><br><span class="line">rsi	               1</span><br><span class="line">rdi	          401775</span><br><span class="line">rsp	    7f69841ede60</span><br><span class="line">rbp	               0</span><br><span class="line">r8	               0</span><br><span class="line">r9	               0</span><br><span class="line">r10	               0</span><br><span class="line">r11	               0</span><br><span class="line">r12	               0</span><br><span class="line">r13	               0</span><br><span class="line">r14	               0</span><br><span class="line">r15	               0</span><br><span class="line">*** STACK ***</span><br><span class="line">7f69841ede60	    7f69841ede68</span><br><span class="line">7f69841ede68	               0</span><br><span class="line">7f69841ede70	               1</span><br><span class="line">7f69841ede78	    7f69841edff0</span><br><span class="line">7f69841ede80	               0</span><br><span class="line">7f69841ede88	               0</span><br><span class="line">7f69841ede90	              10</span><br><span class="line">7f69841ede98	         78bfbfd</span><br><span class="line">7f69841edea0	               6</span><br><span class="line">7f69841edea8	            1000</span><br></pre></td></tr></table></figure>
+<h2 id="a6-内存"><a class="markdownIt-Anchor" href="#a6-内存"></a> A.6 内存</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">callback_address</span>(<span class="params">ql: qiling.Qiling</span>):</span><br><span class="line">    address_to_map = <span class="number">0x123456780000</span></span><br><span class="line">    <span class="keyword">if</span> ql.mem.is_mapped(address_to_map, <span class="number">0x2000</span>):</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    ql.mem.<span class="built_in">map</span>(address_to_map, <span class="number">0x2000</span>, UC_PROT_READ | UC_PROT_WRITE)</span><br><span class="line">    ql.mem.protect(address_to_map, <span class="number">0x1000</span>, UC_PROT_READ)</span><br><span class="line">    addresses: <span class="built_in">list</span>[<span class="built_in">int</span>] = ql.mem.search(re.<span class="built_in">compile</span>(<span class="string">b&quot;[a-zA-Z0-9]&#123;4,&#125;\0&quot;</span>), <span class="number">0x400000</span>, <span class="number">0x500000</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;\n&#x27;</span>.join(<span class="string">f&quot;<span class="subst">&#123;<span class="built_in">hex</span>(x)&#125;</span> <span class="subst">&#123;ql.mem.string(x)&#125;</span>&quot;</span> <span class="keyword">for</span> x <span class="keyword">in</span> addresses))</span><br><span class="line">    ql.mem.unmap(address_to_map, <span class="number">0x2000</span>)</span><br></pre></td></tr></table></figure>
+<p>qiling 支持对内存进行映射、解除映射、搜索等操作。如上，<code>ql.mem.is_mapped</code>可查询某地址开始往后一段空间是否已经被映射，<code>ql.mem.protect</code>用于修改某段内存的权限，<code>ql.mem.search</code>可查询某段内存中的值并返回所有查询结果，查询可使用字节数组或正则表达式。<code>ql.mem.string</code>可便捷地提取内存中某个地址开始的字符串，但字符串中不可包含不可打印字符。</p>
+<p>部分输出结果：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">0x4ad2c7 ENOCSI</span><br><span class="line">0x4ad2ce EL2HLT</span><br><span class="line">0x4ad2d5 EBADE</span><br><span class="line">0x4ad2db EBADR</span><br><span class="line">0x4ad2e1 EXFULL</span><br><span class="line">0x4ad2e8 ENOANO</span><br><span class="line">0x4ad2ef EBADRQC</span><br><span class="line">0x4ad2f7 EBADSLT</span><br><span class="line">0x4ad2ff EBFONT</span><br><span class="line">0x4ad306 ENONET</span><br><span class="line">0x4ad30d ENOPKG</span><br><span class="line">0x4ad314 EADV</span><br></pre></td></tr></table></figure>
+<h2 id="a7-pack"><a class="markdownIt-Anchor" href="#a7-pack"></a> A.7 pack</h2>
+<p>qiling 支持整数类型与字符数组的相互转化，甚至还能够将字符数组转化为 C 语言的结构体。字符数组与结构体的转化是通过 Python 自带模块实现的，规则参考 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/struct.html#module-struct">Python 文档</a>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(emu.pack8(<span class="number">0x12</span>))          <span class="comment"># unpack 将字符数组转化为整数</span></span><br><span class="line"><span class="built_in">print</span>(emu.pack16(<span class="number">0x1234</span>))</span><br><span class="line"><span class="built_in">print</span>(emu.pack32(<span class="number">0x12345678</span>))</span><br><span class="line"><span class="built_in">print</span>(emu.pack64(<span class="number">0x1234567890abcdef</span>))</span><br><span class="line"><span class="built_in">print</span>(emu.pack8s(-<span class="number">0x12</span>))        <span class="comment"># 有符号值</span></span><br><span class="line"><span class="built_in">print</span>(emu.pack16s(-<span class="number">0x1234</span>))</span><br><span class="line"><span class="built_in">print</span>(emu.pack32s(-<span class="number">0x12345678</span>))</span><br><span class="line"><span class="built_in">print</span>(emu.pack64s(-<span class="number">0x1234567890abcdef</span>))</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">b&#x27;\x12&#x27;</span><br><span class="line">b&#x27;4\x12&#x27;</span><br><span class="line">b&#x27;xV4\x12&#x27;</span><br><span class="line">b&#x27;\xef\xcd\xab\x90xV4\x12&#x27;</span><br><span class="line">b&#x27;\xee&#x27;</span><br><span class="line">b&#x27;\xcc\xed&#x27;</span><br><span class="line">b&#x27;\x88\xa9\xcb\xed&#x27;</span><br><span class="line">b&#x27;\x112To\x87\xa9\xcb\xed&#x27;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/02/Unicorn-%E5%AD%A6%E4%B9%A0/" rel="prev" title="Unicorn 学习">
+      <i class="fa fa-chevron-left"></i> Unicorn 学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/" rel="next" title="Rust逆向学习 (8)">
+      Rust逆向学习 (8) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-%E7%B1%BB-qiling"><span class="nav-number">1.</span> <span class="nav-text"> A. 类 Qiling</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a1-%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-number">1.1.</span> <span class="nav-text"> A.1 构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a2-profile-%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E9%A1%B9"><span class="nav-number">1.2.</span> <span class="nav-text"> A.2. profile 配置文件项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a3-%E7%AC%AC%E4%B8%80%E6%AC%A1%E8%AF%95%E8%BF%90%E8%A1%8C"><span class="nav-number">1.3.</span> <span class="nav-text"> A.3 第一次试运行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a4-hooks"><span class="nav-number">1.4.</span> <span class="nav-text"> A.4 Hooks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a5-runtime-%E5%85%B3%E9%94%AE%E6%95%B0%E6%8D%AE"><span class="nav-number">1.5.</span> <span class="nav-text"> A.5 runtime 关键数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a6-%E5%86%85%E5%AD%98"><span class="nav-number">1.6.</span> <span class="nav-text"> A.6 内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a7-pack"><span class="nav-number">1.7.</span> <span class="nav-text"> A.7 pack</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:29</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
