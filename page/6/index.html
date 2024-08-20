@@ -150,6 +150,132 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC7%E7%AB%A0%E4%B9%A0%E9%A2%98/" class="post-title-link" itemprop="url">操作系统原理——第7章习题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 09:13:02 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:13:02+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.3k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="第7章习题详解"><a class="markdownIt-Anchor" href="#第7章习题详解"></a> 第7章习题详解</h1>
+<h2 id="1"><a class="markdownIt-Anchor" href="#1"></a> 1.</h2>
+<p>Cache是三级存储体系中速度最快（√），容量最大（×，最小）的一类</p>
+<h2 id="2"><a class="markdownIt-Anchor" href="#2"></a> 2.</h2>
+<p>固定地址映射由程序员或编译器完成地址映射，容易产生地址冲突，运行失败。（√）</p>
+<h2 id="3"><a class="markdownIt-Anchor" href="#3"></a> 3.</h2>
+<p>存储保护功能是指防止访问越界和防止访问越权。（√）</p>
+<h2 id="4"><a class="markdownIt-Anchor" href="#4"></a> 4.</h2>
+<p>静态地址映射和动态地址映射计算物理地址时都是用虚拟地址加上基址。（√，计算物理地址的公式：MA=BA+VA）</p>
+<h2 id="5"><a class="markdownIt-Anchor" href="#5"></a> 5.</h2>
+<p>虚拟内存管理的目标之一是使得大的程序能在较小的内存中运行。（√，使大的程序能够在较小的内存中运行的机制为虚拟存储，即借助辅存扩大逻辑上的内存空间）</p>
+<h2 id="6"><a class="markdownIt-Anchor" href="#6"></a> 6.</h2>
+<p>采用固定分区的系统在程序装入前，内存已被分区，且每个分区大小都相同（×，每一个分区的大小不一定相同），不再改变。</p>
+<h2 id="7"><a class="markdownIt-Anchor" href="#7"></a> 7.</h2>
+<p>动态分区容易产生碎片。（√，动态分区容易产生外部碎片）</p>
+<h2 id="8"><a class="markdownIt-Anchor" href="#8"></a> 8.</h2>
+<p>内存碎片是指内存损坏而导致不能使用的区域。（×，内存碎片是指内存被反复分割之后剩下的一些小的空闲区，它们难以被操作系统利用）</p>
+<h2 id="9"><a class="markdownIt-Anchor" href="#9"></a> 9.</h2>
+<p>在页式地址映射过程中，快表的作用是尽量减少内存访问次数。（√，快表存放于cache中，访问速度比内存块，将内存的部分内容保存到快表中可以减少内存访问次数，提高系统效率）</p>
+<h2 id="10"><a class="markdownIt-Anchor" href="#10"></a> 10.</h2>
+<p>缺页中断处理程序的作用就是把相应页面的数据从写入到硬盘中。（×，缺页中断处理程序的作用是将相应页面的数据从辅存写入到内存中）</p>
+<h2 id="11"><a class="markdownIt-Anchor" href="#11"></a> 11.</h2>
+<p>最佳算法（OPT算法）淘汰以后不再需要或最远的将来才会用到的页面，是实际应用中性能最好的淘汰算法。（×，实际应用中由于无法预测表中哪一页不再需要或在最远的将来才会需要，因此无法应用于实际）</p>
+<h2 id="12"><a class="markdownIt-Anchor" href="#12"></a> 12.</h2>
+<p>采用内存覆盖技术存储系统，调入一个模块时可以临时将其随意放在一个足够大的覆盖区上。（×，不能将其随意放在一个足够大的覆盖区。覆盖技术的目的是实现小内存运行大程序，基本思路是将程序分为多个模块，需要哪一个模块就将其装入到内存中，不需要则放到辅存中，因此在内存紧张的情况下，可能无法找到一个足够大的覆盖区，所以需要提前设计好如何装入。）</p>
+<h2 id="13"><a class="markdownIt-Anchor" href="#13"></a> 13.</h2>
+<p>使用内存交换技术可以增加进程并发数。（√，内存交换技术让等待的进程迁出内存，可以增加进程的并发数，实现在小内存运行多个程序的目的）</p>
+<h2 id="14"><a class="markdownIt-Anchor" href="#14"></a> 14.</h2>
+<p>提高程序的局部性可以有效降低系统的缺页率。（√，提高程序的局部性可以让程序集中地访问邻近几页的内容，可以直接通过cache进行访问，降低系统的缺页率）</p>
+<h2 id="15"><a class="markdownIt-Anchor" href="#15"></a> 15.</h2>
+<p>段页式系统的地址映射过程既需要段表，也需要页表，而且段表和页表都需要多个。（×，一个进程只需要一个段表，每一个段表需要配备一个页表，因此一个进程一般有多个页表）</p>
+<h2 id="16"><a class="markdownIt-Anchor" href="#16"></a> 16.</h2>
+<p>控制寄存器CR0的PG位作用是控制实模式和保护模式的选择。（×，PG位是用于控制是否将内存进行分页，在位0的PE位才是实模式和保护模式的选择）</p>
+<h2 id="17"><a class="markdownIt-Anchor" href="#17"></a> 17.</h2>
+<p>保护模式下，CS，DS存储的是相应段的基址。（×，保护模式中，段寄存器记录的是段描述符的索引，通过该索引找到段描述符，然后通过段描述符中的段基址域找到该段。）</p>
+<h2 id="18"><a class="markdownIt-Anchor" href="#18"></a> 18.</h2>
+<p>描述符表（Descriptor Table）以8字节为单位存储段的描述符。（√，段描述符一个8字节）</p>
+<h2 id="19"><a class="markdownIt-Anchor" href="#19"></a> 19.</h2>
+<p>选择子作用是选择描述符表中某个描述符。（√，段选择子是记录段描述符在描述符表中索引的数据结构）</p>
+<h2 id="20"><a class="markdownIt-Anchor" href="#20"></a> 20.</h2>
+<p>二级页表机制中，页表和页目录大小都是4K。（√）</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC4-6%E7%AB%A0%E4%B9%A0%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2664,182 +2790,6 @@ F0000H~FFFFFH（64KB）：空闲</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/" class="post-title-link" itemprop="url">操作系统原理——第1章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-03 09:12:14 / 修改时间：09:16:18" itemprop="dateCreated datePublished" datetime="2023-03-03T09:12:14+08:00">2023-03-03</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">操作系统原理</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.2k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-1-操作系统概述"><a class="markdownIt-Anchor" href="#chapter-1-操作系统概述"></a> Chapter 1 操作系统概述</h1>
-<h2 id="11-操作系统直观认识和定义"><a class="markdownIt-Anchor" href="#11-操作系统直观认识和定义"></a> 1.1 操作系统直观认识和定义</h2>
-<h3 id="111-操作系统的直观认识"><a class="markdownIt-Anchor" href="#111-操作系统的直观认识"></a> 1.1.1 操作系统的直观认识</h3>
-<p>操作系统提供以下几种直观功能：</p>
-<ul>
-<li>提供操作界面，用户可以利用一些可视化的元素来操作计算机，展示计算机的执行结果。</li>
-<li>控制程序运行，利用图形化或命令行的方式启动一个程序、结束一个程序、强制结束没有响应的程序等。</li>
-<li>管理系统资源，用户可以更新驱动程序或安装新的驱动、卸载不再需要的设备，访问打印机、硬盘等资源。</li>
-<li>配置系统参数，设置或改变系统参数。</li>
-<li>监控系统状态，通过任务管理器等可以观察系统的实时工作情况。</li>
-<li>工具软件集合，提供用于系统管理的辅助工具和内置命令便于用户进行个性化配置、调优或测试。</li>
-</ul>
-<h3 id="112-操作系统的定义"><a class="markdownIt-Anchor" href="#112-操作系统的定义"></a> 1.1.2 操作系统的定义</h3>
-<p>操作系统是一个大型的系统程序，它<font color=red>管理和分配计算机系统中软、硬件资源</font>，控制和协调并发活动，<font color=red>为用户提供接口</font>和良好的工作环境。</p>
-<h2 id="12-操作系统的发展历史"><a class="markdownIt-Anchor" href="#12-操作系统的发展历史"></a> 1.2 操作系统的发展历史</h2>
-<h3 id="121-手动操作阶段"><a class="markdownIt-Anchor" href="#121-手动操作阶段"></a> 1.2.1 手动操作阶段</h3>
-<p>即电子管时代（1946-1955），此时没有操作系统，一个程序需要程序员通过打孔的方式写在纸带上，然后将纸带装入到设备中，启动输入设备将程序和数据输入到计算机内存中，然后控制台开关启动程序开始处理数据。整个过程中计算机被一个程序员占用。</p>
-<p>特点：用户独占、缺少交互、效率低下（如运行一次程序可能需要提前几十分钟将设备全部装好，运行完之后还需要几十分钟将设备全部拆卸）</p>
-<h3 id="122-单道批处理系统"><a class="markdownIt-Anchor" href="#122-单道批处理系统"></a> 1.2.2 单道批处理系统</h3>
-<p>即晶体管时代（1955-1965）。单道批处理能够控制计算机自动处理一批作业，逐个加载、运行和撤出其中的每一个作业，直到全部作业处理完毕。批处理系统的特点：<font color=red>成批、自动、单道</font>。缺点是平均周转时间长、无交互能力。</p>
-<p>单道批处理系统两种实现方式：<font color=red>联机批处理系统和脱机批处理系统</font>。联机批处理系统的输入输出过程都由主机控制，主机和输入设备之间添加一个磁带作为存储设备。运行于主机上的监督程序控制成批地将输入机上的用户作业读入磁带并形成作业队列，然后依次将磁带上的用户作业逐个装入主机运行并将结果输出到输出机，直到该批作业完成。脱机批处理系统增加一台与主机不直接相连而专门用于输入输出的卫星机，主机的作用是利用批处理方式自动按批处理磁带上的作业并将结果存放到输出磁带上。</p>
-<h3 id="123-多道批处理系统"><a class="markdownIt-Anchor" href="#123-多道批处理系统"></a> 1.2.3 多道批处理系统</h3>
-<p>集成电路时代（1965-1980），多道批处理系统利用多道程序处理技术，在内存中存放多道程序，当某道程序因为某种原因不能继续运行时监控程序会调度另一个程序运行，使得CPU尽量处于忙碌状态。多道批处理系统可以让CPU与外设，外设与外设之间处于并行状态。缺点是作业处理时间长，运行过程不确定，交互能力差。</p>
-<h3 id="124-分时操作系统"><a class="markdownIt-Anchor" href="#124-分时操作系统"></a> 1.2.4 分时操作系统</h3>
-<p>60年代中断技术的出现、80年代后大规模集成电路的出现、事务性程序和任务的出现允许CPU进行更加复杂的作业调度。现在的操作系统要求能够进行多任务多用户的调度。主机采用分时技术轮流为每一个终端服务，每一个终端都认为自己独占了整台计算机。</p>
-<p>主机<font color=red>以很短的时间片为单位将CPU循环地轮流分配给每一个作业使用</font>，直到全部作业运行完毕。时间片是较短的时间间隔，使得主机的响应时间较短。分时系统的特点：多路调制性、独占性（用户认为独占计算机）、交互性（能够及时响应用户请求）</p>
-<h3 id="125-分时操作系统衍化"><a class="markdownIt-Anchor" href="#125-分时操作系统衍化"></a> 1.2.5 分时操作系统衍化</h3>
-<ul>
-<li>微型计算机操作系统</li>
-<li>实时操作系统（可靠性、安全性、强调作业完成时限和可预测性）
-<ul>
-<li>硬实时系统：必须按时完成</li>
-<li>软实时系统：尽量按时完成</li>
-</ul>
-</li>
-<li>嵌入式操作系统</li>
-<li>网络操作系统</li>
-<li>分布式操作系统</li>
-</ul>
-<h2 id="13-操作系统的功能"><a class="markdownIt-Anchor" href="#13-操作系统的功能"></a> 1.3 操作系统的功能</h2>
-<h3 id="131-处理机管理"><a class="markdownIt-Anchor" href="#131-处理机管理"></a> 1.3.1 处理机管理</h3>
-<p>处理机是计算机系统的核心资源，处理机管理即为进程管理或CPU管理。一个操作系统应该能够进行<font color=red>进程控制、进程同步、进程通信与进程调度</font>。</p>
-<ul>
-<li>进程控制：为一个作业创建一个或多个进程，并分配必要的资源。进程运行结束后应该撤销该进程并回收该进程占用的各种资源。主要功能是为作业创建进程、撤销已经结束的进程。</li>
-<li>进程同步：保证进程之间有条不紊地进行，协调多个进程之间的运行。</li>
-<li>进程通信：用于合作进程之间交换信息，操作系统使用合适的机制完成信息传输。</li>
-<li>进程调度：操作系统需要根据某种策略选择合适的进程占用CPU。</li>
-</ul>
-<h3 id="132-存储管理"><a class="markdownIt-Anchor" href="#132-存储管理"></a> 1.3.2 存储管理</h3>
-<p>操作系统需要能够合理调度内存，内存管理需要支持多道程序设计，包含<font color=red>内存分配、内存共享、内存保护、地址映射和虚拟存储</font>。</p>
-<ul>
-<li>内存分配：程序运行需要将其存放在内存中，在程序运行前和运行时需要为其分配一定大小的内存。</li>
-<li>内存共享：允许多道程序存放在内存中，实现内存的共享。另外实现多个进程共用一块内存空间，如dll文件所在的内存。</li>
-<li>内存保护：保证进程在自己的内存空间中运行而不互相干扰，需要检查进程对内存的访问是否越界或越权。</li>
-<li>地址映射：操作系统提供地址映射机构将进程地址空间的逻辑地址转化为内存空间对应的物理地址，地址映射可以使用户不必关心物理存储空间的分配细节。</li>
-<li>虚拟存储：内存扩充功能，避免因为物理内存太小而导致大型程序无法运行或限制了多个进程的并发运行。实现了物理内存在逻辑上进行扩充，在不增加物理内存的情况下使用虚拟存储技术获得内存扩充的效果。</li>
-</ul>
-<h3 id="133-设备管理"><a class="markdownIt-Anchor" href="#133-设备管理"></a> 1.3.3 设备管理</h3>
-<p>操作系统不能让用户直接使用这些设备，这会使得用户的使用变得困难，因此操作系统需要使用合适的方式为进程分配这些资源，提高CPU和设备的使用率。操作系统<font color=red>提供统一规范的接口给应用程序使用</font>，完成进程对设备的输入输出请求并方便用户添加新设备或删除旧设备。</p>
-<ul>
-<li>分配设备：为申请设备的进程分配设备，记录设备的使用情况。</li>
-<li>设备控制：通过合适的方式完成设备与CPU之间的数据传输。</li>
-<li>设备映射：使用所谓的逻辑设备而不是物理设备，可以极大提高程序的灵活性、可移植性和可阅读性。用户可以使用友好名和不同的配置选项选择一个逻辑设备。</li>
-<li>缓冲区管理：提高CPU的利用率，提高系统吞吐量，在内存中设置缓冲区并对缓冲区中的读写更新等操作进行有效管理以获得更好的系统性能。</li>
-</ul>
-<h3 id="134-文件管理"><a class="markdownIt-Anchor" href="#134-文件管理"></a> 1.3.4 文件管理</h3>
-<p>操作系统需要实现按名存取文件和目录，并向用户提供一条存取文件和目录的标准操作接口。除了基本的文件操作（如读写复制删除等）还需要实现文件的共享、保护和保密，保证文件的安全性和不被越权访问。</p>
-<h2 id="15-操作系统评价指标"><a class="markdownIt-Anchor" href="#15-操作系统评价指标"></a> 1.5 操作系统评价指标</h2>
-<ul>
-<li>吞吐量：系统在单位时间内处理信息的能力或可以处理的任务数量。是用于衡量系统性能的重要指标。操作系统合理分配和调度资源可以提高系统的吞吐量。</li>
-<li>响应能力：表现为系统从接收数据到输出结果的时间间隔长短，时间间隔越长说明响应能力越差。系统响应时间与用户数量和时间片的大小有关。用户数量越多响应时间越长，时间片越短响应时间越短。</li>
-<li>资源利用率：设备在单位时间内被利用的百分比。</li>
-<li>可移植性：改变硬件环境，操作系统仍能正常工作的能力。一般在新的硬件环境中需要改写或增加一些代码来使得操作系统能够在新的环境下工作，这个修改工作中的<font color=red>代码修改量</font>越少说明可移植性越好。</li>
-<li>可靠性：即系统发生错误的概率大小和操作系统发现、诊断和恢复系统故障能力的大小。错误率越小可靠性越高。</li>
-</ul>
-<h2 id="17-操作系统的逻辑结构"><a class="markdownIt-Anchor" href="#17-操作系统的逻辑结构"></a> 1.7 操作系统的逻辑结构</h2>
-<h3 id="171-整体式结构"><a class="markdownIt-Anchor" href="#171-整体式结构"></a> 1.7.1 整体式结构</h3>
-<p>整体式结构又称为模块化结构或宏内核结构，操作系统的常用设计模式和应用软件的基本设计模式。以模块为基本单位进行构建，系统中每一个过程都有明确的入口参数列表和返回值列表，大多数过程可以相互调用不受约束。如UNIX系统、Linux系统的单体内核。<br />
-优点：模块设计、编码和调试独立，模块之间可以自由调用<br />
-缺点：错误容易扩散，开发和维护困难，可伸缩性差</p>
-<h3 id="172-层次式结构"><a class="markdownIt-Anchor" href="#172-层次式结构"></a> 1.7.2 层次式结构</h3>
-<p>层次式结构将操作系统中所有功能模块按照调用次序分别排成若干层，确保各层之间只能单向依赖或单向调用。分层原则主要：</p>
-<ul>
-<li>硬件相关放在最底层</li>
-<li>与用户策略和交互有关的放在最顶层</li>
-<li>中间各层按照调用次序或消息传递顺序安排</li>
-<li>共性的和活跃的服务放在较低的层次</li>
-</ul>
-<p>优点：结构清晰、整体问题局部化、有利于维护扩充和移植。</p>
-<h3 id="173-微内核结构"><a class="markdownIt-Anchor" href="#173-微内核结构"></a> 1.7.3 微内核结构</h3>
-<p>微内核结构又称为客户-服务机结构，分为两个部分：微内核和核外服务器。微内核足够小，只提供最基本的OS核心功能和服务，核外服务器完成OS绝大部分功能，等待客户提出请求。如Harmony-OS、Windows-NT（分层结构+微内核）。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2909,7 +2859,7 @@ F0000H~FFFFFH（64KB）：空闲</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2967,7 +2917,7 @@ F0000H~FFFFFH（64KB）：空闲</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:29</span>
+    <span title="站点阅读时长">22:50</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>

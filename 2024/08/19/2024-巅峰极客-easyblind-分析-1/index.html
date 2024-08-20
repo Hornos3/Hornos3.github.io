@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2024年的巅峰极客可以说是强Web组的大福利，除了Web其他类型居然各自只有1道题，令人困惑。在pwn方向只有一道题，但这道题质量比较高，涉及的利用链比较复杂，虽然在现实应用中基本不可能用到，但还是值得学习一番。 幸运的是，在网上找到了讲解此类利用方式的blog，其中使用的示例与本题完全相同：传送门。下面的分析主要参考上面的blog。  A. 题目源码 123456789101112131415">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2024-巅峰极客 easyblind 分析 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="2024年的巅峰极客可以说是强Web组的大福利，除了Web其他类型居然各自只有1道题，令人困惑。在pwn方向只有一道题，但这道题质量比较高，涉及的利用链比较复杂，虽然在现实应用中基本不可能用到，但还是值得学习一番。 幸运的是，在网上找到了讲解此类利用方式的blog，其中使用的示例与本题完全相同：传送门。下面的分析主要参考上面的blog。  A. 题目源码 123456789101112131415">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/2.png">
+<meta property="article:published_time" content="2024-08-19T01:43:37.000Z">
+<meta property="article:modified_time" content="2024-08-20T15:42:17.583Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2024-巅峰极客 easyblind 分析 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/08/19/2024-%E5%B7%85%E5%B3%B0%E6%9E%81%E5%AE%A2-easyblind-%E5%88%86%E6%9E%90-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2024-巅峰极客 easyblind 分析 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-08-19 09:43:37" itemprop="dateCreated datePublished" datetime="2024-08-19T09:43:37+08:00">2024-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-08-20 23:42:17" itemprop="dateModified" datetime="2024-08-20T23:42:17+08:00">2024-08-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/write-ups/" itemprop="url" rel="index"><span itemprop="name">write-ups</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>23k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>2024年的巅峰极客可以说是强Web组的大福利，除了Web其他类型居然各自只有1道题，令人困惑。在pwn方向只有一道题，但这道题质量比较高，涉及的利用链比较复杂，虽然在现实应用中基本不可能用到，但还是值得学习一番。</p>
+<p>幸运的是，在网上找到了讲解此类利用方式的blog，其中使用的示例与本题完全相同：<a target="_blank" rel="noopener" href="https://hackmd.io/@pepsipu/ry-SK44pt">传送门</a>。下面的分析主要参考上面的blog。</p>
+<h1 id="a-题目源码"><a class="markdownIt-Anchor" href="#a-题目源码"></a> A. 题目源码</h1>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stddef.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">char</span>* chunk = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> __attribute__((constructor)) nightmare()</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!chunk)</span><br><span class="line">        chunk = <span class="built_in">malloc</span>(<span class="number">0x40000</span>);</span><br><span class="line">    <span class="type">uint8_t</span> byte = <span class="number">0</span>;</span><br><span class="line">    <span class="type">size_t</span> offset = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    read(<span class="number">0</span>, &amp;offset, <span class="keyword">sizeof</span>(<span class="type">size_t</span>));</span><br><span class="line">    read(<span class="number">0</span>, &amp;byte, <span class="keyword">sizeof</span>(<span class="type">uint8_t</span>));</span><br><span class="line"></span><br><span class="line">    chunk[offset] = byte;</span><br><span class="line"></span><br><span class="line">    write(<span class="number">1</span>, <span class="string">&quot;BORN TO WRITE WORLD IS A CHUNK 鬼神 LSB Em All 1972 I am mov man 410,757,864,530 CORRUPTED POINTERS&quot;</span>, <span class="number">101</span>);</span><br><span class="line">    _Exit(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span></span><br><span class="line">&#123;</span><br><span class="line">    _Exit(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这是blog中提到的源码（删除了<code>seccomp</code>，原题并无沙箱），与本题的源码除了<code>write</code>的字符串之外其他没有任何不同。<code>__attribute__((constructor))</code>是C语言的一个特性，被该特性所修饰的函数能够在<code>main</code>函数之前执行。在二进制文件中，可以观察到这个函数是通过<code>init</code>调用的。</p>
+<p>在<code>nightmare</code>函数的开始，程序分配了一个0x40000的大chunk。对于此类chunk，Glibc通常都是通过调用<code>mmap</code>实现分配的，且<strong>第一个分配的此类chunk应正好位于Glibc加载地址的低地址处</strong>。需要注意这个chunk的分配地址特点，这是我们完成利用的前提条件之一。</p>
+<p>随后，我们可以输入offset与byte，程序以chunk为基地址，offset为偏移，能够实现一个字节的写入。随后输出一个字符串后调用<code>_Exit</code>退出。</p>
+<h1 id="b-无限写入"><a class="markdownIt-Anchor" href="#b-无限写入"></a> B. 无限写入</h1>
+<p>如果我们仅仅是只能写入1个字节，那么复杂的利用无论如何也是无法完成的。因此我们要想办法无限循环<code>nightmare</code>函数。虽然我们在退出之前只能写入1个字节，但这1个字节已经足以让<code>_Exit</code>函数失能了。没错，本题是Partial RELRO，我们可以通过令ld错误解析<code>_Exit</code>函数，将<code>_Exit.got</code>指向其他函数，即可让<code>_Exit</code>调用其他函数而不是退出。（因为写入是以chunk为基地址，考虑ASLR保护，我们无法获取程序的got表的偏移，也就无法直接写入）</p>
+<p>需要注意的是，<code>nightmare</code>函数由于是以<code>_Exit</code>结尾的，因此它隐式包含了<code>__noreturn</code>标签，即该函数并非以<code>ret</code>指令结尾，而是以调用<code>_Exit</code>的指令结尾。通过简单的逆向分析可以发现，<code>nightmare</code>函数（题目中为以0x11A9地址开始的函数）的下面就是<code>main</code>函数和<code>init</code>函数。因此当<code>_Exit</code>不退出并执行结束后，程序将会首先去执行<code>main</code>，而<code>main</code>中的<code>_Exit</code>也不会退出程序，因此会继续执行下面的<code>init</code>函数，这样就产生了一个<code>init -&gt; nightmare -&gt; main -&gt; init</code>的无限循环。</p>
+<p><img src="1.png" alt="" /></p>
+<p>因此下面我们需要深入分析got表的解析流程。</p>
+<h2 id="b1-ldso-对-got-表的解析流程"><a class="markdownIt-Anchor" href="#b1-ldso-对-got-表的解析流程"></a> B.1 <a target="_blank" rel="noopener" href="http://ld.so">ld.so</a> 对 GOT 表的解析流程</h2>
+<p>首先我们都知道，在Partial RELRO的ELF程序中存在.plt节和.got节。在第一次调用某个库函数时，会通过.plt节中的跳转到ld.so中解析函数地址。在本题中，<code>nightmare</code>函数直接调用的是.plt.sec节地址，这个节会跳转到.plt节。本题中.plt节中一共有5个条目，后面4个分别对应于got表中的4个函数，而第1个则是跳转到函数解析流程。</p>
+<p>在本题中，对于第一次调用<code>read</code>函数，跳转流程是这样的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">read@plt.sec    (0x1090)</span><br><span class="line">read@plt        (0x1040)</span><br><span class="line">PLT[0]          (0x1020)</span><br><span class="line">ld.so</span><br></pre></td></tr></table></figure>
+<p>随后，我们跟随调试，结合源码进入ld.so查看。</p>
+<p>直接进入的是<code>_dl_runtime_resolve_xsavec</code>，这个函数使用汇编语言编写，位于<code>/sysdeps/x86_64/dl-trampoline.h</code>，如下所示，首先保存一些寄存器状态后传入2个参数，随后调用<code>_dl_fixup</code>。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; x/10i 0x7ffff7fd8d30</span><br><span class="line">=&gt; 0x7ffff7fd8d30 &lt;_dl_runtime_resolve_xsavec&gt;:	endbr64 </span><br><span class="line">   0x7ffff7fd8d34 &lt;_dl_runtime_resolve_xsavec+4&gt;:	push   rbx</span><br><span class="line">   0x7ffff7fd8d35 &lt;_dl_runtime_resolve_xsavec+5&gt;:	mov    rbx,rsp</span><br><span class="line">   0x7ffff7fd8d38 &lt;_dl_runtime_resolve_xsavec+8&gt;:	and    rsp,0xffffffffffffffc0</span><br><span class="line">   0x7ffff7fd8d3c &lt;_dl_runtime_resolve_xsavec+12&gt;:	sub    rsp,QWORD PTR [rip+0x23f4d]        # 0x7ffff7ffcc90 &lt;_rtld_global_ro+432&gt;</span><br><span class="line">   0x7ffff7fd8d43 &lt;_dl_runtime_resolve_xsavec+19&gt;:	mov    QWORD PTR [rsp],rax</span><br><span class="line">   0x7ffff7fd8d47 &lt;_dl_runtime_resolve_xsavec+23&gt;:	mov    QWORD PTR [rsp+0x8],rcx</span><br><span class="line">   0x7ffff7fd8d4c &lt;_dl_runtime_resolve_xsavec+28&gt;:	mov    QWORD PTR [rsp+0x10],rdx</span><br><span class="line">   0x7ffff7fd8d51 &lt;_dl_runtime_resolve_xsavec+33&gt;:	mov    QWORD PTR [rsp+0x18],rsi</span><br><span class="line">   0x7ffff7fd8d56 &lt;_dl_runtime_resolve_xsavec+38&gt;:	mov    QWORD PTR [rsp+0x20],rdi</span><br><span class="line">pwndbg&gt; </span><br><span class="line">   0x7ffff7fd8d5b &lt;_dl_runtime_resolve_xsavec+43&gt;:	mov    QWORD PTR [rsp+0x28],r8</span><br><span class="line">   0x7ffff7fd8d60 &lt;_dl_runtime_resolve_xsavec+48&gt;:	mov    QWORD PTR [rsp+0x30],r9</span><br><span class="line">   0x7ffff7fd8d65 &lt;_dl_runtime_resolve_xsavec+53&gt;:	mov    eax,0xee</span><br><span class="line">   0x7ffff7fd8d6a &lt;_dl_runtime_resolve_xsavec+58&gt;:	xor    edx,edx</span><br><span class="line">   0x7ffff7fd8d6c &lt;_dl_runtime_resolve_xsavec+60&gt;:	mov    QWORD PTR [rsp+0x250],rdx</span><br><span class="line">   0x7ffff7fd8d74 &lt;_dl_runtime_resolve_xsavec+68&gt;:	mov    QWORD PTR [rsp+0x258],rdx</span><br><span class="line">   0x7ffff7fd8d7c &lt;_dl_runtime_resolve_xsavec+76&gt;:	mov    QWORD PTR [rsp+0x260],rdx</span><br><span class="line">   0x7ffff7fd8d84 &lt;_dl_runtime_resolve_xsavec+84&gt;:	mov    QWORD PTR [rsp+0x268],rdx</span><br><span class="line">   0x7ffff7fd8d8c &lt;_dl_runtime_resolve_xsavec+92&gt;:	mov    QWORD PTR [rsp+0x270],rdx</span><br><span class="line">   0x7ffff7fd8d94 &lt;_dl_runtime_resolve_xsavec+100&gt;:	mov    QWORD PTR [rsp+0x278],rdx</span><br><span class="line">pwndbg&gt; </span><br><span class="line">   0x7ffff7fd8d9c &lt;_dl_runtime_resolve_xsavec+108&gt;:	xsavec [rsp+0x40]</span><br><span class="line">   0x7ffff7fd8da1 &lt;_dl_runtime_resolve_xsavec+113&gt;:	mov    rsi,QWORD PTR [rbx+0x10]</span><br><span class="line">   0x7ffff7fd8da5 &lt;_dl_runtime_resolve_xsavec+117&gt;:	mov    rdi,QWORD PTR [rbx+0x8]</span><br><span class="line">   0x7ffff7fd8da9 &lt;_dl_runtime_resolve_xsavec+121&gt;:	call   0x7ffff7fd5e70 &lt;_dl_fixup&gt;</span><br><span class="line">   0x7ffff7fd8dae &lt;_dl_runtime_resolve_xsavec+126&gt;:	mov    r11,rax</span><br><span class="line">   0x7ffff7fd8db1 &lt;_dl_runtime_resolve_xsavec+129&gt;:	mov    eax,0xee</span><br><span class="line">   0x7ffff7fd8db6 &lt;_dl_runtime_resolve_xsavec+134&gt;:	xor    edx,edx</span><br><span class="line">   0x7ffff7fd8db8 &lt;_dl_runtime_resolve_xsavec+136&gt;:	xrstor [rsp+0x40]</span><br><span class="line">   0x7ffff7fd8dbd &lt;_dl_runtime_resolve_xsavec+141&gt;:	mov    r9,QWORD PTR [rsp+0x30]</span><br><span class="line">   0x7ffff7fd8dc2 &lt;_dl_runtime_resolve_xsavec+146&gt;:	mov    r8,QWORD PTR [rsp+0x28]</span><br><span class="line">pwndbg&gt; </span><br><span class="line">   0x7ffff7fd8dc7 &lt;_dl_runtime_resolve_xsavec+151&gt;:	mov    rdi,QWORD PTR [rsp+0x20]</span><br><span class="line">   0x7ffff7fd8dcc &lt;_dl_runtime_resolve_xsavec+156&gt;:	mov    rsi,QWORD PTR [rsp+0x18]</span><br><span class="line">   0x7ffff7fd8dd1 &lt;_dl_runtime_resolve_xsavec+161&gt;:	mov    rdx,QWORD PTR [rsp+0x10]</span><br><span class="line">   0x7ffff7fd8dd6 &lt;_dl_runtime_resolve_xsavec+166&gt;:	mov    rcx,QWORD PTR [rsp+0x8]</span><br><span class="line">   0x7ffff7fd8ddb &lt;_dl_runtime_resolve_xsavec+171&gt;:	mov    rax,QWORD PTR [rsp]</span><br><span class="line">   0x7ffff7fd8ddf &lt;_dl_runtime_resolve_xsavec+175&gt;:	mov    rsp,rbx</span><br><span class="line">   0x7ffff7fd8de2 &lt;_dl_runtime_resolve_xsavec+178&gt;:	mov    rbx,QWORD PTR [rsp]</span><br><span class="line">   0x7ffff7fd8de6 &lt;_dl_runtime_resolve_xsavec+182&gt;:	add    rsp,0x18</span><br><span class="line">   0x7ffff7fd8dea &lt;_dl_runtime_resolve_xsavec+186&gt;:	jmp    r11</span><br></pre></td></tr></table></figure>
+<p><code>_dl_fixup</code>的第一个参数是<code>struct link_map*</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /elf/link.h, line 95</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* Structure describing a loaded shared object.  The `l_next&#x27; and `l_prev&#x27;</span></span><br><span class="line"><span class="comment">   members form a chain of all the shared objects loaded at startup.</span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment">   These data structures exist in space used by the run-time dynamic linker;</span></span><br><span class="line"><span class="comment">   modifying them may have disastrous results.  */</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">link_map</span></span></span><br><span class="line"><span class="class">  &#123;</span></span><br><span class="line">    <span class="comment">/* These first few members are part of the protocol with the debugger.</span></span><br><span class="line"><span class="comment">       This is the same format used in SVR4.  */</span></span><br><span class="line"></span><br><span class="line">    ElfW(Addr) l_addr;		<span class="comment">/* Difference between the address in the ELF</span></span><br><span class="line"><span class="comment">				   file and the addresses in memory.  */</span></span><br><span class="line">    <span class="type">char</span> *l_name;		<span class="comment">/* Absolute file name object was found in.  */</span></span><br><span class="line">    ElfW(Dyn) *l_ld;		<span class="comment">/* Dynamic section of the shared object.  */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">l_next</span>, *<span class="title">l_prev</span>;</span> <span class="comment">/* Chain of loaded objects.  */</span></span><br><span class="line">  &#125;;</span><br></pre></td></tr></table></figure>
+<p>这是一个链表结构，保存有ELF文件需要加载的所有动态链接库信息。链表的第一个元素保存ELF文件的加载地址，<code>name</code>为空。其后依次为各个动态链接库的加载地址与名字。因为要查找一个函数的地址，首先我们不知道它属于哪个动态链接库，因此需要遍历处理。需要注意的是，有两个<code>link_map</code>结构，上面那个是简化版，还有一个非常复杂的位于<code>/include/link.h</code>。</p>
+<p>下面是某次执行时的<code>link_map</code>结构：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x7ffff7ffe2e0</span><br><span class="line">00:0000│ rdi 0x7ffff7ffe2e0 —▸ 0x555555554000 ◂— 0x10102464c457f</span><br><span class="line">01:0008│     0x7ffff7ffe2e8 —▸ 0x7ffff7ffe888 ◂— 0</span><br><span class="line">02:0010│     0x7ffff7ffe2f0 —▸ 0x555555557df8 ◂— 1</span><br><span class="line">03:0018│     0x7ffff7ffe2f8 —▸ 0x7ffff7ffe890 —▸ 0x7ffff7fc1000 ◂— jg 0x7ffff7fc1047</span><br><span class="line"></span><br><span class="line">pwndbg&gt; tele 0x7ffff7ffe890</span><br><span class="line">00:0000│  0x7ffff7ffe890 —▸ 0x7ffff7fc1000 ◂— jg 0x7ffff7fc1047</span><br><span class="line">01:0008│  0x7ffff7ffe898 —▸ 0x7ffff7fc1371 ◂— insb byte ptr [rdi], dx /* &#x27;linux-vdso.so.1&#x27; */</span><br><span class="line">02:0010│  0x7ffff7ffe8a0 —▸ 0x7ffff7fc13e0 ◂— 0xe</span><br><span class="line">03:0018│  0x7ffff7ffe8a8 —▸ 0x7ffff7fbb160 —▸ 0x7ffff7d78000 ◂— 0x3010102464c457f</span><br><span class="line"></span><br><span class="line">pwndbg&gt; tele 0x7ffff7fbb160</span><br><span class="line">00:0000│  0x7ffff7fbb160 —▸ 0x7ffff7d78000 ◂— 0x3010102464c457f</span><br><span class="line">01:0008│  0x7ffff7fbb168 —▸ 0x7ffff7fbb140 ◂— &#x27;/lib/x86_64-linux-gnu/libc.so.6&#x27;</span><br><span class="line">02:0010│  0x7ffff7fbb170 —▸ 0x7ffff7f91bc0 (_DYNAMIC) ◂— 1</span><br><span class="line">03:0018│  0x7ffff7fbb178 —▸ 0x7ffff7ffdaf0 (_rtld_global+2736) —▸ 0x7ffff7fc3000 ◂— 0x3010102464c457f</span><br><span class="line"></span><br><span class="line">pwndbg&gt; tele 0x7ffff7ffdaf0</span><br><span class="line">00:0000│  0x7ffff7ffdaf0 (_rtld_global+2736) —▸ 0x7ffff7fc3000 ◂— 0x3010102464c457f</span><br><span class="line">01:0008│  0x7ffff7ffdaf8 (_rtld_global+2744) —▸ 0x555555554318 ◂— &#x27;/lib64/ld-linux-x86-64.so.2&#x27;</span><br><span class="line">02:0010│  0x7ffff7ffdb00 (_rtld_global+2752) —▸ 0x7ffff7ffce80 (_DYNAMIC) ◂— 0xe</span><br><span class="line">03:0018│  0x7ffff7ffdb08 (_rtld_global+2760) ◂— 0</span><br></pre></td></tr></table></figure>
+<p>由上述数据可知，ELF的加载地址应位于0x555555554000，加载了3个动态链接库，依次为linux-vdso.so.1、/lib/x86_64-linux-gnu/libc.so.6、/lib64/ld-linux-x86-64.so.2。第2个参数则是我们要解析的函数位于ELF got表中的地址中的索引值。</p>
+<h3 id="_dl_fixup第一段"><a class="markdownIt-Anchor" href="#_dl_fixup第一段"></a> <code>_dl_fixup</code>第一段</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *<span class="type">const</span> symtab</span><br><span class="line">  = (<span class="type">const</span> <span class="type">void</span> *) D_PTR (l, l_info[DT_SYMTAB]);</span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *strtab = (<span class="type">const</span> <span class="type">void</span> *) D_PTR (l, l_info[DT_STRTAB]);</span><br><span class="line"></span><br><span class="line"><span class="type">const</span> PLTREL *<span class="type">const</span> reloc</span><br><span class="line">  = (<span class="type">const</span> <span class="type">void</span> *) (D_PTR (l, l_info[DT_JMPREL]) + reloc_offset);</span><br><span class="line"><span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *sym = &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)];</span><br><span class="line"><span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *refsym = sym;</span><br><span class="line"><span class="type">void</span> *<span class="type">const</span> rel_addr = (<span class="type">void</span> *)(l-&gt;l_addr + reloc-&gt;r_offset);</span><br><span class="line"><span class="type">lookup_t</span> result;</span><br><span class="line">DL_FIXUP_VALUE_TYPE value;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Sanity check that we&#x27;re really looking at a PLT relocation.  */</span></span><br><span class="line">assert (ELFW(R_TYPE)(reloc-&gt;r_info) == ELF_MACHINE_JMP_SLOT);</span><br></pre></td></tr></table></figure>
+<p>这里有一些宏定义需要下面的引用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /elf/link.h, line 28</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* We use this macro to refer to ELF types independent of the native wordsize.</span></span><br><span class="line"><span class="comment">   `ElfW(TYPE)&#x27; is used in place of `Elf32_TYPE&#x27; or `Elf64_TYPE&#x27;.  */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ElfW(type)	_ElfW (Elf, __ELF_NATIVE_CLASS, type)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _ElfW(e,w,t)	_ElfW_1 (e, w, _##t)</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> _ElfW_1(e,w,t)	e##w##t</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /sysdeps/generic/ldsodefs.h, line 78</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> D_PTR(map, i) ((map)-&gt;i-&gt;d_un.d_ptr + (map)-&gt;l_addr)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/elf.h, line 858</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_SYMTAB	6		<span class="comment">/* Address of symbol table */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/dl-runtime.c, line 67</span></span><br><span class="line"></span><br><span class="line"><span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *<span class="type">const</span> symtab</span><br><span class="line">= (<span class="type">const</span> <span class="type">void</span> *) D_PTR (l, l_info[DT_SYMTAB]);      <span class="comment">// l-&gt;l_info[6]-&gt;d_un.d_ptr + l-&gt;l_addr</span></span><br><span class="line"><span class="type">const</span> <span class="type">char</span> *strtab = (<span class="type">const</span> <span class="type">void</span> *) D_PTR (l, l_info[DT_STRTAB]);</span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/dl-runtime.c, line 34</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> PLTREL  ElfW(Rela)</span></span><br></pre></td></tr></table></figure>
+<p><code>__ELF_NATIVE_CLASS</code>为64，因此第一条语句即为获取ELF的.symtab节地址，即符号表地址。具体的获取方式如下：</p>
+<p>在ELF中有.dynamic节，其中保存有本ELF文件多个节的地址信息：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">LOAD:0000000000003DF8                               LOAD segment mempage public &#x27;DATA&#x27; use64</span><br><span class="line">LOAD:0000000000003DF8                               assume cs:LOAD</span><br><span class="line">LOAD:0000000000003DF8                               ;org 3DF8h</span><br><span class="line">LOAD:0000000000003DF8 01 00 00 00 00 00 00 00 01 00+stru_3DF8 Elf64_Dyn &lt;1, 1&gt;              ; DATA XREF: LOAD:00000000000001A0↑o</span><br><span class="line">LOAD:0000000000003DF8 00 00 00 00 00 00                                                     ; .got.plt:0000000000004000↓o</span><br><span class="line">LOAD:0000000000003DF8                                                                       ; DT_NEEDED libc.so.6</span><br><span class="line">LOAD:0000000000003E08 0C 00 00 00 00 00 00 00 00 10+Elf64_Dyn &lt;0Ch, 1000h&gt;                  ; DT_INIT</span><br><span class="line">LOAD:0000000000003E18 0D 00 00 00 00 00 00 00 E8 12+Elf64_Dyn &lt;0Dh, 12E8h&gt;                  ; DT_FINI</span><br><span class="line">LOAD:0000000000003E28 19 00 00 00 00 00 00 00 E0 3D+Elf64_Dyn &lt;19h, 3DE0h&gt;                  ; DT_INIT_ARRAY</span><br><span class="line">LOAD:0000000000003E38 1B 00 00 00 00 00 00 00 10 00+Elf64_Dyn &lt;1Bh, 10h&gt;                    ; DT_INIT_ARRAYSZ</span><br><span class="line">LOAD:0000000000003E48 1A 00 00 00 00 00 00 00 F0 3D+Elf64_Dyn &lt;1Ah, 3DF0h&gt;                  ; DT_FINI_ARRAY</span><br><span class="line">LOAD:0000000000003E58 1C 00 00 00 00 00 00 00 08 00+Elf64_Dyn &lt;1Ch, 8&gt;                      ; DT_FINI_ARRAYSZ</span><br><span class="line">LOAD:0000000000003E68 F5 FE FF 6F 00 00 00 00 A0 03+Elf64_Dyn &lt;6FFFFEF5h, 3A0h&gt;             ; DT_GNU_HASH</span><br><span class="line">LOAD:0000000000003E78 05 00 00 00 00 00 00 00 B8 04+Elf64_Dyn &lt;5, 4B8h&gt;                     ; DT_STRTAB</span><br><span class="line">LOAD:0000000000003E88 06 00 00 00 00 00 00 00 C8 03+dq 6                                    ; d_tag ; DT_SYMTAB</span><br><span class="line">LOAD:0000000000003E88 00 00 00 00 00 00             dq 3C8h                                 ; d_un</span><br><span class="line">LOAD:0000000000003E98 0A 00 00 00 00 00 00 00 95 00+Elf64_Dyn &lt;0Ah, 95h&gt;                    ; DT_STRSZ</span><br><span class="line">LOAD:0000000000003EA8 0B 00 00 00 00 00 00 00 18 00+Elf64_Dyn &lt;0Bh, 18h&gt;                    ; DT_SYMENT</span><br><span class="line">LOAD:0000000000003EB8 15 00 00 00 00 00 00 00 00 00+Elf64_Dyn &lt;15h, 0&gt;                      ; DT_DEBUG</span><br><span class="line">LOAD:0000000000003EC8 03 00 00 00 00 00 00 00 00 40+Elf64_Dyn &lt;3, 4000h&gt;                    ; DT_PLTGOT</span><br><span class="line">LOAD:0000000000003ED8 02 00 00 00 00 00 00 00 60 00+Elf64_Dyn &lt;2, 60h&gt;                      ; DT_PLTRELSZ</span><br><span class="line">LOAD:0000000000003EE8 14 00 00 00 00 00 00 00 07 00+Elf64_Dyn &lt;14h, 7&gt;                      ; DT_PLTREL</span><br><span class="line">LOAD:0000000000003EF8 17 00 00 00 00 00 00 00 60 06+Elf64_Dyn &lt;17h, 660h&gt;                   ; DT_JMPREL</span><br><span class="line">LOAD:0000000000003F08 07 00 00 00 00 00 00 00 88 05+Elf64_Dyn &lt;7, 588h&gt;                     ; DT_RELA</span><br><span class="line">LOAD:0000000000003F18 08 00 00 00 00 00 00 00 D8 00+Elf64_Dyn &lt;8, 0D8h&gt;                     ; DT_RELASZ</span><br><span class="line">LOAD:0000000000003F28 09 00 00 00 00 00 00 00 18 00+Elf64_Dyn &lt;9, 18h&gt;                      ; DT_RELAENT</span><br><span class="line">LOAD:0000000000003F38 FB FF FF 6F 00 00 00 00 00 00+Elf64_Dyn &lt;6FFFFFFBh, 8000000h&gt;         ; DT_FLAGS_1</span><br><span class="line">LOAD:0000000000003F48 FE FF FF 6F 00 00 00 00 68 05+Elf64_Dyn &lt;6FFFFFFEh, 568h&gt;             ; DT_VERNEED</span><br><span class="line">LOAD:0000000000003F58 FF FF FF 6F 00 00 00 00 01 00+Elf64_Dyn &lt;6FFFFFFFh, 1&gt;                ; DT_VERNEEDNUM</span><br><span class="line">LOAD:0000000000003F68 F0 FF FF 6F 00 00 00 00 4E 05+Elf64_Dyn &lt;6FFFFFF0h, 54Eh&gt;             ; DT_VERSYM</span><br><span class="line">LOAD:0000000000003F78 F9 FF FF 6F 00 00 00 00 04 00+Elf64_Dyn &lt;6FFFFFF9h, 4&gt;                ; DT_RELACOUNT</span><br><span class="line">LOAD:0000000000003F88 00 00 00 00 00 00 00 00 00 00+Elf64_Dyn &lt;0&gt;                           ; DT_NULL</span><br></pre></td></tr></table></figure>
+<p>如上例所示，dynamic节实际上是由多个二元组构成，二元组的第一个元素为编号，用于标识表示的内容，如这里的5即代表.strtab节，即字符串表节的相对地址、6即代表.symtab节，即符号表的相对地址。所有这些常量定义在/elf/elf.h中。因此前面3条语句实际上是在获取ELF文件的<strong>符号表实例、字符串表实例、PLT相对跳转表（.rela.plt节）实例</strong>。</p>
+<p>第4行<code>const ElfW(Sym) *sym = &amp;symtab[ELFW(R_SYM) (reloc-&gt;r_info)];</code>是要根据.rela.plt中对应函数的<code>r_info</code>字段获取到.symtab符号表中的对应项：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">LOAD:0000000000000660                               ; ELF JMPREL Relocation Table</span><br><span class="line">LOAD:0000000000000660 18 40 00 00 00 00 00 00 07 00+dq 4018h                                ; r_offset ; R_X86_64_JUMP_SLOT write</span><br><span class="line">LOAD:0000000000000660 00 00 02 00 00 00 00 00 00 00+dq 200000007h                           ; r_info</span><br><span class="line">LOAD:0000000000000660 00 00 00 00                   dq 0                                    ; r_addend</span><br><span class="line">LOAD:0000000000000678 20 40 00 00 00 00 00 00 07 00+dq 4020h                                ; r_offset ; R_X86_64_JUMP_SLOT read</span><br><span class="line">LOAD:0000000000000678 00 00 03 00 00 00 00 00 00 00+dq 300000007h                           ; r_info</span><br><span class="line">LOAD:0000000000000678 00 00 00 00                   dq 0                                    ; r_addend</span><br><span class="line">LOAD:0000000000000690 28 40 00 00 00 00 00 00 07 00+dq 4028h                                ; r_offset ; R_X86_64_JUMP_SLOT malloc</span><br><span class="line">LOAD:0000000000000690 00 00 06 00 00 00 00 00 00 00+dq 600000007h                           ; r_info</span><br><span class="line">LOAD:0000000000000690 00 00 00 00                   dq 0                                    ; r_addend</span><br><span class="line">LOAD:00000000000006A8 30 40 00 00 00 00 00 00 07 00+dq 4030h                                ; r_offset ; R_X86_64_JUMP_SLOT _Exit</span><br><span class="line">LOAD:00000000000006A8 00 00 08 00 00 00 00 00 00 00+dq 800000007h                           ; r_info</span><br><span class="line">LOAD:00000000000006A8 00 00 00 00                   dq 0                                    ; r_addend</span><br></pre></td></tr></table></figure>
+<p>如上例所示，这里是取<code>r_info</code>的高4字节，对于<code>read</code>为3，随后到符号表中查找：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">LOAD:00000000000003C8 00 00 00 00 00 00 00 00 00 00+Elf64_Sym &lt;0&gt;</span><br><span class="line">LOAD:00000000000003E0 50 00 00 00 20 00 00 00 00 00+Elf64_Sym &lt;offset aItmDeregistert - offset unk_4B8, 20h, 0, 0, offset dword_0, 0&gt; ; &quot;_ITM_deregisterTMCloneTable&quot;</span><br><span class="line">LOAD:00000000000003F8 3E 00 00 00 12 00 00 00 00 00+Elf64_Sym &lt;offset aWrite - offset unk_4B8, 12h, 0, 0, offset dword_0, 0&gt; ; &quot;write&quot;</span><br><span class="line">LOAD:0000000000000410 0B 00 00 00 12 00 00 00 00 00+Elf64_Sym &lt;offset aRead - offset unk_4B8, 12h, 0, 0, offset dword_0, 0&gt; ; &quot;read&quot;</span><br><span class="line">LOAD:0000000000000428 2C 00 00 00 12 00 00 00 00 00+Elf64_Sym &lt;offset aLibcStartMain - offset unk_4B8, 12h, 0, 0, offset dword_0, 0&gt; ; &quot;__libc_start_main&quot;</span><br><span class="line">LOAD:0000000000000440 6C 00 00 00 20 00 00 00 00 00+Elf64_Sym &lt;offset aGmonStart - offset unk_4B8, 20h, 0, 0, offset dword_0, 0&gt; ; &quot;__gmon_start__&quot;</span><br><span class="line">LOAD:0000000000000458 10 00 00 00 12 00 00 00 00 00+Elf64_Sym &lt;offset aMalloc - offset unk_4B8, 12h, 0, 0, offset dword_0, 0&gt; ; &quot;malloc&quot;</span><br><span class="line">LOAD:0000000000000470 7B 00 00 00 20 00 00 00 00 00+Elf64_Sym &lt;offset aItmRegistertmc - offset unk_4B8, 20h, 0, 0, offset dword_0, 0&gt; ; &quot;_ITM_registerTMCloneTable&quot;</span><br><span class="line">LOAD:0000000000000488 17 00 00 00 12 00 00 00 00 00+Elf64_Sym &lt;offset aExit - offset unk_4B8, 12h, 0, 0, offset dword_0, 0&gt; ; &quot;_Exit&quot;</span><br><span class="line">LOAD:00000000000004A0 1D 00 00 00 22 00 00 00 00 00+Elf64_Sym &lt;offset aCxaFinalize - offset unk_4B8, 22h, 0, 0, offset dword_0, 0&gt; ; &quot;__cxa_finalize&quot;</span><br></pre></td></tr></table></figure>
+<p>可以看到，索引为3的表项正是<code>read</code>。</p>
+<p>第5行<code>void *const rel_addr = (void *)(l-&gt;l_addr + reloc-&gt;r_offset);</code>即为获取函数的got表（.got.plt节）项地址。</p>
+<h3 id="_dl_fixup第二段"><a class="markdownIt-Anchor" href="#_dl_fixup第二段"></a> <code>_dl_fixup</code>第二段</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">if</span> (__builtin_expect (ELFW(ST_VISIBILITY) (sym-&gt;st_other), <span class="number">0</span>) == <span class="number">0</span>)</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">r_found_version</span> *<span class="title">version</span> =</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (l-&gt;l_info[VERSYMIDX (DT_VERSYM)] != <span class="literal">NULL</span>)</span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Half)</span> *vernum =</span><br><span class="line">    (<span class="type">const</span> <span class="type">void</span> *) D_PTR (l, l_info[VERSYMIDX (DT_VERSYM)]);</span><br><span class="line">  ElfW(Half) ndx = vernum[ELFW(R_SYM) (reloc-&gt;r_info)] &amp; <span class="number">0x7fff</span>;</span><br><span class="line">  version = &amp;l-&gt;l_versions[ndx];</span><br><span class="line">  <span class="keyword">if</span> (version-&gt;hash == <span class="number">0</span>)</span><br><span class="line">    version = <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">/* We need to keep the scope around so do some locking.  This is</span></span><br><span class="line"><span class="comment"> not necessary for objects which cannot be unloaded or when</span></span><br><span class="line"><span class="comment"> we are not using any threads (yet).  */</span></span><br><span class="line">     <span class="type">int</span> flags = DL_LOOKUP_ADD_DEPENDENCY;</span><br><span class="line">     <span class="keyword">if</span> (!RTLD_SINGLE_THREAD_P)</span><br><span class="line">&#123;</span><br><span class="line">  THREAD_GSCOPE_SET_FLAG ();</span><br><span class="line">  flags |= DL_LOOKUP_GSCOPE_LOCK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的if判断条件中：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /elf/elf.h, line 620</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF32_ST_VISIBILITY(o)	((o) &amp; 0x03)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* For ELF64 the definitions are the same.  */</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> ELF64_ST_VISIBILITY(o)	ELF32_ST_VISIBILITY (o)</span></span><br></pre></td></tr></table></figure>
+<p>这里是与符号表项的<code>st_other</code>字段相关的判断。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /sysdeps/generic/ldsodefs.h, line 44</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> VERSYMIDX(sym)	(DT_NUM + DT_THISPROCNUM + DT_VERSIONTAGIDX (sym))</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/elf.h, line 887</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	DT_NUM		35		<span class="comment">/* Number used */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /sysdeps/generic/dl-dtprocnum.h, line 21</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_THISPROCNUM	0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/elf.h, line 949</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span>	DT_VERNEEDNUM	0x6fffffff	<span class="comment">/* Number of needed versions */</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_VERSIONTAGIDX(tag)	(DT_VERNEEDNUM - (tag))	<span class="comment">/* Reverse order! */</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/elf.h, line 937</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DT_VERSYM	0x6ffffff0</span></span><br></pre></td></tr></table></figure>
+<p>内部的第一个判断与版本有关。根据上面的宏定义，我们要找的.dynamic表项索引应为<code>35 + 0 + (0x6fffffff - 0x6ffffff0) = 0x32</code>，这里的<code>ElfW(Half)</code>等同于<code>uint16_t</code>。最终获取到的<code>vernum</code>为指向.gnu.version节的指针：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">LOAD:000000000000054E                               ; ELF GNU Symbol Version Table</span><br><span class="line">LOAD:000000000000054E 00 00                         dw 0</span><br><span class="line">LOAD:0000000000000550 00 00                         dw 0                                    ; local  symbol: _ITM_deregisterTMCloneTable</span><br><span class="line">LOAD:0000000000000552 02 00                         dw 2                                    ; write@@GLIBC_2.2.5</span><br><span class="line">LOAD:0000000000000554 02 00                         dw 2                                    ; read@@GLIBC_2.2.5</span><br><span class="line">LOAD:0000000000000556 02 00                         dw 2                                    ; __libc_start_main@@GLIBC_2.2.5</span><br><span class="line">LOAD:0000000000000558 00 00                         dw 0                                    ; local  symbol: __gmon_start__</span><br><span class="line">LOAD:000000000000055A 02 00                         dw 2                                    ; malloc@@GLIBC_2.2.5</span><br><span class="line">LOAD:000000000000055C 00 00                         dw 0                                    ; local  symbol: _ITM_registerTMCloneTable</span><br><span class="line">LOAD:000000000000055E 02 00                         dw 2                                    ; _Exit@@GLIBC_2.2.5</span><br><span class="line">LOAD:0000000000000560 02 00                         dw 2                                    ; __cxa_finalize@@GLIBC_2.2.5</span><br><span class="line">LOAD:0000000000000562 00 00                         dw 0</span><br><span class="line">LOAD:0000000000000564 00 00                         dw 0</span><br><span class="line">LOAD:0000000000000566 00 00                         dw 0</span><br></pre></td></tr></table></figure>
+<p>随后代码根据.relo.plt记录的索引值，找到.gnu.version节的对应值，对于<code>read</code>而言，这里获取的是2。之后会找到一个ld.so中的结构，其中记录有支持的libc版本与hash值等信息：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x7ffff7fbb6b0</span><br><span class="line">00:0000│  0x7ffff7fbb6b0 ◂— 0</span><br><span class="line">... ↓     5 skipped</span><br><span class="line">06:0030│  0x7ffff7fbb6e0 —▸ 0x5555555544fc ◂— &#x27;GLIBC_2.2.5&#x27;</span><br><span class="line">07:0038│  0x7ffff7fbb6e8 ◂— 0x9691a75</span><br><span class="line">pwndbg&gt; </span><br><span class="line">08:0040│  0x7ffff7fbb6f0 —▸ 0x5555555544b9 ◂— &#x27;libc.so.6&#x27;</span><br><span class="line">09:0048│  0x7ffff7fbb6f8 ◂— 0</span><br><span class="line">... ↓     6 skipped</span><br><span class="line">pwndbg&gt; </span><br><span class="line">10:0080│  0x7ffff7fbb730 —▸ 0x7ffff7fc1381 ◂— push rbp /* &#x27;LINUX_2.6&#x27; */</span><br><span class="line">11:0088│  0x7ffff7fbb738 ◂— 0x3ae75f6</span><br><span class="line">12:0090│  0x7ffff7fbb740 ◂— 0</span><br><span class="line">... ↓     5 skipped</span><br><span class="line">pwndbg&gt; </span><br><span class="line">18:00c0│  0x7ffff7fbb770 ◂— 0</span><br><span class="line">19:00c8│  0x7ffff7fbb778 ◂— 0</span><br><span class="line">1a:00d0│  0x7ffff7fbb780 —▸ 0x7ffff7d963d8 ◂— &#x27;GLIBC_2.2.5&#x27;</span><br><span class="line">1b:00d8│  0x7ffff7fbb788 ◂— 0x9691a75</span><br><span class="line">1c:00e0│  0x7ffff7fbb790 ◂— 0</span><br><span class="line">1d:00e8│  0x7ffff7fbb798 —▸ 0x7ffff7d963e4 ◂— &#x27;GLIBC_2.2.6&#x27;</span><br><span class="line">1e:00f0│  0x7ffff7fbb7a0 ◂— 0x9691a76</span><br><span class="line">1f:00f8│  0x7ffff7fbb7a8 ◂— 0</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>因此这里获取的Hash值为0x9691a75。</p>
+<p>下面的第二个if与多线程有关，这里忽略。</p>
+<h3 id="_dl_fixup第三段"><a class="markdownIt-Anchor" href="#_dl_fixup第三段"></a> <code>_dl_fixup</code>第三段</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">result = _dl_lookup_symbol_x (strtab + sym-&gt;st_name, l, &amp;sym, l-&gt;l_scope,</span><br><span class="line">				    version, ELF_RTYPE_CLASS_PLT, flags, <span class="literal">NULL</span>);</span><br></pre></td></tr></table></figure>
+<p>下面，就是真正的查找函数位置的流程。这里第1个参数为函数名在.strtab节中的偏移。</p>
+<p>为了提升查询速度，ld.so不可能通过遍历所有动态链接库的所有函数名的方式查找匹配，在<code>_dl_lookup_symbol_x</code>中我们就能够窥见一二。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /elf/dl-lookup.c, line 842</span></span><br><span class="line"></span><br><span class="line">    <span class="type">const</span> <span class="type">uint_fast32_t</span> new_hash = dl_new_hash (undef_name);</span><br><span class="line">    <span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> old_hash = <span class="number">0xffffffff</span>;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sym_val</span> <span class="title">current_value</span> =</span> &#123; <span class="literal">NULL</span>, <span class="literal">NULL</span> &#125;;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">r_scope_elem</span> **<span class="title">scope</span> =</span> symbol_scope;</span><br><span class="line">    </span><br><span class="line">    bump_num_relocations ();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/* DL_LOOKUP_RETURN_NEWEST does not make sense for versioned</span></span><br><span class="line"><span class="comment">       lookups.  */</span></span><br><span class="line">    assert (version == <span class="literal">NULL</span> || !(flags &amp; DL_LOOKUP_RETURN_NEWEST));</span><br><span class="line">    </span><br><span class="line">    <span class="type">size_t</span> i = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (__glibc_unlikely (skip_map != <span class="literal">NULL</span>))</span><br><span class="line">    <span class="comment">/* Search the relevant loaded objects for a definition.  */</span></span><br><span class="line">    <span class="keyword">while</span> ((*scope)-&gt;r_list[i] != skip_map)</span><br><span class="line">    ++i;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Search the relevant loaded objects for a definition.  */</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">size_t</span> start = i; *scope != <span class="literal">NULL</span>; start = <span class="number">0</span>, ++scope)</span><br><span class="line">    <span class="keyword">if</span> (do_lookup_x (undef_name, new_hash, &amp;old_hash, *ref,</span><br><span class="line">		     &amp;current_value, *scope, start, version, flags,</span><br><span class="line">		     skip_map, type_class, undef_map) != <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /elf/dl-lookup.c, line 578</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">uint_fast32_t</span></span><br><span class="line"><span class="title function_">dl_new_hash</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> *s)</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="type">uint_fast32_t</span> h = <span class="number">5381</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">unsigned</span> <span class="type">char</span> c = *s; c != <span class="string">&#x27;\0&#x27;</span>; c = *++s)</span><br><span class="line">h = h * <span class="number">33</span> + c;</span><br><span class="line"><span class="keyword">return</span> h &amp; <span class="number">0xffffffff</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上所示，ld.so实现了一个简单的哈希函数，输入为函数名，输出为int类型的哈希值，保存于<code>new_hash</code>变量中。随后看到<code>do_lookup_x</code>函数。</p>
+<p>考虑到系统自带的libc与ld.so符号不全，因此可以重新编译带有所有符号的libc与ld.so辅助分析。编译方法见<a target="_blank" rel="noopener" href="https://blog.csdn.net/astrotycoon/article/details/52662685">传送门</a>。编译完成后执行下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">patchelf --set-interpreter &lt;安装目录&gt;/lib/ld-linux-x86-64.so.2 pwn</span><br><span class="line">patchelf --set-rpath &lt;安装目录&gt;/lib pwn</span><br></pre></td></tr></table></figure>
+<p>即可将ld.so与libc.so替换为我们编译的带有调试符号的版本。</p>
+<h3 id="do_lookup_x第一段"><a class="markdownIt-Anchor" href="#do_lookup_x第一段"></a> <code>do_lookup_x</code>第一段</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /elf/dl-lookup.c, line 361</span></span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">int</span></span><br><span class="line">__attribute_noinline__</span><br><span class="line"><span class="title function_">do_lookup_x</span> <span class="params">(<span class="type">const</span> <span class="type">char</span> *undef_name, <span class="type">uint_fast32_t</span> new_hash,</span></span><br><span class="line"><span class="params">	     <span class="type">unsigned</span> <span class="type">long</span> <span class="type">int</span> *old_hash, <span class="type">const</span> ElfW(Sym) *ref,</span></span><br><span class="line"><span class="params">	     <span class="keyword">struct</span> sym_val *result, <span class="keyword">struct</span> r_scope_elem *scope, <span class="type">size_t</span> i,</span></span><br><span class="line"><span class="params">	     <span class="type">const</span> <span class="keyword">struct</span> r_found_version *<span class="type">const</span> version, <span class="type">int</span> flags,</span></span><br><span class="line"><span class="params">	     <span class="keyword">struct</span> link_map *skip, <span class="type">int</span> type_class, <span class="keyword">struct</span> link_map *undef_map)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">size_t</span> n = scope-&gt;r_nlist;</span><br><span class="line">  <span class="comment">/* Make sure we read the value before proceeding.  Otherwise we</span></span><br><span class="line"><span class="comment">     might use r_list pointing to the initial scope and r_nlist being</span></span><br><span class="line"><span class="comment">     the value after a resize.  That is the only path in dl-open.c not</span></span><br><span class="line"><span class="comment">     protected by GSCOPE.  A read barrier here might be to expensive.  */</span></span><br><span class="line">  __asm <span class="title function_">volatile</span> <span class="params">(<span class="string">&quot;&quot;</span> : <span class="string">&quot;+r&quot;</span> (n), <span class="string">&quot;+m&quot;</span> (scope-&gt;r_list))</span>;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> **<span class="title">list</span> =</span> scope-&gt;r_list;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">link_map</span> *<span class="title">map</span> =</span> <span class="built_in">list</span>[i]-&gt;l_real;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">      <span class="keyword">while</span> (++i &lt; n);</span><br></pre></td></tr></table></figure>
+<p>在该函数开头，通过<code>scope</code>变量可以获取前文中提到的所有动态链接库的<code>link_map</code>结构实例（<code>scope-&gt;r_list</code>指向<code>link_map</code>结构指针的数组）。在do-while循环中，我们将看到ld.so遍历所有的实例，尝试在所有动态链接库中查找<code>undef_name</code>这个符号（函数名、全局变量等）。</p>
+<h3 id="do_lookup_x第二段"><a class="markdownIt-Anchor" href="#do_lookup_x第二段"></a> <code>do_lookup_x</code>第二段</h3>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">     Elf_Symndx symidx;</span><br><span class="line">     <span class="type">int</span> num_versions = <span class="number">0</span>;</span><br><span class="line">     <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *versioned_sym = <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line">     <span class="comment">/* The tables for this map.  */</span></span><br><span class="line">     <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *symtab = (<span class="type">const</span> <span class="type">void</span> *) D_PTR (<span class="built_in">map</span>, l_info[DT_SYMTAB]);</span><br><span class="line">     <span class="type">const</span> <span class="type">char</span> *strtab = (<span class="type">const</span> <span class="type">void</span> *) D_PTR (<span class="built_in">map</span>, l_info[DT_STRTAB]);</span><br><span class="line"></span><br><span class="line">     <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Sym)</span> *sym;</span><br><span class="line">     <span class="type">const</span> <span class="title function_">ElfW</span><span class="params">(Addr)</span> *bitmask = <span class="built_in">map</span>-&gt;l_gnu_bitmask;</span><br><span class="line">     <span class="keyword">if</span> (__glibc_likely (bitmask != <span class="literal">NULL</span>))</span><br><span class="line">&#123;</span><br><span class="line">  ElfW(Addr) bitmask_word</span><br><span class="line">    = bitmask[(new_hash / __ELF_NATIVE_CLASS)</span><br><span class="line">	      &amp; <span class="built_in">map</span>-&gt;l_gnu_bitmask_idxbits];</span><br><span class="line"></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> hashbit1 = new_hash &amp; (__ELF_NATIVE_CLASS - <span class="number">1</span>);</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">int</span> hashbit2 = ((new_hash &gt;&gt; <span class="built_in">map</span>-&gt;l_gnu_shift)</span><br><span class="line">			   &amp; (__ELF_NATIVE_CLASS - <span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (__glibc_unlikely ((bitmask_word &gt;&gt; hashbit1)</span><br><span class="line">			&amp; (bitmask_word &gt;&gt; hashbit2) &amp; <span class="number">1</span>))</span><br><span class="line">    &#123;</span><br><span class="line">      Elf32_Word bucket = <span class="built_in">map</span>-&gt;l_gnu_buckets[new_hash</span><br><span class="line">					     % <span class="built_in">map</span>-&gt;l_nbuckets];</span><br><span class="line">      <span class="keyword">if</span> (bucket != <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">	  <span class="type">const</span> Elf32_Word *hasharr = &amp;<span class="built_in">map</span>-&gt;l_gnu_chain_zero[bucket];</span><br><span class="line"></span><br><span class="line">	  <span class="keyword">do</span></span><br><span class="line">	    <span class="title function_">if</span> <span class="params">(((*hasharr ^ new_hash) &gt;&gt; <span class="number">1</span>) == <span class="number">0</span>)</span></span><br><span class="line">	      &#123;</span><br><span class="line">		symidx = ELF_MACHINE_HASH_SYMIDX (<span class="built_in">map</span>, hasharr);</span><br><span class="line">		sym = check_match (undef_name, ref, version, flags,</span><br><span class="line">				   type_class, &amp;symtab[symidx], symidx,</span><br><span class="line">				   strtab, <span class="built_in">map</span>, &amp;versioned_sym,</span><br><span class="line">				   &amp;num_versions);</span><br><span class="line">		<span class="keyword">if</span> (sym != <span class="literal">NULL</span>)</span><br><span class="line">		  <span class="keyword">goto</span> found_it;</span><br><span class="line">	      &#125;</span><br><span class="line">	  <span class="keyword">while</span> ((*hasharr++ &amp; <span class="number">1u</span>) == <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="comment">/* No symbol found.  */</span></span><br><span class="line">  symidx = SHN_UNDEF;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在if语句前面，可以看到首先获取了动态链接库的符号表地址与字符串表地址，后面还获取了一个<code>l_gnu_bitmask</code>，暂时功能未知，先向后看。如果这个指针不为空，那么进入if语句内部。这里首先通过<code>bitmask[(new_hash / __ELF_NATIVE_CLASS) &amp; map-&gt;l_gnu_bitmask_idxbits]</code>在动态链接库的bitmask中以<code>new_hash</code>作为索引找到hash值对应的bitmask。在libc 2.31中，l_gnu_bitmask_idxbits为255。本例中<code>new_hash</code>的值为2090683713，<code>__ELF_NATIVE_CLASS</code>等于64，计算得到结果为53（0x35）。由于bitmask是uint64_t数组，因此可以索引到bitmask值，本例中为0x813140016c082646：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; p ((struct link_map*)0x7ffff7fcb000)-&gt;l_gnu_bitmask</span><br><span class="line">$11 = (const Elf64_Addr *) 0x7ffff7e1b8b0</span><br><span class="line">pwndbg&gt; p new_hash</span><br><span class="line">$13 = 2090683713</span><br><span class="line">pwndbg&gt; tele 0x7ffff7e1b8b0</span><br><span class="line">...</span><br><span class="line">pwndbg&gt; </span><br><span class="line">30:0180│  0x7ffff7e1ba30 ◂— 0xc81890020142014</span><br><span class="line">31:0188│  0x7ffff7e1ba38 ◂— 0x12c20c1c107c0500</span><br><span class="line">32:0190│  0x7ffff7e1ba40 ◂— 0xc04010181000144</span><br><span class="line">33:0198│  0x7ffff7e1ba48 ◂— 0x28bc04e04dc80510</span><br><span class="line">34:01a0│  0x7ffff7e1ba50 ◂— 0x480002015100080</span><br><span class="line">35:01a8│  0x7ffff7e1ba58 ◂— 0x813140016c082646      // 0x35 = 53</span><br><span class="line">36:01b0│  0x7ffff7e1ba60 ◂— 0x22302a0880760408</span><br><span class="line">37:01b8│  0x7ffff7e1ba68 ◂— 0x9c940010648d020</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>随后，计算了两个hashbit，第1个是取最低6位，第2个是左移0xE位之后取最低6位。根据这两个hashbit取bitmask的2位，若均为1，则表示这个动态链接库中存在这个函数。下面要找到<code>l_gnu_buckets</code>数组，将Hash值模数组长度获得该数组的索引值，解引用获取一个4字节整数值<code>bucket</code>。本例中的整数值为0x3ab。（数组长度为0x3f3）。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; p *((struct link_map*)0x7ffff7fcb000)-&gt;l_nbuckets</span><br><span class="line">Cannot access memory at address 0x3f3</span><br><span class="line">pwndbg&gt; p ((struct link_map*)0x7ffff7fcb000)-&gt;l_gnu_chain_zero</span><br><span class="line">$16 = (const Elf32_Word *) 0x7ffff7e1d04c</span><br><span class="line">pwndbg&gt; tele 0x7FFFF7E1C734</span><br><span class="line">00:0000│  0x7ffff7e1c734 ◂— 0x3ab</span><br><span class="line">01:0008│  0x7ffff7e1c73c ◂— 0x3b2000003af</span><br><span class="line">02:0010│  0x7ffff7e1c744 ◂— 0x3b6000003b5</span><br><span class="line">03:0018│  0x7ffff7e1c74c ◂— 0x3bc000003b8</span><br><span class="line">04:0020│  0x7ffff7e1c754 ◂— 0x3c4000003c2</span><br><span class="line">05:0028│  0x7ffff7e1c75c ◂— 0x3cc000003c8</span><br><span class="line">06:0030│  0x7ffff7e1c764 ◂— 0x3d1000003cf</span><br><span class="line">07:0038│  0x7ffff7e1c76c ◂— 0x3d5000003d4</span><br></pre></td></tr></table></figure>
+<p>然后以这个值作为索引去<code>l_gnu_chain_zero</code>找到另一个整数值<code>hasharr</code>。本例中为0x4b236ea4。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; p ((struct link_map*)0x7ffff7fcb000)-&gt;l_gnu_chain_zero</span><br><span class="line">$18 = (const Elf32_Word *) 0x7ffff7e1d04c</span><br><span class="line">pwndbg&gt; tele 0x7FFFF7E1DEF8</span><br><span class="line">00:0000│  0x7ffff7e1def8 ◂— 0x7c9d4d404b236ea4</span><br><span class="line">01:0008│  0x7ffff7e1df00 ◂— 0x71d90e3dc280ddf8</span><br><span class="line">02:0010│  0x7ffff7e1df08 ◂— 0xffdb8ae60d827524</span><br><span class="line">03:0018│  0x7ffff7e1df10 ◂— 0x738b351c0021c67b</span><br><span class="line">04:0020│  0x7ffff7e1df18 ◂— 0xa9011613755d52c2</span><br><span class="line">05:0028│  0x7ffff7e1df20 ◂— 0x315a1cd2b2265f0f</span><br><span class="line">06:0030│  0x7ffff7e1df28 ◂— 0x5cc4dd64102bde19</span><br><span class="line">07:0038│  0x7ffff7e1df30 ◂— 0x33a12d7ed09ebde0</span><br></pre></td></tr></table></figure>
+<p>下面有一个do-while循环，推测应该是线性递增的Hash表查询。如本例中：</p>
+<ul>
+<li>首先计算<code>0x4b236ea4 ^ 0x7c9d4d41 (2090683713, new_hash)</code>值为0x37BE23E5，右移1位后不为0，跳过if语句。因为<code>0x4b236ea4 &amp; 1 == 0</code>，循环继续。</li>
+<li><code>0x4b236ea4</code>的下面一个整数值为<code>0x7c9d4d40</code>，它与<code>0x7c9d4d41</code>异或的值为1，右移1位后为0，进入if语句。此时索引值为0x3ac。</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /sysdeps/generic/ldsodefs.h, line 57</span></span><br><span class="line"></span><br><span class="line"><span class="meta"># <span class="keyword">define</span> ELF_MACHINE_HASH_SYMIDX(map, hasharr) \</span></span><br><span class="line"><span class="meta">  ((hasharr) - (map)-&gt;l_gnu_chain_zero)</span></span><br></pre></td></tr></table></figure>
+<p>随后计算<code>symidx</code>，即该符号在动态链接库符号表中的索引值。根据上面的宏定义，可值该值等于0x3ac。通过这个索引值可在符号表中找到对应的<code>Elf64_Sym</code>实例。这个结构体中的<code>st_name</code>字段表示这个符号的名字在.strtab节中的偏移量，因此可由此进一步找到符号名，对比即可知道是否真正匹配。</p>
+<p>总结下来，整个符号的查询过程大致如下图所示：</p>
+<p><img src="2.png" alt="" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/" rel="prev" title="Rust逆向学习 (8)">
+      <i class="fa fa-chevron-left"></i> Rust逆向学习 (8)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-%E9%A2%98%E7%9B%AE%E6%BA%90%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text"> A. 题目源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#b-%E6%97%A0%E9%99%90%E5%86%99%E5%85%A5"><span class="nav-number">2.</span> <span class="nav-text"> B. 无限写入</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#b1-ldso-%E5%AF%B9-got-%E8%A1%A8%E7%9A%84%E8%A7%A3%E6%9E%90%E6%B5%81%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text"> B.1 ld.so 对 GOT 表的解析流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#_dl_fixup%E7%AC%AC%E4%B8%80%E6%AE%B5"><span class="nav-number">2.1.1.</span> <span class="nav-text"> _dl_fixup第一段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#_dl_fixup%E7%AC%AC%E4%BA%8C%E6%AE%B5"><span class="nav-number">2.1.2.</span> <span class="nav-text"> _dl_fixup第二段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#_dl_fixup%E7%AC%AC%E4%B8%89%E6%AE%B5"><span class="nav-number">2.1.3.</span> <span class="nav-text"> _dl_fixup第三段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#do_lookup_x%E7%AC%AC%E4%B8%80%E6%AE%B5"><span class="nav-number">2.1.4.</span> <span class="nav-text"> do_lookup_x第一段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#do_lookup_x%E7%AC%AC%E4%BA%8C%E6%AE%B5"><span class="nav-number">2.1.5.</span> <span class="nav-text"> do_lookup_x第二段</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:50</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
