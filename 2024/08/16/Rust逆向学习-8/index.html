@@ -33,7 +33,7 @@
 <meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/4.png">
 <meta property="og:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/5.png">
 <meta property="article:published_time" content="2024-08-16T01:53:02.000Z">
-<meta property="article:modified_time" content="2024-08-16T12:30:35.049Z">
+<meta property="article:modified_time" content="2024-10-09T16:09:26.507Z">
 <meta property="article:author" content="CoLin">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://hornos3.github.com/2024/08/16/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-8/1.png">
@@ -183,10 +183,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2024-08-16 09:53:02 / 修改时间：20:30:35" itemprop="dateCreated datePublished" datetime="2024-08-16T09:53:02+08:00">2024-08-16</time>
+              <time title="创建时间：2024-08-16 09:53:02" itemprop="dateCreated datePublished" datetime="2024-08-16T09:53:02+08:00">2024-08-16</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-10-10 00:09:26" itemprop="dateModified" datetime="2024-10-10T00:09:26+08:00">2024-10-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -269,7 +275,7 @@
 <p><img src="5.png" alt="" /></p>
 <p>上面是两段代码<code>read_username_from_file</code>的反汇编界面。对于不使用<code>?</code>运算符的源代码，其内容比较好理解。而<code>?</code>运算符实际上是利用了<code>Result</code>实现了<code>std::ops::Try</code>这个Trait的特点：</p>
 <figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[unstable(feature = <span class="string">&quot;try_trait_v2&quot;</span>, issue = <span class="string">&quot;84277&quot;</span>)]</span></span><br><span class="line"><span class="keyword">impl</span>&lt;T, E&gt; ops::Try <span class="keyword">for</span> <span class="title class_">Result</span>&lt;T, E&gt; &#123;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Output</span> = T;</span><br><span class="line">    <span class="keyword">type</span> <span class="title class_">Residual</span> = <span class="type">Result</span>&lt;convert::Infallible, E&gt;;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[inline]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">from_output</span>(output: <span class="keyword">Self</span>::Output) <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>(output)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">#[inline]</span></span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">branch</span>(<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> ControlFlow&lt;<span class="keyword">Self</span>::Residual, <span class="keyword">Self</span>::Output&gt; &#123;</span><br><span class="line">        <span class="keyword">match</span> <span class="keyword">self</span> &#123;</span><br><span class="line">            <span class="title function_ invoke__">Ok</span>(v) =&gt; ControlFlow::<span class="title function_ invoke__">Continue</span>(v),</span><br><span class="line">            <span class="title function_ invoke__">Err</span>(e) =&gt; ControlFlow::<span class="title function_ invoke__">Break</span>(<span class="title function_ invoke__">Err</span>(e)),</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在第22行，Rust调用了<code>_&lt;core::result::Result&lt;T, E&gt; as core::ops::try_trait::Try&gt;::branch</code>，从上面的实现源码可以看到<code>branch</code>通过<code>match</code>控制执行流。又因为如果结果为<code>Ok</code>时返回的是<code>Self::Residual</code>实例，后续要使用<code>Result</code>真正包装的实例还需要调用反汇编窗口26行的<code>_&lt;core::result::Result&lt;T, F&gt; as core::ops::try_trait::FromResidual&lt;core..result..Result&lt;core::convert::Infallible, E&gt;&gt;&gt;::from_residual</code>获取。</p>
+<p>在第22行，Rust调用了<code>_&lt;core::result::Result&lt;T, E&gt; as core::ops::try_trait::Try&gt;::branch</code>，从上面的实现源码可以看到<code>branch</code>通过<code>match</code>控制执行流。又因为如果结果为<code>Ok</code>时返回的是<code>Self::Residual</code>实例，后续要使用<code>Result</code>真正包装的实例还需要调用反汇编窗口26行的<code>_&lt;core::result::Result&lt;T, F&gt; as core::ops::try_trait::FromResidual&lt;core..result..Result&lt;core::convert::Infallible, E&gt;&gt;&gt;::from_residual</code>获取。这部分内容可以参考<a target="_blank" rel="noopener" href="https://rustmagazine.github.io/rust_magazine_2021/chapter_4/try_trait_v2.html">资料</a>中有关于<code>try_trait</code>的解释。</p>
 <h1 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h1>
 <p>本文简单分析了<code>panic!</code>以及<code>Result</code>。</p>
 <ul>
