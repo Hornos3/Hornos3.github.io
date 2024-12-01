@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="以前没有了解v8 pwn的时候，还以为这是什么非常高深莫测，很难学的东西，但实际上了解的基本原理后才发现，这东西实际上和PHP pwn差不多，都是用底层语言去解释执行另一门语言，PHP pwn中，我们使用的是C语言，而在v8中，我们使用的是C++语言来解释Javascript。 要理解v8 pwn的原理，首先需要学会如何魔改v8。v8是Chrome开发的一个开源Javascript执行引擎，编译完">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome v8 pwn 学习 (1)">
+<meta property="og:url" content="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="以前没有了解v8 pwn的时候，还以为这是什么非常高深莫测，很难学的东西，但实际上了解的基本原理后才发现，这东西实际上和PHP pwn差不多，都是用底层语言去解释执行另一门语言，PHP pwn中，我们使用的是C语言，而在v8中，我们使用的是C++语言来解释Javascript。 要理解v8 pwn的原理，首先需要学会如何魔改v8。v8是Chrome开发的一个开源Javascript执行引擎，编译完">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/3.png">
+<meta property="article:published_time" content="2024-12-01T07:20:23.000Z">
+<meta property="article:modified_time" content="2024-12-01T14:36:14.291Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>chrome v8 pwn 学习 (1) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          chrome v8 pwn 学习 (1)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-01 15:20:23 / 修改时间：22:36:14" itemprop="dateCreated datePublished" datetime="2024-12-01T15:20:23+08:00">2024-12-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/v8%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">v8系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>13k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>12 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>以前没有了解v8 pwn的时候，还以为这是什么非常高深莫测，很难学的东西，但实际上了解的基本原理后才发现，这东西实际上和PHP pwn差不多，都是用底层语言去解释执行另一门语言，PHP pwn中，我们使用的是C语言，而在v8中，我们使用的是C++语言来解释Javascript。</p>
+<p>要理解v8 pwn的原理，首先需要学会如何魔改v8。v8是Chrome开发的一个开源Javascript执行引擎，编译完成的输出二进制文件为d8。</p>
+<p>编译方法参考：<a target="_blank" rel="noopener" href="https://blog.coderzh.com/2021/06/14/v8-3/">传送门</a></p>
+<p>注意在解决实际问题的时候要用对应的v8版本，之后：</p>
+<ul>
+<li>使用<code>git reset --hard</code>回退到对应的版本</li>
+<li>使用<code>git apply</code>应用题目的diff文件</li>
+<li>执行<code>gclient sync -D</code>进行同步</li>
+<li>执行<code>tools/dev/gm.py x64.debug</code>重新编译</li>
+</ul>
+<p>最后一步要注意如果在Python执行过程中出现问题，可以在root权限下修改/usr/bin中Python的链接到Python2再尝试。（一般在编译较老版本的v8时会出现此类问题）</p>
+<h1 id="a-builtins"><a class="markdownIt-Anchor" href="#a-builtins"></a> A. Builtins</h1>
+<h2 id="a1-builtins-definitions"><a class="markdownIt-Anchor" href="#a1-builtins-definitions"></a> A.1 Builtins Definitions</h2>
+<p>在v8中有很多的内置类型、方法与函数，包括基本类型（整数浮点数布尔值数组字符串等）等。这些内置类型在<code>builtins-definitions.h</code>中进行了定义（新版本位于<code>builtins/builtins-definitions.h</code>），下面是示例代码片段：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0, builtins/builtins-definitions.h, line 481</span></span><br><span class="line">  <span class="comment">/* ES6 #sec-array.prototype.pop */</span>                                           \</span><br><span class="line">  <span class="built_in">CPP</span>(ArrayPop, kDontAdaptArgumentsSentinel)                                   \</span><br><span class="line">  <span class="built_in">TFJ</span>(ArrayPrototypePop, kDontAdaptArgumentsSentinel)                          \</span><br><span class="line">  <span class="comment">/* ES6 #sec-array.prototype.push */</span>                                          \</span><br><span class="line">  <span class="built_in">CPP</span>(ArrayPush, kDontAdaptArgumentsSentinel)                                  \</span><br><span class="line">  <span class="built_in">TFJ</span>(ArrayPrototypePush, kDontAdaptArgumentsSentinel)                         \</span><br><span class="line">  <span class="comment">/* ES6 #sec-array.prototype.shift */</span>                                         \</span><br><span class="line">  <span class="built_in">CPP</span>(ArrayShift, kDontAdaptArgumentsSentinel)                                 \</span><br><span class="line">  <span class="comment">/* ES6 #sec-array.prototype.unshift */</span>                                       \</span><br><span class="line">  <span class="built_in">CPP</span>(ArrayUnshift, kDontAdaptArgumentsSentinel)                               \</span><br><span class="line">  <span class="comment">/* Support for Array.from and other array-copying idioms */</span>                  \</span><br><span class="line">  <span class="built_in">TFS</span>(CloneFastJSArray, NeedsContext::kYes, kSource)                           \</span><br><span class="line">  <span class="built_in">TFS</span>(CloneFastJSArrayFillingHoles, NeedsContext::kYes, kSource)               \</span><br></pre></td></tr></table></figure>
+<p>可以看到，这里是定义了Javascript数组使用到的一些方法。但是使用的宏不同。这里的<code>TFJ</code>和<code>TFS</code>都是v8中定义的TurboFan优化宏定义，相较于直接调用底层C<ins>代码执行的<code>CPP</code>定义更加高效。对于解题而言，我们只需要关注CPP即可。更多相关细节可参考：<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/448085845">资料</a>。<code>CPP</code>宏的第二个参数<code>kDontAdaptArgumentsSentinel</code>指的是需要在C</ins>实现代码中通过<code>Receiver</code>自行完成函数参数的接收，这个我们后面会看到。</p>
+<h2 id="a2-builtins-installation"><a class="markdownIt-Anchor" href="#a2-builtins-installation"></a> A.2 Builtins Installation</h2>
+<p>如果我们需要对v8进行魔改，想让用户能够直接调用我们自己添加的函数或者方法，就一定需要在这个文件中添加函数的定义。但光有定义还不行，还需要在v8引擎启动的时候能够安装我们的函数。这就需要我们修改<code>bootstrapper.cc</code>（新版本为<code>init/bootstrapper.cc</code>），下面是示例代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0, init/bootstrapper.cc</span></span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;findIndex&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeFindIndex, <span class="number">1</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;findLast&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeFindLast, <span class="number">1</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;findLastIndex&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeFindLastIndex, <span class="number">1</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;lastIndexOf&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeLastIndexOf, <span class="number">1</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;pop&quot;</span>, Builtin::kArrayPrototypePop,</span><br><span class="line">                          <span class="number">0</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;push&quot;</span>, Builtin::kArrayPrototypePush,</span><br><span class="line">                          <span class="number">1</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;reverse&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeReverse, <span class="number">0</span>, kDontAdapt);</span><br><span class="line">    <span class="built_in">SimpleInstallFunction</span>(isolate_, proto, <span class="string">&quot;shift&quot;</span>,</span><br><span class="line">                          Builtin::kArrayPrototypeShift, <span class="number">0</span>, kDontAdapt);</span><br></pre></td></tr></table></figure>
+<p>使用<code>SimpleInstallFunction</code>函数进行安装。这个函数的参数含义是（Kimi生成）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Isolate* isolate：这是指向当前V8 Isolate实例的指针。Isolate是V8中用于隔离不同JavaScript环境的一个概念，每个Isolate实例代表一个独立的JavaScript执行环境。在V8中，Isolate用于管理内存分配、垃圾回收等。</span><br><span class="line"></span><br><span class="line">Handle&lt;JSObject&gt; base：这是一个指向JSObject的Handle，JSObject是V8中表示JavaScript对象的类。这个参数指定了要在其上安装函数的JavaScript对象。</span><br><span class="line"></span><br><span class="line">const char* name：这是一个指向C字符串的指针，表示要安装的函数的名称。这个名称将被用作JavaScript对象上函数的属性名。</span><br><span class="line"></span><br><span class="line">Builtin call：这是一个Builtin函数指针，指向一个内置的C++函数，这个函数将作为JavaScript函数的实现。Builtin函数是V8提供的一组预定义的函数，用于执行常见的操作。</span><br><span class="line"></span><br><span class="line">int len：这是一个整数，表示函数的参数长度，即函数可以接受的参数个数。</span><br><span class="line"></span><br><span class="line">AdaptArguments adapt：这是一个函数指针，指向一个用于参数适配的函数。如果JavaScript函数的参数个数与Builtin函数的参数个数不匹配，adapt函数会被调用来适配参数。</span><br><span class="line"></span><br><span class="line">PropertyAttributes attrs：这是一个枚举值，指定了安装到对象上的属性（在这个情况下是函数）的属性。PropertyAttributes定义了属性的一些特性，比如是否可枚举（DontEnum）、是否可写（DontDelete）和是否可配置（ReadOnly）。</span><br></pre></td></tr></table></figure>
+<p>这里第二个参数的几个常用传参有：</p>
+<ul>
+<li><code>object_function</code>：用于Object对象的方法</li>
+<li><code>proto</code>：函数原型</li>
+<li><code>array_function</code>：用于数组的函数</li>
+</ul>
+<p>对于自定义函数，需要传入<code>proto</code>。</p>
+<h2 id="a3-builtins-function"><a class="markdownIt-Anchor" href="#a3-builtins-function"></a> A.3 Builtins Function</h2>
+<p>下面我们就来看看如何定义内置函数的内容。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0, builtins/builtins-array.cc, line 380</span></span><br><span class="line"><span class="built_in">BUILTIN</span>(ArrayPush) &#123;</span><br><span class="line">  <span class="function">HandleScope <span class="title">scope</span><span class="params">(isolate)</span></span>;</span><br><span class="line">  Handle&lt;Object&gt; receiver = args.<span class="built_in">receiver</span>();</span><br><span class="line">  <span class="keyword">if</span> (!<span class="built_in">EnsureJSArrayWithWritableFastElements</span>(isolate, receiver, &amp;args, <span class="number">1</span>,</span><br><span class="line">                                             args.<span class="built_in">length</span>() - <span class="number">1</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">GenericArrayPush</span>(isolate, &amp;args);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  Handle&lt;JSArray&gt; array = <span class="built_in">Cast</span>&lt;JSArray&gt;(receiver);</span><br><span class="line">  <span class="type">bool</span> has_read_only_length = JSArray::<span class="built_in">HasReadOnlyLength</span>(array);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> (has_read_only_length) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">GenericArrayPush</span>(isolate, &amp;args);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Fast Elements Path</span></span><br><span class="line">  <span class="type">int</span> to_add = args.<span class="built_in">length</span>() - <span class="number">1</span>;</span><br><span class="line">  <span class="type">uint32_t</span> len = <span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(Object::<span class="built_in">NumberValue</span>(array-&gt;<span class="built_in">length</span>()));</span><br><span class="line">  <span class="keyword">if</span> (to_add == <span class="number">0</span>) <span class="keyword">return</span> *isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">NewNumberFromUint</span>(len);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Currently fixed arrays cannot grow too big, so we should never hit this.</span></span><br><span class="line">  <span class="built_in">DCHECK_LE</span>(to_add, Smi::kMaxValue - Smi::<span class="built_in">ToInt</span>(array-&gt;<span class="built_in">length</span>()));</span><br><span class="line"></span><br><span class="line">  ElementsAccessor* accessor = array-&gt;<span class="built_in">GetElementsAccessor</span>();</span><br><span class="line">  <span class="type">uint32_t</span> new_length;</span><br><span class="line">  <span class="built_in">MAYBE_ASSIGN_RETURN_FAILURE_ON_EXCEPTION</span>(</span><br><span class="line">      isolate, new_length, accessor-&gt;<span class="built_in">Push</span>(array, &amp;args, to_add));</span><br><span class="line">  <span class="keyword">return</span> *isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">NewNumberFromUint</span>((new_length));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面就是<code>ArrayPush</code>的C++定义，使用<code>BUILTIN</code>宏完成函数体的定义。函数有参数<code>args</code>，表示Javascript函数的参数列表，<code>args</code>是<code>BuiltinArguments</code>类的指针。可以通过<code>args.length()</code>获取参数个数，<code>args.at&lt;&gt;()</code>获取第几个参数。</p>
+<h2 id="a4-builtin-installation-2"><a class="markdownIt-Anchor" href="#a4-builtin-installation-2"></a> A.4 Builtin Installation 2</h2>
+<p>在<code>BUILTIN</code>宏中还会定义一个<code>Builtins::k???</code>，这是用来定义返回值类型的关键结构。在老版本的<code>compiler/typer.cc</code>，新版的<code>compiler/turbofan.cc</code>中有函数：</p>
+<p><code>Type Typer::Visitor::JSCallTyper(Type fun, Typer* t)</code></p>
+<p>其中有一个很大的<code>switch</code>语句，我们需要在其中定义自定义函数的返回值类型。如果没有返回值则定义为<code>Type::Undefined()</code>，如果定义的是方法且返回值是该方法所属的对象，则定义为<code>Type::Receiver()</code>：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0, compiler/turbofan.cc, line 2019</span></span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayPrototypeJoin:</span><br><span class="line">      <span class="keyword">return</span> Type::<span class="built_in">String</span>();</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayPrototypeLastIndexOf:</span><br><span class="line">      <span class="keyword">return</span> Type::<span class="built_in">Range</span>(<span class="number">-1</span>, kMaxSafeInteger, t-&gt;<span class="built_in">zone</span>());</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayMap:</span><br><span class="line">      <span class="keyword">return</span> Type::<span class="built_in">Receiver</span>();</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayPush:</span><br><span class="line">      <span class="keyword">return</span> t-&gt;cache_-&gt;kPositiveSafeInteger;</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayPrototypeReverse:</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArrayPrototypeSlice:</span><br><span class="line">      <span class="keyword">return</span> Type::<span class="built_in">Receiver</span>();</span><br><span class="line">    <span class="keyword">case</span> Builtin::kArraySome:</span><br><span class="line">      <span class="keyword">return</span> Type::<span class="built_in">Boolean</span>();</span><br></pre></td></tr></table></figure>
+<p>除此之外，还有字符串<code>Type::String()</code>、布尔值<code>Type::Boolean()</code>、数值<code>Type::PlainNumber()</code>、不是数字<code>Type::NaN()</code>等。</p>
+<h2 id="a5-example-1"><a class="markdownIt-Anchor" href="#a5-example-1"></a> A.5 Example 1</h2>
+<p>下面通过一个实例帮助我们更深刻地理解上述过程。</p>
+<p>现在，我们需要实现一个内置函数，该函数可直接调用，接受一个数值参数，返回这个参数+100的值。</p>
+<p>使用的v8版本为13.3.0，所有的builtins函数都在<code>src/builtins/builtins-xxx.cc</code>这一系列的文件中定义。我们可以新建一个文件叫<code>builtins-myfunc.cc</code>。</p>
+<p>由于我们新创建了一个文件，因此需要在v8根目录的<code>BUILD.bazel</code>和<code>BUILD.gn</code>中的对应位置添加文件名：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// v8 13.3.0, BUILD.bazel, line 1341</span><br><span class="line">        &quot;src/builtins/builtins-function.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-global.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-internal.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-json.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-myfunc.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-number.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-object.cc&quot;,</span><br><span class="line">        &quot;src/builtins/builtins-promise.h&quot;,</span><br><span class="line"></span><br><span class="line">// v8 13.3.0, BUILD.gn, line 5420</span><br><span class="line">    &quot;src/builtins/builtins-global.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-internal.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-intl.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-json.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-myfunc.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-number.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-object.cc&quot;,</span><br><span class="line">    &quot;src/builtins/builtins-reflect.cc&quot;,</span><br></pre></td></tr></table></figure>
+<p>首先给出写好的代码，然后我们逐行分析：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;src/builtins/builtins-utils-inl.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> v8 &#123;</span><br><span class="line"><span class="keyword">namespace</span> internal &#123;</span><br><span class="line"></span><br><span class="line"><span class="built_in">BUILTIN</span>(MyFunc) &#123;</span><br><span class="line">    <span class="function">HandleScope <span class="title">scope</span><span class="params">(isolate)</span></span>;</span><br><span class="line">    Handle&lt;Object&gt; value = args.<span class="built_in">atOrUndefined</span>(isolate, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断参数是否为基本类型</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">IsJSPrimitiveWrapper</span>(*value)) &#123;</span><br><span class="line">        value = <span class="built_in">handle</span>(<span class="built_in">Cast</span>&lt;JSPrimitiveWrapper&gt;(value)-&gt;<span class="built_in">value</span>(), isolate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断参数是否为数字</span></span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">IsNumber</span>(*value)) &#123;</span><br><span class="line">        <span class="built_in">THROW_NEW_ERROR_RETURN_FAILURE</span>(</span><br><span class="line">                isolate, <span class="built_in">NewTypeError</span>(MessageTemplate::kArgumentIsNotUndefinedOrInteger,</span><br><span class="line">                                      isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">NewStringFromAsciiChecked</span>(</span><br><span class="line">                                              <span class="string">&quot;My.Func&quot;</span>),</span><br><span class="line">                                      isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">Number_string</span>()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将Object转换为浮点数</span></span><br><span class="line">    <span class="type">double</span> <span class="type">const</span> value_number = Object::<span class="built_in">NumberValue</span>(*value);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> *isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">NewNumber</span>(value_number + <span class="number">100</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里首先需要包含<code>src/builtins/builtins-utils-inl.h</code>，以使用<code>BUILTIN</code>宏和参数解析的相关方法。然后我们编写的函数需要包在命名空间<code>v8</code>和<code>internal</code>中。</p>
+<p><code>BUILTIN</code>后面的括号中写我们定义的函数名，第一句固定为<code>HandleScope scope(isolate);</code>。</p>
+<p>后面获取参数可以使用<code>args.at(index)</code>或<code>args.atOrUndefined(isolate, index)</code>，注意第一个参数的索引值为1，这两个方法的返回值都是<code>Handle&lt;Object&gt;</code>，也就是一个Javascript Object的封装，其中重新实现了<code>*</code>运算符用于获取其中的对象。</p>
+<p><code>IsJSPrimitiveWrapper()</code>用于判断一个Javascript Object是否是基本类型，<code>IsNumber()</code>则判断是否是数值类型。内部的<code>THROW_NEW_ERROR_RETURN_FAILURE</code>充当<code>assert</code>的作用，可提供报错，这里的<code>MessageTemplate</code>是一个枚举类型，其中包含很多错误类型。</p>
+<p>后面的<code>Object::NumberValue</code>用于将一个Object类型转换为浮点数类型，当然这个<code>Object</code>类型本身需要是一个数值类型，因此我们在前面需要添加检查。下面的<code>isolate</code>是<code>BUILTIN</code>宏中定义的主逻辑函数的一个参数，是当前Javascript引擎直接绑定的类型，也重新实现了<code>*</code>运算符。<code>*isolate-&gt;factory()</code>是经常使用的一个东西，这个Factory可以帮助我们创建Javascript对象，作为返回值返回。如这里的<code>NewNumber</code>方法即需要传入一个double类型返回一个Javascript Number类型。我们这里将浮点数加100的值传入该方法即可返回。</p>
+<p>在<code>init/bootstrapper.cc</code>中则需要添加下面几行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;  <span class="comment">// -- M y F u n c</span></span><br><span class="line">  <span class="built_in">SimpleInstallFunction</span>(isolate_, global_object, <span class="string">&quot;MyFunc&quot;</span>, Builtin::kMyFunc, <span class="number">1</span>, kDontAdapt);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于<code>MyFunc</code>是需要直接调用的，和<code>eval</code>类似，因此<code>SimpleInstallFunction</code>的第二个参数为<code>global_object</code>。如果仔细观察<code>bootstrapper.cc</code>中的其他安装函数调用，就会知道应该如何定义类似于<code>Console.log</code>这样的调用：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Handle&lt;JSObject&gt; math =</span><br><span class="line">    factory-&gt;<span class="built_in">NewJSObject</span>(isolate_-&gt;<span class="built_in">object_function</span>(), AllocationType::kOld);</span><br><span class="line">JSObject::<span class="built_in">AddProperty</span>(isolate_, global, <span class="string">&quot;Math&quot;</span>, math, DONT_ENUM);</span><br><span class="line"><span class="built_in">SimpleInstallFunction</span>(isolate_, math, <span class="string">&quot;abs&quot;</span>, Builtin::kMathAbs, <span class="number">1</span>, kAdapt);</span><br></pre></td></tr></table></figure>
+<p>方法很简单，首先使用<code>factory-&gt;NewJSObject</code>定义一个新的对象，然后在global这个全局的类中定义一个属性<code>JSObject::AddProperty</code>，将这个对象作为属性，并给个名字。后面就可以通过<code>SimpleInstallFunction</code>在这个类中定义函数作为属性了。</p>
+<p>最终效果：</p>
+<p><img src="1.png" alt="" /></p>
+<p>当然其他地方的定义也不能忘记：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0</span></span><br><span class="line"><span class="comment">// builtins/builtins-definition.h, line 134</span></span><br><span class="line"><span class="built_in">CPP</span>(MyFunc, kDontAdaptArgumentsSentinel)                                     \</span><br><span class="line"></span><br><span class="line"><span class="comment">// compiler/turbofan-typer.cc, line 1847</span></span><br><span class="line"><span class="keyword">switch</span> (function.<span class="built_in">shared</span>(t-&gt;<span class="built_in">broker</span>()).<span class="built_in">builtin_id</span>()) &#123;</span><br><span class="line"><span class="keyword">case</span> Builtin::kMyFunc:</span><br><span class="line">    <span class="keyword">return</span> Type::<span class="built_in">Number</span>();</span><br></pre></td></tr></table></figure>
+<h2 id="a6-example-2"><a class="markdownIt-Anchor" href="#a6-example-2"></a> A.6 Example 2</h2>
+<p>上面我们自己完成了一个全局函数的简单定义，下面来看一下2019年*CTF的oob题目中对于Array类型的定义：</p>
+<figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">diff --git a/src/bootstrapper.cc b/src/bootstrapper.cc</span></span><br><span class="line"><span class="comment">index b027d36..ef1002f 100644</span></span><br><span class="line"><span class="comment">--- a/src/bootstrapper.cc</span></span><br><span class="line"><span class="comment">+++ b/src/bootstrapper.cc</span></span><br><span class="line"><span class="meta">@@ -1668,6 +1668,8 @@</span> void Genesis::InitializeGlobal(Handle&lt;JSGlobalObject&gt; global_object,</span><br><span class="line">                           Builtins::kArrayPrototypeCopyWithin, 2, false);</span><br><span class="line">     SimpleInstallFunction(isolate_, proto, &quot;fill&quot;,</span><br><span class="line">                           Builtins::kArrayPrototypeFill, 1, false);</span><br><span class="line"><span class="addition">+    SimpleInstallFunction(isolate_, proto, &quot;oob&quot;,</span></span><br><span class="line"><span class="addition">+                          Builtins::kArrayOob,2,false);</span></span><br><span class="line">     SimpleInstallFunction(isolate_, proto, &quot;find&quot;,</span><br><span class="line">                           Builtins::kArrayPrototypeFind, 1, false);</span><br><span class="line">     SimpleInstallFunction(isolate_, proto, &quot;findIndex&quot;,</span><br><span class="line"><span class="comment">diff --git a/src/builtins/builtins-array.cc b/src/builtins/builtins-array.cc</span></span><br><span class="line"><span class="comment">index 8df340e..9b828ab 100644</span></span><br><span class="line"><span class="comment">--- a/src/builtins/builtins-array.cc</span></span><br><span class="line"><span class="comment">+++ b/src/builtins/builtins-array.cc</span></span><br><span class="line"><span class="meta">@@ -361,6 +361,27 @@</span> V8_WARN_UNUSED_RESULT Object GenericArrayPush(Isolate* isolate,</span><br><span class="line">   return *final_length;</span><br><span class="line"> &#125;</span><br><span class="line"> &#125;  // namespace</span><br><span class="line"><span class="addition">+BUILTIN(ArrayOob)&#123;</span></span><br><span class="line"><span class="addition">+    uint32_t len = args.length();</span></span><br><span class="line"><span class="addition">+    if(len &gt; 2) return ReadOnlyRoots(isolate).undefined_value();</span></span><br><span class="line"><span class="addition">+    Handle&lt;JSReceiver&gt; receiver;</span></span><br><span class="line"><span class="addition">+    ASSIGN_RETURN_FAILURE_ON_EXCEPTION(</span></span><br><span class="line"><span class="addition">+            isolate, receiver, Object::ToObject(isolate, args.receiver()));</span></span><br><span class="line"><span class="addition">+    Handle&lt;JSArray&gt; array = Handle&lt;JSArray&gt;::cast(receiver);</span></span><br><span class="line"><span class="addition">+    FixedDoubleArray elements = FixedDoubleArray::cast(array-&gt;elements());</span></span><br><span class="line"><span class="addition">+    uint32_t length = static_cast&lt;uint32_t&gt;(array-&gt;length()-&gt;Number());</span></span><br><span class="line"><span class="addition">+    if(len == 1)&#123;</span></span><br><span class="line"><span class="addition">+        //read</span></span><br><span class="line"><span class="addition">+        return *(isolate-&gt;factory()-&gt;NewNumber(elements.get_scalar(length)));</span></span><br><span class="line"><span class="addition">+    &#125;else&#123;</span></span><br><span class="line"><span class="addition">+        //write</span></span><br><span class="line"><span class="addition">+        Handle&lt;Object&gt; value;</span></span><br><span class="line"><span class="addition">+        ASSIGN_RETURN_FAILURE_ON_EXCEPTION(</span></span><br><span class="line"><span class="addition">+                isolate, value, Object::ToNumber(isolate, args.at&lt;Object&gt;(1)));</span></span><br><span class="line"><span class="addition">+        elements.set(length,value-&gt;Number());</span></span><br><span class="line"><span class="addition">+        return ReadOnlyRoots(isolate).undefined_value();</span></span><br><span class="line"><span class="addition">+    &#125;</span></span><br><span class="line"><span class="addition">+&#125;</span></span><br><span class="line"> </span><br><span class="line"> BUILTIN(ArrayPush) &#123;</span><br><span class="line">   HandleScope scope(isolate);</span><br><span class="line"><span class="comment">diff --git a/src/builtins/builtins-definitions.h b/src/builtins/builtins-definitions.h</span></span><br><span class="line"><span class="comment">index 0447230..f113a81 100644</span></span><br><span class="line"><span class="comment">--- a/src/builtins/builtins-definitions.h</span></span><br><span class="line"><span class="comment">+++ b/src/builtins/builtins-definitions.h</span></span><br><span class="line"><span class="meta">@@ -368,6 +368,7 @@</span> namespace internal &#123;</span><br><span class="line">   TFJ(ArrayPrototypeFlat, SharedFunctionInfo::kDontAdaptArgumentsSentinel)     \</span><br><span class="line">   /* https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap */   \</span><br><span class="line">   TFJ(ArrayPrototypeFlatMap, SharedFunctionInfo::kDontAdaptArgumentsSentinel)  \</span><br><span class="line"><span class="addition">+  CPP(ArrayOob)                                                                \</span></span><br><span class="line">                                                                                \</span><br><span class="line">   /* ArrayBuffer */                                                            \</span><br><span class="line">   /* ES #sec-arraybuffer-constructor */                                        \</span><br><span class="line"><span class="comment">diff --git a/src/compiler/typer.cc b/src/compiler/typer.cc</span></span><br><span class="line"><span class="comment">index ed1e4a5..c199e3a 100644</span></span><br><span class="line"><span class="comment">--- a/src/compiler/typer.cc</span></span><br><span class="line"><span class="comment">+++ b/src/compiler/typer.cc</span></span><br><span class="line"><span class="meta">@@ -1680,6 +1680,8 @@</span> Type Typer::Visitor::JSCallTyper(Type fun, Typer* t) &#123;</span><br><span class="line">       return Type::Receiver();</span><br><span class="line">     case Builtins::kArrayUnshift:</span><br><span class="line">       return t-&gt;cache_-&gt;kPositiveSafeInteger;</span><br><span class="line"><span class="addition">+    case Builtins::kArrayOob:</span></span><br><span class="line"><span class="addition">+      return Type::Receiver();</span></span><br><span class="line"> </span><br><span class="line">     // ArrayBuffer functions.</span><br><span class="line">     case Builtins::kArrayBufferIsView:</span><br></pre></td></tr></table></figure>
+<p>这里使用的v8版本为7.5，可以看到为<code>Array</code>类型定义了一个新的属性函数<code>oob</code>。我们重点关注一下实现细节：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">BUILTIN</span>(ArrayOob)&#123;</span><br><span class="line">    <span class="type">uint32_t</span> len = args.<span class="built_in">length</span>();</span><br><span class="line">    <span class="keyword">if</span>(len &gt; <span class="number">2</span>) <span class="keyword">return</span> <span class="built_in">ReadOnlyRoots</span>(isolate).<span class="built_in">undefined_value</span>();</span><br><span class="line">    Handle&lt;JSReceiver&gt; receiver;</span><br><span class="line">    <span class="built_in">ASSIGN_RETURN_FAILURE_ON_EXCEPTION</span>(</span><br><span class="line">            isolate, receiver, Object::<span class="built_in">ToObject</span>(isolate, args.<span class="built_in">receiver</span>()));</span><br><span class="line">    Handle&lt;JSArray&gt; array = Handle&lt;JSArray&gt;::<span class="built_in">cast</span>(receiver);</span><br><span class="line">    FixedDoubleArray elements = FixedDoubleArray::<span class="built_in">cast</span>(array-&gt;<span class="built_in">elements</span>());</span><br><span class="line">    <span class="type">uint32_t</span> length = <span class="built_in">static_cast</span>&lt;<span class="type">uint32_t</span>&gt;(array-&gt;<span class="built_in">length</span>()-&gt;<span class="built_in">Number</span>());</span><br><span class="line">    <span class="keyword">if</span>(len == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="comment">//read</span></span><br><span class="line">        <span class="keyword">return</span> *(isolate-&gt;<span class="built_in">factory</span>()-&gt;<span class="built_in">NewNumber</span>(elements.<span class="built_in">get_scalar</span>(length)));</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//write</span></span><br><span class="line">        Handle&lt;Object&gt; value;</span><br><span class="line">        <span class="built_in">ASSIGN_RETURN_FAILURE_ON_EXCEPTION</span>(</span><br><span class="line">                isolate, value, Object::<span class="built_in">ToNumber</span>(isolate, args.<span class="built_in">at</span>&lt;Object&gt;(<span class="number">1</span>)));</span><br><span class="line">        elements.<span class="built_in">set</span>(length,value-&gt;<span class="built_in">Number</span>());</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">ReadOnlyRoots</span>(isolate).<span class="built_in">undefined_value</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先判断了函数的参数个数，<code>args.at(0)</code>是这个方法的父类型实例，在第一个例子中是全局Object实例，在这里就应该是<code>Array</code>实例。因此这里<code>len</code>不能大于2，也就表示不能传入2个以上的参数。</p>
+<p>下面的<code>args.receiver()</code>实际上就是在获取第0个参数，也就是<code>Array</code>实例，这里是使用<code>Handle&lt;JSArray&gt;::cast</code>完成的类型转换，不过在较新的C++中可以直接使用<code>Cast</code>转换。下面获取了数组的元素（<code>array-&gt;elements</code>）并转换为<code>FixedDoubleArray</code>类型。</p>
+<p>然后通过<code>array-&gt;length()-&gt;Number()</code>首先获取数组长度的Javascript Number实例，再转换为<code>uint32_t</code>类型。下面判断，如果参数长度等于1（也就是不传参），就会出现问题，为什么呢，因为<code>elements.get_scalar()</code>就是获取对应下标的元素，但是获取<code>length</code>处的元素不就相当于溢出一个元素了吗？所以这里存在漏洞。</p>
+<p>下面如果参数长度不为1，也会有一个溢出操作，就是<code>element.set</code>，将数组后面一个地方的值进行修改。从宏定义名来看，<code>ASSIGN_RETURN_FAILURE_ON_EXCEPTION</code>应该是可以带有检查地完成赋值操作，<code>value</code>应该被赋值为第一个参数，也就是传入的参数的值。这里我们简单验证一下是不是这样。</p>
+<p><img src="2.png" alt="" /></p>
+<p>可以看到Debug输出下出现了问题，因为Debug模式输出会检查数组赋值。</p>
+<p>如果在Release模式下运行，则是这个样子：</p>
+<p><img src="3.png" alt="" /></p>
+<p>这里的输出会显示一个浮点数值。至于这个浮点数值具体为什么是这个数，我们将在下一篇blog中通过分析本题深入理解。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/10/10/Rust%E9%80%86%E5%90%91%E5%AD%A6%E4%B9%A0-9/" rel="prev" title="Rust逆向学习 (9)">
+      <i class="fa fa-chevron-left"></i> Rust逆向学习 (9)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#a-builtins"><span class="nav-number">1.</span> <span class="nav-text"> A. Builtins</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#a1-builtins-definitions"><span class="nav-number">1.1.</span> <span class="nav-text"> A.1 Builtins Definitions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a2-builtins-installation"><span class="nav-number">1.2.</span> <span class="nav-text"> A.2 Builtins Installation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a3-builtins-function"><span class="nav-number">1.3.</span> <span class="nav-text"> A.3 Builtins Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a4-builtin-installation-2"><span class="nav-number">1.4.</span> <span class="nav-text"> A.4 Builtin Installation 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a5-example-1"><span class="nav-number">1.5.</span> <span class="nav-text"> A.5 Example 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a6-example-2"><span class="nav-number">1.6.</span> <span class="nav-text"> A.6 Example 2</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:32</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

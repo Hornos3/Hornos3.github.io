@@ -150,6 +150,160 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/" class="post-title-link" itemprop="url">计算机组成原理——第2章</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2023-03-03 00:01:30 / 修改时间：00:05:10" itemprop="dateCreated datePublished" datetime="2023-03-03T00:01:30+08:00">2023-03-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="22-数值数据的表示"><a class="markdownIt-Anchor" href="#22-数值数据的表示"></a> 2.2 数值数据的表示</h2>
+<ul>
+<li><font color=red>真值</font>：使用&quot;+“、”-&quot;表示正负号的数值表示方式。</li>
+<li><font color=red>机器数</font>：符号数值化的数据表示方法，使用0、1表示符号。</li>
+<li>三种常见机器数（整数）：
+<ul>
+<li><font color=red>原码</font>：最高位为符号位，其余位值为数值的绝对值，符号位正数为0，负数为1。原码表示方便，但计算复杂，且有+0和-0两种0的表示方式。</li>
+<li><font color=red>反码</font>：最高位符号位规则与原码相同，当数值为负数时，其余位值相对于原码全部取反。表示相对于原码较复杂，但计算简单，但0的表示同样不唯一。</li>
+<li><font color=red>补码</font>：表示负数时为反码+1。</li>
+<li>规则：对于总位数为n的二进制数，三种码对于正数的表示方法相同，可表示正数范围均为0~2<sup>n-1</sup>-1。原码表示负数x，二进制数的值为2<sup>n-1</sup>-x，反码表示为2<sup>n</sup>+x-1，补码表示为2<sup>n</sup>+x。反码的加法计算方法：二进制数直接相加后再加1。</li>
+</ul>
+</li>
+<li><font color=red>移码</font>：非符号位与补码相同，符号位与补码相反。编码方式是直接将真值加上一个常数偏移量，因此得名。</li>
+<li>定点数表示：X<sub>0</sub>.X<sub>1</sub>X<sub>2</sub>…，其表示范围为-1~1-2<sup>-n</sup>（使用补码形式进行编码）</li>
+<li>浮点数表示：一般格式为E<sub>S</sub>E<sub>1</sub>E<sub>2</sub>…E<sub>n</sub>M<sub>S</sub>M<sub>1</sub>M<sub>2</sub>…M<sub>k</sub>，其中E为阶码位，确定数据的范围，M为尾数，表示数的精度。其中阶码位和尾数位的最高位均表示符号。浮点数表示的不足之处是不同机器可能从相同的二进制数中提取出不同的浮点数。
+<ul>
+<li>IEEE754标准规定单精度浮点数阶码8位，有效尾数23位（<font color=red>不含尾数中的符号位，尾数中的符号位位于阶码前面，在最高位</font>）；双精度浮点数阶码11位，有效尾数52位。<font color=red>阶码采用移码的方式表示，常数为127。</font>其中有效尾数的整数位1被省略。对于单精度浮点数，若其偏指数（带有符号位的阶码的无符号值）为E，尾数为M，则真值可表示为2<sup>E-127</sup>×(-1)<sup>S</sup>×1.M。
+<ul>
+<li>当E=0、M=0时表示机器零，无论S等于0还是1。</li>
+<li>当E=0、M≠0时，真值为非规格化的浮点数，2<sup>-126</sup>×(-1)<sup>S</sup>×0.M。即这个数太接近0，即使阶码为0也必须让尾数的整数位为0才能表示，这样会影响数的表示精度。</li>
+<li>当1≤E≤254时，正常表示，是规格化的浮点数。</li>
+<li>当E=255、M=0时表示无穷大。</li>
+<li>当E=255、M≠0时表示NaN。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="24-数据信息的校验"><a class="markdownIt-Anchor" href="#24-数据信息的校验"></a> 2.4 数据信息的校验</h2>
+<h3 id="241-码距与校验"><a class="markdownIt-Anchor" href="#241-码距与校验"></a> 2.4.1 码距与校验</h3>
+<p><font color=red>码距</font>：信息编码中两个编码对应的二进制位不同的位的个数。如10101和10001的码距为1，只有1个二进制位不同。码距越大、抗干扰、纠错能力越强，数据冗余越大，编码效率越低。<br />
+码距越大，纠错就越容易，当码距变大时，将一个合法编码转化为另一个合法编码需要修改多位，概率较低，且可以根据不合法编码与合法编码之间的码距，选择与不合法编码的码距最小的合法编码纠错。</p>
+<ul>
+<li>当码距d≥e+1时，可以检测出e个错误</li>
+<li>当码距d≥2t+1时，可以纠正t个错误</li>
+<li>当码距d≥e+t+1时（e≥t），可以在检测e个错误的同时纠正t个错误。</li>
+</ul>
+<h3 id="242-奇偶校验"><a class="markdownIt-Anchor" href="#242-奇偶校验"></a> 2.4.2 奇偶校验</h3>
+<p>检测二进制代码中1的个数的奇偶性进行校验。<br />
+<font color=red>奇校验要让数据位和校验位整个的1的个数为奇数，偶校验则让1的个数为偶数</font>。因此奇校验是1的个数为偶数时校验码为1，而偶校验时1的个数为奇数时校验码为1。</p>
+<p>优点：检错简单，编码效率高。<br />
+缺点：不能获取错误位置，只是一种检错码，无错结论不可靠（如果两位同时错误无法检测出来）</p>
+<p>改进：<font color=red>交叉奇偶校验</font>，将原始数据信息构建为行列矩阵式结构，每一行和每一列都产生一个偶校验位，最后生成一个公共校验位。当有一位出错时，可以根据行校验位和列校验位的检查判断出是哪一位出错。但当两位数据同事出错时，不能确定到底是哪两位出错（有两种情况）。<font color=red>可纠正1位错误、检查部分偶数位错误、不能检测出错误发生在数据位中任意一个矩形4个顶点上的错误。</font></p>
+<h3 id="243-crc校验"><a class="markdownIt-Anchor" href="#243-crc校验"></a> 2.4.3 CRC校验</h3>
+<p>Cyclic Redundancy Check，循环冗余校验，是一种基于模2运算建立编码规则的校验码。其中模2运算与异或运算的规则相同，在加的基础上不用进位。在此基础上可以获取模2乘法运算和除法运算的规则。</p>
+<p>编码规则：设CRC码长度n位，原始数据C<sub>k-1</sub>C<sub>k-2</sub>…C<sub>0</sub>共k位，校验位P<sub>r-1</sub>P<sub>r-2</sub>…P<sub>0</sub>共r位，则<font color=red>n=k+r≤2<sup>r</sup>-1</font>。生成一个多项式G(x)，将待发送的二进制数据用该多项式表示：G(x)=C<sub>k-1</sub>x<sup>k-1</sup>+C<sub>k-2</sub>x<sup>k-2</sup>+…+C<sub>1</sub>x+C<sub>0</sub>。G(x)需要满足：</p>
+<ul>
+<li>最高位和最低位必须为1。</li>
+<li>被传送信息任意一位出错时，被生成多项式除之后余数均不为0。</li>
+<li>不同位发生错误时，模2除运算后余数不同。</li>
+<li>对不为0的余数进行模2除运算能够使余数循环。</li>
+</ul>
+<p>编码方法：</p>
+<ul>
+<li>根据待校验信息的长度k按照k+r≤2<sup>r</sup>-1确定校验码位数。</li>
+<li>根据r和生成多项式的选择原则，选择一个位数为r+1的生成多项式。</li>
+<li>将有效信息左移r位得到r+k位的二进制数Q。</li>
+<li>对Q除生成多项式，以余数替换Q的低r位。</li>
+</ul>
+<p>校验方法：<br />
+用数据除生成多项式，余数为0即为正确。</p>
+<p><font color=red>CRC校验码的循环特性</font>：第i位出错的数据除以生成多项式获得的余数R<sub>i</sub>与第i+1位出错的数据除以生成多项式获得的余数R<sub>i+1</sub>满足：<font color=red>R<sub>i+1</sub>=R<sub>i</sub>左移1位后除以生成多项式获得的余数。</font></p>
+<p>纠错方法：<br />
+记录当数据最高位错误时除以生成多项式获取的余数R。<br />
+当待检测数据除以生成多项式获得的余数不是0也不是R时，一边对余数补零继续除，另一边对待检测数据循环左移，当余数的值为R时，将当前循环移位后的待检测数据的最高位取反，再移位回来即可完成纠错。</p>
+<h3 id="243-海明校验"><a class="markdownIt-Anchor" href="#243-海明校验"></a> 2.4.3 海明校验</h3>
+<p>一种既能检错又能纠错的校验码，本质是多重奇偶校验。（海明码为偶校验）</p>
+<p>设海明校验码共n位，原始数据k位，校验位r位，满足k+r≤2<sup>r</sup>-1。<br />
+r位校验码（P<sub>i</sub>，i=1,2,…,r）分别位于海明编码的第2<sup>i-1</sup>位。海明码第i位的数据由若干个位于小于i的校验位校验。<font color=red>注意：第i位如果为数据位，那么参与检验该位的海明码的计算方式是——获取i的二进制表示，二进制中若第j位为1，则第j个海明码参与检验该值。如海明校验码的第11位，二进制表示为1011，则第1、2、4个校验码位参与校验该值。</font>当有1位出错时，只需要将指错字的所有位转换为一个数值，该数值即为出错的位的索引。如第11位出错，则4个指错字中第1、2、4位必然为1，4个指错字结合为1011，即为出现错误的那一位。这种纠错方式可以纠正海明校验码中任何一位的错误，包括校验位。但海明校验不一定能够分辨出一位错与两位错。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/03/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86%E2%80%94%E2%80%94%E7%AC%AC1%E7%AB%A0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3457,334 +3611,10 @@ b. 是。</li>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/03/02/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E2%80%94%E2%80%94%E7%AC%AC2%E7%AB%A0/" class="post-title-link" itemprop="url">计算机网络——第2章</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2023-03-02 23:44:57 / 修改时间：23:45:32" itemprop="dateCreated datePublished" datetime="2023-03-02T23:44:57+08:00">2023-03-02</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">课内笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%BE%E5%86%85%E7%AC%94%E8%AE%B0/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.7k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="chapter-2-应用层"><a class="markdownIt-Anchor" href="#chapter-2-应用层"></a> Chapter 2 应用层</h1>
-<h2 id="21-应用层协议原理"><a class="markdownIt-Anchor" href="#21-应用层协议原理"></a> 2.1 应用层协议原理</h2>
-<p>网络应用可能有很多需求，如运行在不同端系统，通过网络进行交流等。网络应用不需要运行在网络核心设备上。</p>
-<p>网络应用使用多种架构：客户端/服务器架构（C/S）、对等网（P2P）、混合体系结构。</p>
-<h4 id="客户机-服务器体系结构"><a class="markdownIt-Anchor" href="#客户机-服务器体系结构"></a> 客户机-服务器体系结构</h4>
-<p>服务器端总是打开，拥有一个相对固定的地址（一般固定），具有缩放的数据中心。<br />
-客户端与服务器通信，可能是间歇性连接，可能有动态的IP地址，客户端之间不能相互通信。</p>
-<h4 id="p2p体系结构"><a class="markdownIt-Anchor" href="#p2p体系结构"></a> P2P体系结构</h4>
-<ul>
-<li>客户端不一定总是在线</li>
-<li>结点之间可以相互通信</li>
-<li>结点的地址以及他们之间的连接可能随时发生变化</li>
-<li>任何一方既可以提供服务又可以享受服务</li>
-<li>结点之间是间歇性连接，地址也是变化的</li>
-<li>管理非常复杂</li>
-</ul>
-<h4 id="混合体系结构"><a class="markdownIt-Anchor" href="#混合体系结构"></a> 混合体系结构</h4>
-<p>混合体系结构将C/S模式与P2P模式结合起来，广泛应用于即时通信中，当双方在线需要传输文件时可以使用P2P模式，当有一方不在线时可以使用C/S模式首先将文件上传到服务器，然后另一方下载。</p>
-<h3 id="212-进程通信"><a class="markdownIt-Anchor" href="#212-进程通信"></a> 2.1.2 进程通信</h3>
-<p>进程：在端系统运行的程序，操作系统术语，<font color=red>一个程序可能产生多个进程。同一台主机上的不同多个进程之间采用内部进程通信方式（由操作系统决定），而不同主机之间的进程通信采用报文交换方式（应用层协议）。</font>客户端和服务器的通信实际上是进程和进程之间的通信，客户端进程需要启动通信，服务器进程需要等待连接。</p>
-<p>应用层协议定义了：交换的报文类型、各种报文类型的语法、字段的语义、进程何时如何发送报文以及对报文进行响应、开放的允许交互的协议、专有协议（如QQ自己定义的报文格式）</p>
-<p>注意<font color=red>应用层协议≠网络应用</font>。网络应用的本质是进程，而应用层协议只是进程和进程之间的通信方式。</p>
-<h4 id="套接字"><a class="markdownIt-Anchor" href="#套接字"></a> 套接字</h4>
-<p>每一个网络应用进程都有一个属于自己的套接字，该套接字在整个因特网上独一无二。其中包含有：</p>
-<ul>
-<li>主机地址：表示该网络应用进程运行在因特网哪一个主机上，通常使用32位IP地址进行标识。</li>
-<li>端口地址：在该主机表示该网络应用进程，通常使用16位的端口号进行标识。</li>
-<li>套接字的长度为48位。</li>
-</ul>
-<p>进程通过套接字来接收和发送报文，套接字相当于一个接口，依赖接口另一边的传输基础设施来投递数据到接收进程的套接字。<font color=red>主机IP地址和进程相关的端口号标识因特网上的进程，且为唯一标识。</font></p>
-<h3 id="213-可供应用程序使用的运输服务"><a class="markdownIt-Anchor" href="#213-可供应用程序使用的运输服务"></a> 2.1.3 可供应用程序使用的运输服务</h3>
-<p>不同的应用程序对网络有不同的需求，不同的需求对应的网络要求不同。</p>
-<ul>
-<li>文件传输、email、Web网页要求数据必须完全不能出错，带宽可以有弹性要求，不要求实时性</li>
-<li>实时音频和视频、交互式游戏允许数据的一定量丢失，但带宽有要求，且实时性要求很高</li>
-<li>存储音频和视频允许数据的一定量丢失，实时性要求低于实时，但也有一定要求。</li>
-<li>即时讯息要求数据不丢失，实时性可能有可能无。</li>
-</ul>
-<h4 id="tcp协议"><a class="markdownIt-Anchor" href="#tcp协议"></a> TCP协议</h4>
-<ul>
-<li>面向连接，服务器和客户端需要建立连接</li>
-<li>可靠传输，在发送和接收进程之间</li>
-<li>流量控制，发送数据的速度绝不超过接收的速度</li>
-<li>拥塞控制，当网络超负荷时，束紧发送端口，减缓发送速度</li>
-<li>不提供：实时性和最小带宽承诺</li>
-</ul>
-<h4 id="udp协议"><a class="markdownIt-Anchor" href="#udp协议"></a> UDP协议</h4>
-<ul>
-<li>在客户端和服务器进程之间实现不可靠的传输</li>
-<li>不提供：连接建立、可靠性保证、流量控制、拥塞控制、实时性、最小带宽承诺</li>
-</ul>
-<h4 id="安全性"><a class="markdownIt-Anchor" href="#安全性"></a> 安全性</h4>
-<p>两个协议都不提供安全性，需要添加安全套接字SSL，其提供加密的TCP连接，并有数据的完整性检查和端点身份鉴别。SSL位于应用层和TCP之间。</p>
-<h2 id="22-web和http"><a class="markdownIt-Anchor" href="#22-web和http"></a> 2.2 Web和Http</h2>
-<p>Web（C/S模式）的构成：</p>
-<ul>
-<li>Web服务器：IIS、Apache、TomCat等</li>
-<li>浏览器：IE、Maxthon、Firefox等</li>
-<li>协议：信息表达的协议为HTML，信息传输的协议为HTTP</li>
-</ul>
-<p>Web页面由一些对象组成，对象可以是HTML，JPEG图片、音频文件等<br />
-HTML文件是Web页面的基础，可以包括各种对象，是一个容器对象<br />
-任何一个对象都可以使用URL来定位。</p>
-<p>客户端：浏览器请求、接收、展示Web对象。<br />
-服务器：Web服务器发送对象对请求进行响应。</p>
-<h3 id="221-http协议概况"><a class="markdownIt-Anchor" href="#221-http协议概况"></a> 2.2.1 HTTP协议概况</h3>
-<p>HTTP协议的特点：</p>
-<ul>
-<li>TCP传输服务：客户端启动TCP连接到服务器，端口80。</li>
-<li>服务器接收来自客户端的TCP连接。</li>
-<li>HTTP报文在浏览器和Web服务器之间进行交换。</li>
-<li>关闭TCP连接。</li>
-<li>HTTP连接无状态，服务器不保留任何访问过的请求信息。</li>
-</ul>
-<h3 id="221-持续性连接和非持续性连接"><a class="markdownIt-Anchor" href="#221-持续性连接和非持续性连接"></a> 2.2.1 持续性连接和非持续性连接</h3>
-<p>HTTP连接分为<font color=red>非持续性连接和持续性连接</font>两种。非持续性连接通过TCP连接最多发送1个对象，下载多个对象时需要建立多个连接。持续性连接通过单个TCP连接可以发送多个对象。HTTP1.0的传输模式就是非持久性连接。当客户端接收到第一个HTTP对象发现其中还有引用的对象时，会再一次开启TCP连接逐一接收这些对象。</p>
-<p><font color=red>定义往返时间RTT：</font>一个短分组从客户到服务器然后再返回到客户所花费的时间。</p>
-<p>因此在非持续性连接中获取一个对象需要2RTTs，第一个建立连接，第二个请求资源。总时间=2RTTs+文件传输时间。在非持续性连接中只能通过多个浏览器同时打开多个并行的连接来改善性能。</p>
-<p>在HTTP1.1时即使用了持久连接，服务器在发送相应后不再断开TCP连接，而是保持该连接，用于后续对象的传送，直至该连接“休息”了一个较长的时间之后方断开该连接。持久连接减少了服务器端连接数的需要，从而减少了对服务器端套接字资源的占用，提高了服务器的负载能力。持久连接分为<font color=red>非流水线模式和流水线模式</font>。非流水线方式是一个对象传输完成之后方能传输下一个，流水线模式可以一次性发送所有请求，慢慢接收。</p>
-<h3 id="223-http报文格式"><a class="markdownIt-Anchor" href="#223-http报文格式"></a> 2.2.3 HTTP报文格式</h3>
-<p>HTTP请求报文包括：</p>
-<ul>
-<li>请求行：标识该报文的请求方式，包含GET、POST、HEAD、PUT、DELETE共5种。其中绝大多数为GET和POST。</li>
-<li>首部诸行，包含如主机、解析浏览器、编码、语言等信息（每行结束为\r\n表示换行）</li>
-<li>单独一行回车、换行标识报文首部结束</li>
-<li>对象内容，数据</li>
-</ul>
-<h4 id="http请求行定义的方法"><a class="markdownIt-Anchor" href="#http请求行定义的方法"></a> HTTP请求行定义的方法</h4>
-<ul>
-<li>GET请求用于向服务器请求指定URL的对象</li>
-<li>POST请求用于向服务器提交表单数据，也可以同时请求一个Web页面。注意可以不使用POST方法二使用GET方法发送表单数据以获得新的Web页面</li>
-<li>HEAD请求用于从服务器返回相应报文，但是该报文中并不包含请求的对象，常用于故障跟踪</li>
-<li>PUT请求将上传的文件放在实体主体字段中，目标路径由URL字段标明</li>
-<li>DELETE请求删除URL字段中指定的文件。</li>
-</ul>
-<p>上面的前3种为HTTP1.0支持，下面2种为HTTP1.1新支持。上传数据除了可以使用PUT请求外也可以使用GET请求将需要上传的数据发送到URL中。</p>
-<h4 id="http请求报文首部状态码"><a class="markdownIt-Anchor" href="#http请求报文首部状态码"></a> HTTP请求报文首部状态码</h4>
-<p>HTTP请求有一个状态码位于第一行，标识HTTP请求的状态。常见的请求码：</p>
-<ul>
-<li>200：OK，请求成功，被请求的对象就在报文中</li>
-<li>301：Moved Permanently，被请求的对象移动过，新的位置在报文中有说明（Location: 开头的行）</li>
-<li>400：Bad Request，服务器不明白报文的意思（4开头都是客户端的问题）</li>
-<li>505：HTTP Version Not Supported，服务器不支持报文使用的HTTP协议版本（5开头都是服务器的问题）</li>
-</ul>
-<h3 id="224-用户与服务器的交互cookie"><a class="markdownIt-Anchor" href="#224-用户与服务器的交互cookie"></a> 2.2.4 用户与服务器的交互：Cookie</h3>
-<p>Web站点使用Cookie的目的有：</p>
-<ul>
-<li>限制用户的访问</li>
-<li>将内容和用户身份进行关联</li>
-</ul>
-<p>Cookie技术组成部分：</p>
-<ul>
-<li>在HTTP响应报文之中有一个Cookie首部行</li>
-<li>在HTTP请求报文中也有一个Cookie首部行</li>
-<li>在用户端系统中保留一个Cookie文件，由用户浏览器负责管理</li>
-<li>在Web站点有一个后端数据库</li>
-</ul>
-<p>客户端将保存的某个网站的Cookie放在HTTP请求头中，发送到对应的网站，网站发现请求报文中含有Cookie便会进行查找，找到Cookie后网站将Cookie对应到特定的用户中，返回个性化的内容。</p>
-<h3 id="225-web缓存"><a class="markdownIt-Anchor" href="#225-web缓存"></a> 2.2.5 Web缓存</h3>
-<p>缓存的目的：</p>
-<ul>
-<li>加速客户端访问Web界面的速度，减少时延</li>
-<li>减少局域网与外部因特网交换的数据量，从而在达到同等服务质量的同时，可以使用较小的网络带宽，节约费用。</li>
-</ul>
-<p>如果需要频繁从一个内网中访问外部某一个网站的数据，那么会对出口带宽造成很大的挑战。但如果在机构内部假设缓存服务器，那么这些对象的访问只需要在内网即可实现，不仅能够减少对外链路的压力，还能够降低时延。</p>
-<h3 id="226-条件get方法"><a class="markdownIt-Anchor" href="#226-条件get方法"></a> 2.2.6 条件GET方法</h3>
-<p>目的：更新Web缓存中的Web对象副本。<br />
-缓存服务器向网站发送条件GET请求用于确认内容是否被更新，如果没有更新，则服务器返回304报文编码，表示内容没有被更新。如果已经更新，则返回一个普通的带有对象的HTTP报文，其中头部有一行为Last-Modified。</p>
-<h3 id="227-ftp协议"><a class="markdownIt-Anchor" href="#227-ftp协议"></a> 2.2.7 FTP协议</h3>
-<p>FTP协议使用TCP协议传输数据，采用C/S模式，端口号为21/20<br />
-与HTTP的比较：</p>
-<ul>
-<li>都使用TCP协议</li>
-<li>FTP的控制信息带外传送，而HTTP的控制信息带内传送。FTP有两个并行连接，控制连接21端口发送控制信息，数据连接20端口发送数据信息。</li>
-</ul>
-<blockquote>
-<p>有些传输层协议具有带外(Out Of Band, OOB)数据的概念，用于迅速告知对方本端发生的重要事件。因此带外数据比普通数据(也称为带内数据)有更高的优先级，不论发送缓冲区中是否有排队等待发送的普通数据，带外数据总是被立即发送。带外数据的传输可以使用一条独立的传输层连接，也可以映射到传输层普通数据的连接中。但是在实际应用中，带外数据的使用少见，已知的仅有telnet、ftp等远程非活跃程序。<br />
-  UDP没有实现带外数据传输，TCP也没有真正意义上的带外数据。但是TCP利用其头部中的紧急指针标志(URG)和紧急指针两个字段，为应用程序提供了一种紧急方式。TCP紧急方式是利用传输普通数据的连接来传输紧急数据的，这种紧急数据的含义类似于带外数据。<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_29344757/article/details/78689925">https://blog.csdn.net/qq_29344757/article/details/78689925</a></p>
-</blockquote>
-<ul>
-<li>HTTP连接无状态，而FTP连接有状态，FTP服务器会在整个会话期间维持用户状态信息。</li>
-</ul>
-<p>常见的FTP命令</p>
-<ul>
-<li>USER username 登录</li>
-<li>PASS password 登录</li>
-<li>LIST 返回当前目录中的文件列表</li>
-<li>RETR filename 取文件</li>
-<li>STOR filename 传文件</li>
-</ul>
-<p>常见FTP应答：</p>
-<ul>
-<li>331 Username OK，password required</li>
-<li>125 data connection already open; transfer starting</li>
-<li>425 cannot open data connection</li>
-<li>452 error writing file</li>
-</ul>
-<h2 id="24-dns因特网的目录服务"><a class="markdownIt-Anchor" href="#24-dns因特网的目录服务"></a> 2.4 DNS：因特网的目录服务</h2>
-<p>为记忆方面，发明了DNS系统用于IP地址和域名的转换。</p>
-<h3 id="241-dns提供的服务"><a class="markdownIt-Anchor" href="#241-dns提供的服务"></a> 2.4.1 DNS提供的服务</h3>
-<ul>
-<li>DNS是一个分布式数据库，由很多台DNS服务器按照层次结构组织起来</li>
-<li>DNS运行在端到端系统上，且使用UDP协议（53号端口）进行报文传输，因此其为应用层协议</li>
-<li>以C/S模式工作</li>
-<li>不直接展示在用户面前，是Internet的核心功能</li>
-</ul>
-<h3 id="242-dns工作原理概述"><a class="markdownIt-Anchor" href="#242-dns工作原理概述"></a> 2.4.2 DNS工作原理概述</h3>
-<p>用户在浏览器输入一个域名后：</p>
-<ul>
-<li>浏览器从URL中取出域名，将其传送给DNS客户机</li>
-<li>DNS客户机向DNS服务器发出一个包含域名的查询请求报文</li>
-<li>DNS服务器向DNS客户机送回一个包含对应IP地址的响应报文</li>
-<li>DNS客户机将该IP地址传送给浏览器</li>
-<li>浏览器向该IP地址所在Web服务器发起TCP连接</li>
-</ul>
-<p>如果全世界只有一台DNS服务器，那么</p>
-<ul>
-<li>单点故障造成的问题会很严重</li>
-<li>DNS服务器承载的流量过大不堪重负</li>
-<li>远程集中式数据库的查询会带来严重的延时</li>
-<li>维护量巨大，必须实时更新以适应互联网上主机的增减</li>
-</ul>
-<p>因此现实中DNS服务器以层级结构进行设计。最高为根服务器，下面依次为顶级域名服务器（如国家域名 .cn、.jp服务器）、权威服务器（.com、.org等）</p>
-<ul>
-<li>当本地域名服务器不能解析时，就向根域名服务器查询。</li>
-<li>顶级域DNS服务器负责顶级域名和所有国家的顶级域名解析工作，如 .com、.org、.net、.gov、.uk、.jp等</li>
-<li>权威DNS服务器是属于某个组织的DNS服务器，为组织的服务器提供一个权威的域名到IP地址的映射服务，如Web和Mail</li>
-<li>本地DNS服务器位于权威DNS服务器之下，严格意义上并不属于DNS层次结构中的一层。每一个网络服务商都会提供一个本地DNS服务器（又称默认DNS服务器），当一台主机需要域名查询时，请求首先被发送到本地域名服务器，其作用相当于一个代理，向域名层次体系中做进一步的域名查询。</li>
-</ul>
-<p>DNS查询方式：</p>
-<ul>
-<li>发起请求使用递归查询，后续解析使用迭代查询（本地DNS服务器发送请求到根服务器，根服务器返回结果到本地DNS服务器，然后本地DNS服务器再去请求低一级的DNS服务器，即除了本地DNS服务器外所有DNS服务器都只接收一次请求发送一次请求）</li>
-<li>纯递归查询（本地DNS服务器发送请求到根服务器，根服务器找到后发送请求到低一级的DNS服务器，整个请求是一个链式结构）</li>
-<li>上面两种方式中第1种更好，因为第1种请求1次只需要根服务器发送1次请求，而第2种需要发送2次</li>
-</ul>
-<p><font color=red>DNS缓存</font>：当域名服务器知道了某个映射，就将其缓存。</p>
-<ul>
-<li>在一定时间间隔后缓存的条目将会过期自动删除</li>
-<li>顶级域DNS服务器通常被缓存在本地的DNS服务器中</li>
-<li>这样可以减少根DNS的负载</li>
-</ul>
-<p>DNS可以提供的服务有：</p>
-<ul>
-<li>域名到IP地址的转换</li>
-<li>主机/邮件/服务器别名：为不好记的主机/邮件服务器名提供一个容易记忆的别名</li>
-<li>负载均衡，一个域名对应于多个IP，DNS服务器在多个IP之间轮转</li>
-</ul>
-<h3 id="243-dns记录和报文"><a class="markdownIt-Anchor" href="#243-dns记录和报文"></a> 2.4.3 DNS记录和报文</h3>
-<p>DNS记录的格式：(name, value, type, ttl)</p>
-<ul>
-<li>type=A时，name=主机名，value=IP地址</li>
-<li>type=NS时，name=域，value=该域权威域名服务器的主机名</li>
-<li>type=CNAME时，name=别名，value=真名</li>
-<li>type=MX时，value=与name相关的邮件服务器域名</li>
-</ul>
-<p>通过Nslookup命令可以进行域名解析</p>
-<h4 id="dns服务器攻击"><a class="markdownIt-Anchor" href="#dns服务器攻击"></a> DNS服务器攻击</h4>
-<ul>
-<li>DDoS攻击，通过洪泛攻击根服务器——难以成功，因为其通常配备分组过滤器，大多数本地DNS服务器都缓存了TLD DNS服务器的地址，使得洪泛攻击难以触及DNS根服务器本身</li>
-<li>重定向攻击，攻击者截获来自主机的请求并返回伪造的回答（DNS劫持），或攻击者诱导服务器在缓存中接收伪造的记录（DNS毒害）</li>
-<li>利用DNS服务器对目标主机采用DDoS攻击——反射攻击</li>
-</ul>
-<h2 id="25-p2p文件分发"><a class="markdownIt-Anchor" href="#25-p2p文件分发"></a> 2.5 P2P文件分发</h2>
-<p>P2P服务器没有始终在线的服务器，允许端系统直接通信，对等方间歇性连接并更改IP地址。如文件分发BitTorrent、视频流PPTV、VoIP Skype等。</p>
-<p>在C/S模式下，对于一个大小为F的文件，考虑对等方下载和上传速率优先的情况，设<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">u_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为服务器上传速率，<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">d_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为对等方的下载速率。当有N台客户机连接服务器时，服务器必须按顺序发送N份文件副本，总时间为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>N</mi><mi>F</mi></mrow><msub><mi>u</mi><mi>s</mi></msub></mfrac></mrow><annotation encoding="application/x-tex">\frac{NF}{u_s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.317431em;vertical-align:-0.44509999999999994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。每个客户端需要下载文件副本，设所有客户端中最小下载速率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mrow><annotation encoding="application/x-tex">d_{min}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，则客户端最长下载时间为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>F</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">\frac{F}{d_{min}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.317431em;vertical-align:-0.44509999999999994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。因此将F分配给N个客户机的时间<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>c</mi><mo>−</mo><mi>s</mi></mrow></msub><mo>≥</mo><mi mathvariant="normal">max</mi><mo>⁡</mo><mo stretchy="false">{</mo><mfrac><mrow><mi>N</mi><mi>F</mi></mrow><msub><mi>u</mi><mi>s</mi></msub></mfrac><mo separator="true">,</mo><mfrac><mi>F</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mfrac><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">T_{c-s}\ge\operatorname{max}\{\frac{NF}{u_s},\frac{F}{d_{min}}\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.891661em;vertical-align:-0.208331em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.25833100000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">c</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight">s</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.208331em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.317431em;vertical-align:-0.44509999999999994em;"></span><span class="mop"><span class="mord mathrm">m</span><span class="mord mathrm">a</span><span class="mord mathrm">x</span></span><span class="mopen">{</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">}</span></span></span></span>。<br />
-在P2P模式下，服务器需要至少上传一份副本，时间为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>F</mi><msub><mi>u</mi><mi>s</mi></msub></mfrac></mrow><annotation encoding="application/x-tex">\frac{F}{u_s}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.317431em;vertical-align:-0.44509999999999994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>，每一个客户端需要下载文件副本，最长时间为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>F</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mfrac></mrow><annotation encoding="application/x-tex">\frac{F}{d_{min}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.317431em;vertical-align:-0.44509999999999994em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span>。多有客户端整体需要下载NF比特，最大上传速率为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>u</mi><mi>s</mi></msub><mo>+</mo><mo>∑</mo><msub><mi>u</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">u_s+\sum u_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.73333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1.00001em;vertical-align:-0.25001em;"></span><span class="mop op-symbol small-op" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord mathnormal">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>。故将F分配给N个客户机的时间为<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>P</mi><mn>2</mn><mi>P</mi></mrow></msub><mo>≥</mo><mi mathvariant="normal">max</mi><mo>⁡</mo><mo stretchy="false">{</mo><mfrac><mi>F</mi><msub><mi>u</mi><mi>s</mi></msub></mfrac><mo separator="true">,</mo><mfrac><mi>F</mi><msub><mi>d</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub></mfrac><mo separator="true">,</mo><mfrac><mrow><mi>N</mi><mi>F</mi></mrow><mrow><msub><mi>u</mi><mi>s</mi></msub><mo>+</mo><mo>∑</mo><msub><mi>u</mi><mi>i</mi></msub></mrow></mfrac><mo stretchy="false">}</mo></mrow><annotation encoding="application/x-tex">T_{P2P}\ge\operatorname{max}\{\frac{F}{u_s},\frac{F}{d_{min}},\frac{NF}{u_s+\sum u_i}\}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">P</span><span class="mord mtight">2</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">P</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≥</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1.392338em;vertical-align:-0.520007em;"></span><span class="mop"><span class="mord mathrm">m</span><span class="mord mathrm">a</span><span class="mord mathrm">x</span></span><span class="mopen">{</span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">d</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">m</span><span class="mord mathnormal mtight">i</span><span class="mord mathnormal mtight">n</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.872331em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span><span class="mbin mtight">+</span><span class="mop op-symbol small-op mtight" style="position:relative;top:-0.0000050000000000050004em;">∑</span><span class="mspace mtight" style="margin-right:0.19516666666666668em;"></span><span class="mord mtight"><span class="mord mathnormal mtight">u</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:0em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span><span class="mord mathnormal mtight" style="margin-right:0.13889em;">F</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.520007em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mclose">}</span></span></span></span>，最后一个值随N线性增加，但每个对等方带来了服务能力。</p>
-<h4 id="bittorrent基本概念"><a class="markdownIt-Anchor" href="#bittorrent基本概念"></a> BitTorrent基本概念</h4>
-<p>洪流：参与一个特定文件分发的所有对等方的集合<br />
-追踪器：跟踪正在参与在洪流中的对等方<br />
-文件块：256KB</p>
-<h4 id="bittorrent的基本工作机制"><a class="markdownIt-Anchor" href="#bittorrent的基本工作机制"></a> BitTorrent的基本工作机制</h4>
-<ul>
-<li>向邻居请求哪些文件块——最稀罕优先</li>
-<li>优先响应哪些请求——对换算法（每10秒重新确定4个最高速率对等方。每30秒随机选择1个新的邻居）</li>
-<li>下载时，对等方将块上载到其他的对等方</li>
-<li>对等方可能会更改与之交换块的对等方</li>
-<li>对等方不稳定，会产生波动</li>
-<li>一旦对等方拥有了整个文件，它可能直接离开或留在洪流中</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/7/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><span class="page-number current">8</span><a class="page-number" href="/page/9/">9</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/9/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3850,14 +3680,14 @@ HTML文件是Web页面的基础，可以包括各种对象，是一个容器对�
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">161</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-count">26</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -3908,7 +3738,7 @@ HTML文件是Web页面的基础，可以包括各种对象，是一个容器对�
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:20</span>
+    <span title="站点阅读时长">22:32</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
